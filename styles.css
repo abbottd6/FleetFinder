@@ -7,54 +7,49 @@ h1 {
     font-size: 2em;
 }
 
-.navBar {
+header {
     background-color: rgb(34,34,34);
     margin: 1em 0 0 0;
     border: 0;
     border-radius: 0.75em;
-    padding: 0.25em;
-    height: 3vh;
+    padding: 0;
+    height: auto;
     width: 98vw;
-    
+    align-content: bottom;
+    position: absolute;
 }
 
-.navBody {
-    display: flex;
-    padding: 0;
+#navBlockStart {
+    display: inline-block;
     margin: 0 2em 0 2em;
-    border: 0;
-    width: 100%;
-    height: 100%;
-    justify-content: space-between;
-    align-items: baseline;
+    float: left;
+}
 
+#navBlockEnd {
+    display: inline-block;
+    margin: 0 2em 0 2em;
+    float: right;
 }
 
 #siteLogo {
+    display: inline-block;
+    float: left;
     align-items: center;
+    margin: 0 2em 0 2em;
 }
 
 #siteNav {
+    display: flex;
     list-style-type: none;
     color: rgb(120,120,120);
-    display: flex;
-    justify-content: flex-start;
-    padding: 0 1em 0 1em;
-    margin: 0;
-    border: 0;
     gap: 4em;
-    align-items: baseline;
     
 }
 
 #userNav {
+    display: flex;
     list-style-type: none;
     color: rgb(120,120,120);
-    display: flex;
-    display: flex;
-    justify-content: flex-end;
-    padding: 0 2em 0 2em;
-    margin: 0 2em 0 2em;
     border: 0;
     gap: 1em;
 }
@@ -64,4 +59,10 @@ body {
     background-color: rgb(60,60,60);
     font-family: courier, monospace;
     color: rgb(75,140,230);
+}
+
+#findFleet {
+    height: 2000px;
+    position: relative;
+    
 }
