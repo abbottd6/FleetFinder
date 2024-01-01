@@ -1,41 +1,38 @@
 /* scFleetFinder styles */ 
 
 h1 {
-    color: rgb(120,120,120);
-    text-align: center;
+    /*text-align: center;
     font-family: Lucida Sans, monospace; 
     font-size: 2em;
+    margin: 0;
+    padding: 2.2rem 0 0 0; */
 }
 
 header {
     background-color: rgb(34,34,34);
+    font-family: Lucida Sans, monospace;
     margin: 1em 0 0 0;
     border: 0;
     border-radius: 0.75em;
     padding: 0;
-    height: auto;
     width: 98vw;
-    align-content: bottom;
-    position: absolute;
+
 }
 
-#navBlockStart {
+#navBlockLeft {
     display: inline-block;
-    margin: 0 2em 0 2em;
-    float: left;
 }
 
-#navBlockEnd {
+#navBlockRight {
     display: inline-block;
-    margin: 0 2em 0 2em;
-    float: right;
+    margin-left: auto;
 }
 
 #siteLogo {
+    color: rgb(120,120,120);
     display: inline-block;
-    float: left;
-    align-items: center;
-    margin: 0 2em 0 2em;
+    margin: 0rem 2rem 0 5rem;
+    padding: 0;
 }
 
 #siteNav {
@@ -51,18 +48,45 @@ header {
     list-style-type: none;
     color: rgb(120,120,120);
     border: 0;
-    gap: 1em;
+    gap: 1em;   
 }
-
 
 body {
+    justify-content: center;
     background-color: rgb(60,60,60);
-    font-family: courier, monospace;
+    /* I don't know if I like this font font-family: courier, monospace; */
+    font-family: Lucida Sans, monospace;
     color: rgb(75,140,230);
+    
 }
 
-#findFleet {
-    height: 2000px;
-    position: relative;
-    
+.textBodies {
+    display: flex;
+    text-align: center;
+    align-items: center;
+}
+
+#welcomeSpan {
+    display: inline-block;
+}
+
+.fleetTypeGrid {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 8rem;
+    margin-top: 4rem;
+
+    /* position: absolute;
+    display: grid;
+    grid-template-rows: auto auto;
+    grid-template-columns: 10rem 10rem;
+    align-items: center; */
+}
+
+.fleetTypeItem {
+    flex: 10rem 10rem 30%;
+    padding: 1rem;
+    gap: 2rem;
+    border: 1px solid;
 }
