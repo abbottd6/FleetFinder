@@ -1,21 +1,15 @@
 /* scFleetFinder styles */ 
 
-h1 {
-    /*text-align: center;
-    font-family: Lucida Sans, monospace; 
-    font-size: 2em;
-    margin: 0;
-    padding: 2.2rem 0 0 0; */
+h2 {
+    color: rgb(75,140,230);
 }
 
 header {
     display: flex;
     background-color: rgb(34,34,34);
     font-family: Lucida Sans, monospace;
-    margin: 1em 0 0 0;
-    border: 0;
+    justify-content: center;
     border-radius: 0.75em;
-    padding: 0;
     width: 98vw;
 
 }
@@ -27,21 +21,26 @@ header {
 
 #navBlockRight {
     display: flex;
-    margin: auto 2rem 0 auto;
-
+    margin: auto 2rem auto auto;
 }
 
 #siteLogo {
-    color: rgb(120,120,120);
     display: flex;
     margin: auto 5rem 0 5rem;
-    padding: 0;
+    color: rgb(120,120,120);
+    font-size: 0.75rem;
+}
+
+#siteLogo a {
+    text-decoration: none;
+    color: rgb(120,120,120);
 }
 
 #siteNav {
     display: flex;
-    list-style-type: none;
+    margin: auto auto auto 0;
     color: rgb(120,120,120);
+    list-style-type: none;
     gap: 4em;
     
 }
@@ -49,6 +48,7 @@ header {
 #userNav {
     display: flex;
     list-style-type: none;
+    margin: 1rem 0 auto auto;
     color: rgb(120,120,120);
     border: 0;
     gap: 1em;   
@@ -70,32 +70,39 @@ body {
     
 }
 
-.textBodies {
-    display: inline-block;
+.indexMainBody {
+    display: flex;
+    flex-direction: column;
     text-align: center;
-    align-items: center;
     margin: 4rem auto 4rem auto;
     padding: 2rem;
     background-color: rgb(34,34,34);
+    color: rgb(120,120,120);
     border-radius: .75rem;
+    width: 90vw;
 }
 
-#welcomeMsg {
+#indexMainText {
     display: flex;
+    width: 50%;
+    margin: auto;
+    margin-left: 2rem;
+}
+
+.indexBodyStructure {
+    display: flex;
+    flex-direction: row;
+    gap: 4rem;
+    text-align: left;
+    justify-content: center;
+    margin-left: 4rem;
 }
 
 .fleetTypeGrid {
     display: flex;
     justify-content: center;
-    align-items: flex-start;
     gap: 8rem;
     margin-top: 4rem;
-
-    /* position: absolute;
-    display: grid;
-    grid-template-rows: auto auto;
-    grid-template-columns: 10rem 10rem;
-    align-items: center; */
 }
 
 .fleetTypeItem {
@@ -104,6 +111,7 @@ body {
     gap: 2rem;
     border: 1px solid;
     border-radius: .75rem;
+    color: rgb(75,140,230);
 }
 
 .content {
@@ -117,7 +125,7 @@ footer {
     background-color: rgb(34,34,34);
     color: rgb(120,120,120);
     font-family: Lucida Sans, monospace;
-    margin: 4rem 0 1rem 0;
+    margin: 4rem 0 0 0;
     border: 0;
     border-radius: 0.75em;
     padding: 0;
@@ -125,7 +133,8 @@ footer {
 }
 
 #communityLogo {
-    margin: 1rem 4rem 1rem 4rem;
+    margin: auto 4rem auto 4rem;
+    padding: 1rem 0 1rem 0;
     opacity: 50%;
 }
 
@@ -133,7 +142,7 @@ footer {
     display: flex;
     font-family: Lucida Sans, monospace;
     font-weight: 300;
-    width: 15%;
+    width: 25%;
     margin: auto auto auto 0;
     justify-content: center;
 }
@@ -142,9 +151,17 @@ footer {
     display: flex;
     font-family: Lucida Sans, monospace;
     margin: auto auto auto 0;
+    border-radius: 0.75rem;
+    padding: 0 1rem 0 1rem;
 }
 
-a {
+footer a {
     color: rgb(75,140,230);
     text-decoration: none;
+}
+
+#rsiLink:hover {
+    /*font-size: 1.1em;
+    background-color: rgb(120,120,120);
+    color: blue;*/
 }
