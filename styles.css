@@ -45,6 +45,14 @@ header {
     
 }
 
+#banuText {
+    font-family: Banu;
+}
+
+#xiinthleaText {
+    font
+}
+
 #userNav {
     display: flex;
     list-style-type: none;
