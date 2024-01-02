@@ -9,6 +9,7 @@ h1 {
 }
 
 header {
+    display: flex;
     background-color: rgb(34,34,34);
     font-family: Lucida Sans, monospace;
     margin: 1em 0 0 0;
@@ -20,18 +21,20 @@ header {
 }
 
 #navBlockLeft {
-    display: inline-block;
+    display: flex;
+    margin: auto auto 1rem auto;
 }
 
 #navBlockRight {
-    display: inline-block;
-    margin-left: auto;
+    display: flex;
+    margin: auto 2rem 0 auto;
+
 }
 
 #siteLogo {
     color: rgb(120,120,120);
-    display: inline-block;
-    margin: 0rem 2rem 0 5rem;
+    display: flex;
+    margin: auto 5rem 0 5rem;
     padding: 0;
 }
 
@@ -52,22 +55,33 @@ header {
 }
 
 body {
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
     background-color: rgb(60,60,60);
     /* I don't know if I like this font font-family: courier, monospace; */
     font-family: Lucida Sans, monospace;
     color: rgb(75,140,230);
+    min-height: 100vh;
+    background-image: ;
+    background-size: auto;
+    background-repeat: no-repeat;
+    background-position: center center;
+
     
 }
 
 .textBodies {
-    display: flex;
+    display: inline-block;
     text-align: center;
     align-items: center;
+    margin: 4rem auto 4rem auto;
+    padding: 2rem;
+    background-color: rgb(34,34,34);
+    border-radius: .75rem;
 }
 
-#welcomeSpan {
-    display: inline-block;
+#welcomeMsg {
+    display: flex;
 }
 
 .fleetTypeGrid {
@@ -89,4 +103,48 @@ body {
     padding: 1rem;
     gap: 2rem;
     border: 1px solid;
+    border-radius: .75rem;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+}
+
+footer {
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(34,34,34);
+    color: rgb(120,120,120);
+    font-family: Lucida Sans, monospace;
+    margin: 4rem 0 1rem 0;
+    border: 0;
+    border-radius: 0.75em;
+    padding: 0;
+    width: 98vw;
+}
+
+#communityLogo {
+    margin: 1rem 4rem 1rem 4rem;
+    opacity: 50%;
+}
+
+#communityNotice {
+    display: flex;
+    font-family: Lucida Sans, monospace;
+    font-weight: 300;
+    width: 15%;
+    margin: auto auto auto 0;
+    justify-content: center;
+}
+
+#rsiLink {
+    display: flex;
+    font-family: Lucida Sans, monospace;
+    margin: auto auto auto 0;
+}
+
+a {
+    color: rgb(75,140,230);
+    text-decoration: none;
 }
