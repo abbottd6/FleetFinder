@@ -9,7 +9,7 @@ user_name VARCHAR(32) NOT NULL,
 user_password VARCHAR(32) NOT NULL,
 email VARCHAR(45) NOT NULL,
 primary_region ENUM('USA', 'EU', 'AUS', 'ASIA', 'ANY'),
-organization VARCHAR(25),
+org VARCHAR(25),
 about_user VARCHAR(255),
 acct_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 PRIMARY KEY (id_user)
