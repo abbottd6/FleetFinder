@@ -1,8 +1,8 @@
 -- TEST Users
-INSERT INTO sc_fleetfinder.`user` (user_name, user_password, email, primary_region, org, about_user)
+INSERT INTO sc_fleetfinder.`user` (user_name, user_password, email, server_id, org, about_user)
 VALUES 
-	('Batman', 'batmanIsCool', 'thebatman@yahoo.com', 'USA', 'ICP', 'Love to beat up bad guys in my Vanguard Batmobile'),
-    ('Johnny', 'johnnyIsCool', 'johnny@gmail.com', 'AUS', 'IAE', 'Career miner, primarily on Aberdeen. Pro scanner.');
+	('Batman', 'batmanIsCool', 'thebatman@yahoo.com', (SELECT server_id FROM server_region WHERE server_name = 'USA'), 'ICP', 'Love to beat up bad guys in my Vanguard Batmobile'),
+    ('Johnny', 'johnnyIsCool', 'johnny@gmail.com', (SELECT server_id FROM server_region WHERE server_name = 'AUS'), 'IAE', 'Career miner, primarily on Aberdeen. Pro scanner.');
     
 -- SELECT * FROM `user`;
 -- SELECT * FROM gameplay_category;

@@ -2,7 +2,7 @@
 -- SELECT * FROM `user`;
 
 INSERT INTO sc_fleetfinder.group_listing (id_user, server_id, environment_id, experience_id, listing_title, listing_user, 
-	style_id, legality, group_status, event_scheduled, category_id, subcategory_id, 
+	style_id, legality, group_status, event_schedule, category_id, subcategory_id, 
     pvp_status, system_id, planet_id, activity_description, desired_party_size, available_roles, comms_options,
     comms_service)
 VALUES 
