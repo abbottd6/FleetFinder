@@ -43,15 +43,39 @@ PRIMARY KEY(planet_id),
 FOREIGN KEY(system_id) REFERENCES planetary_system(system_id)
 );
 
+CREATE TABLE IF NOT EXISTS sc_fleetfinder.server_region (
+server_id INT NOT NULL AUTO_INCREMENT,
+server_name VARCHAR(12) NOT NULL,
+PRIMARY KEY(server_id)
+);
+
+CREATE TABLE IF NOT EXISTS sc_fleetfinder.game_environment (
+environment_id INT NOT NULL AUTO_INCREMENT,
+environment_type VARCHAR(16) NOT NULL,
+PRIMARY KEY(environment_id)
+);
+
+CREATE TABLE IF NOT EXISTS sc_fleetfinder.game_experience (
+experience_id INT NOT NULL AUTO_INCREMENT,
+experience_type VARCHAR(20) NOT NULL,
+PRIMARY KEY(experience_id)
+);
+
+CREATE TABLE IF NOT EXISTS sc_fleetfinder.play_style (
+style_id INT NOT NULL AUTO_INCREMENT,
+play_style VARCHAR(12),
+PRIMARY KEY(style_id)
+);
+
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.group_listing (
 id_group BIGINT(20) NOT NULL AUTO_INCREMENT,
 id_user BIGINT(20) NOT NULL,
-server_region ENUM('USA', 'EU', 'AUS', 'Asia', 'Any') NOT NULL,
-game_environment ENUM('LIVE', 'PTU', 'ANY') NOT NULL,
-game_experience ENUM('Persistent Universe', 'Arena Commander') NOT NULL,
+server_id INT NOT NULL,
+environment_id INT NOT NULL,
+experience_id INT NOT NULL,
 listing_title VARCHAR(65) NOT NULL,
 listing_user VARCHAR(32) NOT NULL,
-engagement_type ENUM('Casual', 'Competitive', 'Learning', 'Social', 'Mission Collaboration', 'For Hire'),
+style_id INT,
 legality ENUM('LAWFUL', 'UNLAWFUL') NOT NULL,
 group_status ENUM('ACTIVE', 'FUTURE') NOT NULL,
 event_scheduled DATETIME NOT NULL,
@@ -67,14 +91,18 @@ comms_options ENUM('REQUIRED', 'OPTIONAL', 'NO COMMS') NOT NULL,
 comms_service VARCHAR(25),
 creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
 PRIMARY KEY(id_group),
-FOREIGN KEY(id_user) REFERENCES user(id_user) ON DELETE CASCADE,
+FOREIGN KEY(id_user) REFERENCES `user`(id_user) ON DELETE CASCADE,
+FOREIGN KEY(server_id) REFERENCES server_region(server_id),
+FOREIGN KEY(environment_id) REFERENCES game_environment(environment_id),
+FOREIGN KEY(experience_id) REFERENCES game_experience(experience_id),
+FOREIGN KEY(style_id) REFERENCES play_style(style_id) ON DELETE SET NULL,
 FOREIGN KEY(category_id) REFERENCES sc_fleetfinder.gameplay_category(category_id) ON DELETE SET NULL,
 FOREIGN KEY(subcategory_id) REFERENCES sc_fleetfinder.gameplay_subcategory(subcategory_id) ON DELETE SET NULL,
 FOREIGN KEY(system_id) REFERENCES sc_fleetfinder.planetary_system(system_id) ON DELETE SET NULL,
 FOREIGN KEY(planet_id) REFERENCES sc_fleetfinder.planet_moon_system(planet_id) ON DELETE SET NULL
 );
 
--- gameplay_category insert*
+-- gameplay_category insert
 INSERT INTO gameplay_category (category_name)
 VALUES
 	('Ship Combat'), 
@@ -140,7 +168,7 @@ VALUES
     ('Current Event', (SELECT category_id FROM gameplay_category WHERE category_name = 'Event')),
     ('Other - Event', (SELECT category_id FROM gameplay_category WHERE category_name = 'Event'));
     
--- Inserting into planetary system
+-- Inserting available planetary systems
 INSERT INTO planetary_system (system_name)
 VALUES
 	('Stanton'),
@@ -151,7 +179,7 @@ SELECT system_id, system_name
 FROM planetary_system
 WHERE system_name IN ('Stanton', 'Pyro');
 
--- Inserting into planet_moon_system
+-- Inserting planet/moon systems
 INSERT INTO planet_moon_system (planet_name, system_id)
 VALUES
 	('Hurston: Stanton I', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
@@ -165,6 +193,38 @@ VALUES
     ('Pyro IV', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
     ('Pyro V', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
     ('Terminus: Pyro VI', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro'));
+    
+-- Inserting available server regions
+INSERT INTO server_region (server_name)
+VALUES
+	('USA'),
+    ('EU'),
+    ('AUS'),
+    ('Asia'),
+    ('Any');
+
+-- Inserting available game environments
+INSERT INTO game_environment (environment_type)
+VALUES
+	('LIVE'),
+    ('PTU'),
+    ('Tech Preview'),
+    ('Any');
+    
+-- Inserting available game experiences
+INSERT INTO game_experience (experience_type)
+VALUES
+	('Persistent Universe'),
+    ('Arena Commander');
+    
+-- Inserting suggested play style options
+INSERT INTO play_style (play_style)
+VALUES
+	('Casual'),
+    ('Competitive'),
+    ('Learning'),
+    ('Social'),
+    ('For Hire');
     
 
 
