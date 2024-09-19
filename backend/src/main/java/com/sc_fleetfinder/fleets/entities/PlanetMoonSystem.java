@@ -1,4 +1,4 @@
-package entities;
+package com.sc_fleetfinder.fleets.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,10 +23,7 @@ public class PlanetMoonSystem {
     @Column(name="planet_name")
     private String planetName;
 
-    @Column(name="system_id")
-    private int systemId;
-
     @ManyToOne
-    @JoinColumn(name="system_id")
+    @JoinColumn(name="system_id", nullable = false)
     private PlanetarySystem planetarySystem;
 }

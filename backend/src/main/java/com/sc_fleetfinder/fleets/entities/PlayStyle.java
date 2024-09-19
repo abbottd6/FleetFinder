@@ -1,4 +1,4 @@
-package entities;
+package com.sc_fleetfinder.fleets.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,15 +9,15 @@ import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name="server_region")
+@Table(name="play_style")
 @Data
-public class ServerRegion {
+public class PlayStyle {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="server_id")
-    private int serverId;
+    @Column(name="style_id")
+    private int styleId;
 
-    @Column(name="server_name")
-    private String serverName;
+    @Column(name="play_style")
+    private String playStyle;
 }
