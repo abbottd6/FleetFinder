@@ -1,4 +1,4 @@
-package entities;
+package com.sc_fleetfinder.fleets.entities;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -46,6 +46,6 @@ public class User {
     @CreationTimestamp
     private LocalDateTime acctCreated;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="userId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="user")
     private Set<GroupListing> groupListings;
 }
