@@ -1,4 +1,4 @@
-package entities;
+package com.sc_fleetfinder.fleets.entities;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,6 +25,6 @@ public class PlanetarySystem {
     @Column(name="system_name")
     private String systemName;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="system_id")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="planetarySystem")
     private Set<PlanetMoonSystem> planetMoonSystems;
 }

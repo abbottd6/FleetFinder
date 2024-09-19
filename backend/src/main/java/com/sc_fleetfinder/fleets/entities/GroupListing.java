@@ -1,5 +1,6 @@
-package entities;
+package com.sc_fleetfinder.fleets.entities;
 
+import com.sc_fleetfinder.fleets.util.CommsOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,9 +14,9 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import util.GroupStatus;
-import util.Legality;
-import util.PvpStatus;
+import com.sc_fleetfinder.fleets.util.GroupStatus;
+import com.sc_fleetfinder.fleets.util.Legality;
+import com.sc_fleetfinder.fleets.util.PvpStatus;
 
 import java.time.LocalDateTime;
 
@@ -29,8 +30,9 @@ public class GroupListing {
     @Column(name="id_group")
     private int groupId;
 
-    @Column(name="id_user")
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name="id_user", nullable = false)
+    private User user;
 
     @Column(name="server_id")
     private int serverId;
@@ -88,17 +90,16 @@ public class GroupListing {
 
     @Enumerated(EnumType.STRING)
     @Column(name="comms_options")
-    private String commsOptions;
+    private CommsOption commsOption;
 
     @Column(name="comms_service")
     private String commsService;
 
     @CreationTimestamp
-    @UpdateTimestamp
     @Column(name="creation_timestamp")
     private LocalDateTime creationTimestamp;
 
-    @ManyToOne
-    @JoinColumn(name="id_user")
-    private User user;
+    @UpdateTimestamp
+    @Column(name="last_updated")
+    private LocalDateTime lastUpdated;
 }

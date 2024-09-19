@@ -1,4 +1,4 @@
-package entities;
+package com.sc_fleetfinder.fleets.entities;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,6 +25,6 @@ public class GameplayCategory {
     @Column(name="category_name")
     private String categoryName;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="categoryId")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="gameplayCategory")
     private Set<GameplaySubcategory> subCategories;
 }

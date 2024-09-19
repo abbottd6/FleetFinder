@@ -1,4 +1,4 @@
-package util;
+package com.sc_fleetfinder.fleets.util;
 
 public enum GroupStatus {
     ACTIVE,

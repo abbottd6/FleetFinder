@@ -1,4 +1,4 @@
-package entities;
+package com.sc_fleetfinder.fleets.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,9 +22,6 @@ public class GameplaySubcategory {
 
     @Column(name="subcategory_name")
     private String subcategoryName;
-
-    @Column(name="category_id")
-    private int categoryId;
 
     @ManyToOne
     @JoinColumn(name="category_id", nullable = false)
