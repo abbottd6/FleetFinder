@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.entities;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,6 +29,6 @@ public class PlanetarySystem {
     @Column(name="system_name")
     private String systemName;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="planetarySystem")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="planetarySystem", fetch = FetchType.EAGER)
     private Set<PlanetMoonSystem> planetMoonSystems;
 }
