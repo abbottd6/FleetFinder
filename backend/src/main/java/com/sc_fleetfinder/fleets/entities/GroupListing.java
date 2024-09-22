@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import com.sc_fleetfinder.fleets.util.GroupStatus;
@@ -22,7 +24,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name="group_listing")
-@Data
+@Getter
+@Setter
 public class GroupListing {
 
     @Id

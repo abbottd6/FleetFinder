@@ -9,6 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -16,7 +18,8 @@ import java.util.Set;
 
 @Entity
 @Table(name="user")
-@Data
+@Getter
+@Setter
 public class User {
 
     @Id
