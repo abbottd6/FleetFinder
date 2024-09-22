@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /* I was having problems with my JPA relationships not populating the sets for OneToMany relationships, so I made this test to check it.
     Running the test produced an Assertion error on GameplayCategory.java:19 and GameplaySubcategory.java:15, which is where my Lombok class
-    level annotations were, so I realized that it was a problem with the @Data annotation being in conflict with the @OneToMany and @ManyToOne
+    level annotations were, so I discovered that it was a problem with the @Data annotation being in conflict with the @OneToMany and @ManyToOne
     annotations. Swapped it for @Getter and @Setter and the sets are populating correctly now.
  */
 @SpringBootTest
