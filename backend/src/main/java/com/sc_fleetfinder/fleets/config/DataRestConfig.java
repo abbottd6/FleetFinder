@@ -24,46 +24,52 @@ public class DataRestConfig implements RepositoryRestConfigurer {
 
         HttpMethod[] unsupportedMethods = { HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE };
 
-        //DISABLING METHODS for: GameEnvironment, GameExperience, GameplayCategory,
-        // GameplaySubcategory, Planetary System, Planet/Moon System, Play Style, Server Region
-
         //User and Group Listing support GET, POST, PUT, DELETE
+        //Other entities should be immutable
 
+        //disable HTTP methods for GameEnvironment: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(GameEnvironment.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
 
+        //disable HTTP methods for GameExperience: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(GameExperience.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
 
+        //disable HTTP methods for GameplayCategory: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(GameplayCategory.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
 
+        //disable HTTP methods for GameplaySubcategory: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(GameplaySubcategory.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
 
+        //disable HTTP methods for PlanetarySystem: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(PlanetarySystem.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
 
+        //disable HTTP methods for PlanetMoonSystem: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(PlanetMoonSystem.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
 
+        //disable HTTP methods for PlayStyle: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(PlayStyle.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
 
+        //disable HTTP methods for ServerRegion: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(ServerRegion.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
