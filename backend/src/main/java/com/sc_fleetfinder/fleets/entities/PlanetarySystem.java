@@ -9,12 +9,15 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Set;
 
 @Entity
 @Table(name="planetary_system")
-@Data
+@Getter
+@Setter
 public class PlanetarySystem {
 
     @Id
