@@ -1,9 +1,7 @@
-package com.sc_fleetfinder.fleets;
+package com.sc_fleetfinder.fleets.entitiesTests;
 
 import com.sc_fleetfinder.fleets.dao.GameplayCategoryRepository;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,9 +20,6 @@ public class GameplayCategoryTest {
 
     @Autowired
     private GameplayCategoryRepository gameplayCategoryRepository;
-
-    @PersistenceContext
-    private EntityManager entityManager;
 
     @Test
     public void testGameplaySubcategoriesPopulating() {
