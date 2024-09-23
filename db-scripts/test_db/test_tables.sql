@@ -67,21 +67,59 @@ play_style VARCHAR(12),
 PRIMARY KEY(style_id)
 );
 
+CREATE TABLE IF NOT EXISTS test_sc_fleetfinder.group_status (
+group_status_id INT NOT NULL AUTO_INCREMENT,
+group_status VARCHAR(6),
+PRIMARY KEY(group_status_id)
+);
+
+-- Inserting group status options
+INSERT INTO test_sc_fleetfinder.group_status (group_status)
+VALUES
+	('Current/Active'),
+    ('Future/Planned');
+
+CREATE TABLE IF NOT EXISTS test_sc_fleetfinder.legality (
+legality_id INT NOT NULL AUTO_INCREMENT,
+legality VARCHAR(9) NOT NULL,
+PRIMARY KEY(legality_id)
+);
+
+-- Inserting legality options
+INSERT INTO test_sc_fleetfinder.legality (legality)
+VALUES
+	('Lawful'),
+    ('Unlawful'),
+    ('Undefined');
+
+CREATE TABLE IF NOT EXISTS test_sc_fleetfinder.pvp_status (
+pvp_status_id INT NOT NULL AUTO_INCREMENT,
+pvp_status VARCHAR(3) NOT NULL,
+PRIMARY KEY(pvp_status_id)
+);
+
+-- Inserting PVP options
+INSERT INTO test_sc_fleetfinder.pvp_status (pvp_status)
+VALUES
+	('PvP'),
+    ('PvE'),
+    ('PvX');
+
 CREATE TABLE IF NOT EXISTS test_sc_fleetfinder.group_listing (
-id_group BIGINT(20) NOT NULL AUTO_INCREMENT,
-id_user BIGINT(20) NOT NULL,
+id_group BIGINT NOT NULL AUTO_INCREMENT,
+id_user BIGINT NOT NULL,
 server_id INT NOT NULL,
 environment_id INT NOT NULL,
 experience_id INT NOT NULL,
 listing_title VARCHAR(65) NOT NULL,
 listing_user VARCHAR(32) NOT NULL,
 style_id INT,
-legality ENUM('LAWFUL', 'UNLAWFUL') NOT NULL,
-group_status ENUM('ACTIVE', 'FUTURE') NOT NULL,
+legality_id INT NOT NULL,
+group_status_id INT NOT NULL,
 event_schedule DATETIME NOT NULL,
 category_id INT,
 subcategory_id INT,
-pvp_status ENUM('PVP', 'PVE') NOT NULL,
+pvp_status_id INT NOT NULL,
 system_id INT,
 planet_id INT,
 activity_description VARCHAR(500) NOT NULL,
@@ -97,8 +135,11 @@ FOREIGN KEY(server_id) REFERENCES server_region(server_id),
 FOREIGN KEY(environment_id) REFERENCES game_environment(environment_id),
 FOREIGN KEY(experience_id) REFERENCES game_experience(experience_id),
 FOREIGN KEY(style_id) REFERENCES play_style(style_id) ON DELETE SET NULL,
-FOREIGN KEY(category_id) REFERENCES sc_fleetfinder.gameplay_category(category_id) ON DELETE SET NULL,
-FOREIGN KEY(subcategory_id) REFERENCES sc_fleetfinder.gameplay_subcategory(subcategory_id) ON DELETE SET NULL,
+FOREIGN KEY(legality_id) REFERENCES legality(legality_id),
+FOREIGN KEY(group_status_id) REFERENCES group_status(group_status_id),
+FOREIGN KEY(category_id) REFERENCES gameplay_category(category_id) ON DELETE SET NULL,
+FOREIGN KEY(subcategory_id) REFERENCES gameplay_subcategory(subcategory_id) ON DELETE SET NULL,
+FOREIGN KEY(pvp_status_id) REFERENCES pvp_status(pvp_status_id),
 FOREIGN KEY(system_id) REFERENCES sc_fleetfinder.planetary_system(system_id) ON DELETE SET NULL,
 FOREIGN KEY(planet_id) REFERENCES sc_fleetfinder.planet_moon_system(planet_id) ON DELETE SET NULL
 );
