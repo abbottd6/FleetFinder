@@ -24,3 +24,4 @@ interface GetResponse {
     groupListings: GroupListing[];
   }
 }
+
