@@ -52,10 +52,10 @@ public class GroupListing {
     private int styleId;
 
     @Column(name="legality_id")
-    private int legality;
+    private int legalityId;
 
     @Column(name="group_status_id")
-    private int groupStatus;
+    private int groupStatusId;
 
     @Column(name="event_schedule")
     private LocalDateTime eventSchedule;
