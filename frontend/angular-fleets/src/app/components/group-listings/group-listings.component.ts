@@ -14,13 +14,16 @@ export class GroupListingsComponent {
   constructor(private groupListingService: GroupListingService) { }
 
   ngOnInit(): void {
-    this.listGroupListings();
+    this.loadGroupListings();
   }
 
-  listGroupListings() {
+  loadGroupListings() {
     this.groupListingService.getGroupListings().subscribe(
       data => {
         this.groupListings = data;
+        console.log(data);
+      }, error => {
+        console.error('Error loading group listings', error);
       }
     )
   }

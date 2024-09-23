@@ -17,7 +17,7 @@ export class GroupListing {
               },
               public listingTitle: string,
               public listingUser: string,
-              public gameplayStyle: {
+              public playStyle: {
                 styleId: number;
                 playStyle: string;
               },
