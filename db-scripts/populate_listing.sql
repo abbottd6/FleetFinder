@@ -3,7 +3,7 @@
 
 INSERT INTO sc_fleetfinder.group_listing (id_user, server_id, environment_id, experience_id, listing_title, listing_user, 
 	style_id, legality_id, group_status_id, event_schedule, category_id, subcategory_id, 
-    pvp_status_id, system_id, planet_id, activity_description, desired_party_size, available_roles, comms_options,
+    pvp_status_id, system_id, planet_id, listing_description, desired_party_size, available_roles, comms_options,
     comms_service)
 VALUES 
 	((SELECT id_user FROM `user` WHERE id_user = (SELECT MIN(id_user) FROM `user`)), (SELECT server_id FROM server_region WHERE server_name = 'USA') , (SELECT environment_id FROM game_environment WHERE environment_type = 'LIVE'),

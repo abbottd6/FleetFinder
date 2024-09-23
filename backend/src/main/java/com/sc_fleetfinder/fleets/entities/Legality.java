@@ -19,5 +19,5 @@ public class Legality {
     private int legalityId;
 
     @Column(name="legality")
-    private String legality;
+    private String legalityStatus;
 }
