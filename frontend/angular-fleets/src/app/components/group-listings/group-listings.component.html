@@ -18,11 +18,11 @@
     </tr>
   </thead>
 
-  <tbody>
+  <tbody *ngIf="groupListings">
     <tr *ngFor="let tempGroupListing of groupListings">
         <td>{{ tempGroupListing.listingUser }}</td>
         <td>{{ tempGroupListing.listingTitle }}</td>
-        <td>{{ tempGroupListing.gameplayStyle.playStyle }}</td>
+        <td>{{ tempGroupListing.playStyle?.playStyle }}</td>
         <td>{{ tempGroupListing.groupStatus }}</td>
         <td>{{ tempGroupListing.server.serverName }}</td>
         <td>{{tempGroupListing.environment.environmentType }}</td>
