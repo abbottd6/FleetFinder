@@ -75,8 +75,8 @@ public class GroupListing {
     @Column(name="planet_id")
     private int planetId;
 
-    @Column(name="activity_description")
-    private String activityDescription;
+    @Column(name="listing_description")
+    private String listingDescription;
 
     @Column(name="desired_party_size")
     private int desiredPartySize;
