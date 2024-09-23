@@ -5,6 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,50 +34,62 @@ public class GroupListing {
     @JoinColumn(name="id_user", nullable = false)
     private User user;
 
-    @Column(name="server_id")
-    private int serverId;
+    @ManyToOne
+    @JoinColumn(name="server_id")
+    private ServerRegion server;
 
-    @Column(name="environment_id")
-    private int environmentId;
+    @ManyToOne
+    @JoinColumn(name="environment_id")
+    private GameEnvironment environment;
 
-    @Column(name="experience_id")
-    private int experienceId;
+    @ManyToOne
+    @JoinColumn(name="experience_id")
+    private GameExperience experience;
 
     @Column(name="listing_title")
     private String listingTitle;
 
+    //Don't think I need this
     @Column(name="listing_user")
     private String listingUser;
 
-    @Column(name="style_id")
-    private int styleId;
+    @ManyToOne
+    @JoinColumn(name="style_id")
+    private PlayStyle playStyle;
 
-    @Column(name="legality_id")
-    private int legalityId;
+    @ManyToOne
+    @JoinColumn(name="legality_id")
+    private Legality legality;
 
-    @Column(name="group_status_id")
-    private int groupStatusId;
+    @ManyToOne
+    @JoinColumn(name="group_status_id")
+    private GroupStatus groupStatus;
 
     @Column(name="event_schedule")
     private LocalDateTime eventSchedule;
 
-    @Column(name="category_id")
-    private int categoryId;
+    @ManyToOne
+    @JoinColumn(name="category_id")
+    private GameplayCategory category;
 
-    @Column(name="subcategory_id")
-    private int subcategoryId;
+    @ManyToOne
+    @JoinColumn(name="subcategory_id")
+    private GameplaySubcategory subcategory;
 
-    @Column(name="pvp_status_id")
-    private int pvpStatusId;
+    @ManyToOne
+    @JoinColumn(name="pvp_status_id")
+    private PvpStatus pvpStatus;
 
-    @Column(name="system_id")
-    private int systemId;
+    @ManyToOne
+    @JoinColumn(name="system_id")
+    private PlanetarySystem system;
 
-    @Column(name="planet_id")
-    private int planetId;
+    @ManyToOne
+    @JoinColumn(name="planet_id")
+    private PlanetMoonSystem planetMoonSystem;
 
-    @Column(name="activity_description")
-    private String activityDescription;
+    @Column(name="listing_description")
+    private String listingDescription;
 
     @Column(name="desired_party_size")
     private int desiredPartySize;
