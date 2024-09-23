@@ -11,14 +11,10 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import com.sc_fleetfinder.fleets.util.GroupStatus;
-import com.sc_fleetfinder.fleets.util.Legality;
-import com.sc_fleetfinder.fleets.util.PvpStatus;
 
 import java.time.LocalDateTime;
 
@@ -55,13 +51,11 @@ public class GroupListing {
     @Column(name="style_id")
     private int styleId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="legality")
-    private Legality legality;
+    @Column(name="legality_id")
+    private int legality;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="group_status")
-    private GroupStatus groupStatus;
+    @Column(name="group_status_id")
+    private int groupStatus;
 
     @Column(name="event_schedule")
     private LocalDateTime eventSchedule;
@@ -72,9 +66,8 @@ public class GroupListing {
     @Column(name="subcategory_id")
     private int subcategoryId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="pvp_status")
-    private PvpStatus pvpStatus;
+    @Column(name="pvp_status_id")
+    private int pvpStatusId;
 
     @Column(name="system_id")
     private int systemId;
