@@ -1,59 +1,93 @@
 package com.sc_fleetfinder.fleets.Services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.ServerRegionRepository;
+import com.sc_fleetfinder.fleets.Services.ServerRegionServiceImpl;
+import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
+import com.sc_fleetfinder.fleets.entities.GameEnvironment;
+import com.sc_fleetfinder.fleets.entities.GameExperience;
+import com.sc_fleetfinder.fleets.entities.GameplayCategory;
+import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.GroupStatus;
+import com.sc_fleetfinder.fleets.entities.Legality;
+import com.sc_fleetfinder.fleets.entities.PlayStyle;
+import com.sc_fleetfinder.fleets.entities.PvpStatus;
+import com.sc_fleetfinder.fleets.entities.ServerRegion;
+import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class GroupListingServiceImpl implements GroupListingService {
 
     private final GroupListingRepository groupListingRepository;
+    private final ModelMapper modelMapper;
 
-    public GroupListingServiceImpl(GroupListingRepository groupListingRepository) {
+
+    public GroupListingServiceImpl(GroupListingRepository groupListingRepository, ModelMapper modelMapper) {
         super();
         this.groupListingRepository = groupListingRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
-    public List<GroupListing> getAllGroupListings() {
-        return groupListingRepository.findAll();
+    public List<GroupListingDto> getAllGroupListings() {
+        List<GroupListing> groupListings = groupListingRepository.findAll();
+        return groupListings.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public GroupListing createGroupListing(GroupListing groupListing) {
-        return groupListingRepository.save(groupListing);
+    public GroupListing createGroupListing(GroupListingDto groupListingDto) {
+        if(groupListingDto != null){
+            GroupListing groupListing = convertToEntity(groupListingDto);
+            return groupListingRepository.save(groupListing);
+        }
+        else {
+            throw new IllegalArgumentException("GroupListingDto is null");
+        }
     }
 
     @Override
-    public GroupListing updateGroupListing(Long id, GroupListing groupListingUpdate) {
+    public GroupListing updateGroupListing(Long id, GroupListingDto groupListingDto) {
+
         GroupListing groupListing = groupListingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Group Listing with id " + id + " not found"));
 
-        groupListing.setUser(groupListingUpdate.getUser());
-        groupListing.setServer(groupListingUpdate.getServer());
-        groupListing.setEnvironment(groupListingUpdate.getEnvironment());
-        groupListing.setExperience(groupListingUpdate.getExperience());
-        groupListing.setListingTitle(groupListingUpdate.getListingTitle());
-        groupListing.setListingUser(groupListingUpdate.getListingUser());
-        groupListing.setPlayStyle(groupListingUpdate.getPlayStyle());
-        groupListing.setLegality(groupListingUpdate.getLegality());
-        groupListing.setGroupStatus(groupListingUpdate.getGroupStatus());
-        groupListing.setEventSchedule(groupListingUpdate.getEventSchedule());
-        groupListing.setCategory(groupListingUpdate.getCategory());
-        groupListing.setSubcategory(groupListingUpdate.getSubcategory());
-        groupListing.setPvpStatus(groupListingUpdate.getPvpStatus());
-        groupListing.setSystem(groupListingUpdate.getSystem());
-        groupListing.setPlanetMoonSystem(groupListingUpdate.getPlanetMoonSystem());
-        groupListing.setListingDescription(groupListingUpdate.getListingDescription());
-        groupListing.setDesiredPartySize(groupListingUpdate.getDesiredPartySize());
-        groupListing.setAvailableRoles(groupListingUpdate.getAvailableRoles());
-        groupListing.setCommsOption(groupListingUpdate.getCommsOption());
-        groupListing.setCommsService(groupListingUpdate.getCommsService());
+        GroupListing groupListingEntity = convertToEntity(groupListingDto);
+
+        groupListing.setUser(groupListingEntity.getUser());
+        groupListing.setServer(groupListingEntity.getServer());
+        groupListing.setEnvironment(groupListingEntity.getEnvironment());
+        groupListing.setExperience(groupListingEntity.getExperience());
+        groupListing.setListingTitle(groupListingEntity.getListingTitle());
+        groupListing.setListingUser(groupListingEntity.getListingUser());
+        groupListing.setPlayStyle(groupListingEntity.getPlayStyle());
+        groupListing.setLegality(groupListingEntity.getLegality());
+        groupListing.setGroupStatus(groupListingEntity.getGroupStatus());
+        groupListing.setEventSchedule(groupListingEntity.getEventSchedule());
+        groupListing.setCategory(groupListingEntity.getCategory());
+        groupListing.setSubcategory(groupListingEntity.getSubcategory());
+        groupListing.setPvpStatus(groupListingEntity.getPvpStatus());
+        groupListing.setSystem(groupListingEntity.getSystem());
+        groupListing.setPlanetMoonSystem(groupListingEntity.getPlanetMoonSystem());
+        groupListing.setListingDescription(groupListingEntity.getListingDescription());
+        groupListing.setDesiredPartySize(groupListingEntity.getDesiredPartySize());
+        groupListing.setAvailableRoles(groupListingEntity.getAvailableRoles());
+        groupListing.setCommsOption(groupListingEntity.getCommsOption());
+        groupListing.setCommsService(groupListingEntity.getCommsService());
+
         return groupListingRepository.save(groupListing);
+
     }
 
     @Override
@@ -62,13 +96,21 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    public GroupListing getGroupListingById(Long id) {
+    public GroupListingDto getGroupListingById(Long id) {
         Optional<GroupListing> groupListing = groupListingRepository.findById(id);
         if(groupListing.isPresent()) {
-            return groupListing.get();
+            return modelMapper.map(groupListing, GroupListingDto.class);
         }
         else {
             throw new ResourceNotFoundException("GroupListing with id " + id + " not found");
         }
+    }
+
+    private GroupListingDto convertToDto(GroupListing groupListing) {
+        return modelMapper.map(groupListing, GroupListingDto.class);
+    }
+
+    private GroupListing convertToEntity(GroupListingDto groupListingDto) {
+        return modelMapper.map(groupListingDto, GroupListing.class);
     }
 }

@@ -1,14 +1,15 @@
 package com.sc_fleetfinder.fleets.Services;
 
+import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 
 import java.util.List;
 
 public interface GroupListingService {
 
-    List<GroupListing> getAllGroupListings();
-    GroupListing createGroupListing(GroupListing groupListing);
-    GroupListing updateGroupListing(Long id, GroupListing groupListing);
+    List<GroupListingDto> getAllGroupListings();
+    GroupListing createGroupListing(GroupListingDto groupListingDto);
+    GroupListing updateGroupListing(Long id, GroupListingDto groupListingDto);
     void deleteGroupListing(GroupListing groupListing);
-    GroupListing getGroupListingById(Long id);
+    GroupListingDto getGroupListingById(Long id);
 }
