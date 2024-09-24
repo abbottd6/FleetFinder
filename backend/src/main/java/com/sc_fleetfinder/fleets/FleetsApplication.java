@@ -6,12 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class 		FleetsApplication {
-
-	@Bean
-	public ModelMapper modelMapper() {
-		return new ModelMapper();
-	}
+public class FleetsApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(FleetsApplication.class, args);
