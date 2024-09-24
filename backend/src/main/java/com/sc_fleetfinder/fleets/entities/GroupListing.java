@@ -28,7 +28,7 @@ public class GroupListing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_group")
-    private int groupId;
+    private Long groupId;
 
     @ManyToOne
     @JoinColumn(name="id_user", nullable = false)

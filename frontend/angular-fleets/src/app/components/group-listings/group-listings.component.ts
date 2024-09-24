@@ -21,9 +21,6 @@ export class GroupListingsComponent {
     this.groupListingService.getGroupListings().subscribe(
       data => {
         this.groupListings = data;
-        console.log(data);
-      }, error => {
-        console.error('Error loading group listings', error);
       }
     )
   }

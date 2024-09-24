@@ -38,12 +38,18 @@ export class GroupListing {
                 subcategoryId: number;
                 subcategoryName: string;
               },
-              public pvpStatusId: number,
-              public pvpStatus: string,
-              public systemId: number,
-              public systemName: string,
-              public planetId: number,
-              public planetName: string,
+              public pvpStatus: {
+                pvpStatusId: number;
+                pvpStatus: String;
+              },
+              public planetarySystem: {
+                systemId: number;
+                systemName: string;
+              },
+              public planetMoonSystem: {
+                planetId: number;
+                planetName: string;
+              },
               public listingDescription: string,
               public desiredPartySize: number,
               public availableRoles: string,
