@@ -23,15 +23,15 @@
         <td>{{ tempGroupListing.listingUser }}</td>
         <td>{{ tempGroupListing.listingTitle }}</td>
         <td>{{ tempGroupListing.playStyle?.playStyle }}</td>
-        <td>{{ tempGroupListing.groupStatus }}</td>
-        <td>{{ tempGroupListing.server.serverName }}</td>
-        <td>{{tempGroupListing.environment.environmentType }}</td>
-        <td>{{ tempGroupListing.experience.experienceType }}</td>
-        <td>{{tempGroupListing.gameplayCategory.categoryName }}</td>
-        <td>{{tempGroupListing.gameplaySubcategory.subcategoryName }}</td>
-        <td>{{tempGroupListing.systemName }}</td>
-        <td>{{ tempGroupListing.legality }}</td>
-        <td>{{ tempGroupListing.pvpStatus }}</td>
+        <td>{{ tempGroupListing.groupStatus?.groupStatus }}</td>
+        <td>{{ tempGroupListing.server?.serverName }}</td>
+        <td>{{tempGroupListing.environment?.environmentType }}</td>
+        <td>{{ tempGroupListing.experience?.experienceType }}</td>
+        <td>{{tempGroupListing.gameplayCategory?.categoryName }}</td>
+        <td>{{tempGroupListing.gameplaySubcategory?.subcategoryName }}</td>
+        <td>{{tempGroupListing.planetarySystem?.systemName }}</td>
+        <td>{{ tempGroupListing.legality?.legality }}</td>
+        <td>{{ tempGroupListing.pvpStatus?.pvpStatus }}</td>
         <td>{{ tempGroupListing.commsOptions }}</td>
         <td>{{tempGroupListing.updateTimestamp | date: 'MM/dd/yy HH:mm'}}</td>
     </tr>
