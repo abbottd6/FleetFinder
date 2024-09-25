@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sc_fleetfinder.fleets.util.CommsOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

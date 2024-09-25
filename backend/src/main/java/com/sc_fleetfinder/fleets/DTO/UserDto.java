@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

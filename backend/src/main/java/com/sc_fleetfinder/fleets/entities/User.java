@@ -1,5 +1,7 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -13,13 +15,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -64,5 +66,5 @@ public class User {
     private LocalDateTime acctCreated;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="user", fetch = FetchType.EAGER)
-    private Set<GroupListing> groupListings;
+    private Set<GroupListing> groupListings = new HashSet<>();
 }
