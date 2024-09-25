@@ -6,6 +6,9 @@ import com.sc_fleetfinder.fleets.Services.GroupListingService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +29,14 @@ public class GroupListingsController {
     private GroupListingService groupListingService;
 
     @GetMapping
-    public List<GroupListingDto> getGroupListings() {
-        return groupListingService.getAllGroupListings();
+    public CollectionModel<EntityModel<GroupListingDto>> getAllGroupListings() {
+        List<GroupListingDto> groupListingDto = groupListingService.getAllGroupListings();
+
+        List<EntityModel<GroupListingDto>> groupListingModels = groupListingDto.stream()
+                .map(groupListing -> EntityModel.of(groupListing,
+                        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupListingsController.class).getAllGroupListings()).withSelfRel()))
+                .toList();
+        return CollectionModel.of(groupListingModels);
     }
 
     @GetMapping("/{id}")

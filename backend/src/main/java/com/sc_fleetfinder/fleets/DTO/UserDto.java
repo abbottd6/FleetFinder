@@ -27,7 +27,7 @@ public class UserDto {
     @NotBlank(message = "User email cannot be blank")
     @Email
     private String email;
-    private int serverId;
+    private String server;
     private String org;
     private String about;
     @DateTimeFormat(pattern = "MM/dd/yyyy")
