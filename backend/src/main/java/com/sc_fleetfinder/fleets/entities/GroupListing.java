@@ -49,10 +49,6 @@ public class GroupListing {
     @Column(name="listing_title")
     private String listingTitle;
 
-    //Don't think I need this
-    @Column(name="listing_user")
-    private String listingUser;
-
     @ManyToOne
     @JoinColumn(name="style_id")
     private PlayStyle playStyle;

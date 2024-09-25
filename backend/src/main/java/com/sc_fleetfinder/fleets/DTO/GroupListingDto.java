@@ -13,7 +13,6 @@ public class GroupListingDto {
     private String environment;
     private String experience;
     private String listingTitle;
-    private String listingUser;
     private String playStyle;
     private String legality;
     private String groupStatus;

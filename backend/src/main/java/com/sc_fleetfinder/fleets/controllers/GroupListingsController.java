@@ -3,7 +3,6 @@ package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
 import com.sc_fleetfinder.fleets.Services.GroupListingService;
-import com.sc_fleetfinder.fleets.entities.GroupListing;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
