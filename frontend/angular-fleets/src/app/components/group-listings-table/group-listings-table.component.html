@@ -1,0 +1,40 @@
+<table class="table table-hover">
+  <thead class="table-dark">
+    <tr>
+      <th>Listed By</th>
+      <th>Title</th>
+      <th>Play Style</th>
+      <th>Group Status</th>
+      <th>Server</th>
+      <th>Game Environment</th>
+      <th>Game Experience</th>
+      <th>Gameplay Category</th>
+      <th>Subcategory</th>
+      <th>System</th>
+      <th>Legality</th>
+      <th>PvP Status</th>
+      <th>Voice Chat</th>
+      <th>Last Updated</th>
+    </tr>
+  </thead>
+
+  <tbody *ngIf="groupListings">
+    <tr *ngFor="let tempGroupListing of groupListings">
+        <td>{{ tempGroupListing.userName }}</td>
+        <td>{{ tempGroupListing.listingTitle }}</td>
+        <td>{{ tempGroupListing.playStyle }}</td>
+        <td>{{ tempGroupListing.groupStatus }}</td>
+        <td>{{ tempGroupListing.server }}</td>
+        <td>{{tempGroupListing.environment }}</td>
+        <td>{{ tempGroupListing.experience }}</td>
+        <td>{{tempGroupListing.category }}</td>
+        <td>{{tempGroupListing.subcategory }}</td>
+        <td>{{tempGroupListing.system }}</td>
+        <td>{{ tempGroupListing.legality }}</td>
+        <td>{{ tempGroupListing.pvpStatus }}</td>
+        <td>{{ tempGroupListing.commsOption }}</td>
+        <td>{{tempGroupListing.lastUpdated | date: 'MM/dd/yy HH:mm'}}</td>
+    </tr>
+  </tbody>
+
+</table>

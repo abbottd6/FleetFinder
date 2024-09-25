@@ -1,15 +1,15 @@
-import { Component } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {GroupListingService} from "../../services/group-listing.service";
 import {GroupListing} from "../../common/group-listing";
 
 @Component({
-  selector: 'app-group-listings',
-  templateUrl: './group-listings.component.html',
-  styleUrl: './group-listings.component.css'
+  selector: 'app-group-listings-table',
+  templateUrl: './group-listings-table.component.html',
+  styleUrl: './group-listings-table.component.css'
 })
-export class GroupListingsComponent {
+export class GroupListingsTableComponent implements OnInit {
 
-  groupListings: GroupListing[] = [];
+  @Input() public groupListings: GroupListing[] = [];
 
   constructor(private groupListingService: GroupListingService) { }
 
