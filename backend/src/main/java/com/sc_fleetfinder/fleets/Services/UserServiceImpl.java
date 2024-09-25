@@ -1,8 +1,10 @@
 package com.sc_fleetfinder.fleets.Services;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.UserDto;
 import com.sc_fleetfinder.fleets.entities.User;
+import com.sc_fleetfinder.fleets.Services.GroupListingServiceImpl;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -13,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,19 +25,20 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
         super();
         this.userRepository = userRepository;
-        this.modelMapper = new ModelMapper();
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public List<UserDto> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+               .map(this::convertToDto)
+               .collect(Collectors.toList());
     }
+
 
     @Override
     public User createUser(@Valid UserDto userDto) {
@@ -71,7 +75,15 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto convertToDto(User user) {
-        return modelMapper.map(user, UserDto.class);
+        UserDto userDto = new UserDto();
+
+        Set<GroupListingDto> groupListingDtos = user.getGroupListings().stream()
+                        .map(groupListing -> modelMapper.map(groupListing, GroupListingDto.class))
+                        .collect(Collectors.toSet());
+        userDto.setGroupListingsDto(groupListingDtos);
+        modelMapper.map(user, userDto, "GroupListingDto");
+
+        return userDto;
     }
 
     public User convertToEntity(UserDto userDto) {

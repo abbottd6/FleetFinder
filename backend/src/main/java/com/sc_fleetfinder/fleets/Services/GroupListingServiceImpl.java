@@ -1,10 +1,8 @@
 package com.sc_fleetfinder.fleets.Services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
-import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.entities.User;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -23,21 +21,19 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     private final GroupListingRepository groupListingRepository;
     private final ModelMapper modelMapper;
-    private final UserRepository userRepository;
 
 
-    public GroupListingServiceImpl(GroupListingRepository groupListingRepository, ModelMapper modelMapper, UserRepository userRepository) {
+    public GroupListingServiceImpl(GroupListingRepository groupListingRepository, ModelMapper modelMapper) {
         super();
         this.groupListingRepository = groupListingRepository;
         this.modelMapper = modelMapper;
-        this.userRepository = userRepository;
     }
 
     @Override
     public List<GroupListingDto> getAllGroupListings() {
         List<GroupListing> groupListings = groupListingRepository.findAll();
         return groupListings.stream()
-                .map(this::convertToDto)
+                .map(this::convertListingToDto)
                 .collect(Collectors.toList());
     }
 
@@ -80,14 +76,14 @@ public class GroupListingServiceImpl implements GroupListingService {
     public GroupListingDto getGroupListingById(Long id) {
         Optional<GroupListing> groupListing = groupListingRepository.findById(id);
         if(groupListing.isPresent()) {
-            return convertToDto(groupListing.get());
+            return convertListingToDto(groupListing.get());
         }
         else {
             throw new ResourceNotFoundException("GroupListing with id " + id + " not found");
         }
     }
 
-    public GroupListingDto convertToDto(GroupListing groupListing) {
+    public GroupListingDto convertListingToDto(GroupListing groupListing) {
         return modelMapper.map(groupListing, GroupListingDto.class);
     }
 
