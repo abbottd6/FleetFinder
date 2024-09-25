@@ -4,6 +4,7 @@ package com.sc_fleetfinder.fleets.controllers;
 import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
 import com.sc_fleetfinder.fleets.Services.GroupListingService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -35,12 +36,12 @@ public class GroupListingsController {
     }
 
     @PostMapping
-    public GroupListing createGroupListing(@RequestBody GroupListingDto groupListingDto) {
+    public GroupListing createGroupListing(@Valid @RequestBody GroupListingDto groupListingDto) {
         return groupListingService.createGroupListing(groupListingDto);
     }
 
-    @PutMapping("{/id}")
-    public GroupListing updateGroupListing(@PathVariable Long id, @RequestBody GroupListingDto groupListingDto) {
+    @PutMapping("/{id}")
+    public GroupListing updateGroupListing(@PathVariable Long id,@Valid @RequestBody GroupListingDto groupListingDto) {
         return groupListingService.updateGroupListing(id, groupListingDto);
     }
 
