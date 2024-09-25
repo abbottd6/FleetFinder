@@ -10,6 +10,6 @@ public interface GroupListingService {
     List<GroupListingDto> getAllGroupListings();
     GroupListing createGroupListing(GroupListingDto groupListingDto);
     GroupListing updateGroupListing(Long id, GroupListingDto groupListingDto);
-    void deleteGroupListing(GroupListing groupListing);
+    void deleteGroupListing(Long id);
     GroupListingDto getGroupListingById(Long id);
 }
