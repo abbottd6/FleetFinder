@@ -55,8 +55,9 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    public void deleteGroupListing(GroupListing groupListing) {
-        groupListingRepository.delete(groupListing);
+    public void deleteGroupListing(Long id) {
+        groupListingRepository.delete(groupListingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Group Listing with id " + id + "not found")));
     }
 
     @Override
