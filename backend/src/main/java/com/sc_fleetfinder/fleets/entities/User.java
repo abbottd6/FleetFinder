@@ -9,10 +9,15 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -26,15 +31,22 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_user")
+    @NotNull(message = "UserId cannot be null")
     private Long userId;
 
     @Column(name="user_name")
+    @Size(min = 1, max = 32, message = "Username must be between 1 and 32 characters in length")
+    @NotBlank(message = "Username cannot be blank")
     private String username;
 
     @Column(name="user_password")
+    @Size(min = 8, max = 32, message = "User password must be between 8 and 32 characters in length")
+    @NotBlank(message = "User password cannot be blank")
     private String password;
 
     @Column(name="email")
+    @NotBlank(message = "User email cannot be blank")
+    @Email
     private String email;
 
     @Column(name="server_id")
@@ -48,6 +60,7 @@ public class User {
 
     @Column(name="acct_created")
     @CreationTimestamp
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
     private LocalDateTime acctCreated;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="user", fetch = FetchType.EAGER)
