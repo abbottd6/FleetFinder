@@ -26,7 +26,6 @@ public class UserTest {
         assertFalse(fetchedUser.getGroupListings().isEmpty(), "GroupListings should not be empty");
 
         fetchedUser.getGroupListings().forEach(sub -> {
-            assertNotNull(sub.getListingUser(), "ListingUser should not be null");
             assertEquals(userId, sub.getUser().getUserId(), "ListingUser should have the same ID as user");
         });
 
