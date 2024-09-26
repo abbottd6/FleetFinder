@@ -74,7 +74,7 @@ public class UserDtoTest {
 
         //Assert
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Username is required")));
+        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Username cannot be blank") | violation.getMessage().equals("Username must be between 1 and 32 characters.")));
     }
 
     @Test
@@ -91,7 +91,7 @@ public class UserDtoTest {
 
         //Assert
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Password is required")));
+        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("User password cannot be blank") | violation.getMessage().equals("User password must be between 8 and 32 characters")));
     }
 
     @Test
@@ -106,9 +106,9 @@ public class UserDtoTest {
         //Act
         Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
 
-        //Asert
+        //Assert
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Email is required")));
+        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("User email cannot be blank")));
     }
 
     @Test
