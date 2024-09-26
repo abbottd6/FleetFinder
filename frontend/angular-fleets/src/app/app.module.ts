@@ -3,19 +3,20 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { GroupListingsComponent } from './components/group-listings/group-listings.component';
-import {HttpClientModule, provideHttpClient} from "@angular/common/http";
-import {GroupListingService} from "./services/group-listing.service";
+import { GroupListingsTableComponent } from './components/group-listings-table/group-listings-table.component';
+import { provideHttpClient } from "@angular/common/http";
+import { GroupListingService } from "./services/group-listing.service";
+import { UserComponent } from './components/user/user.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    GroupListingsComponent
+    GroupListingsTableComponent,
+    UserComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    HttpClientModule,
   ],
   providers: [
     provideClientHydration(), provideHttpClient(), GroupListingService
