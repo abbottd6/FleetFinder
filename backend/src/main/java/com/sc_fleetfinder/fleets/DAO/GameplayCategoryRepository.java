@@ -1,11 +1,11 @@
-package com.sc_fleetfinder.fleets.dao;
+package com.sc_fleetfinder.fleets.DAO;
 
-import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RepositoryRestResource
 @CrossOrigin
-public interface GroupListingRepository extends JpaRepository<GroupListing, Integer> {
+public interface GameplayCategoryRepository extends JpaRepository<GameplayCategory, Integer> {
 }

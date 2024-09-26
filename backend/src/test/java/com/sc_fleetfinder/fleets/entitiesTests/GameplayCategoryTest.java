@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.entitiesTests;
 
-import com.sc_fleetfinder.fleets.dao.GameplayCategoryRepository;
+import com.sc_fleetfinder.fleets.DAO.GameplayCategoryRepository;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
