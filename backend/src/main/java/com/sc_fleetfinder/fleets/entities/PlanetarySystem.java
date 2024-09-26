@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -30,5 +31,5 @@ public class PlanetarySystem {
     private String systemName;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="planetarySystem", fetch = FetchType.EAGER)
-    private Set<PlanetMoonSystem> planetMoonSystems;
+    private Set<PlanetMoonSystem> planetMoonSystems = new HashSet<>();
 }
