@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.UserDto;
-import com.sc_fleetfinder.fleets.Services.UserService;
+import com.sc_fleetfinder.fleets.services.UserService;
 import com.sc_fleetfinder.fleets.entities.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
