@@ -7,6 +7,6 @@ import lombok.Data;
 public class PlanetMoonSystemDto {
 
     private int planetId;
-    private int planetName;
-    private PlanetarySystem planetarySystem;
+    private String planetName;
+    private String systemName;
 }
