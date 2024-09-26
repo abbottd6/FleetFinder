@@ -2,7 +2,7 @@ package com.sc_fleetfinder.fleets.controllers;
 
 
 import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
-import com.sc_fleetfinder.fleets.Services.GroupListingService;
+import com.sc_fleetfinder.fleets.services.GroupListingService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
