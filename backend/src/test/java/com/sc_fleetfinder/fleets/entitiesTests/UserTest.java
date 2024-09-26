@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.entitiesTests;
 
-import com.sc_fleetfinder.fleets.dao.UserRepository;
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.entities.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
