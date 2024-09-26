@@ -6,5 +6,5 @@ import lombok.Data;
 public class GameExperienceDto {
 
     private int experienceId;
-    private String experienceName;
+    private String experienceType;
 }

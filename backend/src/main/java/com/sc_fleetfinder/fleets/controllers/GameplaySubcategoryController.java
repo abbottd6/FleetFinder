@@ -1,0 +1,30 @@
+package com.sc_fleetfinder.fleets.controllers;
+
+import com.sc_fleetfinder.fleets.DTO.GameplaySubcategoryDto;
+import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
+import com.sc_fleetfinder.fleets.services.GameplaySubcategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/gameplaySubcategories")
+public class GameplaySubcategoryController {
+
+    @Autowired
+    private GameplaySubcategoryService gameplaySubcategoryService;
+
+    @GetMapping
+    public List<GameplaySubcategoryDto> getGameplaySubcategories() {
+        return gameplaySubcategoryService.getAllSubcategories();
+    }
+
+    @GetMapping("/{id}")
+    public GameplaySubcategoryDto getGameplaySubcategory(@PathVariable int id) {
+        return gameplaySubcategoryService.getSubcategoryById(id);
+    }
+}
