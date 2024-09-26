@@ -14,13 +14,14 @@ export class GroupListingService {
 
   getGroupListings(): Observable<GroupListing[]> {
     return this.httpClient.get<GetResponse>(this.baseUrl).pipe(
-      map(response => response._embedded.groupListings),
+      map(response => response._embedded.groupListingDtoes),
     )
   }
 }
 
 interface GetResponse {
   _embedded: {
-    groupListings: GroupListing[];
+    groupListingDtoes: GroupListing[];
   }
 }
+
