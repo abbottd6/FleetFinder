@@ -60,8 +60,6 @@ public class GroupListing {
     @Size(min = 2, max = 65, message = "Listing title must be between 2 and 65 characters")
     private String listingTitle;
 
-    @Column(name="style_id")
-    private int styleId;
     @ManyToOne
     @JoinColumn(name="style_id")
     private PlayStyle playStyle;
