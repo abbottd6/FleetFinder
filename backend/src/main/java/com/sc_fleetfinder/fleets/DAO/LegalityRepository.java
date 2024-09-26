@@ -1,11 +1,11 @@
-package com.sc_fleetfinder.fleets.dao;
+package com.sc_fleetfinder.fleets.DAO;
 
-import com.sc_fleetfinder.fleets.entities.GroupStatus;
+import com.sc_fleetfinder.fleets.entities.Legality;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @RepositoryRestResource
 @CrossOrigin
-public interface GroupStatusRepository extends JpaRepository<GroupStatus, Integer> {
+public interface LegalityRepository extends JpaRepository<Legality, Integer> {
 }

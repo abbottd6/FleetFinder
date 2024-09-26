@@ -45,9 +45,6 @@ public class GroupListing {
     @Column(name="listing_title")
     private String listingTitle;
 
-    @Column(name="listing_user")
-    private String listingUser;
-
     @Column(name="style_id")
     private int styleId;
 
