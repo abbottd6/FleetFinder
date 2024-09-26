@@ -7,7 +7,7 @@
     <li>About user: {{ user.about }}</li>
     <li>Fleets account created: {{ user.acctCreated | date:'MM/dd/yyyy'}}</li>
   </ul>
-  <h3>User's Current Group Listings</h3>
+  <h5>Current Group Listings</h5>
   <div *ngIf="user && user.groupListingsDto && user.groupListingsDto.length > 0; else noListings"></div>
   <app-group-listings-table [groupListings]="user?.groupListingsDto ?? []"></app-group-listings-table>
 </div>
