@@ -1,12 +1,10 @@
 package com.sc_fleetfinder.fleets.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sc_fleetfinder.fleets.util.CommsOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
