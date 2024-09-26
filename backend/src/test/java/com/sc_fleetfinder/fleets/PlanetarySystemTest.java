@@ -1,4 +1,4 @@
-package com.sc_fleetfinder.fleets.entitiesTests;
+package com.sc_fleetfinder.fleets;
 
 import com.sc_fleetfinder.fleets.DAO.PlanetarySystemRepository;
 import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
