@@ -1,4 +1,56 @@
+@import 'bootstrap/dist/css/bootstrap.css';
+@import 'bootstrap/dist/css/bootstrap.rtl.css';
+@import 'bootstrap/dist/css/bootstrap-grid.css';
+@import 'bootstrap/dist/css/bootstrap-grid.rtl.css';
+@import 'bootstrap/dist/css/bootstrap-reboot.css';
+@import 'bootstrap/dist/css/bootstrap-reboot.rtl.css';
+@import 'bootstrap/dist/css/bootstrap-utilities.css';
+@import 'bootstrap/dist/css/bootstrap-utilities.rtl.css';
+
 body {
-  background-color: #41678e;
+  background-color: var(--bs-dark);
 }
 
+.navbar.bg-primary {
+  background-color: #41678e !important;
+}
+
+.navbar-nav .dropdown-menu {
+  position: static;
+  background-color: var(--bs-gray-dark);
+}
+
+.navbar-nav {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  justify-content: flex-start;
+  margin-left: 5rem !important;
+}
+
+.navbar-nav form {
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+#navbar-search-button {
+  color: rgba(255, 131, 7, .75);
+  border-color: rgba(255, 131, 7, .75);
+}
+
+#navbar-search-button:hover {
+  color: rgba(255, 131, 7, .75);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .15);
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  margin-right: 100%;
+  padding: .25rem .25rem .25rem .5rem;
+  clear: both;
+  color: rgba(52, 135, 168, 0.9);
+  text-align: left;
+}
