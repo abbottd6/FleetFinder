@@ -7,12 +7,14 @@ import { GroupListingsTableComponent } from './components/group-listings-table/g
 import { provideHttpClient } from "@angular/common/http";
 import { GroupListingService } from "./services/group-listing.service";
 import { UserComponent } from './components/user/user.component';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     GroupListingsTableComponent,
-    UserComponent
+    UserComponent,
+    NavBarComponent
   ],
   imports: [
     BrowserModule,
