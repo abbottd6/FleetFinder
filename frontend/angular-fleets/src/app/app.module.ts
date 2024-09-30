@@ -8,13 +8,15 @@ import { provideHttpClient } from "@angular/common/http";
 import { GroupListingService } from "./services/group-listing.service";
 import { UserComponent } from './components/user/user.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     GroupListingsTableComponent,
     UserComponent,
-    NavBarComponent
+    NavBarComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
