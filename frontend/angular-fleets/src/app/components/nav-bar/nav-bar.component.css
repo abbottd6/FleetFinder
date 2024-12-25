@@ -3,7 +3,7 @@
   border: 1px groove rgba(13, 47, 67);
   border-radius: .75rem;
   color: rgba(13, 47, 67);
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   width: 100%;

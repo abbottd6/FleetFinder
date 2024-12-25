@@ -3,43 +3,43 @@
   border: 1px groove rgba(13, 47, 67);
   border-radius: .75rem;
   color: rgba(13, 47, 67);
-  flex-wrap: nowrap;
   position: fixed;
+  align-items: center;
+  justify-content: space-between;
   bottom: 0;
   left: 0;
   width: 100%;
   z-index: 1030;
+  box-sizing: border-box;
 }
 #communityLogo {
-  display: flex;
-  justify-content: flex-start;
+  display: block;
   opacity: 0.65;
-  margin: .5rem 0 0 .5rem;
-  padding: 0;
+  left: 0;
+  margin-left: 2rem;
 }
 
 .footer-text {
+  position: absolute;
   display: flex;
   flex-direction: column;
-  margin-left: 10%;
-  flex-grow: 1;
+  align-items: center;
+  width: 100%;
 }
 
 #disclaimer {
-  display: flex;
-  justify-content: flex-start;
-  margin-left: 10%;
-  flex-grow: 1;
   font-weight: bold;
 }
 
 #linkOfficial {
-  margin-left: 21%;
-  flex-wrap: wrap;
+  display: inline-block;
   color: rgba(255, 131, 7, .75);
   text-decoration: none;
+  padding: 1rem;
+  transition: transform 0.15s ease, text-shadow 0.35s ease;
 }
 
 #linkOfficial:hover {
-  text-decoration: underline;
+  transform: scale(1.1);
+  text-shadow: .3rem .3rem .5rem rgba(255, 131, 7, .45);
 }

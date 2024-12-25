@@ -10,6 +10,7 @@ import { UserComponent } from './components/user/user.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
 import {NgOptimizedImage} from "@angular/common";
+import { WelcomeScreenComponent } from './components/welcome-screen/welcome-screen.component';
 
 @NgModule({
   declarations: [
@@ -17,7 +18,8 @@ import {NgOptimizedImage} from "@angular/common";
     GroupListingsTableComponent,
     UserComponent,
     NavBarComponent,
-    FooterComponent
+    FooterComponent,
+    WelcomeScreenComponent
   ],
   imports: [
     BrowserModule,
