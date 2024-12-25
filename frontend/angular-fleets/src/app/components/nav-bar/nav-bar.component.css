@@ -3,6 +3,11 @@
   border: 1px groove rgba(13, 47, 67);
   border-radius: .75rem;
   color: rgba(13, 47, 67);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1030;
 }
 #navbar-title {
   color: rgba(255, 131, 7, .75);
