@@ -9,6 +9,7 @@ import { GroupListingService } from "./services/group-listing.service";
 import { UserComponent } from './components/user/user.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
+import {NgOptimizedImage} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { FooterComponent } from './components/footer/footer.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
+    NgOptimizedImage,
   ],
   providers: [
     provideClientHydration(), provideHttpClient(), GroupListingService
