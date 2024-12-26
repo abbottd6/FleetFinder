@@ -1,7 +1,57 @@
-<h1 style="color: white">TEST GROUP LISTINGS</h1>
-<br>
-<br>
-<h1 style="color: white">TEST GROUP LISTINGS</h1>
-<br>
-<br>
-<h1 style="color: white">TEST GROUP LISTINGS</h1>
+<div class="table-container">
+  <table class="groups-table">
+    <thead>
+    <tr>
+      <!-- COlUMN 1 -->
+      <th scope="col">Listed By</th>
+      <!-- COlUMN 2 -->
+      <th scope="col">Listing Title</th>
+      <!-- COlUMN 3 -->
+      <th scope="col">Group Status</th>
+      <!-- COlUMN 4 -->
+      <th scope="col">Gameplay Category</th>
+      <!-- COlUMN 5 -->
+      <th scope="col">PVP Status</th>
+      <!-- COlUMN 6 -->
+      <th scope="col">System</th>
+      <!-- COlUMN 7 -->
+      <th scope="col">Available Roles</th>
+      <!-- COlUMN 8 -->
+      <th scope="col">Last Updated</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let tempListing of groupListings">
+      <!-- COlUMN 1 -->
+      <td>{{ tempListing.userName}}</td>
+      <!-- COlUMN 2 -->
+      <td>{{ tempListing.listingTitle.length > 50 ? (tempListing.listingTitle|
+        slice:0:47) + '...' : tempListing.listingTitle}}</td>
+          <!-- Cut title length if >50 chars -->
+      <!-- COlUMN 3 -->
+      <td> {{ tempListing.groupStatus}}</td>
+      <!-- COlUMN 4 -->
+      <td>{{ tempListing.category}}
+        <ng-container *ngIf="tempListing.subcategory; else emptySubcategory">
+          - {{ tempListing.subcategory}}
+        </ng-container>
+        <ng-template #emptySubcategory>
+          <!-- leave blank if subcategory null -->
+        </ng-template>
+      </td>
+      <!-- COlUMN 5 -->
+      <td [ngClass]="{
+        'pvp-color': tempListing.pvpStatus == 'PvP',
+        'pvx-color': tempListing.pvpStatus == 'PvX',
+        'pve-color': tempListing.pvpStatus == 'PvE'}">
+        {{ tempListing.pvpStatus }}</td>
+      <!-- COlUMN 6 -->
+      <td>{{ tempListing.system}}</td>
+      <!-- COlUMN 7 -->
+      <td>{{ tempListing.availableRoles}}</td>
+      <!-- COlUMN 8 -->
+      <td>{{ tempListing.lastUpdated | date:'MMM d, h:mm a'}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

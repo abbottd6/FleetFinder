@@ -68,6 +68,7 @@ h1 {
   color: rgba(255, 131, 7, .75);
   font-size: 1.2rem;
   border-radius: .25rem;
+  transition: background-color 0.15s ease;
 }
 
 .entry-buttons:hover {
