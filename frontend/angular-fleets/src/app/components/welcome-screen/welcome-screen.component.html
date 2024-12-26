@@ -10,10 +10,15 @@
       <span class="text-body">FleetFinder is a fan-operated companion tool for the Star Citizen MMO,
         helping players connect and form groups based on shared interests.</span>
       <div id="entry-buttons-container">
-        <button class="entry-buttons" type="button">Create Group Listing</button>
-        <button class="entry-buttons" type="button">Search Existing Groups</button>
+        <a [routerLink]="['/create-listing']">
+          <button class="entry-buttons" onclick="window.location.href='/create-listing'">Create Group Listing</button>
+        </a>
+        <a [routerLink]="['/group-listings']">
+          <button class="entry-buttons" onclick="window.location.href='/group-listings'">Search Existing Groups</button>
+        </a>
       </div>
     </div>
 
   </div>
 </div>
+
