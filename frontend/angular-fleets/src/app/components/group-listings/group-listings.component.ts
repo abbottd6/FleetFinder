@@ -4,10 +4,10 @@ import {GroupListing} from "../../common/group-listing";
 
 @Component({
   selector: 'app-group-listings-table',
-  templateUrl: './group-listings-table.component.html',
-  styleUrl: './group-listings-table.component.css'
+  templateUrl: './group-listings.component.html',
+  styleUrl: './group-listings.component.css'
 })
-export class GroupListingsTableComponent implements OnInit {
+export class GroupListingsComponent implements OnInit {
 
   @Input() public groupListings: GroupListing[] = [];
 
@@ -19,7 +19,7 @@ export class GroupListingsTableComponent implements OnInit {
 
   loadGroupListings() {
     this.groupListingService.getGroupListings().subscribe(
-      data => {
+        (data: GroupListing[]) => {
         this.groupListings = data;
       }
     )

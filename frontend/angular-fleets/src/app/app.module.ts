@@ -3,7 +3,7 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { GroupListingsTableComponent } from './components/group-listings-table/group-listings-table.component';
+import { GroupListingsComponent } from './components/group-listings/group-listings.component';
 import { provideHttpClient } from "@angular/common/http";
 import { GroupListingService } from "./services/group-listing.service";
 import { UserComponent } from './components/user/user.component';
@@ -15,7 +15,7 @@ import { WelcomeScreenComponent } from './components/welcome-screen/welcome-scre
 @NgModule({
   declarations: [
     AppComponent,
-    GroupListingsTableComponent,
+    GroupListingsComponent,
     UserComponent,
     NavBarComponent,
     FooterComponent,
