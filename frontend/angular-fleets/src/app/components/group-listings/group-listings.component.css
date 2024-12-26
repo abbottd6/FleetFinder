@@ -1,0 +1,64 @@
+.table-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #6c757d;
+  width: 95%;
+  margin: 3rem auto auto auto;
+  border-top: 5px solid rgba(255, 131, 7, .75);;
+  border-left: 5px solid rgba(255, 131, 7, .75);;
+  font-size: 1.1rem;
+  color: var(--bs-gray-900);
+  flex-grow: 1;
+  min-height: 150px;
+  overflow-y: auto;
+  overflow-x: auto;
+  height: 65vh;
+}
+
+.groups-table tbody tr:nth-child(even) {
+  background-color: #2c2c2c;
+}
+
+.groups-table tbody tr:nth-child(odd) {
+  background-color: #3c3c3c;
+}
+
+.groups-table {
+  color: #d8d8d8;
+}
+
+.groups-table tr td {
+  padding: .5rem .5rem .5rem .75rem;
+}
+
+.groups-table th {
+  padding: 0.75rem;
+}
+
+.groups-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.groups-table tbody tr:hover {
+  background-color: rgba(69, 69, 74, 0.75);
+}
+
+.pvp-color {
+  color: rgba(255, 0, 0, .75);
+}
+
+.pvx-color {
+  color: rgba(255, 131, 7, .75);
+}
+
+.pve-color {
+  color: green;
+}
+
+.table th {
+  position: sticky;
+  top: 0;
+  background-color: #6c757d;
+  z-index: 1;
+}
+
+
