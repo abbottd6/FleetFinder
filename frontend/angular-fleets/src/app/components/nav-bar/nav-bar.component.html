@@ -19,9 +19,9 @@
             Listings
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">Search Listings</a></li>
+            <li><a class="dropdown-item" [routerLink]="['group-listings']">Search Listings</a></li>
             <li><a class="dropdown-item" href="#">My Listings</a></li>
-            <li><a class="dropdown-item" href="#">Create Listing</a></li>
+            <li><a class="dropdown-item" [routerLink]="['create-listing']">Create Listing</a></li>
           </ul>
         </li>
 
@@ -40,7 +40,7 @@
         <a href="#">
           <i class="bi bi-bell-fill"></i>
         </a>
-        <a href="#">
+        <a [routerLink]="['user-account']">
           <i class="bi bi-person-fill"></i>
         </a>
       </span>
