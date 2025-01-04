@@ -69,13 +69,15 @@
         <div class="modal-body">
           <div class="container-fluid">
             <div class="modal-listing-container">
-              <div class="modal-listing-row">
-                <span class="modal-listing-fieldL">Listed By:</span><span class="modal-listing-ml">{{tempListing.userName}}</span>
-                <span class="modal-listing-fieldR">Last Updated: </span><span class="modal-listing-mr">{{tempListing.lastUpdated | date:'MMM d, h:mm a'}}</span>
-              </div>
-              <div class="modal-listing-row">
-                <span class="modal-listing-fieldL">Server Region:</span><span class="modal-listing-ml">{{tempListing.server}}</span>
-                <span class="modal-listing-fieldR">Group Status:</span><span class="modal-listing-mr">{{tempListing.groupStatus}}</span>
+              <div class="modal-listing-sub-body-first">
+                <div class="modal-listing-row">
+                  <span class="modal-listing-fieldL">Listed By:</span><span class="modal-listing-ml">{{tempListing.userName}}</span>
+                  <span class="modal-listing-fieldR">Last Updated: </span><span class="modal-listing-mr">{{tempListing.lastUpdated | date:'MMM d, h:mm a'}}</span>
+                </div>
+                <div class="modal-listing-row">
+                  <span class="modal-listing-fieldL">Server Region:</span><span class="modal-listing-ml">{{tempListing.server}}</span>
+                  <span class="modal-listing-fieldR">Group Status:</span><span class="modal-listing-mr">{{tempListing.groupStatus}}</span>
+                </div>
               </div>
               <div class="modal-listing-sub-body">
                 <div class="modal-listing-row">
