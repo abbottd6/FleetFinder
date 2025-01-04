@@ -27,7 +27,7 @@ export class GroupListing {
               public systemId: number,
               public system: string,
               public planetId: number,
-              public planetName: string,
+              public planetMoonSystem: string,
               public listingDescription: string,
               public desiredPartySize: number,
               public availableRoles: string,
