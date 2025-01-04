@@ -115,7 +115,7 @@ VALUES
 	('Hurston: Stanton I', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
     ('Crusader: Stanton II', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
     ('ArcCorp: Stanton III', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
-    ('microTech: Stanton IV', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
+    ('MicroTech: Stanton IV', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
     ('Other - Stanton', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
     ('Pyro I', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
     ('Monox: Pyro II', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
@@ -189,8 +189,8 @@ PRIMARY KEY(group_status_id)
 -- Inserting group status options
 INSERT INTO group_status (group_status)
 VALUES
-	('Current/Active'),
-    ('Future/Planned');
+	('Active'),
+    ('Future');
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.legality (
 legality_id INT NOT NULL AUTO_INCREMENT,
