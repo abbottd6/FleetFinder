@@ -4,7 +4,7 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GroupListingsComponent } from './components/group-listings/group-listings.component';
-import { provideHttpClient } from "@angular/common/http";
+import {provideHttpClient, withFetch} from "@angular/common/http";
 import { GroupListingService } from "./services/group-listing.service";
 import { UserComponent } from './components/user/user.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
@@ -29,7 +29,7 @@ import { CreateListingComponent } from './components/create-listing/create-listi
     NgOptimizedImage,
   ],
   providers: [
-    provideClientHydration(), provideHttpClient(), GroupListingService
+    provideClientHydration(), provideHttpClient(withFetch()), GroupListingService
   ],
   bootstrap: [AppComponent]
 })
