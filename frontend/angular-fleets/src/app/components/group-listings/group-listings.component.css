@@ -149,8 +149,14 @@
   margin-right: 0;
 }
 
+.modal-listing-sub-body-first {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 1.25rem 0;
+}
+
 .modal-listing-sub-body {
   display: flex;
   flex-direction: column;
-  margin: 1rem 0 1rem 0;
+  margin: 1.25rem 0 1.25rem 0;
 }
