@@ -99,7 +99,8 @@ PRIMARY KEY(system_id)
 INSERT INTO planetary_system (system_name)
 VALUES
 	('Stanton'),
-    ('Pyro');
+    ('Pyro'),
+    ('Any');
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.planet_moon_system (
 planet_id INT NOT NULL AUTO_INCREMENT,
@@ -230,10 +231,10 @@ style_id INT,
 legality_id INT NOT NULL,
 group_status_id INT NOT NULL,
 event_schedule DATETIME,
-category_id INT,
+category_id INT NOT NULL,
 subcategory_id INT,
 pvp_status_id INT NOT NULL,
-system_id INT,
+system_id INT NOT NULL,
 planet_id INT,
 listing_description VARCHAR(500) NOT NULL,
 desired_party_size TINYINT,
@@ -248,12 +249,12 @@ FOREIGN KEY(id_user) REFERENCES `user`(id_user) ON DELETE CASCADE,
 FOREIGN KEY(server_id) REFERENCES server_region(server_id),
 FOREIGN KEY(environment_id) REFERENCES game_environment(environment_id),
 FOREIGN KEY(experience_id) REFERENCES game_experience(experience_id),
-FOREIGN KEY(style_id) REFERENCES play_style(style_id) ON DELETE SET NULL,
+FOREIGN KEY(style_id) REFERENCES play_style(style_id),
 FOREIGN KEY(legality_id) REFERENCES legality(legality_id),
 FOREIGN KEY(group_status_id) REFERENCES group_status(group_status_id),
-FOREIGN KEY(category_id) REFERENCES gameplay_category(category_id) ON DELETE SET NULL,
-FOREIGN KEY(subcategory_id) REFERENCES gameplay_subcategory(subcategory_id) ON DELETE SET NULL,
+FOREIGN KEY(category_id) REFERENCES gameplay_category(category_id),
+FOREIGN KEY(subcategory_id) REFERENCES gameplay_subcategory(subcategory_id),
 FOREIGN KEY(pvp_status_id) REFERENCES pvp_status(pvp_status_id),
-FOREIGN KEY(system_id) REFERENCES sc_fleetfinder.planetary_system(system_id) ON DELETE SET NULL,
-FOREIGN KEY(planet_id) REFERENCES sc_fleetfinder.planet_moon_system(planet_id) ON DELETE SET NULL
+FOREIGN KEY(system_id) REFERENCES sc_fleetfinder.planetary_system(system_id),
+FOREIGN KEY(planet_id) REFERENCES sc_fleetfinder.planet_moon_system(planet_id)
 );
