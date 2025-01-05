@@ -12,6 +12,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import {NgOptimizedImage} from "@angular/common";
 import { WelcomeScreenComponent } from './components/welcome-screen/welcome-screen.component';
 import { CreateListingComponent } from './components/create-listing/create-listing.component';
+import {ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -20,13 +21,14 @@ import { CreateListingComponent } from './components/create-listing/create-listi
     UserComponent,
     NavBarComponent,
     FooterComponent,
-    WelcomeScreenComponent,
-    CreateListingComponent
+    CreateListingComponent,
+    WelcomeScreenComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NgOptimizedImage,
+    ReactiveFormsModule,
   ],
   providers: [
     provideClientHydration(), provideHttpClient(withFetch()), GroupListingService
