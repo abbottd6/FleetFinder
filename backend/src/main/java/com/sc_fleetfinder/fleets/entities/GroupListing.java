@@ -32,32 +32,32 @@ public class GroupListing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_group")
-    @NotNull(message = "groupId cannot be null")
+    @NotNull(message = "GroupListing entity field 'groupId' cannot be null")
     private Long groupId;
 
     @ManyToOne
     @JoinColumn(name="id_user", nullable = false)
-    @NotNull(message = "GroupListing user cannot be null")
+    @NotNull(message = "GroupListing entity field 'user' cannot be null")
     private User user;
 
     @ManyToOne
     @JoinColumn(name="server_id")
-    @NotNull(message = "GroupListing server cannot be null")
+    @NotNull(message = "GroupListing entity field 'server' cannot be null")
     private ServerRegion server;
 
     @ManyToOne
     @JoinColumn(name="environment_id")
-    @NotNull(message = "GroupListing environment cannot be null")
+    @NotNull(message = "GroupListing entity field 'environment' cannot be null")
     private GameEnvironment environment;
 
     @ManyToOne
     @JoinColumn(name="experience_id")
-    @NotNull(message = "GroupListing experience cannot be null")
+    @NotNull(message = "GroupListing entity field 'experience' cannot be null")
     private GameExperience experience;
 
     @Column(name="listing_title")
-    @NotBlank(message = "GroupListing Title cannot be blank")
-    @Size(min = 2, max = 65, message = "Listing title must be between 2 and 65 characters")
+    @NotBlank(message = "GroupListing entity field 'listingTitle' cannot be blank")
+    @Size(min = 2, max = 65, message = "GroupListing entity field 'listingTitle' must be between 2 and 65 characters")
     private String listingTitle;
 
     @ManyToOne
@@ -66,12 +66,12 @@ public class GroupListing {
 
     @ManyToOne
     @JoinColumn(name="legality_id")
-    @NotNull(message = "GroupListing legality cannot be null")
+    @NotNull(message = "GroupListing entity field 'legality' cannot be null")
     private Legality legality;
 
     @ManyToOne
     @JoinColumn(name="group_status_id")
-    @NotNull(message = "GroupListing groupStatus cannot be null")
+    @NotNull(message = "GroupListing entity field 'groupStatus' cannot be null")
     private GroupStatus groupStatus;
 
     @Column(name="event_schedule")
@@ -79,17 +79,16 @@ public class GroupListing {
 
     @ManyToOne
     @JoinColumn(name="category_id")
-    @NotNull(message = "GroupListing category cannot be null")
+    @NotNull(message = "GroupListing entity field 'category' cannot be null")
     private GameplayCategory category;
 
     @ManyToOne
     @JoinColumn(name="subcategory_id")
-    @NotNull(message = "GroupListing subcategory cannot be null")
     private GameplaySubcategory subcategory;
 
     @ManyToOne
     @JoinColumn(name="pvp_status_id")
-    @NotNull(message = "GroupListing pvpStatus cannot be null")
+    @NotNull(message = "GroupListing entity field 'pvpStatus' cannot be null")
     private PvpStatus pvpStatus;
 
     @ManyToOne
@@ -101,18 +100,18 @@ public class GroupListing {
     private PlanetMoonSystem planetMoonSystem;
 
     @Column(name="listing_description")
-    @NotNull(message = "GroupListing description cannot be null")
+    @NotNull(message = "GroupListing entity field 'listingDescription' cannot be null")
     @Size(min = 0, max = 500, message = "Listing description cannot be longer than 400 characters")
     private String listingDescription;
 
     @Column(name="desired_party_size")
-    @Min(value = 2, message = "Desired party size must be at least 2.")
-    @Max(value = 1000, message = "Desired party size cannot exceed 1,000.")
+    @Min(value = 2, message = "GroupListing entity field 'desiredPartySize' must be at least 2.")
+    @Max(value = 1000, message = "GroupListing entity field 'desiredPartySize' cannot exceed 1,000.")
     private int desiredPartySize;
 
     @Column(name="current_party_size")
-    @Min(value = 1, message = "Current party size must be at least 1.")
-    @Max(value = 1000, message = "Current party size cannot exceed 1,000.")
+    @Min(value = 1, message = "GroupListing entity field 'currentPartySize' must be at least 1.")
+    @Max(value = 1000, message = "GroupListing entity field 'currentPartySize' cannot exceed 1,000.")
     private int currentPartySize;
 
     @Column(name="available_roles")
@@ -120,7 +119,7 @@ public class GroupListing {
 
     @Enumerated(EnumType.STRING)
     @Column(name="comms_options")
-    @NotNull(message = "GroupListing commsOptions cannot be null")
+    @NotNull(message = "GroupListing entity field 'commsOptions' cannot be null")
     private CommsOption commsOption;
 
     @Column(name="comms_service")
@@ -128,7 +127,7 @@ public class GroupListing {
 
     @CreationTimestamp
     @Column(name="creation_timestamp")
-    @NotNull(message = "GroupListing creationTimestamp cannot be null")
+    @NotNull(message = "GroupListing entity field 'creationTimestamp' cannot be null")
     private LocalDateTime creationTimestamp;
 
     @UpdateTimestamp
