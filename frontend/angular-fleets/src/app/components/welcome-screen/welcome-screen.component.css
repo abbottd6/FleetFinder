@@ -1,7 +1,7 @@
 .main-body {
   display: flex;
   flex-direction: column;
-  background-color: #6c757d;
+  background-color: rgba(108, 117, 125, 100);
   width: 75%;
   margin: 3rem auto auto auto;
   border-top: 5px solid var(--stark-blue);

@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {LookupService} from "../../services/lookup.service";
 
 @Component({
   selector: 'app-create-listing',
@@ -10,13 +11,71 @@ export class CreateListingComponent implements OnInit{
 
   //this was throwing an error, need to check if this should be undefined (suggested)
   //or if there is a different problem.
-  createListingFormGroup: FormGroup | undefined;
+  createListingFormGroup!: FormGroup;
+  public servers: any[] = [];
+  public environments: any[] = [];
+  public experiences: any[] = [];
+  public playStyles: any[] = [];
+  public legalities: any[] = [];
+  public groupStatuses: any[] = [];
+  public categories: any[] = [];
+  public subcategories: any[] = [];
+  public pvpStatuses: any[] = [];
+  public planetarySystems: any[] = [];
+  public planetMoonSystems:  any[] = [];
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private formBuilder: FormBuilder, private lookupService: LookupService) {
 
   }
   ngOnInit(): void {
 
+    // Fetch lookup table data from API
+    this.lookupService.getServerRegions().subscribe(data => {
+      this.servers = data;
+    })
+
+    this.lookupService.getGameEnvironments().subscribe(data => {
+      this.environments = data;
+    })
+
+    this.lookupService.getGameExperiences().subscribe(data => {
+      this.experiences = data;
+    })
+
+    this.lookupService.getPlayStyles().subscribe(data => {
+      this.playStyles = data;
+    })
+
+    this.lookupService.getLegalities().subscribe(data => {
+      this.legalities = data;
+    })
+
+    this.lookupService.getGroupStatuses().subscribe(data => {
+      this.groupStatuses = data;
+    })
+
+    this.lookupService.getGameplayCategories().subscribe(data => {
+      this.categories = data;
+    })
+
+    this.lookupService.getGameplaySubcategories().subscribe(data => {
+      this.subcategories = data;
+    })
+
+    this.lookupService.getPvpStatuses().subscribe(data => {
+      this.pvpStatuses = data;
+    })
+
+    this.lookupService.getPlanetarySystems().subscribe(data => {
+      this.planetarySystems = data;
+    })
+
+    this.lookupService.getPlanetMoonSystems().subscribe(data => {
+      this.planetMoonSystems = data;
+    })
+
+
+    //Form builder
     this.createListingFormGroup = this.formBuilder.group({
       groupListing: this.formBuilder.group({
         serverId: [null, Validators.required],
