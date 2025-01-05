@@ -112,7 +112,7 @@
                 </div>
                 <div class="modal-listing-row">
                   <span class="modal-listing-fieldL">PvP Status:</span><span class="modal-listing-ml">{{tempListing.pvpStatus}}</span>
-                  <span class="modal-listing-fieldR">Group Size:</span><span class="modal-listing-mr">{{tempListing.desiredPartySize}}</span>
+                  <span class="modal-listing-fieldR">Group Size:</span><span class="modal-listing-mr">{{tempListing.currentPartySize}} / {{tempListing.desiredPartySize}}</span>
                 </div>
                 <div class="modal-listing-row">
                   <span class="modal-listing-fieldL">Legality:</span><span class="modal-listing-ml">{{tempListing.legality}}</span>
@@ -121,6 +121,11 @@
               <div class="modal-listing-sub-body">
                 <div class="modal-listing-row">
                   <span class="modal-listing-fieldL">Description:</span><span class="modal-listing-ml">{{tempListing.listingDescription}}</span>
+                </div>
+              </div>
+              <div class="modal-listing-sub-body">
+                <div class="modal-listing-row">
+                  <span class="modal-listing-fieldL">Available Roles:</span><span class="modal-listing-ml">{{tempListing.availableRoles}}</span>
                 </div>
               </div>
             </div>
