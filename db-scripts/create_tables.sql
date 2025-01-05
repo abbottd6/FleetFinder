@@ -182,15 +182,15 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.group_status (
 group_status_id INT NOT NULL AUTO_INCREMENT,
-group_status VARCHAR(14),
+group_status VARCHAR(16),
 PRIMARY KEY(group_status_id)
 );
 
 -- Inserting group status options
 INSERT INTO group_status (group_status)
 VALUES
-	('Active'),
-    ('Future');
+	('Current/Live'),
+    ('Future/Scheduled');
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.legality (
 legality_id INT NOT NULL AUTO_INCREMENT,
