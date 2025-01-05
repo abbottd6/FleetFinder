@@ -75,7 +75,6 @@ public class GroupListing {
     private GroupStatus groupStatus;
 
     @Column(name="event_schedule")
-    @NotNull(message = "GroupListing eventSchedule cannot be null")
     private LocalDateTime eventSchedule;
 
     @ManyToOne
