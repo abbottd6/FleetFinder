@@ -111,6 +111,11 @@ public class GroupListing {
     @Max(value = 1000, message = "Desired party size cannot exceed 1,000.")
     private int desiredPartySize;
 
+    @Column(name="current_party_size")
+    @Min(value = 1, message = "Current party size must be at least 1.")
+    @Max(value = 1000, message = "Current party size cannot exceed 1,000.")
+    private int currentPartySize;
+
     @Column(name="available_roles")
     private String availableRoles;
 
