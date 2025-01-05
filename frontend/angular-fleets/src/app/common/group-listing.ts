@@ -30,6 +30,7 @@ export class GroupListing {
               public planetMoonSystem: string,
               public listingDescription: string,
               public desiredPartySize: number,
+              public currentPartySize: number,
               public availableRoles: string,
               public commsOption: string,
               public commsService: string,
