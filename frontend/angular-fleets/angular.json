@@ -82,7 +82,8 @@
               "buildTarget": "angular-fleets:build:production"
             },
             "development": {
-              "buildTarget": "angular-fleets:build:development"
+              "buildTarget": "angular-fleets:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"
