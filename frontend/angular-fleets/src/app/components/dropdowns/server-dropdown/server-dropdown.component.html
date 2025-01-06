@@ -1,0 +1,12 @@
+<div class="form-group">
+  <label id="server">Server Region:</label>
+  <ng-select
+    id="server"
+    [items]="servers"
+    bindLabel="servername"
+    bindValue="serverId"
+    [loading]="loading"
+    [ngModel]="selectedValue"
+    (change)="onValueChange($event)">
+  </ng-select>
+</div>
