@@ -62,14 +62,18 @@
   border-radius: .25rem;
   margin: 0.375rem 0 0.375rem 0.5rem;
   width: 25%;
-  color: rgba(33, 37, 41, 0.35);
+  color: rgba(255, 131, 7, .75);
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5;
   padding: 0.375rem .4rem 0.375rem 0.375rem;
-  background-color: #fff;
+  background-color: rgba(33, 37, 41, .5);
   background-clip: padding-box;
-  border: 1px solid #ced4da;
+  border: rgba(255, 131, 7, .75);
+}
+
+.dropdown-select-s1 option {
+  background-color: rgba(33, 37, 41, .5);
 }
 
 .dropdown-select-s1 option:disabled {
@@ -95,6 +99,7 @@
 .dropdown-select-s1.is-invalid {
   border-color: #dc3545;
   padding-right: calc(1.5em + 0.75rem);
+  background-color: rgba(33, 37, 41, .5);
   background-image: url("data:image/svg+xml,...");
   background-repeat: no-repeat;
   background-position: right calc(0.375em + 0.1875rem) center;

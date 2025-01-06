@@ -12,7 +12,7 @@ export class CreateListingComponent implements OnInit{
   //this was throwing an error, need to check if this should be undefined (suggested)
   //or if there is a different problem.
   createListingFormGroup!: FormGroup;
-  public servers: any[] = [];
+
   public environments: any[] = [];
   public experiences: any[] = [];
   public playStyles: any[] = [];
@@ -29,10 +29,7 @@ export class CreateListingComponent implements OnInit{
   }
   ngOnInit(): void {
 
-    // Fetch lookup table data from API
-    this.lookupService.getServerRegions().subscribe(data => {
-      this.servers = data;
-    })
+
 
     this.lookupService.getGameEnvironments().subscribe(data => {
       this.environments = data;

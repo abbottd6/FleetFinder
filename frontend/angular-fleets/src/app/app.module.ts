@@ -13,6 +13,7 @@ import {NgOptimizedImage} from "@angular/common";
 import { WelcomeScreenComponent } from './components/welcome-screen/welcome-screen.component';
 import { CreateListingComponent } from './components/create-listing/create-listing.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import { ServerDropdownComponent } from './components/dropdowns/server-dropdown/server-dropdown.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import {ReactiveFormsModule} from "@angular/forms";
     NavBarComponent,
     FooterComponent,
     CreateListingComponent,
-    WelcomeScreenComponent
+    WelcomeScreenComponent,
+    ServerDropdownComponent
   ],
   imports: [
     BrowserModule,

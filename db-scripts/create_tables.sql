@@ -152,7 +152,7 @@ VALUES
 	('LIVE'),
     ('PTU'),
     ('Tech Preview'),
-    ('Any');
+    ('Other/Any');
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.game_experience (
 experience_id INT NOT NULL AUTO_INCREMENT,
