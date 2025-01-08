@@ -4,16 +4,15 @@ import { BrowserModule, provideClientHydration } from '@angular/platform-browser
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GroupListingsComponent } from './components/group-listings/group-listings.component';
-import {provideHttpClient, withFetch} from "@angular/common/http";
+import { provideHttpClient, withFetch } from "@angular/common/http";
 import { GroupListingService } from "./services/group-listing.service";
 import { UserComponent } from './components/user/user.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
-import {NgOptimizedImage} from "@angular/common";
+import { NgOptimizedImage } from "@angular/common";
 import { WelcomeScreenComponent } from './components/welcome-screen/welcome-screen.component';
-import { CreateListingComponent } from './components/create-listing/create-listing.component';
-import {ReactiveFormsModule} from "@angular/forms";
-import { ServerDropdownComponent } from './components/dropdowns/server-dropdown/server-dropdown.component';
+import {CreateListingModule} from "./components/create-listing/create-listing.module";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -22,14 +21,14 @@ import { ServerDropdownComponent } from './components/dropdowns/server-dropdown/
     UserComponent,
     NavBarComponent,
     FooterComponent,
-    CreateListingComponent,
     WelcomeScreenComponent,
-    ServerDropdownComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     NgOptimizedImage,
+    CreateListingModule,
+    FormsModule,
     ReactiveFormsModule,
   ],
   providers: [
