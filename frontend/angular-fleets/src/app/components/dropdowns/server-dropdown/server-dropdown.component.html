@@ -1,12 +1,11 @@
-<div class="form-group">
-  <label id="server">Server Region:</label>
-  <ng-select
-    id="server"
-    [items]="servers"
-    bindLabel="servername"
-    bindValue="serverId"
-    [loading]="loading"
-    [ngModel]="selectedValue"
-    (change)="onValueChange($event)">
-  </ng-select>
+<div class="dropdown-component">
+  <label for="server">Server Region:</label>
+    <ng-select
+        class="server-dd"
+        id="server"
+        [items]="cities"
+        bindLabel="name"
+        bindValue="id"
+        placeholder="Select...">
+     </ng-select>
 </div>

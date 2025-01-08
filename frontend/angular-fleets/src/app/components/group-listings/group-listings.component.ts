@@ -3,9 +3,10 @@ import {GroupListingService} from "../../services/group-listing.service";
 import {GroupListing} from "../../common/group-listing";
 
 @Component({
-  selector: 'app-group-listings-table',
-  templateUrl: './group-listings.component.html',
-  styleUrl: './group-listings.component.css'
+    selector: 'app-group-listings-table',
+    templateUrl: './group-listings.component.html',
+    styleUrl: './group-listings.component.css',
+    standalone: false
 })
 export class GroupListingsComponent implements OnInit {
 

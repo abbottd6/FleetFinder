@@ -1,45 +1,59 @@
-import {Component, Input, OnInit, Output, EventEmitter} from '@angular/core';
-import {LookupService} from "../../../services/lookup.service";
-import { NgSelectModule } from '@ng-select/ng-select';
-import { FormsModule } from '@angular/forms';
+import {Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
 
 
 @Component({
-  selector: 'app-server-dropdown',
-  templateUrl: './server-dropdown.component.html',
-  styleUrl: './server-dropdown.component.css'
+    selector: 'app-server-dropdown',
+    templateUrl: './server-dropdown.component.html',
+    styleUrl: './server-dropdown.component.css',
+    standalone: false
 })
-export class ServerDropdownComponent implements OnInit {
-  @Input() selectedValue: number | null = null;
-  @Output() valueChange = new EventEmitter<number>();
+export class ServerDropdownComponent {
+  cities = [
+    {id: 1, name: 'New York'},
+    {id: 2, name: 'Seattle'},
+    {id: 3, name: 'Los Angeles'},
+  ]
+}
+  //@Input() control!: FormControl;
+  //public servers!: Observable<any[]>;
 
-  public servers: any[] = [];
-  loading = false; //spinner animation
 
-  constructor(private lookupService: LookupService) {}
+/*
+  constructor(private lookupService: LookupService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.fetchServerRegions();
+    //console.log('FormControl Value:', this.control.value);
+    //console.log('FormControl Valid:', this.control.valid);
+    console.log('Dropdown options on render:', this.servers);
   }
 
+
   fetchServerRegions(): void {
-    this.loading = true;
-    this.lookupService.getServerRegions().subscribe({
-      next: data => {
-        this.servers = data;
-        this.loading = false;
-      },
+    this.servers = this.lookupService.getServerRegions()
+        console.log('Dropdown Options:', this.servers);
+
+        //Update FormControl value if servers are available
+
+        if (this.servers.length > 0) {
+          this.control.setValue(this.servers[0].serverId);
+        }
+        console.log('FormControl value after options load:', this.control.value);
+        console.log('FormControl valid after options load:', this.control.valid);
+        console.log('FormControl errors after load:', this.control.errors);
+        console.log('Control status:', this.control.status);
+
+
       error: (error) => {
         console.error('Error fetching server regions:', error);
-        this.loading = false;
       },
       complete: () => {
         console.log('Fetching complete.');
       }
     });
+
+
   }
 
-  onValueChange(value: number): void {
-    this.valueChange.emit(value);
-  }
 }
+*/
