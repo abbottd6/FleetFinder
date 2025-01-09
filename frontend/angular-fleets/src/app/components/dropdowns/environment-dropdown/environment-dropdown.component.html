@@ -1,0 +1,10 @@
+<div class="dropdown-component">
+  <label id="environment-dropdown">Game Environment:</label>
+  <ng-select
+    [items]="environments"
+    bindLabel="environmentType"
+    bindValue="environmentId"
+    placeholder="Select environment"
+    [attr.aria-labelledby]="'environment-dropdown...'">
+  </ng-select>
+</div>

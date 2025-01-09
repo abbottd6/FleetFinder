@@ -2,8 +2,6 @@ import {Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
 import {LookupService} from "../../../services/lookup.service";
 import {catchError, of} from "rxjs";
 
-
-
 @Component({
     selector: 'app-server-dropdown',
     templateUrl: './server-dropdown.component.html',
@@ -18,15 +16,14 @@ export class ServerDropdownComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchServerRegions();
-    console.log('Dropdown options on render:', this.servers);
+    console.log('Server dropdown options fetched:', this.servers);
   }
-
 
   fetchServerRegions(): void {
     this.lookupService.getServerRegions()
       .pipe(
         catchError((err) => {
-          console.error('Error fetching server regions:', err);
+          console.error('Error fetching dropdown server regions:', err);
           return of([]);
         })
       )

@@ -1,0 +1,10 @@
+<div class="dropdown-component">
+  <label id="playstyle-dropdown">Playstyle:</label>
+  <ng-select
+    [items]="playStyles"
+    bindLabel="playStyle"
+    bindValue="styleId"
+    placeholder="Select play style..."
+    [attr.aria-labelledby]="'playstyle-dropdown'">
+  </ng-select>
+</div>
