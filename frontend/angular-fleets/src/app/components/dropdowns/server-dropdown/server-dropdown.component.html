@@ -1,11 +1,10 @@
 <div class="dropdown-component">
-  <label for="server">Server Region:</label>
+  <label id="server-dropdown">Server Region:</label>
     <ng-select
-        class="server-dd"
-        id="server"
-        [items]="cities"
-        bindLabel="name"
-        bindValue="id"
-        placeholder="Select...">
+      [items]="servers"
+      bindLabel="servername"
+      bindValue="serverId"
+      placeholder="Select..."
+      [attr.aria-labelledby]="'server-dropdown'">
      </ng-select>
 </div>
