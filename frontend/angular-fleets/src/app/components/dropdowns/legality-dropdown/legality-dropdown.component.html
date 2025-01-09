@@ -1,0 +1,10 @@
+<div class="dropdown-component">
+  <label id="legality-dropdown">Legality:</label>
+  <ng-select
+    [items]="legalities"
+    bindLabel="legalityStatus"
+    bindValue="legalityId"
+    placeholder="Select legality..."
+    [attr.aria-labelledby]="'legality-dropdown'">
+  </ng-select>
+</div>

@@ -1,0 +1,10 @@
+<div class="dropdown-component">
+  <label id="environment-dropdown">Game Experience:</label>
+  <ng-select
+    [items]="experiences"
+    bindLabel="experienceType"
+    bindValue="experienceId"
+    placeholder="Select experience..."
+    [attr.aria-labelledby]="'experience-dropdown'">
+  </ng-select>
+</div>
