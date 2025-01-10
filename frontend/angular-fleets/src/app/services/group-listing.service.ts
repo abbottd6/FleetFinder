@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {map, Observable} from "rxjs";
+import {map, Observable, tap} from "rxjs";
 import {GroupListing} from "../common/group-listing";
 
 @Injectable({
@@ -8,13 +8,15 @@ import {GroupListing} from "../common/group-listing";
 })
 export class GroupListingService {
 
-  private baseUrl = 'http://localhost:8080/api/groupListings';
+  private baseUrl = '/api/groupListings';
 
   constructor(private httpClient: HttpClient) { }
 
   getGroupListings(): Observable<GroupListing[]> {
     return this.httpClient.get<GetResponse>(this.baseUrl).pipe(
+      tap(response => console.log('Raw API Response: ', response)),
       map(response => response._embedded.groupListingDtoes),
+      tap(groupListings => console.log('Transformed data: ', groupListings)),
     )
   }
 }

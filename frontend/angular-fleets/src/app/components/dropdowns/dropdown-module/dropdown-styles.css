@@ -16,13 +16,15 @@
   margin-left: 1.25rem;
   margin-right: auto;
   width: 13rem;
+  transition: font-size 0.3s ease;
 }
 
 :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
   overflow: hidden;
   text-overflow: ellipsis;
   width: 90%;
-  color: rgba(40, 70, 101, 0.6)
+  color: rgba(255, 131, 7, 0.5) !important;
+  transition: font-size 0.3s ease;
 }
 
 :host ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items {
@@ -30,46 +32,93 @@
   text-overflow: ellipsis;
 }
 
-:host ::ng-deep ng-dropdown-panel {
+:host ::ng-deep .ng-dropdown-panel {
   background-color: rgba(60, 70, 74, 75);
 }
 
+/* Dropdown placeholder:hover */
+:host ::ng-deep .ng-select:hover .ng-select-container .ng-value-container .ng-placeholder {
+  font-size: 112%;
+}
+
+/* Dropdown placeholder:focused */
 :host ::ng-deep .ng-select.ng-select-focused .ng-select-container .ng-value-container .ng-placeholder {
-  color: var(--stark-blue);
+  color: rgba(255, 131, 7, 0.5) !important;
 }
 
-:host ::ng-deep .ng-select.ng-select-focused .ng-select-container .ng-arrow-wrapper .ng-arrow {
-  color: var(--stark-blue);
+/* Dropdown placeholder text with value selected, but field not focused */
+:host ::ng-deep .ng-select .ng-has-value .ng-placeholder {
+  color: rgba(65, 103, 142, 1) !important;
 }
 
-:host ::ng-deep .ng-select.ng-select-focused .ng-select-container:after {
-  border-color: var(--stark-blue);
+/* Dropdown value selected focused */
+:host ::ng-deep .ng-select-focused .ng-value {
+  color: rgba(255, 131, 7, 0.5) !important;
 }
 
-:host ::ng-deep .ng-select .ng-clear-wrapper:focus {
-  color: var(--stark-blue);
+/* Dropdown clear: field focused */
+:host ::ng-deep .ng-select.ng-select-single:focus-within .ng-clear-wrapper {
+  color: rgba(255, 131, 7, 0.5)
 }
 
-:host ::ng-deep .ng-select .ng-select-container.ng-appearance-outline:hover:after {
-  border-color: var(--stark-blue);
+/* Dropdown clear: value selected, not focused */
+:host ::ng-deep .ng-select .ng-clear-wrapper {
+  color: rgba(65, 103, 142, 1);
+  transition: color 0.75s ease;
 }
 
-:host ::ng-deep .ng-select.ng-select-focused .ng-select-container.ng-appearance-outline:after,
-.ng-select.ng-select-focused .ng-select-container.ng-appearance-outline:hover:after {
-  border-color: var(--stark-blue);
-}
-:host ::ng-deep .ng-select.ng-select-clearable.ng-select-focused .ng-clear-wrapper {
-  color: var(--stark-blue);
+/* Dropdown clear: value selected, not focused, hover */
+:host ::ng-deep .ng-select:hover .ng-clear-wrapper {
+  color: rgba(255, 131, 7, 0.5)
 }
 
+/* Dropdown arrow pre-selection */
+:host ::ng-deep .ng-select:not(.ng-select-single .ng-value) .ng-arrow {
+  color: rgba(255, 131, 7, 0.5);
+  transition: color 0.75s ease;
+}
+
+/* Dropdown arrow field focused on hover*/
+:host ::ng-deep .ng-select.ng-select-single.ng-select:hover .ng-arrow {
+  color: rgba(255, 131, 7, 0.5);
+}
+
+/* Dropdown arrow while focused/open */
+:host ::ng-deep .ng-select.ng-select-single:focus-within .ng-select-container .ng-arrow-wrapper .ng-arrow {
+  color: rgba(255, 131, 7, 0.5);
+}
+
+/* Dropdown arrow post-selection*/
+:host ::ng-deep .ng-select.ng-select-single .ng-has-value .ng-arrow {
+  color: rgba(65, 103, 142, 1);
+}
+
+/* Dropdown underline */
+:host ::ng-deep .ng-select .ng-select-container::after {
+  transition: border-color 0.5s ease;
+}
+
+/* Dropdown underline hover */
+:host ::ng-deep .ng-select-container:hover::after {
+  border-color: rgba(255, 131, 7, 0.5);
+}
+
+/* Dropdown underline while dropdown is open with value selected */
+:host ::ng-deep .ng-select:focus-within .ng-select-container::after {
+  border-color: rgba(255, 131, 7, 0.5);
+}
+
+/* Dropdown item/list text */
 :host ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
-  color: rgba(255, 131, 7, .75);
+  color: rgba(255, 131, 7, 0.7);
 }
 
+/* Dropdown item/list text:hover */
 :host ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option:hover {
-  background-color: var(--stark-blue);
+  color: rgba(255, 131, 7, 0.5);
 }
 
+/* Dropdown selected val */
 :host ::ng-deep .ng-select .ng-select-container {
-  color: rgba(255, 131, 7, .75);
+  color: rgba(65, 103, 142, 1);
 }

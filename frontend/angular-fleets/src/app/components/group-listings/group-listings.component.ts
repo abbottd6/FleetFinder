@@ -12,17 +12,25 @@ export class GroupListingsComponent implements OnInit {
 
   @Input() public groupListings: GroupListing[] = [];
 
-  constructor(private groupListingService: GroupListingService) { }
+  constructor(private groupListingService: GroupListingService) {
+  }
 
   ngOnInit(): void {
     this.loadGroupListings();
   }
 
   loadGroupListings() {
-    this.groupListingService.getGroupListings().subscribe(
-        (data: GroupListing[]) => {
+    this.groupListingService.getGroupListings().subscribe({
+      next: (data: GroupListing[]) => {
+        console.log('Data received in component:', data);
         this.groupListings = data;
+      },
+      error: (error) => {
+        console.log('Error fetching group listings from component:', error);
+      },
+      complete: () => {
+        console.log('Group listings fetching completed.');
       }
-    )
+    });
   }
 }
