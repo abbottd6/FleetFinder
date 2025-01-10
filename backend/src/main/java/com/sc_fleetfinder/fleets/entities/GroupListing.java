@@ -75,15 +75,17 @@ public class GroupListing {
     private GroupStatus groupStatus;
 
     @Column(name="event_schedule")
+    @NotNull(message = "GroupListing eventSchedule cannot be null")
     private LocalDateTime eventSchedule;
 
     @ManyToOne
     @JoinColumn(name="category_id")
-    @NotNull(message = "GroupListing entity field 'category' cannot be null")
+    @NotNull(message = "GroupListing category cannot be null")
     private GameplayCategory category;
 
     @ManyToOne
     @JoinColumn(name="subcategory_id")
+    @NotNull(message = "GroupListing subcategory cannot be null")
     private GameplaySubcategory subcategory;
 
     @ManyToOne
