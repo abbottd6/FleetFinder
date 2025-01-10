@@ -12,48 +12,48 @@ export class LookupService {
   constructor(private http: HttpClient) { }
 
   getServerRegions(): Observable<any[]> {
-    return this.http.get<any[]>('api/serverRegions')
+    return this.http.get<any[]>('/api/serverRegions')
   }
 
   getGameEnvironments(): Observable<any[]> {
-    return this.http.get<any[]>('api/gameEnvironments')
+    return this.http.get<any[]>('/api/gameEnvironments')
   }
 
   getGameExperiences(): Observable<any[]> {
-    return this.http.get<any[]>('api/gameExperiences')
+    return this.http.get<any[]>('/api/gameExperiences')
   }
 
   getPlayStyles(): Observable<any[]> {
-    return this.http.get<any[]>('api/playStyles')
+    return this.http.get<any[]>('/api/playStyles')
   }
 
   getLegalities(): Observable<any[]> {
-    return this.http.get<any[]>('api/legalities');
+    return this.http.get<any[]>('/api/legalities');
   }
 
   getGroupStatuses(): Observable<any[]> {
-    return this.http.get<any[]>('api/groupStatuses')
+    return this.http.get<any[]>('/api/groupStatuses')
   }
 
   getGameplayCategories(): Observable<any[]> {
-    return this.http.get<any[]>('api/gameplayCategories');
+    return this.http.get<any[]>('/api/gameplayCategories');
   }
 
   getGameplaySubcategories(): Observable<any[]> {
-    return this.http.get<any[]>('api/gameplaySubcategories');
+    return this.http.get<any[]>('/api/gameplaySubcategories');
   }
 
   getPvpStatuses(): Observable<any[]> {
-    return this.http.get<any[]>('api/pvpStatuses');
+    return this.http.get<any[]>('/api/pvpStatuses');
   }
 
   //Large scale systems: Stanton, Pyro, etc.
   getPlanetarySystems(): Observable<any[]> {
-    return this.http.get<any[]>('api/planetarySystems');
+    return this.http.get<any[]>('/api/planetarySystems');
   }
 
   //Small scale systems: Hurston, Microtech, etc.
   getPlanetMoonSystems(): Observable<any[]> {
-    return this.http.get<any[]>('api/planetMoonSystems');
+    return this.http.get<any[]>('/api/planetMoonSystems');
   }
 }

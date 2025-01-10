@@ -36,7 +36,5 @@ export class GroupListing {
               public commsService: string,
               public creationTimestamp: Date,
               public lastUpdated: Date
-      ){
-
-  }
+      ){}
 }

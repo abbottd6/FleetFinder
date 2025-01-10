@@ -1,5 +1,5 @@
 @import '../dropdown-module/dropdown-styles.css';
 
 .dropdown-component ng-select {
-  width: 10rem;
+  width: 11rem;
 }
