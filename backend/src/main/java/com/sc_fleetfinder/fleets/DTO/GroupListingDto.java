@@ -52,7 +52,6 @@ public class GroupListingDto {
     @NotNull(message = "GroupListingDto field 'pvpStatus' cannot be null")
     private String pvpStatus;
 
-    @NotNull(message="GroupListingDto field 'system' cannot be null")
     private String system;
 
     private String planetMoonSystem;
