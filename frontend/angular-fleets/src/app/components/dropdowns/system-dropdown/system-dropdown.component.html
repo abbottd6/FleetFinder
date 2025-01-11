@@ -1,1 +1,10 @@
-<p>system-dropdown works!</p>
+<div class="dropdown-component">
+  <label id="system-dropdown">Star System:</label>
+  <ng-select
+    [items]="systems"
+    bindLabel="systemName"
+    bindValue="systemId"
+    placeholder="Select star system..."
+    [attr.aria-labelledby]="'system-dropdown'">
+  </ng-select>
+</div>

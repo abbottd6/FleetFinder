@@ -1,1 +1,10 @@
-<p>category-dropdown works!</p>
+<div class="dropdown-component">
+  <label id="category-dropdown">Gameplay Category:</label>
+  <ng-select
+    [items]="categories"
+    bindLabel="gameplayCategoryName"
+    bindValue="gameplayCategoryId"
+    placeholder="Select category..."
+    [attr.aria-labelledby]="'category-dropdown'">
+  </ng-select>
+</div>
