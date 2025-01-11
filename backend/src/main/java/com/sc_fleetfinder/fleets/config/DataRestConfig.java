@@ -4,9 +4,12 @@ import com.sc_fleetfinder.fleets.entities.GameEnvironment;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
+import com.sc_fleetfinder.fleets.entities.GroupStatus;
+import com.sc_fleetfinder.fleets.entities.Legality;
 import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
 import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.entities.PlayStyle;
+import com.sc_fleetfinder.fleets.entities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ServerRegion;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -51,6 +54,19 @@ public class DataRestConfig implements RepositoryRestConfigurer {
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
 
+
+        //disable http methods for GroupStatus: POST, PUT, DELETE
+        config.getExposureConfiguration()
+                .forDomainType(GroupStatus.class)
+                .withItemExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods))
+                .withCollectionExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods));
+
+        //disable HTTP methods for Legality: POST, PUT, DELETE
+        config.getExposureConfiguration()
+                .forDomainType(Legality.class)
+                .withItemExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods))
+                .withCollectionExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods));
+
         //disable HTTP methods for PlanetarySystem: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(PlanetarySystem.class)
@@ -68,6 +84,12 @@ public class DataRestConfig implements RepositoryRestConfigurer {
                 .forDomainType(PlayStyle.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
+
+        //disable HTTP methods for PvpStatus: POST, PUT, DELETE
+        config.getExposureConfiguration()
+                .forDomainType(PvpStatus.class)
+                .withItemExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods))
+                .withCollectionExposure((metadata, httpMethods) -> httpMethods.disable(unsupportedMethods));
 
         //disable HTTP methods for ServerRegion: POST, PUT, DELETE
         config.getExposureConfiguration()
