@@ -1,1 +1,10 @@
-<p>group-status-dropdown works!</p>
+<div class="dropdown-component">
+  <label id="groupStatuses-dropdown">Group Status:</label>
+  <ng-select
+    [items]="groupStatuses"
+    bindLabel="groupStatus"
+    bindValue="groupStatusId"
+    placeholder="Select status..."
+    [attr.aria-labelledby]="'groupStatuses-dropdown'">
+  </ng-select>
+</div>

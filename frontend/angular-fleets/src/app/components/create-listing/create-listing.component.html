@@ -1,13 +1,53 @@
 <div class="main-body">
   <span class="page-title"><h2>Create your group listing</h2></span>
   <div class="header-line"></div>
-  <div class="container-fluid">
-    <form class="form-body" name="listingForm">
-      <app-server-dropdown></app-server-dropdown>
-      <app-environment-dropdown></app-environment-dropdown>
-      <app-experience-dropdown></app-experience-dropdown>
-      <app-playstyle-dropdown></app-playstyle-dropdown>
-      <app-legality-dropdown></app-legality-dropdown>
+  <div>
+    <form class="form-body" [formGroup]="listingFormGroup">
+
+      <!-- titleGroup -->
+      <div formGroupName="titleGroup">
+
+      </div>
+
+      <!-- sessionEnvInfoGroup -->
+      <div formGroupName="sessionEnvInfoGroup">
+        <h4 class="form-group-heading1">Game Environment</h4>
+        <div class="form-row">
+          <app-server-dropdown></app-server-dropdown>
+          <app-environment-dropdown></app-environment-dropdown>
+          <app-experience-dropdown></app-experience-dropdown>
+        </div>
+      </div>
+
+      <!-- gameplayInfoGroup -->
+      <div formGroupName="gameplayInfoGroup">
+        <h4 class="form-group-heading2">Gameplay Details</h4>
+        <div class="form-row">
+          <app-playstyle-dropdown></app-playstyle-dropdown>
+          <app-category-dropdown></app-category-dropdown>
+          <app-subcategory-dropdown></app-subcategory-dropdown>
+        </div>
+        <div class="form-row">
+          <app-legality-dropdown></app-legality-dropdown>
+          <app-pvp-status-dropdown></app-pvp-status-dropdown>
+        </div>
+        <div class="form-row">
+          <app-system-dropdown></app-system-dropdown>
+          <app-planet-dropdown></app-planet-dropdown>
+        </div>
+      </div>
+
+      <!-- groupSpecInfoGroup -->
+      <div formGroupName="groupSpecInfoGroup">
+        <h4 class="form-group-heading2">Group Specs</h4>
+        <div class="form-row">
+          <app-group-status-dropdown></app-group-status-dropdown>
+        </div>
+        <div class="form-row">
+          <app-comms-option-dropdown></app-comms-option-dropdown>
+        </div>
+      </div>
     </form>
   </div>
 </div>
+

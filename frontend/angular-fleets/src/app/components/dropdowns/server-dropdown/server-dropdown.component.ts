@@ -16,7 +16,6 @@ export class ServerDropdownComponent implements OnInit {
 
   ngOnInit(): void {
     this.fetchServerRegions();
-    console.log('Server dropdown options fetched:', this.servers);
   }
 
   fetchServerRegions(): void {
@@ -29,6 +28,7 @@ export class ServerDropdownComponent implements OnInit {
       )
       .subscribe((data) => {
         this.servers = data;
+        console.log('Server dropdown options fetched:', this.servers);
       })
   }
 }

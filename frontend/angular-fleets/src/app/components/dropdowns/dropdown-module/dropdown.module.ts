@@ -27,10 +27,10 @@ import {CommsOptionDropdownComponent} from "../comms-option-dropdown/comms-optio
     EventscheduleDatepickerComponent,
     CategoryDropdownComponent,
     SubcategoryDropdownComponent,
-    PvpStatusDropdownComponent,
     SystemDropdownComponent,
     PlanetDropdownComponent,
     CommsOptionDropdownComponent,
+    PvpStatusDropdownComponent,
   ],
   imports: [
     CommonModule,
@@ -48,10 +48,10 @@ import {CommsOptionDropdownComponent} from "../comms-option-dropdown/comms-optio
     EventscheduleDatepickerComponent,
     CategoryDropdownComponent,
     SubcategoryDropdownComponent,
-    PvpStatusDropdownComponent,
     SystemDropdownComponent,
     PlanetDropdownComponent,
     CommsOptionDropdownComponent,
+    PvpStatusDropdownComponent,
   ]
 })
 export class DropdownModule { }

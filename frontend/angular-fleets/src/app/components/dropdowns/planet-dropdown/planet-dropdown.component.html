@@ -1,1 +1,10 @@
-<p>planet-dropdown works!</p>
+<div class="dropdown-component">
+  <label id="planetMoon-dropdown">Planet/moon system:</label>
+  <ng-select
+    [items]="planetMoonSystems"
+    bindLabel="planetName"
+    bindValue="planetId"
+    placeholder="Select planet"
+    [attr.aria-labelledby]="'planetMoon-dropdown'">
+  </ng-select>
+</div>

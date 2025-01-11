@@ -1,1 +1,10 @@
-<p>pvp-status-dropdown works!</p>
+<div class="dropdown-component">
+  <label id="pvpStatus-dropdown">PvP Status:</label>
+  <ng-select
+    [items]="pvpStatuses"
+    bindLabel="pvpStatus"
+    bindValue="pvpStatusId"
+    placeholder="Select pvp status..."
+    [attr.aria-labelledby]="'pvpStatus-dropdown'">
+  </ng-select>
+</div>

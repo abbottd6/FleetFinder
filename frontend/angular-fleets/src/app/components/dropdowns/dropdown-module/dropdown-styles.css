@@ -15,7 +15,6 @@
 .dropdown-component ng-select {
   margin-left: 1.25rem;
   margin-right: auto;
-  width: 13rem;
   transition: font-size 0.3s ease;
 }
 
@@ -28,7 +27,6 @@
 }
 
 :host ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items {
-  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -46,7 +44,7 @@
   color: rgba(255, 131, 7, 0.5) !important;
 }
 
-/* Dropdown placeholder text with value selected, but field not focused */
+ /* Dropdown placeholder text with value selected, but field not focused */
 :host ::ng-deep .ng-select .ng-has-value .ng-placeholder {
   color: rgba(65, 103, 142, 1) !important;
 }
@@ -78,7 +76,7 @@
   transition: color 0.75s ease;
 }
 
-/* Dropdown arrow field focused on hover*/
+/* Dropdown arrow field focused on hover */
 :host ::ng-deep .ng-select.ng-select-single.ng-select:hover .ng-arrow {
   color: rgba(255, 131, 7, 0.5);
 }
@@ -88,7 +86,7 @@
   color: rgba(255, 131, 7, 0.5);
 }
 
-/* Dropdown arrow post-selection*/
+/* Dropdown arrow post-selection */
 :host ::ng-deep .ng-select.ng-select-single .ng-has-value .ng-arrow {
   color: rgba(65, 103, 142, 1);
 }
