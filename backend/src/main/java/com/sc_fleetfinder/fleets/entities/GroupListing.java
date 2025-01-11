@@ -119,10 +119,9 @@ public class GroupListing {
     @Column(name="available_roles")
     private String availableRoles;
 
-    @Enumerated(EnumType.STRING)
     @Column(name="comms_options")
     @NotNull(message = "GroupListing entity field 'commsOptions' cannot be null")
-    private CommsOption commsOption;
+    private String commsOption;
 
     @Column(name="comms_service")
     private String commsService;
