@@ -1,9 +1,10 @@
-<div class="dropdown-component">
+<div class="dropdown-component" [formGroup]="parentForm">
   <label id="category-dropdown">Gameplay Category:</label>
   <ng-select
     [items]="categories"
     bindLabel="gameplayCategoryName"
     bindValue="gameplayCategoryId"
+    formControlName="category"
     placeholder="Select category..."
     [attr.aria-labelledby]="'category-dropdown'">
   </ng-select>

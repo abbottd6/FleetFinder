@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/lookup.service";
 import {catchError, of} from "rxjs";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-category-dropdown',
@@ -10,6 +11,7 @@ import {catchError, of} from "rxjs";
   styleUrl: './category-dropdown.component.css'
 })
 export class CategoryDropdownComponent implements OnInit{
+  @Input() parentForm!: FormGroup;
   categories: {gameplayCategoryId: number, gameplayCategoryName: string, gameplaySubcategories:
       {subcategoryId: number, subcategoryName: string, gameplayCategoryName: string}}[] = [];
 

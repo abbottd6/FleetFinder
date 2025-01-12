@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/lookup.service";
 import {catchError, of, pipe} from "rxjs";
+import {FormBuilder, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-playstyle-dropdown',
@@ -9,7 +10,8 @@ import {catchError, of, pipe} from "rxjs";
   templateUrl: './playstyle-dropdown.component.html',
   styleUrl: './playstyle-dropdown.component.css'
 })
-export class PlaystyleDropdownComponent {
+export class PlaystyleDropdownComponent implements OnInit{
+  @Input() parentForm!: FormGroup;
   playStyles: {styleId: number, playStyle: string}[] = [];
 
   constructor(private lookupService: LookupService) {}

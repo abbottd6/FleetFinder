@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/lookup.service";
 import {catchError, of} from "rxjs";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-system-dropdown',
@@ -10,6 +11,7 @@ import {catchError, of} from "rxjs";
   styleUrl: './system-dropdown.component.css'
 })
 export class SystemDropdownComponent implements OnInit{
+  @Input() parentForm!: FormGroup;
   systems: {systemId: number, systemName: string, planetMoonSystems:
       {planetId: number, planetName: string, systemName: string}}[] = [];
 

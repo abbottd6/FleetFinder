@@ -29,8 +29,8 @@ export class CreateListingComponent  implements OnInit {
         playStyle: [null],
         category: [null, [Validators.required]],
         subcategory: [null],
-        pvpStatus: [null, [Validators.required]],
         legality: [null, [Validators.required]],
+        pvpStatus: [null, [Validators.required]],
         planetarySystem: [null, [Validators.required]],
         planetMoon: [null],
         listingDescription: [null, [Validators.required]],
@@ -46,4 +46,23 @@ export class CreateListingComponent  implements OnInit {
       })
     })
   }
+
+  //Getters for passing FormGroups to children
+
+  get titleGroup(): FormGroup {
+    return this.listingFormGroup.get('titleGroup') as FormGroup;
+  }
+
+  get sessionEnvInfoGroup(): FormGroup {
+    return this.listingFormGroup.get('sessionEnvInfoGroup') as FormGroup;
+  }
+
+  get gameplayInfoGroup(): FormGroup {
+    return this.listingFormGroup.get('gameplayInfoGroup') as FormGroup;
+  }
+
+  get groupSpecInfoGroup(): FormGroup {
+    return this.listingFormGroup.get('groupSpecInfoGroup') as FormGroup;
+  }
+
 }

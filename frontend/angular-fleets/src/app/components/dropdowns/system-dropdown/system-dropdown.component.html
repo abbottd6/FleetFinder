@@ -1,9 +1,10 @@
-<div class="dropdown-component">
+<div class="dropdown-component" [formGroup]="parentForm">
   <label id="system-dropdown">Star System:</label>
   <ng-select
     [items]="systems"
     bindLabel="systemName"
     bindValue="systemId"
+    formControlName="planetarySystem"
     placeholder="Select star system..."
     [attr.aria-labelledby]="'system-dropdown'">
   </ng-select>

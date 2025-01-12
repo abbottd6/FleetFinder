@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/lookup.service";
 import {catchError, of} from "rxjs";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-group-status-dropdown',
@@ -10,6 +11,7 @@ import {catchError, of} from "rxjs";
   styleUrl: './group-status-dropdown.component.css'
 })
 export class GroupStatusDropdownComponent implements OnInit{
+  @Input() parentForm!: FormGroup;
   groupStatuses: {groupStatusId: number, groupStatus: string}[] = [];
 
   constructor(private lookupService: LookupService) {}

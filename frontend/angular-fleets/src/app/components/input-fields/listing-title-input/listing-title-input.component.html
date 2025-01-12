@@ -1,0 +1,13 @@
+<div  class="listing-title-input">
+    <mat-form-field [formGroup]="parentForm">
+      <mat-label>Listing Title</mat-label>
+      <input
+        matInput
+        formControlName="listingTitle"
+        (input)="updateCharacterCount()"
+        maxlength="65"
+        placeholder="Enter listing title..."
+        [attr.aria-labelledby]="'listing-title'">
+      <mat-hint align="start">{{ characterCount }}/65</mat-hint>
+    </mat-form-field>
+</div>

@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/lookup.service";
 import {catchError, of} from "rxjs";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-experience-dropdown',
@@ -10,6 +11,7 @@ import {catchError, of} from "rxjs";
   styleUrl: './experience-dropdown.component.css'
 })
 export class ExperienceDropdownComponent implements OnInit{
+  @Input() parentForm!: FormGroup;
   experiences: {experienceId: number, experienceType: string}[] = [];
 
   constructor(private lookupService: LookupService) {}

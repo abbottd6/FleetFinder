@@ -1,9 +1,10 @@
-<div class="dropdown-component">
+<div class="dropdown-component" [formGroup]="parentForm">
   <label id="pvpStatus-dropdown">PvP Status:</label>
   <ng-select
     [items]="pvpStatuses"
     bindLabel="pvpStatus"
     bindValue="pvpStatusId"
+    formControlName="pvpStatus"
     placeholder="Select pvp status..."
     [attr.aria-labelledby]="'pvpStatus-dropdown'">
   </ng-select>

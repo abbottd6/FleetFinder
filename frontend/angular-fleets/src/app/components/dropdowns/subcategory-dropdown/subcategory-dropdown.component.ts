@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/lookup.service";
 import {catchError, of} from "rxjs";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-subcategory-dropdown',
@@ -10,6 +11,7 @@ import {catchError, of} from "rxjs";
   styleUrl: './subcategory-dropdown.component.css'
 })
 export class SubcategoryDropdownComponent implements OnInit{
+  @Input() parentForm!: FormGroup;
   subcategories: {subcategoryId: number, subcategoryName: string}[] = [];
 
   constructor(private lookupService: LookupService) { }

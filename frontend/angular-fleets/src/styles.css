@@ -16,4 +16,7 @@
 body {
   background-color: var(--bs-dark);
   font-family: 'Orbitron', sans-serif;
+  margin: 0;
 }
+
+html, body { height: 100%; }
