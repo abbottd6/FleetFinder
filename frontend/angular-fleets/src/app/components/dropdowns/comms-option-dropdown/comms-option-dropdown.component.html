@@ -1,9 +1,10 @@
-<div class="dropdown-component">
+<div class="dropdown-component" [formGroup]="parentForm">
   <label id="commsOption-dropdown">Comms:</label>
   <ng-select
     [items]="commsOptions"
     bindLabel="option"
     bindValue="id"
+    formControlName="commsOption"
     placeholder="Select comms..."
     [attr.aria-labelledby]="'commsOption-dropdown'">
   </ng-select>

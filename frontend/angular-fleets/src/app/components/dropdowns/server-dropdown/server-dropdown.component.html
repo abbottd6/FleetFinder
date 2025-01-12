@@ -1,9 +1,10 @@
-<div class="dropdown-component">
+<div class="dropdown-component" [formGroup]="parentForm">
   <label id="server-dropdown">Server Region:</label>
   <ng-select
     [items]="servers"
     bindLabel="servername"
     bindValue="serverId"
+    formControlName="serverRegion"
     placeholder="Select server..."
     [attr.aria-labelledby]="'server-dropdown'">
   </ng-select>

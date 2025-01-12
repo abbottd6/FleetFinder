@@ -1,0 +1,15 @@
+<div class="listing-available-roles-input">
+  <mat-form-field [formGroup]="parentForm">
+    <mat-label>Available Roles</mat-label>
+    <textarea
+      matInput
+      formControlName="availableRoles"
+      rows="2"
+      maxlength="255"
+      placeholder="Optional: enter available roles"
+      (input)="updateCharacterCount()"
+      [attr.aria-labelledby]="'listing-available-roles-input'">
+    </textarea>
+    <mat-hint align="start">{{ characterCount }} /255</mat-hint>
+  </mat-form-field>
+</div>

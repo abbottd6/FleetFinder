@@ -1,0 +1,15 @@
+<div class="listing-description-input">
+  <mat-form-field [formGroup]="parentForm">
+    <mat-label>Listing Description</mat-label>
+    <textarea
+      matInput
+      formControlName="listingDescription"
+      rows="5"
+      maxlength="500"
+      placeholder="Enter a detailed description"
+      (input)="updateCharacterCount()"
+      [attr.aria-labelledby]="'listing-description-input'">
+    </textarea>
+    <mat-hint align="start">{{ characterCount }}/500</mat-hint>
+  </mat-form-field>
+</div>

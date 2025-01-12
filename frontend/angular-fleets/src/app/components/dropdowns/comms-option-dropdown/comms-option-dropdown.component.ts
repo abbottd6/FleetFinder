@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-comms-option-dropdown',
@@ -8,6 +9,8 @@ import {Component, OnInit} from '@angular/core';
   styleUrl: './comms-option-dropdown.component.css'
 })
 export class CommsOptionDropdownComponent {
+  @Input() parentForm!: FormGroup;
+
   commsOptions: { id: number; option: string }[] = [
     {id: 1, option: 'Required'},
     {id: 2, option: 'Optional'},

@@ -1,9 +1,10 @@
-<div class="dropdown-component">
+<div class="dropdown-component" [formGroup]="parentForm">
   <label id="groupStatuses-dropdown">Group Status:</label>
   <ng-select
     [items]="groupStatuses"
     bindLabel="groupStatus"
     bindValue="groupStatusId"
+    formControlName="groupStatus"
     placeholder="Select status..."
     [attr.aria-labelledby]="'groupStatuses-dropdown'">
   </ng-select>

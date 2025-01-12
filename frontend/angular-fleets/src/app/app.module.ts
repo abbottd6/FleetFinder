@@ -11,8 +11,10 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { NgOptimizedImage } from "@angular/common";
 import { WelcomeScreenComponent } from './components/welcome-screen/welcome-screen.component';
-import {CreateListingModule} from "./components/create-listing/create-listing.module";
-import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import { CreateListingModule } from "./components/create-listing/create-listing.module";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 
 
 @NgModule({
@@ -33,7 +35,8 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
     ReactiveFormsModule,
   ],
   providers: [
-    provideClientHydration(), provideHttpClient(withFetch()), GroupListingService
+    provideClientHydration(), provideHttpClient(withFetch()), GroupListingService, provideAnimationsAsync(),
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}}
   ],
   bootstrap: [AppComponent]
 })

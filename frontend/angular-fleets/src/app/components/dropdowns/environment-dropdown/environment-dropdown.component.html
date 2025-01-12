@@ -1,9 +1,10 @@
-<div class="dropdown-component">
+<div class="dropdown-component" [formGroup]="parentForm">
   <label id="environment-dropdown">Game Environment:</label>
   <ng-select
     [items]="environments"
     bindLabel="environmentType"
     bindValue="environmentId"
+    formControlName="gameEnvironment"
     placeholder="Select environment..."
     [attr.aria-labelledby]="'environment-dropdown'">
   </ng-select>

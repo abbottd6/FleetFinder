@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/lookup.service";
 import {catchError, of} from "rxjs";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-pvp-status-dropdown',
@@ -11,6 +12,7 @@ import {catchError, of} from "rxjs";
 })
 
 export class PvpStatusDropdownComponent implements OnInit{
+  @Input() parentForm!: FormGroup;
   pvpStatuses: {pvpStatusId: number, pvpStatus: string}[] = [];
 
   constructor(private lookupService: LookupService) { }

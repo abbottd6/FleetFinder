@@ -6,16 +6,19 @@
 
       <!-- titleGroup -->
       <div formGroupName="titleGroup">
-
+        <h4 class="form-group-heading1">Listing Title</h4>
+        <div class="form-row">
+          <app-listing-title-input [parentForm]="titleGroup"></app-listing-title-input>
+        </div>
       </div>
 
       <!-- sessionEnvInfoGroup -->
       <div formGroupName="sessionEnvInfoGroup">
-        <h4 class="form-group-heading1">Game Environment</h4>
+        <h4 class="form-group-heading2">Game Environment</h4>
         <div class="form-row">
-          <app-server-dropdown></app-server-dropdown>
-          <app-environment-dropdown></app-environment-dropdown>
-          <app-experience-dropdown></app-experience-dropdown>
+          <app-server-dropdown [parentForm]="sessionEnvInfoGroup"></app-server-dropdown>
+          <app-environment-dropdown [parentForm]="sessionEnvInfoGroup"></app-environment-dropdown>
+          <app-experience-dropdown [parentForm]="sessionEnvInfoGroup"></app-experience-dropdown>
         </div>
       </div>
 
@@ -23,17 +26,20 @@
       <div formGroupName="gameplayInfoGroup">
         <h4 class="form-group-heading2">Gameplay Details</h4>
         <div class="form-row">
-          <app-playstyle-dropdown></app-playstyle-dropdown>
-          <app-category-dropdown></app-category-dropdown>
-          <app-subcategory-dropdown></app-subcategory-dropdown>
+          <app-playstyle-dropdown [parentForm]="gameplayInfoGroup"></app-playstyle-dropdown>
+          <app-category-dropdown [parentForm]="gameplayInfoGroup"></app-category-dropdown>
+          <app-subcategory-dropdown [parentForm]="gameplayInfoGroup"></app-subcategory-dropdown>
         </div>
         <div class="form-row">
-          <app-legality-dropdown></app-legality-dropdown>
-          <app-pvp-status-dropdown></app-pvp-status-dropdown>
+          <app-legality-dropdown [parentForm]="gameplayInfoGroup"></app-legality-dropdown>
+          <app-pvp-status-dropdown [parentForm]="gameplayInfoGroup"></app-pvp-status-dropdown>
         </div>
         <div class="form-row">
-          <app-system-dropdown></app-system-dropdown>
-          <app-planet-dropdown></app-planet-dropdown>
+          <app-system-dropdown [parentForm]="gameplayInfoGroup"></app-system-dropdown>
+          <app-planet-dropdown [parentForm]="gameplayInfoGroup"></app-planet-dropdown>
+        </div>
+        <div class="form-row">
+          <app-listing-description-input [parentForm]="gameplayInfoGroup"></app-listing-description-input>
         </div>
       </div>
 
@@ -41,10 +47,13 @@
       <div formGroupName="groupSpecInfoGroup">
         <h4 class="form-group-heading2">Group Specs</h4>
         <div class="form-row">
-          <app-group-status-dropdown></app-group-status-dropdown>
+          <app-group-status-dropdown [parentForm]="groupSpecInfoGroup"></app-group-status-dropdown>
         </div>
         <div class="form-row">
-          <app-comms-option-dropdown></app-comms-option-dropdown>
+          <app-available-roles-input [parentForm]="groupSpecInfoGroup"></app-available-roles-input>
+        </div>
+        <div class="form-row">
+          <app-comms-option-dropdown [parentForm]="groupSpecInfoGroup"></app-comms-option-dropdown>
         </div>
       </div>
     </form>

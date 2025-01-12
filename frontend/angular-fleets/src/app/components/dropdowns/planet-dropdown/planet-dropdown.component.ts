@@ -1,6 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/lookup.service";
 import {catchError, of} from "rxjs";
+import {FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-planet-dropdown',
@@ -10,7 +11,7 @@ import {catchError, of} from "rxjs";
   styleUrl: './planet-dropdown.component.css'
 })
 export class PlanetDropdownComponent implements OnInit{
-
+  @Input() parentForm!: FormGroup;
   planetMoonSystems: {planetId: number, planetName: string, systemName: string}[] = [];
 
   constructor(private lookupService: LookupService) { }
