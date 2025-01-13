@@ -7,7 +7,7 @@
       <!-- titleGroup -->
       <div formGroupName="titleGroup">
         <h4 class="form-group-heading1">Listing Title</h4>
-        <div class="form-row">
+        <div class="form-title-row">
           <app-listing-title-input [parentForm]="titleGroup"></app-listing-title-input>
         </div>
       </div>
@@ -48,6 +48,7 @@
         <h4 class="form-group-heading2">Group Specs</h4>
         <div class="form-row">
           <app-group-status-dropdown [parentForm]="groupSpecInfoGroup"></app-group-status-dropdown>
+          <app-event-schedule-datepicker-input [eventDateControl]="groupSpecInfoGroup"></app-event-schedule-datepicker-input>
         </div>
         <div class="form-row">
           <app-current-party-size-dropdown [parentForm]="groupSpecInfoGroup"></app-current-party-size-dropdown>

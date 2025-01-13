@@ -45,6 +45,10 @@ app-listing-description-input {
   width: 100%;
 }
 
+app-event-schedule-datepicker-input {
+  padding-left: 3rem;
+}
+
 app-available-roles-input {
   display: block;
   width: 100%;
@@ -56,8 +60,18 @@ app-comms-service-input {
 }
 
 .form-group-heading1 {
-  padding-left: 3rem;
+  padding-left: 23%;
   padding-top: 1rem;
+}
+
+.form-title-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  padding-left: 25%;
+  justify-content: flex-start;
+  width: 100%;
+  align-items: center;
 }
 
 .form-group-heading2 {
@@ -95,3 +109,44 @@ app-comms-service-input {
   width: 15%;
 }
 
+/* datepicker calendar container */
+::ng-deep .mat-datepicker-content {
+  background-color: var(--bs-gray-900) !important;
+  color: var(--stark-blue) !important;
+  border-radius: 1rem !important;
+}
+
+/* datepicker calendar */
+::ng-deep .mat-datepicker-content .mat-calendar {
+  border: 2px solid rgba(255, 131, 7, 0.5);
+  border-radius: 1rem !important;
+}
+
+/* datepicker calendar days */
+::ng-deep .mat-calendar-body-cell-content {
+  background-color: rgba(108, 117, 125, 100) !important;
+  color: rgba(27, 72, 120, 100) !important;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, font-size 0.3s ease;
+}
+
+/* datepicker calendar days NOT disabled hover */
+::ng-deep .mat-calendar-body-cell-content:not(.mat-calendar-body-disabled):hover {
+  border-color: rgba(255, 131, 7, 0.5) !important;
+  box-shadow: 0 0 2px 2px rgba(255, 131, 7, 0.5) !important;
+  font-size: 105%;
+}
+
+/* datepicker year change dropdown arrow */
+::ng-deep .mat-calendar .mat-calendar-arrow {
+  fill: var(--stark-blue) !important;
+}
+
+/* datepicker year dropdown button */
+::ng-deep .mat-mdc-button:not(:disabled) {
+  transition: font-size 0.3s ease;
+}
+
+/* datepicker year dropdown button hover*/
+::ng-deep .mat-mdc-button:not(:disabled):hover {
+  font-size: 105%;
+}

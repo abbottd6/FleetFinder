@@ -35,8 +35,13 @@
 }
 
 /* Dropdown placeholder:hover */
-:host ::ng-deep .ng-select:hover .ng-select-container .ng-value-container .ng-placeholder {
+:host ::ng-deep .ng-select:not(.ng-select-disabled):hover .ng-select-container .ng-value-container .ng-placeholder {
   font-size: 112%;
+}
+
+/* Dropdown placeholder DISABLED */
+:host ::ng-deep .ng-select.ng-select-disabled .ng-select-container .ng-value-container .ng-placeholder {
+  color: rgba(69, 72, 74, 0.5) !important;
 }
 
 /* Dropdown placeholder:focused */
@@ -71,7 +76,7 @@
 }
 
 /* Dropdown arrow pre-selection */
-:host ::ng-deep .ng-select:not(.ng-select-single .ng-value) .ng-arrow {
+:host ::ng-deep .ng-select:not(.ng-select.ng-select-disabled):not(.ng-select-single .ng-value) .ng-arrow {
   color: rgba(255, 131, 7, 0.5);
   transition: color 0.75s ease;
 }

@@ -8,6 +8,11 @@ import {MatError, MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatIconModule} from "@angular/material/icon";
 import {CommsServiceInputComponent} from "../comms-service-input/comms-service-input.component";
+import {MatDatepickerModule} from "@angular/material/datepicker";
+import {MatNativeDateModule} from "@angular/material/core";
+import {
+  EventScheduleDatepickerInputComponent
+} from "../event-schedule-datepicker-input/event-schedule-datepicker-input.component";
 
 @NgModule({
   declarations: [
@@ -15,6 +20,7 @@ import {CommsServiceInputComponent} from "../comms-service-input/comms-service-i
     ListingDescriptionInputComponent,
     AvailableRolesInputComponent,
     CommsServiceInputComponent,
+    EventScheduleDatepickerInputComponent,
   ],
   imports: [
     CommonModule,
@@ -23,13 +29,16 @@ import {CommsServiceInputComponent} from "../comms-service-input/comms-service-i
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatError
+    MatError,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   exports: [
     ListingTitleInputComponent,
     ListingDescriptionInputComponent,
     AvailableRolesInputComponent,
     CommsServiceInputComponent,
+    EventScheduleDatepickerInputComponent,
   ]
 })
 export class InputFieldModule { }
