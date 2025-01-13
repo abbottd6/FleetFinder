@@ -29,4 +29,7 @@ public class PlanetMoonSystem {
     @ManyToOne
     @JoinColumn(name="system_id", nullable = false)
     private PlanetarySystem planetarySystem;
+
+    @Column(name="system_name", nullable = false)
+    private String systemName;
 }
