@@ -8,7 +8,6 @@ import {ExperienceDropdownComponent} from "../experience-dropdown/experience-dro
 import {PlaystyleDropdownComponent} from "../playstyle-dropdown/playstyle-dropdown.component";
 import {LegalityDropdownComponent} from "../legality-dropdown/legality-dropdown.component";
 import {GroupStatusDropdownComponent} from "../group-status-dropdown/group-status-dropdown.component";
-import {EventscheduleDatepickerComponent} from "../eventschedule-datepicker/eventschedule-datepicker.component";
 import {CategoryDropdownComponent} from "../category-dropdown/category-dropdown.component";
 import {SubcategoryDropdownComponent} from "../subcategory-dropdown/subcategory-dropdown.component";
 import {PvpStatusDropdownComponent} from "../pvp-status-dropdown/pvp-status-dropdown.component";
@@ -26,7 +25,6 @@ import {DesiredPartySizeDropdownComponent} from "../desired-party-size-dropdown/
     PlaystyleDropdownComponent,
     LegalityDropdownComponent,
     GroupStatusDropdownComponent,
-    EventscheduleDatepickerComponent,
     CategoryDropdownComponent,
     SubcategoryDropdownComponent,
     SystemDropdownComponent,
@@ -49,7 +47,6 @@ import {DesiredPartySizeDropdownComponent} from "../desired-party-size-dropdown/
     PlaystyleDropdownComponent,
     LegalityDropdownComponent,
     GroupStatusDropdownComponent,
-    EventscheduleDatepickerComponent,
     CategoryDropdownComponent,
     SubcategoryDropdownComponent,
     SystemDropdownComponent,

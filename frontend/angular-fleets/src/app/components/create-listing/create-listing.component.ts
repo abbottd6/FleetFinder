@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DropdownModule} from '../dropdowns/dropdown-module/dropdown.module';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-create-listing',
@@ -32,12 +32,12 @@ export class CreateListingComponent  implements OnInit {
         legality: [null, [Validators.required]],
         pvpStatus: [null, [Validators.required]],
         planetarySystem: [null, [Validators.required]],
-        planetMoon: [null],
+        planetMoon: [{value: null, disabled: true}],
         listingDescription: [null, [Validators.required]],
       }),
       groupSpecInfoGroup: this.formBuilder.group({
         groupStatus: [null, Validators.required],
-        eventScheduleDate: [null],
+        eventScheduleDate: [{value: null, disabled: true}],
         currentPartySize: [null, [Validators.required]],
         desiredPartySize: [null, [Validators.required]],
         availableRoles: [null],
@@ -45,7 +45,28 @@ export class CreateListingComponent  implements OnInit {
         commsService: [null],
       })
     })
+
+    this.groupSpecInfoGroup.get('groupStatus')?.valueChanges.subscribe(value => {
+      if (value == 2) {
+        this.groupSpecInfoGroup.get('eventScheduleDate')?.enable();
+      }
+      else {
+        this.groupSpecInfoGroup.get('eventScheduleDate')?.disable();
+      }
+    })
+/* THIS ENABLE IS NOT WORKING
+    this.gameplayInfoGroup.get('planetarySystem')?.valueChanges.subscribe(value => {
+      console.log('planetarySystem value: ', value);
+      if (value == 1 || value == 2) {
+        this.groupSpecInfoGroup.get('planetMoon')?.enable();
+      }
+      else {
+        this.groupSpecInfoGroup.get('planetMoon')?.disable();
+      }
+    });
+*/
   }
+
 
   //Getters for passing FormGroups to children
 
@@ -65,4 +86,5 @@ export class CreateListingComponent  implements OnInit {
     return this.listingFormGroup.get('groupSpecInfoGroup') as FormGroup;
   }
 
+  protected readonly FormControl = FormControl;
 }

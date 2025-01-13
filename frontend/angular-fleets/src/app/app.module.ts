@@ -19,6 +19,7 @@ import { CommsServiceInputComponent } from './components/input-fields/comms-serv
 import { CurrentPartySizeDropdownComponent } from './components/dropdowns/current-party-size-dropdown/current-party-size-dropdown.component';
 import { DesiredPartySizeDropdownComponent } from './components/dropdowns/desired-party-size-dropdown/desired-party-size-dropdown.component';
 import {NgSelectComponent} from "@ng-select/ng-select";
+import { EventScheduleDatepickerInputComponent } from './components/input-fields/event-schedule-datepicker-input/event-schedule-datepicker-input.component';
 
 
 @NgModule({
