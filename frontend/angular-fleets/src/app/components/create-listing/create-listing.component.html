@@ -50,10 +50,15 @@
           <app-group-status-dropdown [parentForm]="groupSpecInfoGroup"></app-group-status-dropdown>
         </div>
         <div class="form-row">
+          <app-current-party-size-dropdown [parentForm]="groupSpecInfoGroup"></app-current-party-size-dropdown>
+          <app-desired-party-size-dropdown [parentForm]="groupSpecInfoGroup"></app-desired-party-size-dropdown>
+        </div>
+        <div class="form-row">
           <app-available-roles-input [parentForm]="groupSpecInfoGroup"></app-available-roles-input>
         </div>
         <div class="form-row">
           <app-comms-option-dropdown [parentForm]="groupSpecInfoGroup"></app-comms-option-dropdown>
+          <app-comms-service-input [parentForm]="groupSpecInfoGroup"></app-comms-service-input>
         </div>
       </div>
     </form>

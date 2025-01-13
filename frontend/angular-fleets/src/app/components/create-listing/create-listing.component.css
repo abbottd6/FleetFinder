@@ -50,6 +50,11 @@ app-available-roles-input {
   width: 100%;
 }
 
+app-comms-service-input {
+  display: block;
+  width: 80%;
+}
+
 .form-group-heading1 {
   padding-left: 3rem;
   padding-top: 1rem;
@@ -67,6 +72,7 @@ app-available-roles-input {
   padding-left: 3rem;
   justify-content: flex-start;
   width: 100%;
+  align-items: center;
 }
 
 .dropdown-component {

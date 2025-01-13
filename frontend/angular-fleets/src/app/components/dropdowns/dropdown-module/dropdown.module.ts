@@ -15,6 +15,8 @@ import {PvpStatusDropdownComponent} from "../pvp-status-dropdown/pvp-status-drop
 import {SystemDropdownComponent} from "../system-dropdown/system-dropdown.component";
 import {PlanetDropdownComponent} from "../planet-dropdown/planet-dropdown.component";
 import {CommsOptionDropdownComponent} from "../comms-option-dropdown/comms-option-dropdown.component";
+import {CurrentPartySizeDropdownComponent} from "../current-party-size-dropdown/current-party-size-dropdown.component";
+import {DesiredPartySizeDropdownComponent} from "../desired-party-size-dropdown/desired-party-size-dropdown.component";
 
 @NgModule({
   declarations: [
@@ -31,6 +33,8 @@ import {CommsOptionDropdownComponent} from "../comms-option-dropdown/comms-optio
     PlanetDropdownComponent,
     CommsOptionDropdownComponent,
     PvpStatusDropdownComponent,
+    CurrentPartySizeDropdownComponent,
+    DesiredPartySizeDropdownComponent,
   ],
   imports: [
     CommonModule,
@@ -52,6 +56,8 @@ import {CommsOptionDropdownComponent} from "../comms-option-dropdown/comms-optio
     PlanetDropdownComponent,
     CommsOptionDropdownComponent,
     PvpStatusDropdownComponent,
+    CurrentPartySizeDropdownComponent,
+    DesiredPartySizeDropdownComponent,
   ]
 })
 export class DropdownModule { }

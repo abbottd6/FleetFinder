@@ -7,12 +7,14 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatError, MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatIconModule} from "@angular/material/icon";
+import {CommsServiceInputComponent} from "../comms-service-input/comms-service-input.component";
 
 @NgModule({
   declarations: [
     ListingTitleInputComponent,
     ListingDescriptionInputComponent,
     AvailableRolesInputComponent,
+    CommsServiceInputComponent,
   ],
   imports: [
     CommonModule,
@@ -27,6 +29,7 @@ import {MatIconModule} from "@angular/material/icon";
     ListingTitleInputComponent,
     ListingDescriptionInputComponent,
     AvailableRolesInputComponent,
+    CommsServiceInputComponent,
   ]
 })
 export class InputFieldModule { }
