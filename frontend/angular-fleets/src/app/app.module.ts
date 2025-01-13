@@ -15,6 +15,10 @@ import { CreateListingModule } from "./components/create-listing/create-listing.
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
+import { CommsServiceInputComponent } from './components/input-fields/comms-service-input/comms-service-input.component';
+import { CurrentPartySizeDropdownComponent } from './components/dropdowns/current-party-size-dropdown/current-party-size-dropdown.component';
+import { DesiredPartySizeDropdownComponent } from './components/dropdowns/desired-party-size-dropdown/desired-party-size-dropdown.component';
+import {NgSelectComponent} from "@ng-select/ng-select";
 
 
 @NgModule({
@@ -33,11 +37,13 @@ import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
     CreateListingModule,
     FormsModule,
     ReactiveFormsModule,
+    NgSelectComponent,
   ],
   providers: [
     provideClientHydration(), provideHttpClient(withFetch()), GroupListingService, provideAnimationsAsync(),
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}}
   ],
+  exports: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

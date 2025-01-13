@@ -1,0 +1,10 @@
+<div class="dropdown-component" [formGroup]="parentForm">
+  <label id="current-party-size-dropdown">Current Party Size:</label>
+    <ng-select
+      [items]="partySize"
+      formControlName="currentPartySize"
+      placeholder="Select..."
+      [attr.aria-labelledby]="'current-party-size-dropdown'">
+    </ng-select>
+</div>
+
