@@ -9,7 +9,6 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
   standalone: false
 })
 export class CreateListingComponent  implements OnInit {
-
   listingFormGroup: FormGroup = new FormGroup({});
 
   constructor(private formBuilder: FormBuilder) {}
@@ -45,26 +44,6 @@ export class CreateListingComponent  implements OnInit {
         commsService: [null],
       })
     })
-
-    this.groupSpecInfoGroup.get('groupStatus')?.valueChanges.subscribe(value => {
-      if (value == 2) {
-        this.groupSpecInfoGroup.get('eventScheduleDate')?.enable();
-      }
-      else {
-        this.groupSpecInfoGroup.get('eventScheduleDate')?.disable();
-      }
-    })
-/* THIS ENABLE IS NOT WORKING
-    this.gameplayInfoGroup.get('planetarySystem')?.valueChanges.subscribe(value => {
-      console.log('planetarySystem value: ', value);
-      if (value == 1 || value == 2) {
-        this.groupSpecInfoGroup.get('planetMoon')?.enable();
-      }
-      else {
-        this.groupSpecInfoGroup.get('planetMoon')?.disable();
-      }
-    });
-*/
   }
 
 
@@ -85,6 +64,4 @@ export class CreateListingComponent  implements OnInit {
   get groupSpecInfoGroup(): FormGroup {
     return this.listingFormGroup.get('groupSpecInfoGroup') as FormGroup;
   }
-
-  protected readonly FormControl = FormControl;
 }
