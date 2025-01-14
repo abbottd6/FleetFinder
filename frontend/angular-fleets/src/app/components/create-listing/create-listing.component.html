@@ -2,7 +2,7 @@
   <span class="page-title"><h2>Create your group listing</h2></span>
   <div class="header-line"></div>
   <div>
-    <form class="form-body" [formGroup]="listingFormGroup">
+    <form class="form-body" [formGroup]="listingFormGroup" (ngSubmit)="onSubmit()">
 
       <!-- titleGroup -->
       <div formGroupName="titleGroup">
@@ -61,6 +61,10 @@
           <app-comms-option-dropdown [parentForm]="groupSpecInfoGroup"></app-comms-option-dropdown>
           <app-comms-service-input [parentForm]="groupSpecInfoGroup"></app-comms-service-input>
         </div>
+      </div>
+
+      <div class="form-row">
+        <button type="submit" class="submit-button">Create Listing</button>
       </div>
     </form>
   </div>

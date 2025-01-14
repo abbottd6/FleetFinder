@@ -1,7 +1,7 @@
 <div class="dropdown-component" [formGroup]="parentForm">
   <label id="subcategories-dropdown">Subcategory:</label>
   <ng-select
-    [items]="subcategories"
+    [items]="filteredSubcategories"
     bindLabel="subcategoryName"
     bindValue="subcategoryId"
     formControlName="subcategory"
