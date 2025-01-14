@@ -126,27 +126,52 @@ app-comms-service-input {
 ::ng-deep .mat-calendar-body-cell-content {
   background-color: rgba(108, 117, 125, 100) !important;
   color: rgba(27, 72, 120, 100) !important;
-  transition: box-shadow 0.3s ease, border-color 0.3s ease, font-size 0.3s ease;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, font-size 0.3s ease, color 0.4s ease;
 }
 
 /* datepicker calendar days NOT disabled hover */
 ::ng-deep .mat-calendar-body-cell-content:not(.mat-calendar-body-disabled):hover {
+  font-size: 103%;
   border-color: rgba(255, 131, 7, 0.5) !important;
   box-shadow: 0 0 2px 2px rgba(255, 131, 7, 0.5) !important;
-  font-size: 105%;
+  color: rgba(255, 131, 7, 0.5) !important;
 }
 
 /* datepicker year change dropdown arrow */
 ::ng-deep .mat-calendar .mat-calendar-arrow {
+  display: none; /* not displayed, not a button */
   fill: var(--stark-blue) !important;
 }
 
-/* datepicker year dropdown button */
+/* datepicker year dropdown button, making it not a button */
 ::ng-deep .mat-mdc-button:not(:disabled) {
-  transition: font-size 0.3s ease;
+  pointer-events: none;
 }
 
 /* datepicker year dropdown button hover*/
 ::ng-deep .mat-mdc-button:not(:disabled):hover {
   font-size: 105%;
+}
+
+/* disabled/previous dates */
+::ng-deep .mat-calendar-body-cell.disabled-date .mat-calendar-body-cell-content{
+  background-color: rgba(108, 117, 125, 0.5) !important;
+  color: rgba(33, 37, 41, 0.5) !important;
+}
+
+/* disabled/previous dates hover */
+::ng-deep .mat-calendar-body-cell.disabled-date:hover .mat-calendar-body-cell-content {
+  border-color: rgba(27, 72, 120, 100) !important;
+  box-shadow: 0 0 3px 2px rgba(27, 72, 120, 0.75) !important;
+}
+
+::ng-deep .mat-calendar-previous-button,
+::ng-deep .mat-calendar-next-button {
+  transition: filter 0.3s ease;
+}
+
+::ng-deep .mat-calendar-previous-button:hover,
+::ng-deep .mat-calendar-next-button:hover {
+  color: rgba(255, 131, 7, 0.5) !important;
+  filter: drop-shadow(0 0 6px rgba(255, 131, 7, 0.75)) drop-shadow(0 0 12px rgba(255, 131, 7, 0.75)) !important;
 }
