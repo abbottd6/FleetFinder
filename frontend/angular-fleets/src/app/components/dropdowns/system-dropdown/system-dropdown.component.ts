@@ -26,7 +26,7 @@ export class SystemDropdownComponent implements OnInit{
         })
       )
       .subscribe((data) => {this.systems = data;
-      console.log('Planet moon systems dropdown options fetched:', this.systems);
+      console.log('Planetary systems dropdown options fetched:', this.systems);
       });
   }
 }

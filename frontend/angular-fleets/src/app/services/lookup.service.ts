@@ -47,12 +47,12 @@ export class LookupService {
     return this.http.get<any[]>('/api/pvpStatuses');
   }
 
-  //Large scale systems: Stanton, Pyro, etc.
+  //Broader systems: Stanton, Pyro, etc.
   getPlanetarySystems(): Observable<any[]> {
     return this.http.get<any[]>('/api/planetarySystems');
   }
 
-  //Small scale systems: Hurston, Microtech, etc.
+  //Subsystems: Hurston, Microtech, etc.
   getPlanetMoonSystems(): Observable<any[]> {
     return this.http.get<any[]>('/api/planetMoonSystems');
   }

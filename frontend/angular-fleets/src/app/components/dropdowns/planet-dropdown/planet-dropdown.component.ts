@@ -12,14 +12,45 @@ import {FormGroup} from "@angular/forms";
 })
 export class PlanetDropdownComponent implements OnInit{
   @Input() parentForm!: FormGroup;
-  planetMoonSystems: {planetId: number, planetName: string, systemName: string}[] = [];
+  planetMoonSystems: {planetId: number, planetName: string, systemName: number}[] = [];
+  filteredPlanetMoons: {planetId: number, planetName: string, systemName: number}[] = [];
 
   constructor(private lookupService: LookupService) { }
 
   ngOnInit() {
     this.fetchPlanetMoonSystems();
+
+    // Subscribing to planetary system changes to filter planet moons by system
+    this.parentForm.get('planetarySystem')?.valueChanges.subscribe(value => {
+
+      //clearing filtered planet array after value change
+      this.parentForm.get('planetMoon')?.reset();
+      this.parentForm.get('planetName')?.disable();
+      this.filteredPlanetMoons.splice(0, this.filteredPlanetMoons.length);
+
+      //filtering planet moons by selected value of planetarySystem dropdown
+      //shows only planets that correspond to the selected system
+      if (value != null && value.systemName != 'Any' ) {
+        this.filteredPlanetMoons = this.planetMoonSystems.filter(
+          planetMoon => planetMoon.systemName === value.systemName
+        );
+        if (this.filteredPlanetMoons.length > 0) {
+          this.parentForm.get('planetMoon')?.enable();
+        }
+        else {
+          this.parentForm.get('planetMoon')?.reset();
+          this.parentForm.get('planetMoon')?.disable();
+        }
+      }
+      else {
+        this.parentForm.get('planetMoon')?.reset();
+        this.parentForm.get('planetMoon')?.disable();
+      }
+      console.log('Filtered Planet Moons: ', this.filteredPlanetMoons);
+    })
   }
 
+  //Fetching planet moon systems from API
   fetchPlanetMoonSystems(): void {
     this.lookupService.getPlanetMoonSystems()
       .pipe(

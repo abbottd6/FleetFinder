@@ -22,6 +22,7 @@
 :host ::ng-deep .mdc-text-field--outlined.mdc-text-field--disabled .mat-mdc-notch-piece{
   color: rgba(69, 72, 74, 0.5) !important;
 }
+
 /* Calendar button disabled state */
 :host ::ng-deep .mdc-text-field--disabled .mat-mdc-icon-button {
   color: rgba(69, 72, 74, 0.5) !important;
@@ -33,8 +34,14 @@
   font-size: 105% !important;
 }
 
+/* outline DISABLED */
+:host ::ng-deep .mdc-text-field--outlined.mdc-text-field--disabled .mat-mdc-notch-piece {
+  color: rgba(69, 72, 74, 0.5) !important;
+  transition: border-color 0.5s ease !important;
+}
+
 /* outline hover */
-:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mat-mdc-notch-piece {
+:host ::ng-deep .mdc-text-field--outlined:hover .mat-mdc-notch-piece {
   border-color: rgba(255, 131, 7, 0.5) !important;
 }
 
@@ -43,18 +50,9 @@
   transition: color 0.5s ease !important;
 }
 
+/* Input field selected date text */
 :host ::ng-deep .mdc-text-field__input {
   padding-left: 1rem;
-}
-
-:host ::ng-deep .cdk-overlay-container .cdk-overlay-pane .mat-datepicker-content {
-  background-color: #1e1e2f !important; /* Background color */
-  color: #ffffff !important;            /* Text color */
-}
-
-:host ::ng-deep .mat-calendar-body-cell-content {
-  background-color: #2a2a3a !important; /* Calendar cells */
-  color: #ffffff !important;
 }
 
 /* calendar icon hover */
