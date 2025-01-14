@@ -34,7 +34,8 @@ VALUES
     ('Exploration'),
     ('Medical'),
     ('Racing'),
-    ('Event');
+    ('Event'),
+    ('Other');
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.gameplay_subcategory (
 subcategory_id INT NOT NULL AUTO_INCREMENT,
