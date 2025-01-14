@@ -3,9 +3,11 @@
     <mat-label>Select Event Date</mat-label>
     <input matInput
       [matDatepicker]="picker"
+      [min]="minDate"
+      [max]="maxDate"
       formControlName="eventScheduleDate">
     <mat-hint>MM/DD/YYYY</mat-hint>
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker panelClass="custom-datepicker"></mat-datepicker>
+    <mat-datepicker #picker panelClass="custom-datepicker" [dateClass]="disabledDatesClass"></mat-datepicker>
   </mat-form-field>
 </div>
