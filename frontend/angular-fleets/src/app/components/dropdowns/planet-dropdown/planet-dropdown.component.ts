@@ -23,14 +23,14 @@ export class PlanetDropdownComponent implements OnInit{
     // Subscribing to planetary system changes to filter planet moons by system
     this.parentForm.get('planetarySystem')?.valueChanges.subscribe(value => {
 
-      //clearing filtered planet array after value change
+      //clearing filtered planet array after value change and resetting dropdown
       this.parentForm.get('planetMoon')?.reset();
       this.parentForm.get('planetName')?.disable();
       this.filteredPlanetMoons.splice(0, this.filteredPlanetMoons.length);
 
       //filtering planet moons by selected value of planetarySystem dropdown
       //shows only planets that correspond to the selected system
-      if (value != null && value.systemName != 'Any' ) {
+      if (value != null && value.systemName != 'Any') {
         this.filteredPlanetMoons = this.planetMoonSystems.filter(
           planetMoon => planetMoon.systemName === value.systemName
         );

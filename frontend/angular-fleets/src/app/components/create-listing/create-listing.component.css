@@ -165,13 +165,32 @@ app-comms-service-input {
   box-shadow: 0 0 3px 2px rgba(27, 72, 120, 0.75) !important;
 }
 
+/* calendar month pervious/next buttons */
 ::ng-deep .mat-calendar-previous-button,
 ::ng-deep .mat-calendar-next-button {
   transition: filter 0.3s ease;
 }
 
+/* calendar month previous/next buttons hover */
 ::ng-deep .mat-calendar-previous-button:hover,
 ::ng-deep .mat-calendar-next-button:hover {
   color: rgba(255, 131, 7, 0.5) !important;
   filter: drop-shadow(0 0 6px rgba(255, 131, 7, 0.75)) drop-shadow(0 0 12px rgba(255, 131, 7, 0.75)) !important;
+}
+
+.submit-button {
+  border: 2px solid rgba(255, 131, 7, .75);
+  padding: .25rem .75rem .25rem .75rem !important;
+  background-color: rgba(33, 37, 41, .4);
+  color: rgba(255, 131, 7, .75);
+  font-size: 1.2rem;
+  border-radius: .25rem;
+  transition: background-color 0.15s ease;
+  margin: 3rem auto auto 45%;
+}
+
+.submit-button:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
 }

@@ -12,7 +12,7 @@
   color: rgba(33, 37, 41, .75);
 }
 
-/* label transition */
+/* label/placeholder */
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
   padding-left: 1rem;
   transition: color 0.5s ease, font-size 0.5s ease !important;
@@ -23,18 +23,20 @@
   transition: border-color 0.5s ease !important;
 }
 
-/* label hover */
-:host ::ng-deep .mat-mdc-form-field:hover:not(:focus-within) .mat-mdc-floating-label {
+/* label/placeholder hover */
+:host ::ng-deep .mdc-text-field:not(.mdc-text-field--disabled):hover:not(:focus-within) .mat-mdc-floating-label {
   color: rgba(255, 131, 7, 0.5) !important;
   font-size: 105% !important;
 }
 
-/* outline hover */
-:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mat-mdc-notch-piece {
-  border-color: rgba(255, 131, 7, 0.5) !important;
+/* outline DISABLED */
+:host ::ng-deep .mdc-text-field--outlined.mdc-text-field--disabled .mat-mdc-notch-piece {
+  color: rgba(69, 72, 74, 0.5) !important;
+  transition: border-color 0.5s ease !important;
 }
 
-:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):focus-within .mat-mdc-notch-piece {
+/* outline hover */
+:host ::ng-deep .mdc-text-field--outlined:hover .mat-mdc-notch-piece {
   border-color: rgba(255, 131, 7, 0.5) !important;
 }
 
@@ -44,6 +46,8 @@
   caret-color: rgba(255, 131, 7, 0.5) !important;
 }
 
-.mat-mdc-form-field-hint {
-  color: rgba(33, 37, 41, .75);
+/* character counter */
+:host ::ng-deep .mat-mdc-form-field-hint {
+  color: rgba(33, 37, 41, 0.75) !important;
 }
+

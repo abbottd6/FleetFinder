@@ -27,7 +27,7 @@ export class CreateListingComponent  implements OnInit {
       gameplayInfoGroup: this.formBuilder.group({
         playStyle: [null],
         category: [null, [Validators.required]],
-        subcategory: [null],
+        subcategory: [{value: null, disabled: true}],
         legality: [null, [Validators.required]],
         pvpStatus: [null, [Validators.required]],
         planetarySystem: [null, [Validators.required]],
@@ -41,12 +41,17 @@ export class CreateListingComponent  implements OnInit {
         desiredPartySize: [null, [Validators.required]],
         availableRoles: [null],
         commsOption: [null, [Validators.required]],
-        commsService: [null],
+        commsService: [{value: null, disabled: true}],
       })
     })
   }
 
+  onSubmit() {
+    const formData = this.listingFormGroup.value;
 
+    console.log("Handling the submit button");
+    console.log(formData);
+  }
   //Getters for passing FormGroups to children
 
   get titleGroup(): FormGroup {
