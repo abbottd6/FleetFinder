@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 
-import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.services.GroupListingService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
@@ -10,7 +10,6 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,10 +29,10 @@ public class GroupListingsController {
     private GroupListingService groupListingService;
 
     @GetMapping
-    public CollectionModel<EntityModel<GroupListingDto>> getAllGroupListings() {
-        List<GroupListingDto> groupListingDto = groupListingService.getAllGroupListings();
+    public CollectionModel<EntityModel<GroupListingResponseDto>> getAllGroupListings() {
+        List<GroupListingResponseDto> groupListingResponseDto = groupListingService.getAllGroupListings();
 
-        List<EntityModel<GroupListingDto>> groupListingModels = groupListingDto.stream()
+        List<EntityModel<GroupListingResponseDto>> groupListingModels = groupListingResponseDto.stream()
                 .map(groupListing -> EntityModel.of(groupListing,
                         WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupListingsController.class).getAllGroupListings()).withSelfRel()))
                 .toList();
@@ -41,17 +40,17 @@ public class GroupListingsController {
     }
 
     @GetMapping("/{id}")
-    public GroupListingDto getGroupListingById(@PathVariable Long id) {
+    public GroupListingResponseDto getGroupListingById(@PathVariable Long id) {
         return groupListingService.getGroupListingById(id);
     }
 
     @PostMapping
-    public GroupListing createGroupListing(@Valid @RequestBody GroupListingDto groupListingDto) {
+    public GroupListing createGroupListing(@Valid @RequestBody GroupListingResponseDto groupListingDto) {
         return groupListingService.createGroupListing(groupListingDto);
     }
 
     @PutMapping("/{id}")
-    public GroupListing updateGroupListing(@PathVariable Long id,@Valid @RequestBody GroupListingDto groupListingDto) {
+    public GroupListing updateGroupListing(@PathVariable Long id,@Valid @RequestBody GroupListingResponseDto groupListingDto) {
         return groupListingService.updateGroupListing(id, groupListingDto);
     }
 

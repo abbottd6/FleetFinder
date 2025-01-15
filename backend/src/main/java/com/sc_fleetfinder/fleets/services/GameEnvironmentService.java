@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.services;
 
-import com.sc_fleetfinder.fleets.DTO.GameEnvironmentDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 
 import java.util.List;
 

@@ -1,7 +1,5 @@
-package com.sc_fleetfinder.fleets.DTO;
+package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import lombok.Data;
 
 @Data

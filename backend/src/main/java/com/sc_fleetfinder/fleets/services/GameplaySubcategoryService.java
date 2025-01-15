@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.services;
 
-import com.sc_fleetfinder.fleets.DTO.GameplaySubcategoryDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplaySubcategoryDto;
 
 import java.util.List;
 

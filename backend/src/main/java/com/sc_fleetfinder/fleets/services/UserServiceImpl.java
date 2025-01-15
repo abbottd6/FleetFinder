@@ -1,8 +1,9 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
-import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
-import com.sc_fleetfinder.fleets.DTO.UserDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UserRequestDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.UserResponseDto;
 import com.sc_fleetfinder.fleets.entities.User;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -10,6 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.Objects;
@@ -31,29 +33,30 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllUsers() {
+    public List<UserResponseDto> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
                .map(this::convertToDto)
                .collect(Collectors.toList());
     }
 
-
     @Override
-    public User createUser(@Valid UserDto userDto) {
-        Objects.requireNonNull(userDto, "userDto cannot be null");
-            User user = convertToEntity(userDto);
-        return userRepository.save(user);
+    public UserResponseDto createUser(@Valid UserRequestDto userRequestDto) {
+        Objects.requireNonNull(userRequestDto, "userDto cannot be null");
+            User user = convertToEntity(userRequestDto);
+        userRepository.save(user);
+        return convertToDto(user);
     }
 
     @Override
-    public User updateUser(Long id, @Valid UserDto userDto) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User with id " + id + " not found"));
+    public UserResponseDto updateUser(@PathVariable Long id, @Valid UserRequestDto userRequestDto) {
+        User user = userRepository.findById(userRequestDto.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User with id " + userRequestDto.getUserId() + " not found"));
 
-        BeanUtils.copyProperties(userDto, user, "id");
+        BeanUtils.copyProperties(userRequestDto, user, "id");
+        userRepository.save(user);
 
-        return userRepository.save(user);
+        return convertToDto(user);
     }
 
     @Override
@@ -63,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto getUserById(Long id) {
+    public UserResponseDto getUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
         if (user.isPresent()) {
             return convertToDto(user.get());
@@ -73,19 +76,19 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public UserDto convertToDto(User user) {
-        UserDto userDto = new UserDto();
-
-        Set<GroupListingDto> groupListingDtos = user.getGroupListings().stream()
-                        .map(groupListing -> modelMapper.map(groupListing, GroupListingDto.class))
+    public UserResponseDto convertToDto(User user) {
+        Set<GroupListingResponseDto> groupListingResponseDtos = user.getGroupListings().stream()
+                        .map(groupListing -> modelMapper.map(groupListing, GroupListingResponseDto.class))
                         .collect(Collectors.toSet());
-        userDto.setGroupListingsDto(groupListingDtos);
-        modelMapper.map(user, userDto, "GroupListingDto");
 
-        return userDto;
+        UserResponseDto userResponseDto = modelMapper.map(user, UserResponseDto.class);
+
+        userResponseDto.setGroupListingsDto(groupListingResponseDtos);
+
+        return userResponseDto;
     }
 
-    public User convertToEntity(UserDto userDto) {
-        return modelMapper.map(userDto, User.class);
+    public User convertToEntity(UserRequestDto userRequestDto) {
+        return modelMapper.map(userRequestDto, User.class);
     }
 }

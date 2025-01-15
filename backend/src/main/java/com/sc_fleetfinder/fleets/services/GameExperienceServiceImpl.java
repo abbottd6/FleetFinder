@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.ExperienceRepository;
-import com.sc_fleetfinder.fleets.DTO.GameEnvironmentDto;
-import com.sc_fleetfinder.fleets.DTO.GameExperienceDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

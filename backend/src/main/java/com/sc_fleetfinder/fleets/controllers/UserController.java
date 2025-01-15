@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.UserDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UserRequestDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.UserResponseDto;
 import com.sc_fleetfinder.fleets.services.UserService;
 import com.sc_fleetfinder.fleets.entities.User;
 import jakarta.validation.Valid;
@@ -25,23 +26,23 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public List<UserDto> getUsers() {
+    public List<UserResponseDto> getUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable Long id) {
+    public UserResponseDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @PostMapping
-    public User createUser(@Valid @RequestBody UserDto userDto) {
-        return userService.createUser(userDto);
+    public UserResponseDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+        return userService.createUser(userRequestDto);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto) {
-        return userService.updateUser(id, userDto);
+    public UserResponseDto updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDto userRequestDto) {
+        return userService.updateUser(id, userRequestDto);
     }
 
     @DeleteMapping("/{id}")
