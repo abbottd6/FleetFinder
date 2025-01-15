@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.services;
 
-import com.sc_fleetfinder.fleets.DTO.PvpStatusDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PvpStatusDto;
 
 import java.util.List;
 

@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.ServerRegionDto;
-import com.sc_fleetfinder.fleets.entities.ServerRegion;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ServerRegionDto;
 import com.sc_fleetfinder.fleets.services.ServerRegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

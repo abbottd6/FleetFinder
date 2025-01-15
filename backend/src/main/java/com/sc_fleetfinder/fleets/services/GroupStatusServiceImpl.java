@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupStatusRepository;
-import com.sc_fleetfinder.fleets.DTO.GroupStatusDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
 import com.sc_fleetfinder.fleets.entities.GroupStatus;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

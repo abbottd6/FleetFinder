@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.services;
 
-import com.sc_fleetfinder.fleets.DTO.PlanetarySystemDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetarySystemDto;
 
 import java.util.List;
 

@@ -1,6 +1,5 @@
-package com.sc_fleetfinder.fleets.DTO;
+package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
-import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import lombok.Data;
 
 @Data

@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
-import com.sc_fleetfinder.fleets.DTO.GroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -30,7 +30,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    public List<GroupListingDto> getAllGroupListings() {
+    public List<GroupListingResponseDto> getAllGroupListings() {
         List<GroupListing> groupListings = groupListingRepository.findAll();
         return groupListings.stream()
                 .map(this::convertListingToDto)
@@ -38,15 +38,15 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    public GroupListing createGroupListing(@Valid GroupListingDto groupListingDto) {
-        Objects.requireNonNull(groupListingDto, "GroupListingDto cannot be null");
+    public GroupListing createGroupListing(@Valid GroupListingResponseDto groupListingDto) {
+        Objects.requireNonNull(groupListingDto, "GroupListingResponseDto cannot be null");
 
             GroupListing groupListing = convertToEntity(groupListingDto);
             return groupListingRepository.save(groupListing);
     }
 
     @Override
-    public GroupListing updateGroupListing(Long id,@Valid GroupListingDto groupListingDto) {
+    public GroupListing updateGroupListing(Long id,@Valid GroupListingResponseDto groupListingDto) {
         GroupListing groupListing = groupListingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Group Listing with id " + id + " not found"));
 
@@ -73,7 +73,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    public GroupListingDto getGroupListingById(Long id) {
+    public GroupListingResponseDto getGroupListingById(Long id) {
         Optional<GroupListing> groupListing = groupListingRepository.findById(id);
         if(groupListing.isPresent()) {
             return convertListingToDto(groupListing.get());
@@ -83,11 +83,11 @@ public class GroupListingServiceImpl implements GroupListingService {
         }
     }
 
-    public GroupListingDto convertListingToDto(GroupListing groupListing) {
-        return modelMapper.map(groupListing, GroupListingDto.class);
+    public GroupListingResponseDto convertListingToDto(GroupListing groupListing) {
+        return modelMapper.map(groupListing, GroupListingResponseDto.class);
     }
 
-    public GroupListing convertToEntity(GroupListingDto groupListingDto) {
+    public GroupListing convertToEntity(GroupListingResponseDto groupListingDto) {
         return modelMapper.map(groupListingDto, GroupListing.class);
     }
 }

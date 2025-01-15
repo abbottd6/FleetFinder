@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.PvpStatusRepository;
-import com.sc_fleetfinder.fleets.DTO.PvpStatusDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PvpStatusDto;
 import com.sc_fleetfinder.fleets.entities.PvpStatus;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

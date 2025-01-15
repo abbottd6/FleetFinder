@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.GameplaySubcategoryRepository;
-import com.sc_fleetfinder.fleets.DTO.GameplaySubcategoryDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplaySubcategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

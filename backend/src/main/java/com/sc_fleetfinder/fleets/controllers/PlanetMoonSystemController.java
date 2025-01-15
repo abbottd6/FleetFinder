@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.PlanetMoonSystemDto;
-import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
 import com.sc_fleetfinder.fleets.services.PlanetMoonSystemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

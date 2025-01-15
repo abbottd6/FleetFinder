@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.PlanetMoonSystemRepository;
-import com.sc_fleetfinder.fleets.DTO.PlanetMoonSystemDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
 import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

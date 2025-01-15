@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.ServerRegionRepository;
-import com.sc_fleetfinder.fleets.DTO.ServerRegionDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ServerRegionDto;
 import com.sc_fleetfinder.fleets.entities.ServerRegion;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;

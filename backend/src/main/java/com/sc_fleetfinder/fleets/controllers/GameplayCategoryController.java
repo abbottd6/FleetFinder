@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.GameplayCategoryDto;
-import com.sc_fleetfinder.fleets.entities.GameplayCategory;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.services.GameplayCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

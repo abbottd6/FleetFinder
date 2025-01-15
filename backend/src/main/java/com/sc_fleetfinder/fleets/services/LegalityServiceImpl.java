@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.LegalityRepository;
-import com.sc_fleetfinder.fleets.DTO.LegalityDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
 import com.sc_fleetfinder.fleets.entities.Legality;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
