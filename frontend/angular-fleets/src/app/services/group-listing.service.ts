@@ -15,7 +15,7 @@ export class GroupListingService {
   getGroupListings(): Observable<GroupListing[]> {
     return this.httpClient.get<GetResponse>(this.baseUrl).pipe(
       tap(response => console.log('Raw API Response: ', response)),
-      map(response => response._embedded.groupListingDtoes),
+      map(response => response._embedded.groupListingResponseDtoes),
       tap(groupListings => console.log('Transformed data: ', groupListings)),
     )
   }
@@ -23,7 +23,7 @@ export class GroupListingService {
 
 interface GetResponse {
   _embedded: {
-    groupListingDtoes: GroupListing[];
+    groupListingResponseDtoes: GroupListing[];
   }
 }
 

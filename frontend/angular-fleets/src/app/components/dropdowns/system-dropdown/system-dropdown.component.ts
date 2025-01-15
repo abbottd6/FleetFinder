@@ -12,8 +12,7 @@ import {FormGroup} from "@angular/forms";
 })
 export class SystemDropdownComponent implements OnInit{
   @Input() parentForm!: FormGroup;
-  systems: {systemId: number, systemName: string, planetMoonSystems:
-      {planetId: number, planetName: string, systemName: string}}[] = [];
+  systems: {systemId: number, systemName: string}[] = [];
 
   constructor(private lookupService: LookupService) { }
 
