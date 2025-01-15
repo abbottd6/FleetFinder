@@ -12,8 +12,7 @@ import {FormGroup} from "@angular/forms";
 })
 export class CategoryDropdownComponent implements OnInit{
   @Input() parentForm!: FormGroup;
-  categories: {gameplayCategoryId: number, gameplayCategoryName: string, gameplaySubcategories:
-      {subcategoryId: number, subcategoryName: string, gameplayCategoryName: string}}[] = [];
+  categories: {gameplayCategoryId: number, gameplayCategoryName: string}[] = [];
 
   constructor(private lookupService: LookupService) {}
 
