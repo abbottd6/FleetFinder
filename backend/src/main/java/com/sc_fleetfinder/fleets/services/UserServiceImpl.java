@@ -1,8 +1,9 @@
 package com.sc_fleetfinder.fleets.services;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.UserRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.UserResponseDto;
 import com.sc_fleetfinder.fleets.entities.User;
 import jakarta.validation.Valid;
@@ -41,19 +42,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto createUser(@Valid UserRequestDto userRequestDto) {
-        Objects.requireNonNull(userRequestDto, "userDto cannot be null");
-            User user = convertToEntity(userRequestDto);
+    public UserResponseDto createUser(@Valid CreateUserDto createUserDto) {
+        Objects.requireNonNull(createUserDto, "userDto cannot be null");
+            User user = convertToEntity(createUserDto);
         userRepository.save(user);
         return convertToDto(user);
     }
 
     @Override
-    public UserResponseDto updateUser(@PathVariable Long id, @Valid UserRequestDto userRequestDto) {
-        User user = userRepository.findById(userRequestDto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User with id " + userRequestDto.getUserId() + " not found"));
+    public UserResponseDto updateUser(@PathVariable Long id, @Valid UpdateUserDto updateUserDto) {
+        User user = userRepository.findById(updateUserDto.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User with id " + updateUserDto.getUserId() + " not found"));
 
-        BeanUtils.copyProperties(userRequestDto, user, "id");
+        BeanUtils.copyProperties(updateUserDto, user, "id");
         userRepository.save(user);
 
         return convertToDto(user);
@@ -77,18 +78,21 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserResponseDto convertToDto(User user) {
+
+        //Entity 'User' contains a set of groupListing entities that also need to be converted to the response dto
         Set<GroupListingResponseDto> groupListingResponseDtos = user.getGroupListings().stream()
                         .map(groupListing -> modelMapper.map(groupListing, GroupListingResponseDto.class))
                         .collect(Collectors.toSet());
 
         UserResponseDto userResponseDto = modelMapper.map(user, UserResponseDto.class);
 
+        //Setting the converted groupListingDtos from above as the userResponseDto's set of group listings
         userResponseDto.setGroupListingsDto(groupListingResponseDtos);
 
         return userResponseDto;
     }
 
-    public User convertToEntity(UserRequestDto userRequestDto) {
-        return modelMapper.map(userRequestDto, User.class);
+    public User convertToEntity(CreateUserDto createUserDto) {
+        return modelMapper.map(createUserDto, User.class);
     }
 }

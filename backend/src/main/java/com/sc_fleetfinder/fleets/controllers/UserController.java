@@ -1,9 +1,9 @@
 package com.sc_fleetfinder.fleets.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.UserRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.UserResponseDto;
 import com.sc_fleetfinder.fleets.services.UserService;
-import com.sc_fleetfinder.fleets.entities.User;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -36,13 +36,13 @@ public class UserController {
     }
 
     @PostMapping
-    public UserResponseDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
-        return userService.createUser(userRequestDto);
+    public UserResponseDto createUser(@Valid @RequestBody CreateUserDto createUserDto) {
+        return userService.createUser(createUserDto);
     }
 
     @PutMapping("/{id}")
-    public UserResponseDto updateUser(@PathVariable Long id, @Valid @RequestBody UserRequestDto userRequestDto) {
-        return userService.updateUser(id, userRequestDto);
+    public UserResponseDto updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserDto updateUserDto) {
+        return userService.updateUser(id, updateUserDto);
     }
 
     @DeleteMapping("/{id}")
@@ -50,5 +50,4 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
-
 }

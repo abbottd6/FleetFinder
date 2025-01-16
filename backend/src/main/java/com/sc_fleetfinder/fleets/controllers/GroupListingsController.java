@@ -1,6 +1,8 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.services.GroupListingService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
@@ -45,13 +47,13 @@ public class GroupListingsController {
     }
 
     @PostMapping
-    public GroupListing createGroupListing(@Valid @RequestBody GroupListingResponseDto groupListingDto) {
-        return groupListingService.createGroupListing(groupListingDto);
+    public GroupListing createGroupListing(@Valid @RequestBody CreateGroupListingDto createGroupListingDto) {
+        return groupListingService.createGroupListing(createGroupListingDto);
     }
 
     @PutMapping("/{id}")
-    public GroupListing updateGroupListing(@PathVariable Long id,@Valid @RequestBody GroupListingResponseDto groupListingDto) {
-        return groupListingService.updateGroupListing(id, groupListingDto);
+    public GroupListing updateGroupListing(@PathVariable Long id, @Valid @RequestBody UpdateGroupListingDto updateGroupListingDto) {
+        return groupListingService.updateGroupListing(id, updateGroupListingDto);
     }
 
     @DeleteMapping("/{id}")
