@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO;
 
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.UserRequestDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.UserResponseDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -18,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-public class UserRequestDtoTest {
+public class CreateUserDtoTest {
 
     private Validator validator;
 
@@ -31,7 +30,7 @@ public class UserRequestDtoTest {
     //Testing valid field values
     @Test
     public void testValidRequestUserDto() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
         userDto.setUserId(1L);
         userDto.setUsername("Batman");
         userDto.setPassword("123456789");
@@ -42,7 +41,7 @@ public class UserRequestDtoTest {
         userDto.setAcctCreated(LocalDateTime.now());
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertTrue(violations.isEmpty());
@@ -50,10 +49,10 @@ public class UserRequestDtoTest {
 
     @Test
     public void testInvalidUserDto_null() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertFalse(violations.isEmpty());
@@ -64,7 +63,7 @@ public class UserRequestDtoTest {
 
     @Test
     public void testInvalidUserDto_blankName() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         userDto.setUserId(1L);
         userDto.setUsername("");
@@ -72,7 +71,7 @@ public class UserRequestDtoTest {
         userDto.setEmail("batman@gmail.com");
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertFalse(violations.isEmpty());
@@ -81,7 +80,7 @@ public class UserRequestDtoTest {
 
     @Test
     public void testInvalidUserDto_blankPassword() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         userDto.setUserId(1L);
         userDto.setUsername("Batman");
@@ -89,7 +88,7 @@ public class UserRequestDtoTest {
         userDto.setEmail("batman@gmail.com");
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertFalse(violations.isEmpty());
@@ -98,7 +97,7 @@ public class UserRequestDtoTest {
 
     @Test
     public void testInvalidUserDto_blankEmail() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         userDto.setUserId(1L);
         userDto.setUsername("Batman");
@@ -106,7 +105,7 @@ public class UserRequestDtoTest {
         userDto.setEmail("");
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertFalse(violations.isEmpty());
@@ -115,7 +114,7 @@ public class UserRequestDtoTest {
 
     @Test
     public void testValidUserDto_validEmail() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         userDto.setUserId(1L);
         userDto.setUsername("Batman");
@@ -123,7 +122,7 @@ public class UserRequestDtoTest {
         userDto.setEmail("batman@gmail.com");
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertTrue(violations.isEmpty());
@@ -131,7 +130,7 @@ public class UserRequestDtoTest {
 
     @Test
     public void testInvalidUserDto_invalidEmail() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         userDto.setUserId(1L);
         userDto.setUsername("Batman");
@@ -139,7 +138,7 @@ public class UserRequestDtoTest {
         userDto.setEmail("batman.com");
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertFalse(violations.isEmpty());
@@ -147,7 +146,7 @@ public class UserRequestDtoTest {
 
     @Test
     public void testInvalidUserDto_invalidPasswordMax() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         userDto.setUserId(1L);
         userDto.setUsername("Batman");
@@ -155,7 +154,7 @@ public class UserRequestDtoTest {
         userDto.setEmail("batman@gmail.com");
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertFalse(violations.isEmpty());
@@ -163,7 +162,7 @@ public class UserRequestDtoTest {
 
     @Test
     public void testInvalidUserDto_invalidPasswordMin() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         userDto.setUserId(1L);
         userDto.setUsername("Batman");
@@ -171,7 +170,7 @@ public class UserRequestDtoTest {
         userDto.setEmail("batman@gmail.com");
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertFalse(violations.isEmpty());
@@ -179,7 +178,7 @@ public class UserRequestDtoTest {
 
     @Test
     public void testInvalidUserDto_invalidUserNameMax() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         userDto.setUserId(1L);
         userDto.setUsername("BatmanBigAndStrongAndToughAndBetterThanSpiderMan");
@@ -187,7 +186,7 @@ public class UserRequestDtoTest {
         userDto.setEmail("batman@gmail.com");
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertFalse(violations.isEmpty());
@@ -195,7 +194,7 @@ public class UserRequestDtoTest {
 
     @Test
     public void testInvalidUserDto_idNull() {
-        UserRequestDto userDto = new UserRequestDto();
+        CreateUserDto userDto = new CreateUserDto();
 
         userDto.setUserId(null);
         userDto.setUsername("Batman");
@@ -203,7 +202,7 @@ public class UserRequestDtoTest {
         userDto.setEmail("batman@gmail.com");
 
         //Act
-        Set<ConstraintViolation<UserRequestDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
 
         //Assert
         assertFalse(violations.isEmpty());

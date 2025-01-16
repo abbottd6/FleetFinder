@@ -1,10 +1,7 @@
 package com.sc_fleetfinder.fleets.entities;
 
-import com.sc_fleetfinder.fleets.util.CommsOption;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -75,7 +72,6 @@ public class GroupListing {
     private GroupStatus groupStatus;
 
     @Column(name="event_schedule")
-    @NotNull(message = "GroupListing eventSchedule cannot be null")
     private LocalDateTime eventSchedule;
 
     @ManyToOne
@@ -102,8 +98,8 @@ public class GroupListing {
     private PlanetMoonSystem planetMoonSystem;
 
     @Column(name="listing_description")
-    @NotNull(message = "GroupListing entity field 'listingDescription' cannot be null")
-    @Size(min = 0, max = 500, message = "Listing description cannot be longer than 400 characters")
+    @NotBlank(message = "GroupListing entity field 'listingDescription' cannot be blank")
+    @Size(max = 500, message = "Listing description cannot be longer than 500 characters")
     private String listingDescription;
 
     @Column(name="desired_party_size")

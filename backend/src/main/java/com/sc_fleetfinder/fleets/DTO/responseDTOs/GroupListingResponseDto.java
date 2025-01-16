@@ -40,7 +40,7 @@ public class GroupListingResponseDto {
     @NotNull(message = "GroupListingResponseDto field 'groupStatus' cannot be null")
     private String groupStatus;
 
-    @DateTimeFormat(pattern = "MM/dd/yy HH:mm")
+    @DateTimeFormat(pattern = "MM/dd/yy")
     private LocalDateTime eventSchedule;
 
     @NotNull(message = "GroupListingResponseDto field 'category' cannot be null")
@@ -56,7 +56,7 @@ public class GroupListingResponseDto {
     private String planetMoonSystem;
 
     @NotNull(message = "GroupListingResponseDto field 'listingDescription' cannot be null")
-    @Size(min = 0, max = 500, message = "GroupListingResponseDto field 'listingDescription' cannot exceed 400 characters")
+    @Size(max = 500, message = "GroupListingResponseDto field 'listingDescription' cannot exceed 400 characters")
     private String listingDescription;
 
     @Min(value = 2, message = "GroupListingResponseDto field 'desiredPartySize' must be at least 2.")
