@@ -4,6 +4,9 @@ import com.sc_fleetfinder.fleets.DAO.EnvironmentRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class GameEnvironmentServiceImpl implements GameEnvironmentService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final EnvironmentRepository environmentRepository;
     private final ModelMapper modelMapper;
 
@@ -24,7 +28,9 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
     }
 
     @Override
+    @Cacheable(value = "environmentsCache", key = "'allEnvironments'")
     public List<GameEnvironmentDto> getAllEnvironments() {
+        log.info("Caching test: getting all game environments");
         List<GameEnvironment> environments = environmentRepository.findAll();
         return environments.stream()
                 .map(this::convertToDto)
