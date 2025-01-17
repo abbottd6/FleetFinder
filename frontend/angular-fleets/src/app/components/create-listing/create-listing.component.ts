@@ -51,6 +51,31 @@ export class CreateListingComponent  implements OnInit {
 
     console.log("Handling the submit button");
     console.log(formData);
+
+    const payload = {
+      userId: 3,
+      listingTitle: formData.titleGroup.listingTitle,
+      serverId: formData.sessionEnvInfoGroup.serverRegion,
+      environmentId: formData.sessionEnvInfoGroup.gameEnvironment,
+      experienceId: formData.sessionEnvInfoGroup.gameExperience,
+      playStyleId: formData.gameplayInfoGroup.playStyle,
+      categoryId: formData.gameplayInfoGroup.category.gameplayCategoryId,
+      subcategoryId: formData.gameplayInfoGroup.subcategory,
+      legalityId: formData.gameplayInfoGroup.legality,
+      pvpStatusId: formData.gameplayInfoGroup.pvpStatus,
+      systemId: formData.gameplayInfoGroup.planetarySystem.systemId,
+      planetId: formData.gameplayInfoGroup.planetMoon,
+      listingDescription: formData.gameplayInfoGroup.listingDescription,
+      groupStatusId: formData.groupSpecInfoGroup.groupStatus,
+      eventScheduleDate: formData.groupSpecInfoGroup.eventScheduleDate,
+      currentPartySize: formData.groupSpecInfoGroup.currentPartySize,
+      desiredPartySize: formData.groupSpecInfoGroup.desiredPartySize,
+      availableRoles: formData.groupSpecInfoGroup.availableRoles,
+      commsOption: formData.groupSpecInfoGroup.commsOption.option,
+      commsService: formData.groupSpecInfoGroup.commsService,
+    };
+
+    console.log(payload);
   }
   //Getters for passing FormGroups to children
 

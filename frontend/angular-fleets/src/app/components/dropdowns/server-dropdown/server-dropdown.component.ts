@@ -11,7 +11,7 @@ import {FormGroup} from "@angular/forms";
 })
 export class ServerDropdownComponent implements OnInit {
   @Input() parentForm!: FormGroup;
-  servers: {id: number, name: string}[] = [];
+  servers: {serverId: number, name: string}[] = [];
 
 
   constructor(private lookupService: LookupService) {}
