@@ -29,16 +29,14 @@ public class CreateUserDtoTest {
 
     //Testing valid field values
     @Test
-    public void testValidRequestUserDto() {
+    public void testValidCreateUserDto() {
         CreateUserDto userDto = new CreateUserDto();
-        userDto.setUserId(1L);
         userDto.setUsername("Batman");
         userDto.setPassword("123456789");
         userDto.setEmail("batman@gmail.com");
         userDto.setServer("AUS");
         userDto.setOrg("Organization");
-        userDto.setAbout("Did you know that my mom and dad were murdered?");
-        userDto.setAcctCreated(LocalDateTime.now());
+        userDto.setAbout("I don't like bats.");
 
         //Act
         Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
@@ -48,7 +46,7 @@ public class CreateUserDtoTest {
     }
 
     @Test
-    public void testInvalidUserDto_null() {
+    public void testInvalidCreateUserDto_null() {
         CreateUserDto userDto = new CreateUserDto();
 
         //Act
@@ -58,14 +56,13 @@ public class CreateUserDtoTest {
         assertFalse(violations.isEmpty());
 
         //number of fields with not null/empty/blank
-        assertEquals(4, violations.size());
+        assertEquals(3, violations.size());
     }
 
     @Test
-    public void testInvalidUserDto_blankName() {
+    public void testInvalidCreateUserDto_blankName() {
         CreateUserDto userDto = new CreateUserDto();
 
-        userDto.setUserId(1L);
         userDto.setUsername("");
         userDto.setPassword("000000000");
         userDto.setEmail("batman@gmail.com");
@@ -75,14 +72,13 @@ public class CreateUserDtoTest {
 
         //Assert
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Username cannot be blank") | violation.getMessage().equals("Username must be between 1 and 32 characters.")));
+        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Create user DTO field 'username' cannot be blank") | violation.getMessage().equals("Username must be between 1 and 32 characters.")));
     }
 
     @Test
-    public void testInvalidUserDto_blankPassword() {
+    public void testInvalidCreateUserDto_blankPassword() {
         CreateUserDto userDto = new CreateUserDto();
 
-        userDto.setUserId(1L);
         userDto.setUsername("Batman");
         userDto.setPassword("");
         userDto.setEmail("batman@gmail.com");
@@ -92,14 +88,13 @@ public class CreateUserDtoTest {
 
         //Assert
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("User password cannot be blank") | violation.getMessage().equals("User password must be between 8 and 32 characters")));
+        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Create user DTO password cannot be blank") | violation.getMessage().equals("User password must be between 8 and 32 characters")));
     }
 
     @Test
-    public void testInvalidUserDto_blankEmail() {
+    public void testInvalidCreateUserDto_blankEmail() {
         CreateUserDto userDto = new CreateUserDto();
 
-        userDto.setUserId(1L);
         userDto.setUsername("Batman");
         userDto.setPassword("123456789");
         userDto.setEmail("");
@@ -109,14 +104,13 @@ public class CreateUserDtoTest {
 
         //Assert
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("User email cannot be blank")));
+        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Create user DTO field 'email' cannot be blank")));
     }
 
     @Test
-    public void testValidUserDto_validEmail() {
+    public void testValidCreateUserDto_validEmail() {
         CreateUserDto userDto = new CreateUserDto();
 
-        userDto.setUserId(1L);
         userDto.setUsername("Batman");
         userDto.setPassword("123456789");
         userDto.setEmail("batman@gmail.com");
@@ -129,10 +123,9 @@ public class CreateUserDtoTest {
     }
 
     @Test
-    public void testInvalidUserDto_invalidEmail() {
+    public void testInvalidCreateUserDto_invalidEmail() {
         CreateUserDto userDto = new CreateUserDto();
 
-        userDto.setUserId(1L);
         userDto.setUsername("Batman");
         userDto.setPassword("123456789");
         userDto.setEmail("batman.com");
@@ -145,10 +138,9 @@ public class CreateUserDtoTest {
     }
 
     @Test
-    public void testInvalidUserDto_invalidPasswordMax() {
+    public void testInvalidCreateUserDto_invalidPasswordMax() {
         CreateUserDto userDto = new CreateUserDto();
 
-        userDto.setUserId(1L);
         userDto.setUsername("Batman");
         userDto.setPassword("123456789000000000000000000000000");
         userDto.setEmail("batman@gmail.com");
@@ -161,10 +153,9 @@ public class CreateUserDtoTest {
     }
 
     @Test
-    public void testInvalidUserDto_invalidPasswordMin() {
+    public void testInvalidCreateUserDto_invalidPasswordMin() {
         CreateUserDto userDto = new CreateUserDto();
 
-        userDto.setUserId(1L);
         userDto.setUsername("Batman");
         userDto.setPassword("1234567");
         userDto.setEmail("batman@gmail.com");
@@ -177,10 +168,9 @@ public class CreateUserDtoTest {
     }
 
     @Test
-    public void testInvalidUserDto_invalidUserNameMax() {
+    public void testInvalidCreateUserDto_invalidUserNameMax() {
         CreateUserDto userDto = new CreateUserDto();
 
-        userDto.setUserId(1L);
         userDto.setUsername("BatmanBigAndStrongAndToughAndBetterThanSpiderMan");
         userDto.setPassword("123456789");
         userDto.setEmail("batman@gmail.com");
@@ -191,21 +181,4 @@ public class CreateUserDtoTest {
         //Assert
         assertFalse(violations.isEmpty());
     }
-
-    @Test
-    public void testInvalidUserDto_idNull() {
-        CreateUserDto userDto = new CreateUserDto();
-
-        userDto.setUserId(null);
-        userDto.setUsername("Batman");
-        userDto.setPassword("123456789");
-        userDto.setEmail("batman@gmail.com");
-
-        //Act
-        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(userDto);
-
-        //Assert
-        assertFalse(violations.isEmpty());
-    }
-
 }

@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,6 +21,7 @@ import java.util.Set;
 @Table(name="planetary_system")
 @Getter
 @Setter
+@Cacheable
 public class PlanetarySystem {
 
     @Id

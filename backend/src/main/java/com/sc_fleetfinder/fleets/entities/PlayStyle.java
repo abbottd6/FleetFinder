@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import lombok.Data;
 @Entity
 @Table(name="play_style")
 @Data
+@Cacheable
 public class PlayStyle {
 
     @Id
