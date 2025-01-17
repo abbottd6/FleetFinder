@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,6 +23,7 @@ import java.util.Set;
 @Table(name="gameplay_category")
 @Getter
 @Setter
+@Cacheable
 public class GameplayCategory {
 
     @Id

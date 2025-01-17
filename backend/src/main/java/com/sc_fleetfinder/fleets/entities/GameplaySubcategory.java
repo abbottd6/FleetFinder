@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ import lombok.Setter;
 @Table(name="gameplay_subcategory")
 @Getter
 @Setter
+@Cacheable
 public class GameplaySubcategory {
 
     @Id

@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +17,7 @@ import lombok.Setter;
 @Table(name="planet_moon_system")
 @Getter
 @Setter
+@Cacheable
 public class PlanetMoonSystem {
 
     @Id
