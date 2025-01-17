@@ -12,12 +12,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Table(name="gameplay_subcategory")
 @Getter
 @Setter
-@Cacheable
 public class GameplaySubcategory {
 
     @Id
@@ -30,5 +31,6 @@ public class GameplaySubcategory {
 
     @ManyToOne
     @JoinColumn(name="category_id", nullable = false)
+    @JsonBackReference
     private GameplayCategory gameplayCategory;
 }

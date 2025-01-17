@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,12 +13,13 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Table(name="planet_moon_system")
 @Getter
 @Setter
-@Cacheable
 public class PlanetMoonSystem {
 
     @Id
@@ -30,5 +32,6 @@ public class PlanetMoonSystem {
 
     @ManyToOne
     @JoinColumn(name="system_id", nullable = false)
+    @JsonBackReference
     private PlanetarySystem planetarySystem;
 }

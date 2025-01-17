@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,12 +30,12 @@ public class GroupListing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_group")
-    @NotNull(message = "GroupListing entity field 'groupId' cannot be null")
     private Long groupId;
 
     @ManyToOne
     @JoinColumn(name="id_user", nullable = false)
     @NotNull(message = "GroupListing entity field 'user' cannot be null")
+    @JsonBackReference
     private User user;
 
     @ManyToOne
@@ -124,7 +125,6 @@ public class GroupListing {
 
     @CreationTimestamp
     @Column(name="creation_timestamp")
-    @NotNull(message = "GroupListing entity field 'creationTimestamp' cannot be null")
     private LocalDateTime creationTimestamp;
 
     @UpdateTimestamp
