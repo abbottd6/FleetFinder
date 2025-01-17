@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.hibernate.sql.Update;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -24,13 +25,16 @@ import java.util.stream.Collectors;
 public class GroupListingServiceImpl implements GroupListingService {
 
     private final GroupListingRepository groupListingRepository;
+    private final ModelMapper createGroupListingModelMapper;
     private final ModelMapper modelMapper;
 
 
-    public GroupListingServiceImpl(GroupListingRepository groupListingRepository, ModelMapper modelMapper) {
+    public GroupListingServiceImpl(GroupListingRepository groupListingRepository, ModelMapper createGroupListingModelMapper) {
         super();
+
+        this.modelMapper = new ModelMapper();
         this.groupListingRepository = groupListingRepository;
-        this.modelMapper = modelMapper;
+        this.createGroupListingModelMapper = createGroupListingModelMapper;
     }
 
     @Override
@@ -45,7 +49,8 @@ public class GroupListingServiceImpl implements GroupListingService {
     public GroupListing createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
         Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
 
-            GroupListing groupListing = convertToEntity(createGroupListingDto);
+            GroupListing groupListing = createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
+
             return groupListingRepository.save(groupListing);
     }
 
