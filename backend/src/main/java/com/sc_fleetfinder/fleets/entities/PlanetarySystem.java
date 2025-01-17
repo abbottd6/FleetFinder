@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,6 +14,8 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,7 +24,6 @@ import java.util.Set;
 @Table(name="planetary_system")
 @Getter
 @Setter
-@Cacheable
 public class PlanetarySystem {
 
     @Id
@@ -33,5 +35,6 @@ public class PlanetarySystem {
     private String systemName;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="planetarySystem", fetch = FetchType.EAGER)
+    @JsonManagedReference
     private Set<PlanetMoonSystem> planetMoonSystems = new HashSet<>();
 }

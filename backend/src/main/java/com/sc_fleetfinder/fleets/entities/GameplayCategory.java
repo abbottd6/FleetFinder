@@ -15,6 +15,8 @@ import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +25,6 @@ import java.util.Set;
 @Table(name="gameplay_category")
 @Getter
 @Setter
-@Cacheable
 public class GameplayCategory {
 
     @Id
@@ -35,5 +36,6 @@ public class GameplayCategory {
     private String categoryName;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="gameplayCategory", fetch = FetchType.EAGER)
+    @JsonManagedReference
     private Set<GameplaySubcategory> gameplaySubcategories = new HashSet<>();
 }

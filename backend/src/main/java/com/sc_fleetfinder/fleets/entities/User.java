@@ -70,5 +70,6 @@ public class User {
     private LocalDateTime acctCreated;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="user", fetch = FetchType.EAGER)
+    @JsonManagedReference
     private Set<GroupListing> groupListings = new HashSet<>();
 }
