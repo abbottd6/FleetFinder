@@ -1,138 +1,162 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<config xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
-        xmlns='http://www.ehcache.org/v3'
+<config xmlns='http://www.ehcache.org/v3'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
         xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core.xsd">
 
+        <cache alias="environmentsCache">
+            <key-type>java.lang.String</key-type>
+            <value-type>java.util.List</value-type>
+            <expiry>
+                <ttl>3600</ttl>
+            </expiry>
+            <resources>
+                <heap unit="entries">100</heap>
+                <offheap unit="MB">30</offheap>
+            </resources>
+        </cache>
 
-    <!-- Cache for game environment entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.GameEnvironment">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.GameEnvironment</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
+    <!--
+                <cache alias="com.sc_fleetfinder.fleets.entities.GameExperience">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.GameExperience</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
 
-    <!-- Cache for game experience entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.GameExperience">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.GameExperience</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
 
-    <!-- Cache for gameplay category entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.GameplayCategory">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.GameplayCategory</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
+                <cache alias="com.sc_fleetfinder.fleets.entities.GameplayCategory">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.GameplayCategory</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
 
-    <!-- Cache for gameplay subcategory entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.GameplaySubcategory">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.GameplaySubcategory</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
 
-    <!-- Cache for group status entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.GroupStatus">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.GroupStatus</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
+                <cache alias="com.sc_fleetfinder.fleets.entities.GameplaySubcategory">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.GameplaySubcategory</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
 
-    <!-- Cache for legality entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.Legality">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.Legality</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
 
-    <!-- Cache for planetary system entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.PlanetarySystem">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.PlanetarySystem</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
+                <cache alias="com.sc_fleetfinder.fleets.entities.GroupStatus">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.GroupStatus</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
 
-    <!-- Cache for planet moon system entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.PlanetMoonSystem">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.PlanetMoonSystem</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
 
-    <!-- Cache for play style entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.PlayStyle">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.PlayStyle</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
+                <cache alias="com.sc_fleetfinder.fleets.entities.Legality">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.Legality</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
 
-    <!-- Cache for pvp status entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.PvpStatus">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.PvpStatus</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
 
-    <!-- Cache for server region entity -->
-    <cache alias="com.sc_fleetfinder.fleets.entities.ServerRegion">
-        <key-type>java.lang.int</key-type>
-        <value-type>com.sc_fleetfinder.fleets.entities.ServerRegion</value-type>
-        <expiry>
-            <ttl unit="minutes">60</ttl>
-        </expiry>
-        <resources>
-            <heap unit="entries">100</heap>
-        </resources>
-    </cache>
+                <cache alias="com.sc_fleetfinder.fleets.entities.PlanetarySystem">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.PlanetarySystem</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
+
+
+                <cache alias="com.sc_fleetfinder.fleets.entities.PlanetMoonSystem">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.PlanetMoonSystem</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
+
+
+                <cache alias="com.sc_fleetfinder.fleets.entities.PlayStyle">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.PlayStyle</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
+
+
+                <cache alias="com.sc_fleetfinder.fleets.entities.PvpStatus">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.PvpStatus</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
+
+
+                <cache alias="com.sc_fleetfinder.fleets.entities.ServerRegion">
+                    <key-type>java.lang.Integer</key-type>
+                    <value-type>com.sc_fleetfinder.fleets.entities.ServerRegion</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>100</heap>
+                    </resources>
+                </cache>
+
+
+                <cache alias="default-update-timestamps-region">
+                    <key-type>java.lang.String</key-type>
+                    <value-type>java.lang.Object</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>1000</heap>
+                    </resources>
+                </cache>
+
+
+                <cache alias="default-query-results-region">
+                    <key-type>java.lang.String</key-type>
+                    <value-type>java.lang.Object</value-type>
+                    <expiry>
+                        <ttl unit="minutes">60</ttl>
+                    </expiry>
+                    <resources>
+                        <heap>1000</heap>
+                    </resources>
+                </cache>
+
+                -->
 </config>
