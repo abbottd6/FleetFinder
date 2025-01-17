@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class GameExperienceServiceImpl implements GameExperienceService {
     }
 
     @Override
+    //@Cacheable(value = "experienceCache")
     public List<GameExperienceDto> getAllExperiences() {
         List<GameExperience> experiences = experienceRepository.findAll();
         return experiences.stream()
