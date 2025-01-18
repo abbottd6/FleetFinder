@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
-import {LookupService} from "../../../services/lookup.service";
+import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormGroup} from "@angular/forms";
 

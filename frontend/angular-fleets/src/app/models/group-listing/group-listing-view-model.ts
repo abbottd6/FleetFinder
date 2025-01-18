@@ -1,4 +1,4 @@
-export class GroupListing {
+export class GroupListingViewModel {
 
   constructor(
               public groupId: number,
