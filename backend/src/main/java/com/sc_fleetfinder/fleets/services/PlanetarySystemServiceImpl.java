@@ -4,6 +4,9 @@ import com.sc_fleetfinder.fleets.DAO.PlanetarySystemRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetarySystemDto;
 import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class PlanetarySystemServiceImpl implements PlanetarySystemService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final PlanetarySystemRepository planetarySystemRepository;
     private final ModelMapper modelMapper;
 
@@ -24,7 +28,9 @@ public class PlanetarySystemServiceImpl implements PlanetarySystemService {
     }
 
     @Override
+    @Cacheable(value = "planetarySystemsCache", key = "'allSystemsCache'")
     public List<PlanetarySystemDto> getAllPlanetarySystems() {
+        log.info("Caching test: getting all systems");
         List<PlanetarySystem> planetarySystems = planetarySystemRepository.findAll();
         return planetarySystems.stream()
                 .map(this::convertToDto)

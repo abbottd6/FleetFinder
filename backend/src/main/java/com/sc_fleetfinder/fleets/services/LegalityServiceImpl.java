@@ -4,6 +4,9 @@ import com.sc_fleetfinder.fleets.DAO.LegalityRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
 import com.sc_fleetfinder.fleets.entities.Legality;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class LegalityServiceImpl implements LegalityService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final LegalityRepository legalityRepository;
     private final ModelMapper modelMapper;
 
@@ -24,7 +28,9 @@ public class LegalityServiceImpl implements LegalityService {
     }
 
     @Override
+    @Cacheable(value = "legalitiesCache", key = "'allLegalitiesCache'")
     public List<LegalityDto> getAllLegalities() {
+        log.info("Caching test: getting all legalities");
         List<Legality> legalities = legalityRepository.findAll();
         return legalities.stream()
                 .map(this::convertToDto)

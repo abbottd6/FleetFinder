@@ -28,7 +28,7 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
     }
 
     @Override
-    @Cacheable(value = "environmentsCache", key = "'allEnvironments'")
+    @Cacheable(value = "environmentsCache", key = "'allEnvironmentsCache'")
     public List<GameEnvironmentDto> getAllEnvironments() {
         log.info("Caching test: getting all game environments");
         List<GameEnvironment> environments = environmentRepository.findAll();

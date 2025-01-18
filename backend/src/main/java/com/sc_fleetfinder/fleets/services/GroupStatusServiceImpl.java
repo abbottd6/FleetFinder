@@ -4,6 +4,9 @@ import com.sc_fleetfinder.fleets.DAO.GroupStatusRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
 import com.sc_fleetfinder.fleets.entities.GroupStatus;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class GroupStatusServiceImpl implements GroupStatusService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final GroupStatusRepository groupStatusRepository;
     private final ModelMapper modelMapper;
 
@@ -24,7 +28,9 @@ public class GroupStatusServiceImpl implements GroupStatusService {
     }
 
     @Override
+    @Cacheable(value = "groupStatusesCache", key = "'allGroupstatuses'")
     public List<GroupStatusDto> getAllGroupStatuses() {
+        log.info("Caching test: getting all group statuses");
         List<GroupStatus> groupStatuses = groupStatusRepository.findAll();
         return groupStatuses.stream()
                 .map(this::convertToDto)
