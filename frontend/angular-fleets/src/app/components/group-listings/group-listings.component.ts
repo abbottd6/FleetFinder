@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {GroupListingService} from "../../services/group-listing.service";
-import {GroupListing} from "../../common/group-listing";
+import {GroupListingFetchService} from "../../services/group-listing-services/group-listing-fetch.service";
+import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -10,9 +10,9 @@ import {GroupListing} from "../../common/group-listing";
 })
 export class GroupListingsComponent implements OnInit {
 
-  @Input() public groupListings: GroupListing[] = [];
+  @Input() public groupListings: GroupListingViewModel[] = [];
 
-  constructor(private groupListingService: GroupListingService) {
+  constructor(private groupListingService: GroupListingFetchService) {
   }
 
   ngOnInit(): void {
@@ -21,7 +21,7 @@ export class GroupListingsComponent implements OnInit {
 
   loadGroupListings() {
     this.groupListingService.getGroupListings().subscribe({
-      next: (data: GroupListing[]) => {
+      next: (data: GroupListingViewModel[]) => {
         console.log('Data received in component:', data);
         this.groupListings = data;
       },

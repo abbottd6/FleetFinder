@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {LookupService} from "../../../services/lookup.service";
+import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of, pipe} from "rxjs";
 import {FormBuilder, FormGroup} from "@angular/forms";
 

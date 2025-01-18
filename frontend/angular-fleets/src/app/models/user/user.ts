@@ -1,4 +1,4 @@
-import { GroupListing } from './group-listing'
+import { GroupListingViewModel } from '../group-listing/group-listing-view-model'
 
 export class User {
 
@@ -9,5 +9,5 @@ export class User {
               public org: string,
               public about: string,
               public acctCreated: Date,
-              public groupListingsDto: GroupListing[]) {}
+              public groupListingsDto: GroupListingViewModel[]) {}
 }

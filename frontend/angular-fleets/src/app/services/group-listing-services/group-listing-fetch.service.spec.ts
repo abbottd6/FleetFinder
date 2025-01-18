@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { GroupListingService } from './group-listing.service';
+import { GroupListingFetchService } from './group-listing-fetch.service';
 
 describe('GroupListingService', () => {
-  let service: GroupListingService;
+  let service: GroupListingFetchService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(GroupListingService);
+    service = TestBed.inject(GroupListingFetchService);
   });
 
   it('should be created', () => {

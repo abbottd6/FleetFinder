@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map, Observable, tap} from "rxjs";
-import {GroupListing} from "../common/group-listing";
+import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 
 @Injectable({
   providedIn: 'root'
 })
-export class GroupListingService {
+export class GroupListingFetchService {
 
   private baseUrl = '/api/groupListings';
 
   constructor(private httpClient: HttpClient) { }
 
-  getGroupListings(): Observable<GroupListing[]> {
+  getGroupListings(): Observable<GroupListingViewModel[]> {
     return this.httpClient.get<GetResponse>(this.baseUrl).pipe(
       tap(response => console.log('Raw API Response: ', response)),
       map(response => response._embedded.groupListingResponseDtoes),
@@ -23,7 +23,7 @@ export class GroupListingService {
 
 interface GetResponse {
   _embedded: {
-    groupListingResponseDtoes: GroupListing[];
+    groupListingResponseDtoes: GroupListingViewModel[];
   }
 }
 

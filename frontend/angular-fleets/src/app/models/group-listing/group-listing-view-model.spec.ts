@@ -1,8 +1,8 @@
-import { GroupListing } from './group-listing';
+import { GroupListingViewModel } from './group-listing-view-model';
 
 describe('GroupListing', () => {
   it('should create an instance', () => {
-    expect(new GroupListing(33, 44, 1, 'USA', 3,
+    expect(new GroupListingViewModel(33, 44, 1, 'USA', 3,
       'Tech Preview', 1, 'Persistent Universe',
       'Test listing title', 'Angular Test User', 3, 'Learning', 2,
       'Unlawful', 2,'Future/Scheduled', new Date('2025-01-15'),
