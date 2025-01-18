@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {DropdownModule} from '../dropdowns/dropdown-module/dropdown.module';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {CreateListingRequest} from "../../models/group-listing/create-listing-request";
 
 @Component({
   selector: 'app-create-listing',
@@ -47,38 +48,13 @@ export class CreateListingComponent  implements OnInit {
   }
 
   onSubmit() {
-    const formData = this.listingFormGroup.value;
-
-    console.log("Handling the submit button");
-    console.log(formData);
-
-    const payload = {
-      userId: 3,
-      listingTitle: formData.titleGroup.listingTitle,
-      serverId: formData.sessionEnvInfoGroup.serverRegion,
-      environmentId: formData.sessionEnvInfoGroup.gameEnvironment,
-      experienceId: formData.sessionEnvInfoGroup.gameExperience,
-      playStyleId: formData.gameplayInfoGroup.playStyle,
-      categoryId: formData.gameplayInfoGroup.category.gameplayCategoryId,
-      subcategoryId: formData.gameplayInfoGroup.subcategory,
-      legalityId: formData.gameplayInfoGroup.legality,
-      pvpStatusId: formData.gameplayInfoGroup.pvpStatus,
-      systemId: formData.gameplayInfoGroup.planetarySystem.systemId,
-      planetId: formData.gameplayInfoGroup.planetMoon,
-      listingDescription: formData.gameplayInfoGroup.listingDescription,
-      groupStatusId: formData.groupSpecInfoGroup.groupStatus,
-      eventScheduleDate: formData.groupSpecInfoGroup.eventScheduleDate,
-      currentPartySize: formData.groupSpecInfoGroup.currentPartySize,
-      desiredPartySize: formData.groupSpecInfoGroup.desiredPartySize,
-      availableRoles: formData.groupSpecInfoGroup.availableRoles,
-      commsOption: formData.groupSpecInfoGroup.commsOption.option,
-      commsService: formData.groupSpecInfoGroup.commsService,
-    };
+    const payload = new CreateListingRequest(3, this.listingFormGroup.value);
 
     console.log(payload);
   }
-  //Getters for passing FormGroups to children
 
+
+  //Getters for passing FormGroups to children
   get titleGroup(): FormGroup {
     return this.listingFormGroup.get('titleGroup') as FormGroup;
   }
