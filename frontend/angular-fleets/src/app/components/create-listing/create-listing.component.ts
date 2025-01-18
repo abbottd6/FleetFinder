@@ -2,6 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {DropdownModule} from '../dropdowns/dropdown-module/dropdown.module';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {CreateListingRequest} from "../../models/group-listing/create-listing-request";
+import {CreateListingService} from "../../services/group-listing-services/create-listing.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-create-listing',
@@ -12,7 +14,8 @@ import {CreateListingRequest} from "../../models/group-listing/create-listing-re
 export class CreateListingComponent  implements OnInit {
   listingFormGroup: FormGroup = new FormGroup({});
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder, private createListingService: CreateListingService,
+              private router: Router) {}
 
   ngOnInit() {
 
@@ -48,11 +51,33 @@ export class CreateListingComponent  implements OnInit {
   }
 
   onSubmit() {
-    const payload = new CreateListingRequest(3, this.listingFormGroup.value);
+    if (this.listingFormGroup.invalid) {
+      this.listingFormGroup.markAllAsTouched();
+      return;
+    }
 
-    console.log(payload);
+    const newListingData = new CreateListingRequest(3, this.listingFormGroup.value);
+
+    console.log(newListingData);
+
+    this.createListingService.createListing(newListingData).subscribe({
+        next: response => {
+          alert(`Your group listing was successful. ${response.createGroupListingDto}`);
+
+          this.resetAndRedirect();
+        },
+        error: err => {
+          alert(`There was an error creating your listing: ${err.message}`);
+        }
+      }
+    )
   }
 
+  private resetAndRedirect() {
+    this.listingFormGroup.reset();
+
+    this.router.navigateByUrl("/group-listings")
+  }
 
   //Getters for passing FormGroups to children
   get titleGroup(): FormGroup {

@@ -47,7 +47,7 @@ public class GroupListingsController {
         return groupListingService.getGroupListingById(id);
     }
 
-    @PostMapping
+    @PostMapping("/create_listing")
     public GroupListing createGroupListing(@Valid @RequestBody CreateGroupListingDto createGroupListingDto) {
         return groupListingService.createGroupListing(createGroupListingDto);
     }
