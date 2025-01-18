@@ -67,6 +67,8 @@ public class MapperLookupService {
         this.userRepository = userRepository;
     }
 
+    //Make these cacheable??
+
     public User findUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User", id));

@@ -4,6 +4,9 @@ import com.sc_fleetfinder.fleets.DAO.GameplayCategoryRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class GameplayCategoryServiceImpl implements GameplayCategoryService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final GameplayCategoryRepository gameplayCategoryRepository;
     private final ModelMapper modelMapper;
 
@@ -24,7 +28,9 @@ public class GameplayCategoryServiceImpl implements GameplayCategoryService {
     }
 
     @Override
+    @Cacheable(value = "categoryCache", key= "'allCategoriesCache'")
     public List<GameplayCategoryDto> getAllCategories() {
+        log.info("Caching test: getting all gameplay categories");
         List<GameplayCategory> categories = gameplayCategoryRepository.findAll();
         return categories.stream()
                 .map(this::convertToDto)

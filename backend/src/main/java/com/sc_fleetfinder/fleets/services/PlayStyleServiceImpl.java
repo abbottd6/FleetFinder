@@ -4,6 +4,9 @@ import com.sc_fleetfinder.fleets.DAO.PlayStyleRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlayStyleDto;
 import com.sc_fleetfinder.fleets.entities.PlayStyle;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class PlayStyleServiceImpl implements PlayStyleService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final PlayStyleRepository playStyleRepository;
     private final ModelMapper modelMapper;
 
@@ -24,7 +28,9 @@ public class PlayStyleServiceImpl implements PlayStyleService {
     }
 
     @Override
+    @Cacheable(value = "playStylesCache", key = "'allPlayStyles'")
     public List<PlayStyleDto> getAllPlayStyles() {
+        log.info("Caching test: getting all play styles");
         List<PlayStyle> playStyles = playStyleRepository.findAll();
         return playStyles.stream()
                 .map(this::convertToDto)

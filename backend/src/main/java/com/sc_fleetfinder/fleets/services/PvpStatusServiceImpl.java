@@ -4,6 +4,9 @@ import com.sc_fleetfinder.fleets.DAO.PvpStatusRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PvpStatusDto;
 import com.sc_fleetfinder.fleets.entities.PvpStatus;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 public class PvpStatusServiceImpl implements PvpStatusService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final PvpStatusRepository pvpStatusRepository;
     private final ModelMapper modelMapper;
 
@@ -24,7 +28,9 @@ public class PvpStatusServiceImpl implements PvpStatusService {
     }
 
     @Override
+    @Cacheable(value = "pvpStatusesCache", key = "'allPvpStatuses'")
     public List<PvpStatusDto> getAllPvpStatuses() {
+        log.info("Caching test: getting all pvp statuses");
         List<PvpStatus> pvpStatuses = pvpStatusRepository.findAll();
         return pvpStatuses.stream()
                 .map(this::convertToDto)

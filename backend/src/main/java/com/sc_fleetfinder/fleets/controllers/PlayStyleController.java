@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlayStyleDto;
 import com.sc_fleetfinder.fleets.services.PlayStyleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ public class PlayStyleController {
     }
 
     @GetMapping("/{id}")
-    public PlayStyleDto getPlayStyleById(@RequestParam int id) {
+    public PlayStyleDto getPlayStyleById(@PathVariable int id) {
         return playStyleService.getPlayStyleById(id);
     }
 }
