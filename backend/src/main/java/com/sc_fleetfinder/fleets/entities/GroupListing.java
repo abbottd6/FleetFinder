@@ -20,6 +20,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
@@ -76,7 +77,7 @@ public class GroupListing {
 
     @Column(name="event_schedule")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private ZonedDateTime eventSchedule;
+    private Instant eventSchedule;
 
     @ManyToOne
     @JoinColumn(name="category_id")
