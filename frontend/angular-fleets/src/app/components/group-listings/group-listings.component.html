@@ -80,7 +80,10 @@
                   <span class="modal-listing-fieldL">Server Region:</span><span class="modal-listing-ml">{{tempListing.server}}</span>
                   <span class="modal-listing-fieldR">Group Status:</span><span class="modal-listing-mr">{{tempListing.groupStatus}}</span>
                 </div>
-              </div>
+                <div *ngIf="tempListing?.groupStatus === 'Future/Scheduled' && tempListing?.eventSchedule as eventSchedule" class="modal-listing-row">
+                    <span class="modal-listing-fieldR">Event Scheduled: </span>
+                    <span class="modal-listing-mr">{{ eventSchedule | date: 'MMM d, h:mm a' }}</span>
+                </div>
               <div class="modal-listing-sub-body">
                 <div class="modal-listing-row">
                   <span class="modal-listing-fieldL">Environment:</span><span class="modal-listing-ml">{{tempListing.environment}}</span>

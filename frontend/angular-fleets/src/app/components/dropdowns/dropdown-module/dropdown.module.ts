@@ -16,6 +16,9 @@ import {PlanetDropdownComponent} from "../planet-dropdown/planet-dropdown.compon
 import {CommsOptionDropdownComponent} from "../comms-option-dropdown/comms-option-dropdown.component";
 import {CurrentPartySizeDropdownComponent} from "../current-party-size-dropdown/current-party-size-dropdown.component";
 import {DesiredPartySizeDropdownComponent} from "../desired-party-size-dropdown/desired-party-size-dropdown.component";
+import {ScheduleTimeDropdownComponent} from "../schedule-time-dropdown/schedule-time-dropdown.component";
+import {ScheduleTimeZoneDropdownComponent} from "../schedule-time-zone-dropdown/schedule-time-zone-dropdown.component";
+import {MatHint} from "@angular/material/form-field";
 
 @NgModule({
   declarations: [
@@ -33,12 +36,15 @@ import {DesiredPartySizeDropdownComponent} from "../desired-party-size-dropdown/
     PvpStatusDropdownComponent,
     CurrentPartySizeDropdownComponent,
     DesiredPartySizeDropdownComponent,
+    ScheduleTimeDropdownComponent,
+    ScheduleTimeZoneDropdownComponent,
   ],
   imports: [
     CommonModule,
     NgSelectModule,
     FormsModule,
     ReactiveFormsModule,
+    MatHint,
   ],
   exports: [
     ServerDropdownComponent,
@@ -55,6 +61,8 @@ import {DesiredPartySizeDropdownComponent} from "../desired-party-size-dropdown/
     PvpStatusDropdownComponent,
     CurrentPartySizeDropdownComponent,
     DesiredPartySizeDropdownComponent,
+    ScheduleTimeDropdownComponent,
+    ScheduleTimeZoneDropdownComponent,
   ]
 })
 export class DropdownModule { }
