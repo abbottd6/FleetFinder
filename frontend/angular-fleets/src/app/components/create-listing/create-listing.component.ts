@@ -64,7 +64,8 @@ export class CreateListingComponent  implements OnInit {
 
     this.createListingService.createListing(newListingData).subscribe({
         next: response => {
-          alert(`Your group listing was successful. ${response.createGroupListingDto}`);
+          console.log(response.listingTitle)
+          alert(`Your creation of group listing, ${response.listingTitle} was successful!`);
 
           this.resetAndRedirect();
         },

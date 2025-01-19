@@ -26,8 +26,8 @@
       <td>{{ tempListing.userName}}</td>
       <!-- COlUMN 2 -->
       <!-- Cut title length if >50 chars -->
-      <td>{{ tempListing.listingTitle.length > 50 ? (tempListing.listingTitle|
-        slice:0:45) + '...' : tempListing.listingTitle}}</td>
+      <td>{{ tempListing.listingTitle.length > 45 ? (tempListing.listingTitle|
+        slice:0:42) + '...' : tempListing.listingTitle}}</td>
       <!-- COlUMN 3 -->
       <td> {{ tempListing.groupStatus}}</td>
       <!-- COlUMN 4 -->
@@ -49,8 +49,8 @@
       <td>{{ tempListing.system}}</td>
       <!-- COlUMN 7 -->
       <!-- Cut available roles if >50 chars -->
-      <td>{{ tempListing.availableRoles.length > 50 ? (tempListing.availableRoles|
-        slice:  0: 20) + '...' : tempListing.availableRoles}}</td>
+      <td>{{ tempListing.availableRoles.length > 20 ? (tempListing.availableRoles|
+        slice:  0: 17) + '...' : tempListing.availableRoles}}</td>
       <!-- COlUMN 8 -->
       <td>{{ tempListing.lastUpdated | date:'MMM d, h:mm a'}}</td>
     </tr>
