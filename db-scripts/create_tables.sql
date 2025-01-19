@@ -4,7 +4,7 @@ CREATE DATABASE sc_fleetfinder;
 USE sc_fleetfinder;
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.`user` (
-id_user BIGINT(20) NOT NULL AUTO_INCREMENT,
+id_user BIGINT NOT NULL AUTO_INCREMENT,
 user_name VARCHAR(32) NOT NULL,
 user_password VARCHAR(32) NOT NULL,
 email VARCHAR(45) NOT NULL,
@@ -124,7 +124,8 @@ VALUES
     ('Bloom: Pyro III', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
     ('Pyro IV', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
     ('Pyro V', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
-    ('Terminus: Pyro VI', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro'));
+    ('Terminus: Pyro VI', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
+    ('Other - Pyro', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro'));
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.server_region (
 server_id INT NOT NULL AUTO_INCREMENT,
@@ -169,7 +170,7 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.play_style (
 style_id INT NOT NULL AUTO_INCREMENT,
-play_style VARCHAR(12),
+play_style VARCHAR(17),
 PRIMARY KEY(style_id)
 );
 
@@ -177,10 +178,16 @@ PRIMARY KEY(style_id)
 INSERT INTO play_style (play_style)
 VALUES
 	('Casual'),
+    ('Profit'),
+    ('Progression'),
     ('Competitive'),
-    ('Learning'),
+    ('Skill Development'),
     ('Social'),
-    ('For Hire');
+    ('Roleplay'),
+    ('For Hire'),
+    ('LF Service'),
+    ('Feature Testing'),
+    ('Other');
 
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.group_status (
 group_status_id INT NOT NULL AUTO_INCREMENT,
