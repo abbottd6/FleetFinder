@@ -15,7 +15,11 @@ export class CreateListingRequest {
       planetId: formData.gameplayInfoGroup.planetMoon,
       listingDescription: formData.gameplayInfoGroup.listingDescription,
       groupStatusId: formData.groupSpecInfoGroup.groupStatus,
-      eventScheduleDate: formData.groupSpecInfoGroup.eventScheduleDate,
+
+      //formatting event schedule data to ISO
+      eventSchedule: formData.groupSpecInfoGroup.eventScheduleDate ?
+        new Date(formData.groupSpecInfoGroup.eventScheduleDate).toISOString() : null,
+
       currentPartySize: formData.groupSpecInfoGroup.currentPartySize,
       desiredPartySize: formData.groupSpecInfoGroup.desiredPartySize,
       availableRoles: formData.groupSpecInfoGroup.availableRoles,

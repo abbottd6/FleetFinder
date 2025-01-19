@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Data
 public class CreateGroupListingDto {
@@ -38,8 +40,8 @@ public class CreateGroupListingDto {
     @NotNull(message = "Create group listing DTO field 'groupStatusId' cannot be null")
     private int groupStatusId;
 
-    @DateTimeFormat(pattern = "MM/dd/yy")
-    private LocalDateTime eventSchedule;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private ZonedDateTime eventSchedule;
 
     @NotNull(message = "Create group listing DTO field 'categoryId' cannot be null")
     private int categoryId;

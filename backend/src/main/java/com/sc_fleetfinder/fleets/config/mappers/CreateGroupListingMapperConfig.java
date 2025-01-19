@@ -16,12 +16,15 @@ import com.sc_fleetfinder.fleets.entities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
 import com.sc_fleetfinder.fleets.entities.User;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.ZonedDateTime;
 
 
 @Configuration
@@ -79,7 +82,13 @@ public class CreateGroupListingMapperConfig {
                         mapper.using((MappingContext<Integer, GroupStatus> ctx) -> mapperLookupService.findGroupStatusById(ctx.getSource()))
                                 .map(CreateGroupListingDto::getGroupStatusId, GroupListing::setGroupStatus);
 
-                        //event schedule mapped automatically due to property name and type match
+                        //eventScheduleDate mapped to eventSchedule
+                        Converter<String, ZonedDateTime> toZonedDateTime = new Converter<String, ZonedDateTime>() {
+                            @Override
+                            public ZonedDateTime convert(MappingContext<String, ZonedDateTime> mappingContext) {
+                                return ZonedDateTime.parse(mappingContext.getSource());
+                            }
+                        };
 
                         //categoryId to category entity
                         mapper.using((MappingContext<Integer, GameplayCategory> ctx) -> mapperLookupService.findCategoryById(ctx.getSource()))
