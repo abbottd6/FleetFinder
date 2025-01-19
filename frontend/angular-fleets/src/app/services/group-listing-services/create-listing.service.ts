@@ -13,7 +13,7 @@ export class CreateListingService {
   constructor(private httpClient: HttpClient) {
   }
 
-  createListing(createListingRequest: CreateListingRequest): Observable<any> {
-    return this.httpClient.post<CreateListingRequest>(this.createListingUrl, createListingRequest)
+  createListing(createListingRequest: CreateListingRequest): Observable<{ listingTitle: string}> {
+    return this.httpClient.post<{ listingTitle: string }>(this.createListingUrl, createListingRequest)
   }
 }

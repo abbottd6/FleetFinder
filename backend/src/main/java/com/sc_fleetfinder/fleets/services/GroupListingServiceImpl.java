@@ -13,11 +13,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -49,12 +53,23 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    public GroupListing createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
+    public ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
         Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
+            try {
+                log.info(String.valueOf("DTO TO CONVERT: " + createGroupListingDto));
 
-            log.info(String.valueOf("DTO TO CONVERT: " + createGroupListingDto));
-            GroupListing groupListing = createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
-            return groupListingRepository.save(groupListing);
+                GroupListing groupListing = createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
+
+                groupListingRepository.save(groupListing);
+
+                Map<String, String> response = new HashMap<>();
+                response.put("listingTitle", groupListing.getListingTitle());
+                return ResponseEntity.status(HttpStatus.CREATED).body(response);
+            }
+            catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("An error occurred while creating the listing.");
+            }
     }
 
     @Override

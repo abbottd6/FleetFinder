@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   background-color: rgba(108, 117, 125, 100);
-  width: 100%;
+  width: 90vw;
   border-top: 4px solid rgba(255, 131, 7, .75);
   border-left: 4px solid rgba(255, 131, 7, .75);
   font-size: 1.1rem;
@@ -10,10 +10,11 @@
   flex-grow: 1;
   min-height: 150px;
   overflow: auto;
-  height: 65vh;
+  height: 74vh;
 }
 
-.table th {
+
+table th {
   position: sticky;
   top: 0;
   background-color: #60646a;

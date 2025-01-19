@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 public interface GroupListingService {
 
     List<GroupListingResponseDto> getAllGroupListings();
-    GroupListing createGroupListing(@Valid CreateGroupListingDto createGroupListingDto);
+    ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto);
     GroupListing updateGroupListing(Long id, @Valid UpdateGroupListingDto updateGroupListingDto);
     void deleteGroupListing(Long id);
     GroupListingResponseDto getGroupListingById(Long id);
