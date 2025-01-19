@@ -8,6 +8,8 @@ import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
 import org.hibernate.sql.Update;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @Validated
 public class GroupListingServiceImpl implements GroupListingService {
 
+    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final GroupListingRepository groupListingRepository;
     private final ModelMapper createGroupListingModelMapper;
     private final ModelMapper modelMapper;
@@ -49,8 +52,8 @@ public class GroupListingServiceImpl implements GroupListingService {
     public GroupListing createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
         Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
 
+            log.info(String.valueOf("DTO TO CONVERT: " + createGroupListingDto));
             GroupListing groupListing = createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
-
             return groupListingRepository.save(groupListing);
     }
 

@@ -18,8 +18,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 @Entity
 @Table(name="group_listing")
@@ -73,7 +75,8 @@ public class GroupListing {
     private GroupStatus groupStatus;
 
     @Column(name="event_schedule")
-    private LocalDateTime eventSchedule;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private ZonedDateTime eventSchedule;
 
     @ManyToOne
     @JoinColumn(name="category_id")
