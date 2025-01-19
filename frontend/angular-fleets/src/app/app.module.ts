@@ -15,11 +15,7 @@ import { CreateListingModule } from "./components/create-listing/create-listing.
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
-import { CommsServiceInputComponent } from './components/input-fields/comms-service-input/comms-service-input.component';
-import { CurrentPartySizeDropdownComponent } from './components/dropdowns/current-party-size-dropdown/current-party-size-dropdown.component';
-import { DesiredPartySizeDropdownComponent } from './components/dropdowns/desired-party-size-dropdown/desired-party-size-dropdown.component';
 import {NgSelectComponent} from "@ng-select/ng-select";
-import { EventScheduleDatepickerInputComponent } from './components/input-fields/event-schedule-datepicker-input/event-schedule-datepicker-input.component';
 
 
 @NgModule({

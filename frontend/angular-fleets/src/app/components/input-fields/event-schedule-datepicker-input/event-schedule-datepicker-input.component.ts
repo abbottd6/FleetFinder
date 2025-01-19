@@ -38,6 +38,6 @@ export class EventScheduleDatepickerInputComponent implements OnInit{
         this.parentForm.get('eventScheduleDate')?.reset();
         this.parentForm.get('eventScheduleDate')?.disable();
       }
-    })
+    });
   }
 }

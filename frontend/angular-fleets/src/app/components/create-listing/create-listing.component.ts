@@ -41,6 +41,8 @@ export class CreateListingComponent  implements OnInit {
       groupSpecInfoGroup: this.formBuilder.group({
         groupStatus: [null, Validators.required],
         eventScheduleDate: [{value: null, disabled: true}],
+        eventScheduleTime: [{value: null, disabled: true}],
+        eventScheduleZone: [{value: null, disabled: true}],
         currentPartySize: [null, [Validators.required]],
         desiredPartySize: [null, [Validators.required]],
         availableRoles: [null],
