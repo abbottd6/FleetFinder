@@ -21,7 +21,7 @@ export class CreateListingComponent  implements OnInit {
 
     this.listingFormGroup = this.formBuilder.group({
       titleGroup: this.formBuilder.group({
-        listingTitle: [null, [Validators.required]],
+        listingTitle: [null, [Validators.required, Validators.minLength(3)]],
       }),
       sessionEnvInfoGroup: this.formBuilder.group({
         serverRegion: [null, Validators.required],
@@ -36,7 +36,7 @@ export class CreateListingComponent  implements OnInit {
         pvpStatus: [null, [Validators.required]],
         planetarySystem: [null, [Validators.required]],
         planetMoon: [{value: null, disabled: true}],
-        listingDescription: [null, [Validators.required]],
+        listingDescription: [null, [Validators.required, Validators.minLength(3)]],
       }),
       groupSpecInfoGroup: this.formBuilder.group({
         groupStatus: [null, Validators.required],
@@ -45,7 +45,7 @@ export class CreateListingComponent  implements OnInit {
         eventScheduleZone: [{value: null, disabled: true}],
         currentPartySize: [null, [Validators.required]],
         desiredPartySize: [null, [Validators.required]],
-        availableRoles: [null],
+        availableRoles: [null, [Validators.minLength(3)]],
         commsOption: [null, [Validators.required]],
         commsService: [{value: null, disabled: true}],
       })
@@ -98,4 +98,30 @@ export class CreateListingComponent  implements OnInit {
   get groupSpecInfoGroup(): FormGroup {
     return this.listingFormGroup.get('groupSpecInfoGroup') as FormGroup;
   }
+
+  //Field getters for form validation
+  get listingTitle() { return this.listingFormGroup.get('titleGroup.listingTitle'); }
+
+  get serverRegion() {return this.listingFormGroup.get('sessionEnvInfoGroup.serverRegion')}
+  get gameEnvironment() { return this.listingFormGroup.get('sessionEnvInfoGroup.gameEnvironment')}
+  get gameExperience() { return this.listingFormGroup.get('sessionEnvInfoGroup.gameExperience')}
+
+  get playStyle() { return this.listingFormGroup.get('gameplayInfoGroup.playStyle')}
+  get category() { return this.listingFormGroup.get('gameplayInfoGroup.category')}
+  get subcategory() { return this.listingFormGroup.get('gameplayInfoGroup.subcategory')}
+  get legality() { return this.listingFormGroup.get('gameplayInfoGroup.legality')}
+  get pvpStatus() { return this.listingFormGroup.get('gameplayInfoGroup.pvpStatus')}
+  get planetarySystem() { return this.listingFormGroup.get('gameplayInfoGroup.planetarySystem')}
+  get listingDescription() { return this.listingFormGroup.get('gameplayInfoGroup.listingDescription')}
+
+  get groupStatus() { return this.listingFormGroup.get('groupSpecInfoGroup.groupStatus')}
+  get eventScheduleDate() { return this.listingFormGroup.get('groupSpecInfoGroup.eventScheduleDate')}
+  get eventScheduleTime() { return this.listingFormGroup.get('groupSpecInfoGroup.eventScheduleTime')}
+  get eventScheduleZone() { return this.listingFormGroup.get('groupSpecInfoGroup.eventScheduleZone')}
+  get currentPartySize() { return this.listingFormGroup.get('groupSpecInfoGroup.currentPartySize')}
+  get desiredPartySize() { return this.listingFormGroup.get('groupSpecInfoGroup.desiredPartySize')}
+  get availableRoles() { return this.listingFormGroup.get('groupSpecInfoGroup.availableRoles')}
+  get commsOption() { return this.listingFormGroup.get('groupSpecInfoGroup.commsOption')}
+  get commsService() { return this.listingFormGroup.get('groupSpecInfoGroup.commsService')}
+
 }
