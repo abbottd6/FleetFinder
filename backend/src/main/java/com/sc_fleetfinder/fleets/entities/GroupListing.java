@@ -22,7 +22,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 @Entity
 @Table(name="group_listing")
@@ -58,7 +57,7 @@ public class GroupListing {
 
     @Column(name="listing_title")
     @NotBlank(message = "GroupListing entity field 'listingTitle' cannot be blank")
-    @Size(min = 2, max = 65, message = "GroupListing entity field 'listingTitle' must be between 2 and 65 characters")
+    @Size(min = 3, max = 65, message = "GroupListing entity field 'listingTitle' must be between 2 and 65 characters")
     private String listingTitle;
 
     @ManyToOne
