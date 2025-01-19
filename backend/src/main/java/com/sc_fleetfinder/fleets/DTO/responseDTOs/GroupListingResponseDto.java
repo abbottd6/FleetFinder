@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Data
@@ -40,8 +41,8 @@ public class GroupListingResponseDto {
     @NotNull(message = "GroupListingResponseDto field 'groupStatus' cannot be null")
     private String groupStatus;
 
-    @DateTimeFormat(pattern = "MM/dd/yy")
-    private LocalDateTime eventSchedule;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant eventSchedule;
 
     @NotNull(message = "GroupListingResponseDto field 'category' cannot be null")
     private String category;

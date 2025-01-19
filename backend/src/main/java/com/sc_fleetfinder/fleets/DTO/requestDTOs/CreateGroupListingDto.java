@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
@@ -41,7 +42,7 @@ public class CreateGroupListingDto {
     private int groupStatusId;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private ZonedDateTime eventSchedule;
+    private Instant eventSchedule;
 
     @NotNull(message = "Create group listing DTO field 'categoryId' cannot be null")
     private int categoryId;
