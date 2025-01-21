@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-listing-title-input',
@@ -15,5 +15,12 @@ export class ListingTitleInputComponent {
   updateCharacterCount() {
     const value = this.parentForm.controls['listingTitle'].value || '';
     this.characterCount = value.length;
+  }
+
+  get listingTitle(): FormControl {return this.parentForm.controls['titleGroup.listingTitle'] as FormControl};
+
+  get isListingTitleValid(): boolean {
+    const control = this.parentForm.controls['listingTitle'];
+    return control?.invalid && (control?.dirty || control?.touched);
   }
 }

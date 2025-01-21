@@ -1,6 +1,14 @@
 <div class="listing-description-input">
-  <mat-form-field [formGroup]="parentForm">
+  <mat-form-field [formGroup]="parentForm" id="listing-description-input">
     <mat-label>Listing Description</mat-label>
+    <mat-error *ngIf="parentForm.controls['listingDescription']?.errors">
+      <span *ngIf="parentForm.controls['listingDescription']?.errors?.['minlength']">
+        Description must be at least 15 characters
+      </span>
+      <span *ngIf="parentForm.controls['listingDescription']?.errors?.['required']">
+        Description is required
+      </span>
+    </mat-error>
     <textarea
       matInput
       formControlName="listingDescription"

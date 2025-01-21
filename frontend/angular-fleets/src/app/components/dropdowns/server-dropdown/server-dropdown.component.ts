@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, ChangeDetectorRef} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
     selector: 'app-server-dropdown',
@@ -10,7 +10,7 @@ import {FormGroup} from "@angular/forms";
     standalone: false
 })
 export class ServerDropdownComponent implements OnInit {
-  @Input() parentForm!: FormGroup;
+  @Input() serverControl!: FormControl;
   servers: {serverId: number, name: string}[] = [];
 
 
