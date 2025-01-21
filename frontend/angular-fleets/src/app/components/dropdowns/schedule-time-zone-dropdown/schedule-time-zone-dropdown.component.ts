@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-schedule-time-zone-dropdown',
@@ -9,7 +9,8 @@ import {FormGroup} from "@angular/forms";
   styleUrl: './schedule-time-zone-dropdown.component.css'
 })
 export class ScheduleTimeZoneDropdownComponent implements OnInit{
-  @Input() parentForm!: FormGroup;
+  @Input() eventScheduleZoneControl!: FormControl;
+  @Input() groupStatusControl!: FormControl;
 
   timeZones: { label: string, value: string }[] = [
     { label: 'UTC', value: 'UTC' },
@@ -35,9 +36,9 @@ export class ScheduleTimeZoneDropdownComponent implements OnInit{
 
     //subscribing to groupStatus dropdown for enable/disable of event time zone when groupStatus value changes
     //event time zone should only be enabled when groupStatus is set to "future/scheduled"
-    this.parentForm.get('groupStatus')?.valueChanges.subscribe(value => {
+    this.groupStatusControl?.valueChanges.subscribe(value => {
       if (value == 2) {
-        this.parentForm.get('eventScheduleZone')?.enable();
+        this.eventScheduleZoneControl?.enable();
 
         //auto-detecting and setting user time zone
         const detectedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -45,8 +46,8 @@ export class ScheduleTimeZoneDropdownComponent implements OnInit{
 
         //disabling and resetting time zone if group status != "future/scheduled"
       } else {
-        this.parentForm.get('eventScheduleZone')?.reset();
-        this.parentForm.get('eventScheduleZone')?.disable();
+        this.eventScheduleZoneControl?.reset();
+        this.eventScheduleZoneControl?.disable();
       }
     });
   }
@@ -55,7 +56,7 @@ export class ScheduleTimeZoneDropdownComponent implements OnInit{
   setTimeZone(timeZone: string): void {
     const optionsMatchedTimeZone = this.timeZones.find(option => option.value === timeZone);
     if (optionsMatchedTimeZone) {
-      this.parentForm.patchValue({ eventScheduleZone: optionsMatchedTimeZone.value });
+      this.eventScheduleZoneControl.setValue(optionsMatchedTimeZone.value);
     }
   }
 }

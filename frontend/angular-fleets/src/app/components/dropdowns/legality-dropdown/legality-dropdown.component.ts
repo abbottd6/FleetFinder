@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-legality-dropdown',
@@ -11,7 +11,7 @@ import {FormGroup} from "@angular/forms";
   styleUrl: './legality-dropdown.component.css'
 })
 export class LegalityDropdownComponent implements OnInit{
-  @Input() parentForm!: FormGroup;
+  @Input() legalityControl!: FormControl;
   legalities: {legalityId: number, legalityStatus: string}[] = [];
 
   constructor(private lookupService: LookupService) {}

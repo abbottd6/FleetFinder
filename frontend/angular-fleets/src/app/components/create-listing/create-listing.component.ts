@@ -1,9 +1,10 @@
 import {Component, OnInit} from '@angular/core';
-import {DropdownModule} from '../dropdowns/dropdown-module/dropdown.module';
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import { requiredIfGroupStatusFuture } from "../../common/validators/custom-validators";
+import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {CreateListingRequest} from "../../models/group-listing/create-listing-request";
 import {CreateListingService} from "../../services/group-listing-services/create-listing.service";
 import {Router} from "@angular/router";
+import {group} from "@angular/animations";
 
 @Component({
   selector: 'app-create-listing',
@@ -37,21 +38,26 @@ export class CreateListingComponent  implements OnInit {
         pvpStatus: new FormControl (null, [Validators.required]),
         planetarySystem: new FormControl (null, [Validators.required]),
         planetMoon: new FormControl ({value: null, disabled: true}),
-      }),
-      descriptionGroup: this.formBuilder.group({
-        listingDescription: [null, [Validators.required, Validators.minLength(15)]],
+        listingDescription: new FormControl (null, [Validators.required, Validators.minLength(15)]),
       }),
       groupSpecInfoGroup: this.formBuilder.group({
-        groupStatus: [null, Validators.required],
-        eventScheduleDate: [{value: null, disabled: true}],
-        eventScheduleTime: [{value: null, disabled: true}],
-        eventScheduleZone: [{value: null, disabled: true}],
-        currentPartySize: [null, [Validators.required]],
-        desiredPartySize: [null, [Validators.required]],
-        availableRoles: [null, [Validators.minLength(3)]],
-        commsOption: [null, [Validators.required]],
-        commsService: [{value: null, disabled: true}],
+        groupStatus: new FormControl (null, [Validators.required]),
+        eventScheduleDate: new FormControl ({value: null, disabled: true}, [requiredIfGroupStatusFuture]),
+        eventScheduleTime: new FormControl ({value: null, disabled: true}, [requiredIfGroupStatusFuture]),
+        eventScheduleZone: new FormControl ({value: null, disabled: true}, [requiredIfGroupStatusFuture]),
+        currentPartySize: new FormControl (null, [Validators.required]),
+        desiredPartySize: new FormControl (null, [Validators.required]),
+        availableRoles: new FormControl (null, [Validators.minLength(3)]),
+        commsOption: new FormControl (null, [Validators.required]),
+        commsService: new FormControl ({value: null, disabled: true}),
       })
+    });
+
+    //Updating eventScheduleDate, eventScheduleTime, eventScheduleZone error status in relation to groupStatus
+    this.groupStatus?.valueChanges.subscribe(() => {
+      this.eventScheduleDate?.updateValueAndValidity();
+      this.eventScheduleTime?.updateValueAndValidity();
+      this.eventScheduleZone?.updateValueAndValidity();
     })
   }
 
@@ -80,6 +86,7 @@ export class CreateListingComponent  implements OnInit {
     )
   }
 
+  //reset form after valid submit
   private resetAndRedirect() {
     this.listingFormGroup.reset();
     this.formSubmitted = false;
@@ -87,28 +94,51 @@ export class CreateListingComponent  implements OnInit {
     this.router.navigateByUrl("/group-listings")
   }
 
+  //method for checking whether event schedule fields are valid
+  //event date, time, and time zone are only required if group status is "future/scheduled"
+  //method is for displaying a single error if any of the three fields are invalid
+  get isEventScheduleInvalid(): boolean {
+    const dateError = this.eventScheduleDate?.hasError('required')
+      && (this.eventScheduleDate.dirty || this.eventScheduleDate.touched);
+
+    const timeError = this.eventScheduleTime?.hasError('required')
+      && (this.eventScheduleTime.dirty || this.eventScheduleTime.touched);
+
+    const zoneError = this.eventScheduleZone?.hasError('required')
+      && (this.eventScheduleZone.dirty || this.eventScheduleZone.touched);
+
+    return dateError || timeError || zoneError;
+  }
+
+
+  //Getters for passing FormControl entities to child components
+
+  //titleGroup
+  get listingTitle(): FormControl { return this.listingFormGroup.get('titleGroup.listingTitle') as FormControl}
+
+  //sessionEnvInfoGroup
   get serverRegion(): FormControl { return this.listingFormGroup.get('sessionEnvInfoGroup.serverRegion') as FormControl}
   get gameEnvironment(): FormControl { return this.listingFormGroup.get('sessionEnvInfoGroup.gameEnvironment') as FormControl}
   get gameExperience(): FormControl { return this.listingFormGroup.get('sessionEnvInfoGroup.gameExperience') as FormControl}
 
-  //Getters for passing FormGroups to children
-  get titleGroup(): FormGroup {
-    return this.listingFormGroup.get('titleGroup') as FormGroup;
-  }
+  //gameplayInfoGroup
+  get playStyle(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.playStyle') as FormControl }
+  get category(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.category') as FormControl }
+  get subcategory(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.subcategory') as FormControl }
+  get legality(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.legality') as FormControl }
+  get pvpStatus(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.pvpStatus') as FormControl }
+  get planetarySystem(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.planetarySystem') as FormControl }
+  get planetMoon(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.planetMoon') as FormControl }
+  get listingDescription(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.listingDescription') as FormControl }
 
-  get sessionEnvInfoGroup(): FormGroup {
-    return this.listingFormGroup.get('sessionEnvInfoGroup') as FormGroup;
-  }
-
-  get gameplayInfoGroup(): FormGroup {
-    return this.listingFormGroup.get('gameplayInfoGroup') as FormGroup;
-  }
-
-  get groupSpecInfoGroup(): FormGroup {
-    return this.listingFormGroup.get('groupSpecInfoGroup') as FormGroup;
-  }
-
-  get descriptionGroup(): FormGroup {
-    return this.listingFormGroup.get('descriptionGroup') as FormGroup;
-  }
+  //groupSpecInfoGroup
+  get groupStatus(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.groupStatus') as FormControl }
+  get eventScheduleDate(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.eventScheduleDate') as FormControl }
+  get eventScheduleTime(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.eventScheduleTime') as FormControl }
+  get eventScheduleZone(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.eventScheduleZone') as FormControl }
+  get currentPartySize(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.currentPartySize') as FormControl }
+  get desiredPartySize(): FormControl  { return this.listingFormGroup.get('groupSpecInfoGroup.desiredPartySize') as FormControl }
+  get availableRoles(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.availableRoles') as FormControl }
+  get commsOption(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.commsOption') as FormControl }
+  get commsService(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.commsService') as FormControl }
 }

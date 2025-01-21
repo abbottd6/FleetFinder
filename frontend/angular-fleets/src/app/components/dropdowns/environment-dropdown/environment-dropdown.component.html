@@ -9,3 +9,6 @@
     [attr.aria-labelledby]="'environment-dropdown'">
   </ng-select>
 </div>
+<mat-error *ngIf="environmentControl?.hasError?.('required') && (environmentControl.dirty || !environmentControl.untouched)">
+  <span>Game Environment required</span>
+</mat-error>

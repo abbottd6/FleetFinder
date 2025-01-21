@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-desired-party-size-dropdown',
@@ -9,7 +9,7 @@ import {FormGroup} from "@angular/forms";
   styleUrl: './desired-party-size-dropdown.component.css'
 })
 export class DesiredPartySizeDropdownComponent implements OnInit{
-  @Input() parentForm!: FormGroup;
+  @Input() desiredPartySizeControl!: FormControl;
   partySize: number[] = [];
 
   ngOnInit() {

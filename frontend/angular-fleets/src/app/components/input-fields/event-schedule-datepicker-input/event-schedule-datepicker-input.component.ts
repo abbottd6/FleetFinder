@@ -9,7 +9,8 @@ import {FormControl, FormGroup} from "@angular/forms";
   styleUrl: './event-schedule-datepicker-input.component.css'
 })
 export class EventScheduleDatepickerInputComponent implements OnInit{
-  @Input() parentForm!: FormGroup;
+  @Input() eventScheduleDateControl!: FormControl;
+  @Input() groupStatusControl!: FormControl;
 
   //variable for disabling dates prior to current date
   minDate: Date = new Date();
@@ -31,12 +32,12 @@ export class EventScheduleDatepickerInputComponent implements OnInit{
   //subscribing to groupStatus dropdown for enable/disable of event date when groupStatus value changes
   //event date should only be enabled when groupStatus is set to "future/scheduled"
   ngOnInit() {
-    this.parentForm.get('groupStatus')?.valueChanges.subscribe(value => {
+    this.groupStatusControl?.valueChanges.subscribe(value => {
       if (value == 2) {
-        this.parentForm.get('eventScheduleDate')?.enable();
+        this.eventScheduleDateControl?.enable();
       } else {
-        this.parentForm.get('eventScheduleDate')?.reset();
-        this.parentForm.get('eventScheduleDate')?.disable();
+        this.eventScheduleDateControl?.reset();
+        this.eventScheduleDateControl?.disable();
       }
     });
   }

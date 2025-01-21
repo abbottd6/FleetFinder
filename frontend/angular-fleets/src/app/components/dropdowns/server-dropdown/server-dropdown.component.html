@@ -9,3 +9,6 @@
     [attr.aria-labelledby]="'server-dropdown'">
   </ng-select>
 </div>
+<mat-error *ngIf="serverControl?.hasError?.('required') && (serverControl.dirty || !serverControl.untouched)">
+  <span>Server Region required</span>
+</mat-error>

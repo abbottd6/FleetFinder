@@ -125,3 +125,34 @@
 :host ::ng-deep .ng-select .ng-select-container {
   color: rgba(65, 103, 142, 1);
 }
+
+/* VALIDATION STYLES */
+mat-error {
+  color: rgba(161, 13, 13, 0.4) !important;
+  margin-left: 6rem;
+}
+
+/* Validation Styles  */
+/* Dropdown underline */
+:host ::ng-deep .ng-select.ng-touched.ng-invalid:not(ng-select.ng-select-disabled) .ng-select-container::after {
+  border-color: rgba(161, 13, 13, 0.4);
+}
+
+/* Validation Styles  */
+/* Dropdown arrow pre-selection */
+:host ::ng-deep .ng-select.ng-touched.ng-invalid:not(.ng-select.ng-select-disabled) .ng-arrow {
+  color: rgba(161, 13, 13, 0.4);
+}
+
+/* Validation Styles  */
+/* Dropdown placeholder*/
+:host ::ng-deep .ng-select.ng-touched.ng-invalid:not(.ng-select-disabled) .ng-select-container .ng-value-container .ng-placeholder {
+  color: rgba(161, 13, 13, 0.4) !important;
+}
+
+
+/* Validation Styles  */
+/* Dropdown placeholder:hover */
+:host ::ng-deep .ng-select.ng-touched.ng-invalid:not(.ng-select-disabled):hover .ng-select-container .ng-value-container .ng-placeholder {
+  font-size: 112%;
+}

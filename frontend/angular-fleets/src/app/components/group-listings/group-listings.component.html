@@ -49,8 +49,8 @@
       <td>{{ tempListing.system}}</td>
       <!-- COlUMN 7 -->
       <!-- Cut available roles if >50 chars -->
-      <td>{{ tempListing.availableRoles.length > 20 ? (tempListing.availableRoles|
-        slice:  0: 17) + '...' : tempListing.availableRoles}}</td>
+      <td>{{ tempListing.availableRoles.length > 14 ? (tempListing.availableRoles|
+        slice:  0: 11) + '...' : tempListing.availableRoles}}</td>
       <!-- COlUMN 8 -->
       <td>{{ tempListing.lastUpdated | date:'MMM d, h:mm a'}}</td>
     </tr>

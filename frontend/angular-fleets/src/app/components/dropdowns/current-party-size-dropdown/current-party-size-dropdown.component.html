@@ -1,10 +1,12 @@
-<div class="dropdown-component" [formGroup]="parentForm">
+<div class="dropdown-component">
   <label id="current-party-size-dropdown">Current Party Size:</label>
     <ng-select
       [items]="partySize"
-      formControlName="currentPartySize"
+      [formControl]="currentPartySizeControl"
       placeholder="Select..."
       [attr.aria-labelledby]="'current-party-size-dropdown'">
     </ng-select>
 </div>
-
+<mat-error *ngIf="currentPartySizeControl?.hasError?.('required') && (currentPartySizeControl.dirty || !currentPartySizeControl.untouched)">
+  <span>Current party size required</span>
+</mat-error>
