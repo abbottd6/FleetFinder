@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-schedule-time-dropdown',
@@ -9,7 +9,8 @@ import {FormGroup} from "@angular/forms";
   styleUrl: './schedule-time-dropdown.component.css'
 })
 export class ScheduleTimeDropdownComponent implements OnInit{
-  @Input() parentForm!: FormGroup;
+  @Input() eventScheduleTimeControl!: FormControl;
+  @Input() groupStatusControl!: FormControl;
   timeOptions: string[] = [];
 
   ngOnInit(): void {
@@ -17,12 +18,12 @@ export class ScheduleTimeDropdownComponent implements OnInit{
 
     //subscribing to groupStatus dropdown for enable/disable of event time when groupStatus value changes
     //event time should only be enabled when groupStatus is set to "future/scheduled"
-    this.parentForm.get('groupStatus')?.valueChanges.subscribe(value => {
+    this.groupStatusControl?.valueChanges.subscribe(value => {
       if (value == 2) {
-        this.parentForm.get('eventScheduleTime')?.enable();
+        this.eventScheduleTimeControl?.enable();
       } else {
-        this.parentForm.get('eventScheduleTime')?.reset();
-        this.parentForm.get('eventScheduleTime')?.disable();
+        this.eventScheduleTimeControl?.reset();
+        this.eventScheduleTimeControl?.disable();
       }
     });
   }

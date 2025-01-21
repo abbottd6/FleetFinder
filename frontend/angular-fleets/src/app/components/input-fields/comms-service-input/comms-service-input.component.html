@@ -1,9 +1,9 @@
 <div class="comms-service-input">
-  <mat-form-field [formGroup]="parentForm">
+  <mat-form-field>
     <mat-label>Comms Service: Optional</mat-label>
     <input
       matInput
-      formControlName="commsService"
+      [formControl]="commsServiceControl"
       (input)="updateCharacterCount()"
       maxlength="50"
       placeholder="Ex: Discord..."

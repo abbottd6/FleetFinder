@@ -1,10 +1,10 @@
-<div class="dropdown-component" [formGroup]="parentForm">
+<div class="dropdown-component">
   <label id="planetMoon-dropdown">Planet/moon system:</label>
   <ng-select
     [items]="filteredPlanetMoons"
     bindLabel="planetName"
     bindValue="planetId"
-    formControlName="planetMoon"
+    [formControl]="planetMoonControl"
     placeholder="Select planet"
     [attr.aria-labelledby]="'planetMoon-dropdown'">
   </ng-select>

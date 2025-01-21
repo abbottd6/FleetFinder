@@ -8,7 +8,7 @@
       <div formGroupName="titleGroup">
         <h4 class="form-group-heading1">Listing Title</h4>
         <div class="form-title-row">
-          <app-listing-title-input [parentForm]="titleGroup"></app-listing-title-input>
+          <app-listing-title-input [titleControl]="listingTitle"></app-listing-title-input>
         </div>
       </div>
 
@@ -26,43 +26,45 @@
       <div formGroupName="gameplayInfoGroup">
         <h4 class="form-group-heading2">Gameplay Details</h4>
         <div class="form-row">
-          <app-playstyle-dropdown [parentForm]="gameplayInfoGroup"></app-playstyle-dropdown>
-          <app-category-dropdown [parentForm]="gameplayInfoGroup"></app-category-dropdown>
-          <app-subcategory-dropdown [parentForm]="gameplayInfoGroup"></app-subcategory-dropdown>
+          <app-playstyle-dropdown [playStyleControl]="playStyle"></app-playstyle-dropdown>
+          <app-category-dropdown [categoryControl]="category"></app-category-dropdown>
+          <app-subcategory-dropdown [subcategoryControl]="subcategory" [categoryControl]="category"></app-subcategory-dropdown>
         </div>
         <div class="form-row">
-          <app-legality-dropdown [parentForm]="gameplayInfoGroup"></app-legality-dropdown>
-          <app-pvp-status-dropdown [parentForm]="gameplayInfoGroup"></app-pvp-status-dropdown>
+          <app-legality-dropdown [legalityControl]="legality"></app-legality-dropdown>
+          <app-pvp-status-dropdown [pvpStatusControl]="pvpStatus"></app-pvp-status-dropdown>
         </div>
         <div class="form-row">
-          <app-system-dropdown [parentForm]="gameplayInfoGroup"></app-system-dropdown>
-          <app-planet-dropdown [parentForm]="gameplayInfoGroup"></app-planet-dropdown>
+          <app-system-dropdown [planetarySystemControl]="planetarySystem"></app-system-dropdown>
+          <app-planet-dropdown [planetMoonControl]="planetMoon" [planetarySystemControl]="planetarySystem"></app-planet-dropdown>
+        </div>
+        <div class="form-row">
+          <app-listing-description-input [descriptionControl]="listingDescription"></app-listing-description-input>
         </div>
       </div>
-      <div formGroupName="descriptionGroup" class="form-row">
-          <app-listing-description-input [parentForm]="descriptionGroup"></app-listing-description-input>
-      </div>
-
 
       <!-- groupSpecInfoGroup -->
       <div formGroupName="groupSpecInfoGroup">
         <h4 class="form-group-heading2">Group Specs</h4>
         <div class="form-row">
-          <app-group-status-dropdown [parentForm]="groupSpecInfoGroup"></app-group-status-dropdown>
-          <app-event-schedule-datepicker-input [parentForm]="groupSpecInfoGroup"></app-event-schedule-datepicker-input>
-          <app-schedule-time-dropdown [parentForm]="groupSpecInfoGroup"></app-schedule-time-dropdown>
-          <app-schedule-time-zone-dropdown [parentForm]="groupSpecInfoGroup"></app-schedule-time-zone-dropdown>
+          <app-group-status-dropdown [groupStatusControl]="groupStatus"></app-group-status-dropdown>
+          <app-event-schedule-datepicker-input [eventScheduleDateControl]="eventScheduleDate" [groupStatusControl]="groupStatus"></app-event-schedule-datepicker-input>
+          <app-schedule-time-dropdown [eventScheduleTimeControl]="eventScheduleTime" [groupStatusControl]="groupStatus"></app-schedule-time-dropdown>
+          <app-schedule-time-zone-dropdown [eventScheduleZoneControl]="eventScheduleZone" [groupStatusControl]="groupStatus"></app-schedule-time-zone-dropdown>
+        </div>
+        <div *ngIf="isEventScheduleInvalid" class="error-row">
+          <mat-error>Event schedule fields: date, time, and time zone are required when group status is "Future/Scheduled"</mat-error>
         </div>
         <div class="form-row">
-          <app-current-party-size-dropdown [parentForm]="groupSpecInfoGroup"></app-current-party-size-dropdown>
-          <app-desired-party-size-dropdown [parentForm]="groupSpecInfoGroup"></app-desired-party-size-dropdown>
+          <app-current-party-size-dropdown [currentPartySizeControl]="currentPartySize"></app-current-party-size-dropdown>
+          <app-desired-party-size-dropdown [desiredPartySizeControl]="desiredPartySize"></app-desired-party-size-dropdown>
         </div>
         <div class="form-row">
-          <app-available-roles-input [parentForm]="groupSpecInfoGroup"></app-available-roles-input>
+          <app-available-roles-input [availableRolesControl]="availableRoles"></app-available-roles-input>
         </div>
         <div class="form-row">
-          <app-comms-option-dropdown [parentForm]="groupSpecInfoGroup"></app-comms-option-dropdown>
-          <app-comms-service-input [parentForm]="groupSpecInfoGroup"></app-comms-service-input>
+          <app-comms-option-dropdown [commsOptionControl]="commsOption"></app-comms-option-dropdown>
+          <app-comms-service-input [commsServiceControl]="commsService" [commsOptionControl]="commsOption"></app-comms-service-input>
         </div>
       </div>
       <div *ngIf="formSubmitted && listingFormGroup.invalid" class="submit-error">Check required fields</div>

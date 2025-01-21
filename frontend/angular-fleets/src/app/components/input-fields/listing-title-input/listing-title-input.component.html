@@ -1,15 +1,17 @@
 <div  class="listing-title-input">
-    <mat-form-field [formGroup]="parentForm">
+    <mat-form-field>
       <mat-label>Listing Title</mat-label>
-      <mat-error *ngIf="isListingTitleValid">
-        <span *ngIf="parentForm.controls['listingTitle']?.errors?.['minlength']">
+      <mat-error *ngIf="titleControl?.hasError && (titleControl.dirty || !titleControl.untouched)">
+        <span *ngIf="titleControl?.hasError?.('minlength')">
           Title must be at least 5 characters
         </span>
-        <span *ngIf="parentForm.controls['listingTitle']?.errors?.['required']">Title is Required</span>
+        <span *ngIf="titleControl?.hasError?.('required')">
+          Title is Required
+        </span>
       </mat-error>
       <input
         matInput
-        formControlName="listingTitle"
+        [formControl]="titleControl"
         (input)="updateCharacterCount()"
         maxlength="65"
         placeholder="Enter listing title..."

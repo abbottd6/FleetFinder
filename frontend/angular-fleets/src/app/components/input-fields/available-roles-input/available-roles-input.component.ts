@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-available-roles-input',
@@ -9,11 +9,11 @@ import {FormGroup} from "@angular/forms";
   styleUrl: './available-roles-input.component.css'
 })
 export class AvailableRolesInputComponent {
-  @Input() parentForm!: FormGroup;
+  @Input() availableRolesControl!: FormControl;
   characterCount: number = 0;
 
   updateCharacterCount() {
-    const value = this.parentForm.controls['availableRoles'].value || '';
+    const value = this.availableRolesControl.value || '';
     this.characterCount = value.length;
   }
 }

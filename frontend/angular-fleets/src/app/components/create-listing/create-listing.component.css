@@ -178,6 +178,14 @@ app-comms-service-input {
   filter: drop-shadow(0 0 6px rgba(255, 131, 7, 0.75)) drop-shadow(0 0 12px rgba(255, 131, 7, 0.75)) !important;
 }
 
+/* class for group status entire row error */
+.error-row {
+  padding: 0.75rem;
+  display: flex;
+  justify-content: center;
+  color: rgba(161, 13, 13, 0.4) !important;
+}
+
 .submit-button-container {
   display: flex;
   flex-direction: row;
@@ -208,3 +216,4 @@ app-comms-service-input {
   margin: 1rem;
   font-size: 1.2rem;
 }
+

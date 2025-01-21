@@ -25,6 +25,22 @@
   transition: color 0.5s ease, font-size 0.5s ease !important;
 }
 
+/* Validation  style: invalid, datepicker placeholder text */
+:host ::ng-deep .mat-mdc-form-field.ng-touched.ng-invalid:not(.mat-mdc-form-field--disabled) .mat-mdc-floating-label {
+  color: rgba(161, 13, 13, 0.4) !important;
+  transition: color 0.5s ease, font-size 0.5s ease !important;
+}
+
+/* Validation style: invalid, datepicker border */
+:host ::ng-deep .mat-mdc-form-field.ng-touched.ng-invalid .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mat-mdc-notch-piece {
+  border-color: rgba(161, 13, 13, 0.4) !important;
+}
+
+/* Calendar button disabled state */
+:host ::ng-deep .mat-mdc-form-field.ng-touched.ng-invalid:not(.mdc-text-field--disabled) .mat-mdc-icon-button {
+  color: rgba(161, 13, 13, 0.4) !important;
+}
+
 /* Event datepicker outline transition */
 :host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mat-mdc-notch-piece {
   transition: border-color 0.5s ease !important;

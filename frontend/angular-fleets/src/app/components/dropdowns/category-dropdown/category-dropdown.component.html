@@ -1,10 +1,13 @@
-<div class="dropdown-component" [formGroup]="parentForm">
+<div class="dropdown-component">
   <label id="category-dropdown">Gameplay Category:</label>
   <ng-select
     [items]="categories"
     bindLabel="gameplayCategoryName"
-    formControlName="category"
+    [formControl]="categoryControl"
     placeholder="Select category..."
     [attr.aria-labelledby]="'category-dropdown'">
   </ng-select>
 </div>
+<mat-error *ngIf="categoryControl?.hasError?.('required') && (categoryControl.dirty || !categoryControl.untouched)">
+  <span>Gameplay category required</span>
+</mat-error>

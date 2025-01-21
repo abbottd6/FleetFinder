@@ -9,3 +9,6 @@
     [attr.aria-labelledby]="'experience-dropdown'">
   </ng-select>
 </div>
+<mat-error *ngIf="experienceControl?.hasError?.('required') && (experienceControl.dirty || !experienceControl.untouched)">
+  <span>Game Experience required</span>
+</mat-error>

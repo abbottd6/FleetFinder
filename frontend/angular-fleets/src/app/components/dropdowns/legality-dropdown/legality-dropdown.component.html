@@ -1,11 +1,14 @@
-<div class="dropdown-component" [formGroup]="parentForm">
+<div class="dropdown-component">
   <label id="legality-dropdown">Legality:</label>
   <ng-select
     [items]="legalities"
     bindLabel="legalityStatus"
     bindValue="legalityId"
-    formControlName="legality"
+    [formControl]="legalityControl"
     placeholder="Select legality..."
     [attr.aria-labelledby]="'legality-dropdown'">
   </ng-select>
 </div>
+<mat-error *ngIf="legalityControl?.hasError?.('required') && (legalityControl.dirty || !legalityControl.untouched)">
+  <span>Legality required</span>
+</mat-error>

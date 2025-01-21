@@ -1,11 +1,12 @@
-<div class="dropdown-component" [formGroup]="parentForm">
-  <label id="playstyle-dropdown">Playstyle:</label>
+<div class="dropdown-component">
+  <label id="playstyle-dropdown">Play-style:</label>
   <ng-select
     [items]="playStyles"
     bindLabel="playStyle"
     bindValue="styleId"
-    formControlName="playStyle"
+    [formControl]="playStyleControl"
     placeholder="Select play style..."
     [attr.aria-labelledby]="'playstyle-dropdown'">
   </ng-select>
 </div>
+

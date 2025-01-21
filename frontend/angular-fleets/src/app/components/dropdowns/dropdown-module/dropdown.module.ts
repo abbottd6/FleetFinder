@@ -18,7 +18,7 @@ import {CurrentPartySizeDropdownComponent} from "../current-party-size-dropdown/
 import {DesiredPartySizeDropdownComponent} from "../desired-party-size-dropdown/desired-party-size-dropdown.component";
 import {ScheduleTimeDropdownComponent} from "../schedule-time-dropdown/schedule-time-dropdown.component";
 import {ScheduleTimeZoneDropdownComponent} from "../schedule-time-zone-dropdown/schedule-time-zone-dropdown.component";
-import {MatHint} from "@angular/material/form-field";
+import {MatError, MatHint} from "@angular/material/form-field";
 
 @NgModule({
   declarations: [
@@ -39,13 +39,14 @@ import {MatHint} from "@angular/material/form-field";
     ScheduleTimeDropdownComponent,
     ScheduleTimeZoneDropdownComponent,
   ],
-  imports: [
-    CommonModule,
-    NgSelectModule,
-    FormsModule,
-    ReactiveFormsModule,
-    MatHint,
-  ],
+    imports: [
+        CommonModule,
+        NgSelectModule,
+        FormsModule,
+        ReactiveFormsModule,
+        MatHint,
+        MatError,
+    ],
   exports: [
     ServerDropdownComponent,
     EnvironmentDropdownComponent,

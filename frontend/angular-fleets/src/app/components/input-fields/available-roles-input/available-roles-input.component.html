@@ -1,9 +1,9 @@
 <div class="listing-available-roles-input">
-  <mat-form-field [formGroup]="parentForm">
+  <mat-form-field>
     <mat-label>Available Roles: Optional</mat-label>
     <textarea
       matInput
-      formControlName="availableRoles"
+      [formControl]="availableRolesControl"
       rows="2"
       maxlength="255"
       placeholder="Optional: enter available roles"

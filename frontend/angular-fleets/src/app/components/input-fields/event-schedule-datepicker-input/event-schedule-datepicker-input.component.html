@@ -1,12 +1,12 @@
 <div class="event-schedule-datepicker">
-  <mat-form-field [formGroup]="parentForm">
+  <mat-form-field>
     <mat-label>Select Event Date</mat-label>
     <input
       matInput
       [matDatepicker]="picker"
       [min]="minDate"
       [max]="maxDate"
-      formControlName="eventScheduleDate">
+      [formControl]="eventScheduleDateControl">
     <mat-hint>MM/DD/YYYY</mat-hint>
     <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-datepicker #picker panelClass="custom-datepicker" [dateClass]="disabledDatesClass"></mat-datepicker>

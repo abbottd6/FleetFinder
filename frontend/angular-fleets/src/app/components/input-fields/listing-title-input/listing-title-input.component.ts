@@ -9,18 +9,11 @@ import {FormControl, FormGroup} from "@angular/forms";
   styleUrl: './listing-title-input.component.css'
 })
 export class ListingTitleInputComponent {
-  @Input() parentForm!: FormGroup;
+  @Input() titleControl!: FormControl;
   characterCount: number = 0;
 
   updateCharacterCount() {
-    const value = this.parentForm.controls['listingTitle'].value || '';
+    const value = this.titleControl.value || '';
     this.characterCount = value.length;
-  }
-
-  get listingTitle(): FormControl {return this.parentForm.controls['titleGroup.listingTitle'] as FormControl};
-
-  get isListingTitleValid(): boolean {
-    const control = this.parentForm.controls['listingTitle'];
-    return control?.invalid && (control?.dirty || control?.touched);
   }
 }

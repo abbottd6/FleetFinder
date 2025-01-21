@@ -10,13 +10,11 @@ import {FormControl, FormGroup} from "@angular/forms";
   styleUrl: './listing-description-input.component.css'
 })
 export class ListingDescriptionInputComponent {
-  @Input() parentForm!: FormGroup;
+  @Input() descriptionControl!: FormControl;
   characterCount: number = 0;
 
   updateCharacterCount() {
-    const value = this.parentForm.controls['listingDescription'].value || '';
+    const value = this.descriptionControl.value || '';
     this.characterCount = value.length;
   }
-
-  get listingDescription(): FormControl {return this.parentForm.get('listingDescription') as FormControl};
 }

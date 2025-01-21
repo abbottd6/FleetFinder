@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-system-dropdown',
@@ -11,7 +11,7 @@ import {FormGroup} from "@angular/forms";
   styleUrl: './system-dropdown.component.css'
 })
 export class SystemDropdownComponent implements OnInit{
-  @Input() parentForm!: FormGroup;
+  @Input() planetarySystemControl!: FormControl;
   systems: {systemId: number, systemName: string}[] = [];
 
   constructor(private lookupService: LookupService) { }

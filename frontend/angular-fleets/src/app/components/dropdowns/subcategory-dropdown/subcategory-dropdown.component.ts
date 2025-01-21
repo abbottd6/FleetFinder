@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-subcategory-dropdown',
@@ -11,7 +11,8 @@ import {FormGroup} from "@angular/forms";
   styleUrl: './subcategory-dropdown.component.css'
 })
 export class SubcategoryDropdownComponent implements OnInit{
-  @Input() parentForm!: FormGroup;
+  @Input() subcategoryControl!: FormControl;
+  @Input() categoryControl!: FormControl;
   subcategories: {subcategoryId: number, subcategoryName: string, gameplayCategoryName: string}[] = [];
   filteredSubcategories: {subcategoryId: number, subcategoryName: string, gameplayCategoryName: string}[] = [];
 
@@ -21,11 +22,11 @@ export class SubcategoryDropdownComponent implements OnInit{
     this.fetchSubcategories();
 
     // Subscribing to gameplay category selection changes to filter subcategories by parent category
-    this.parentForm.get('category')?.valueChanges.subscribe(value => {
+    this.categoryControl?.valueChanges.subscribe(value => {
 
       //clearing filtered subcategory array after value change and resetting dropdown
-      this.parentForm.get('subcategory')?.reset();
-      this.parentForm.get('subcategory')?.disable();
+      this.subcategoryControl?.reset();
+      this.subcategoryControl?.disable();
       this.filteredSubcategories.splice(0, this.filteredSubcategories.length);
 
       //filtering subcategory options by selected category
@@ -35,16 +36,16 @@ export class SubcategoryDropdownComponent implements OnInit{
               subcategory.gameplayCategoryName === value.gameplayCategoryName
         );
         if (this.filteredSubcategories.length > 0) {
-          this.parentForm.get('subcategory')?.enable();
+          this.subcategoryControl?.enable();
         }
         else {
-          this.parentForm.get('subcategory')?.reset();
-          this.parentForm.get('subcategory')?.disable();
+          this.subcategoryControl?.reset();
+          this.subcategoryControl?.disable();
         }
       }
       else {
-        this.parentForm.get('subcategory')?.reset();
-        this.parentForm.get('subcategory')?.disable();
+        this.subcategoryControl?.reset();
+        this.subcategoryControl?.disable();
       }
     })
   }

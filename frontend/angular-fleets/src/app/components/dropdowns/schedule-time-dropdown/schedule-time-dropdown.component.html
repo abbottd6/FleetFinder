@@ -1,8 +1,8 @@
-<div class="dropdown-component" [formGroup]="parentForm">
+<div class="dropdown-component">
   <label id="time-dropdown">Time:</label>
   <ng-select
     [items]="timeOptions"
-    formControlName="eventScheduleTime"
+    [formControl]="eventScheduleTimeControl"
     placeholder="Select..."
     [attr.aria-labelledby]="'time-dropdown'">
   </ng-select>
