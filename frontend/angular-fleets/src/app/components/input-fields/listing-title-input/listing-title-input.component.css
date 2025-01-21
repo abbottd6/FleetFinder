@@ -1,9 +1,10 @@
+@import '../input-field/input-field-styles.css';
+
 .listing-title-input {
   display: flex;
   flex: 1;
   padding: 1.5rem 0 0 1.5rem;
   width: 100%;
-
 }
 
 .mat-mdc-form-field {
@@ -13,40 +14,18 @@
   color: rgba(33, 37, 41, .75);
 }
 
-/* label transition */
-:host ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
-  padding-left: 1rem;
-  transition: color 0.5s ease, font-size 0.5s ease !important;
+/* VALIDATION STYLES .ng-touched.ng-dirty.ng-invalid*/
+/* INVALID: border */
+:host ::ng-deep  .mat-mdc-form-field.ng-touched.ng-dirty.ng-invalid:not(.mdc-text-field--disabled) .mat-mdc-notch-piece {
+  border-color: rgba(161, 13, 13, 0.35);
 }
 
-/* outline transition */
-:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mat-mdc-notch-piece {
-  transition: border-color 0.5s ease !important;
+/* INVALID: mat-error */
+mat-error {
+  color: rgba(161, 13, 13, 0.35) !important;
+  font-size: 1.1rem;
 }
 
-/* label hover */
-:host ::ng-deep .mat-mdc-form-field:hover:not(:focus-within) .mat-mdc-floating-label {
-  color: rgba(255, 131, 7, 0.5) !important;
-  font-size: 105% !important;
+:host ::ng-deep mat-mdc-input-element mat-mdc-form-field-text-area-control .mat-mdc-form-field.ng-touched.ng-dirty.ng-valid .mdc-text-field .mat-mdc-notch-piece {
+  border-color: rgba(33, 37, 41, .75);
 }
-
-/* outline hover */
-:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mat-mdc-notch-piece {
-  border-color: rgba(255, 131, 7, 0.5) !important;
-}
-
-:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):focus-within .mat-mdc-notch-piece {
-  border-color: rgba(255, 131, 7, 0.5) !important;
-}
-
-/* input text/placeholder text */
-:host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
-  padding-left: 1rem;
-  caret-color: rgba(255, 131, 7, 0.5) !important;
-}
-
-.mat-mdc-form-field-hint {
-  color: rgba(33, 37, 41, .75);
-}
-
-

@@ -16,9 +16,9 @@
       <div formGroupName="sessionEnvInfoGroup">
         <h4 class="form-group-heading2">Game Environment</h4>
         <div class="form-row">
-          <app-server-dropdown [parentForm]="sessionEnvInfoGroup"></app-server-dropdown>
-          <app-environment-dropdown [parentForm]="sessionEnvInfoGroup"></app-environment-dropdown>
-          <app-experience-dropdown [parentForm]="sessionEnvInfoGroup"></app-experience-dropdown>
+          <app-server-dropdown [serverControl]="serverRegion"></app-server-dropdown>
+          <app-environment-dropdown [environmentControl]="gameEnvironment"></app-environment-dropdown>
+          <app-experience-dropdown [experienceControl]="gameExperience"></app-experience-dropdown>
         </div>
       </div>
 
@@ -38,10 +38,11 @@
           <app-system-dropdown [parentForm]="gameplayInfoGroup"></app-system-dropdown>
           <app-planet-dropdown [parentForm]="gameplayInfoGroup"></app-planet-dropdown>
         </div>
-        <div class="form-row">
-          <app-listing-description-input [parentForm]="gameplayInfoGroup"></app-listing-description-input>
-        </div>
       </div>
+      <div formGroupName="descriptionGroup" class="form-row">
+          <app-listing-description-input [parentForm]="descriptionGroup"></app-listing-description-input>
+      </div>
+
 
       <!-- groupSpecInfoGroup -->
       <div formGroupName="groupSpecInfoGroup">
@@ -64,8 +65,8 @@
           <app-comms-service-input [parentForm]="groupSpecInfoGroup"></app-comms-service-input>
         </div>
       </div>
-
-      <div class="form-row">
+      <div *ngIf="formSubmitted && listingFormGroup.invalid" class="submit-error">Check required fields</div>
+      <div class="submit-button-container">
         <button type="submit" class="submit-button">Create Listing</button>
       </div>
     </form>

@@ -1,5 +1,6 @@
 import {Component, Input} from '@angular/core';
-import {FormGroup} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
+
 
 @Component({
   selector: 'app-listing-description-input',
@@ -16,4 +17,6 @@ export class ListingDescriptionInputComponent {
     const value = this.parentForm.controls['listingDescription'].value || '';
     this.characterCount = value.length;
   }
+
+  get listingDescription(): FormControl {return this.parentForm.get('listingDescription') as FormControl};
 }
