@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
@@ -8,11 +8,11 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './desired-party-size-dropdown.component.html',
   styleUrl: './desired-party-size-dropdown.component.css'
 })
-export class DesiredPartySizeDropdownComponent implements OnInit{
+export class DesiredPartySizeDropdownComponent implements AfterViewInit{
   @Input() desiredPartySizeControl!: FormControl;
   partySize: number[] = [];
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.partySize = Array.from({ length: 100 }, (_, i) => i + 1);
   }
 }

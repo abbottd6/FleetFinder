@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -10,13 +10,13 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './experience-dropdown.component.html',
   styleUrl: './experience-dropdown.component.css'
 })
-export class ExperienceDropdownComponent implements OnInit{
+export class ExperienceDropdownComponent implements AfterViewInit{
   @Input() experienceControl!: FormControl;
   experiences: {experienceId: number, experienceType: string}[] = [];
 
   constructor(private lookupService: LookupService) {}
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.fetchGameExperiences();
     console.log('Experience dropdown options fetched: ' + this.experiences);
   }

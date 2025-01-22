@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
@@ -8,7 +8,7 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './schedule-time-zone-dropdown.component.html',
   styleUrl: './schedule-time-zone-dropdown.component.css'
 })
-export class ScheduleTimeZoneDropdownComponent implements OnInit{
+export class ScheduleTimeZoneDropdownComponent implements AfterViewInit{
   @Input() eventScheduleZoneControl!: FormControl;
   @Input() groupStatusControl!: FormControl;
 
@@ -32,7 +32,7 @@ export class ScheduleTimeZoneDropdownComponent implements OnInit{
     { label: 'Eastern European Time (EET)', value: 'Africa/Cairo' }
   ]
 
-  ngOnInit() {
+  ngAfterViewInit() {
 
     //subscribing to groupStatus dropdown for enable/disable of event time zone when groupStatus value changes
     //event time zone should only be enabled when groupStatus is set to "future/scheduled"

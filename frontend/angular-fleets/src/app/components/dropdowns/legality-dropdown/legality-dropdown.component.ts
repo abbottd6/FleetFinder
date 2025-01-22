@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -10,13 +10,13 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './legality-dropdown.component.html',
   styleUrl: './legality-dropdown.component.css'
 })
-export class LegalityDropdownComponent implements OnInit{
+export class LegalityDropdownComponent implements AfterViewInit{
   @Input() legalityControl!: FormControl;
   legalities: {legalityId: number, legalityStatus: string}[] = [];
 
   constructor(private lookupService: LookupService) {}
 
-  ngOnInit() {
+  ngAfterViewInit() {
       this.fetchLegalities();
       console.log('Legality dropdown options fetched:' + this.legalities);
   }

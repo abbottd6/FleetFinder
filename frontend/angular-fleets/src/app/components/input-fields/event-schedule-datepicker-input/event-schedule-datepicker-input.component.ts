@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import { AfterViewInit, Component, Input } from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
@@ -8,7 +8,7 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './event-schedule-datepicker-input.component.html',
   styleUrl: './event-schedule-datepicker-input.component.css'
 })
-export class EventScheduleDatepickerInputComponent implements OnInit{
+export class EventScheduleDatepickerInputComponent implements AfterViewInit {
   @Input() eventScheduleDateControl!: FormControl;
   @Input() groupStatusControl!: FormControl;
 
@@ -31,7 +31,7 @@ export class EventScheduleDatepickerInputComponent implements OnInit{
 
   //subscribing to groupStatus dropdown for enable/disable of event date when groupStatus value changes
   //event date should only be enabled when groupStatus is set to "future/scheduled"
-  ngOnInit() {
+  ngAfterViewInit() {
     this.groupStatusControl?.valueChanges.subscribe(value => {
       if (value == 2) {
         this.eventScheduleDateControl?.enable();

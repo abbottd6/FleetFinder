@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of, pipe} from "rxjs";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
@@ -10,13 +10,13 @@ import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
   templateUrl: './playstyle-dropdown.component.html',
   styleUrl: './playstyle-dropdown.component.css'
 })
-export class PlaystyleDropdownComponent implements OnInit{
+export class PlaystyleDropdownComponent implements AfterViewInit{
   @Input() playStyleControl!: FormControl;
   playStyles: {styleId: number, playStyle: string}[] = [];
 
   constructor(private lookupService: LookupService) {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.fetchPlayStyles();
     console.log('Play styles dropdown options fetched: ' + this.playStyles);
   }

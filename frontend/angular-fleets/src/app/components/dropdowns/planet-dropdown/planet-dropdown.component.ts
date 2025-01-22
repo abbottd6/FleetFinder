@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -10,7 +10,7 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './planet-dropdown.component.html',
   styleUrl: './planet-dropdown.component.css'
 })
-export class PlanetDropdownComponent implements OnInit{
+export class PlanetDropdownComponent implements AfterViewInit{
   @Input() planetMoonControl!: FormControl;
   @Input() planetarySystemControl!: FormControl;
   planetMoonSystems: {planetId: number, planetName: string, systemName: number}[] = [];
@@ -18,7 +18,7 @@ export class PlanetDropdownComponent implements OnInit{
 
   constructor(private lookupService: LookupService) { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.fetchPlanetMoonSystems();
 
     // Subscribing to planetary system changes to filter planet moons by system
