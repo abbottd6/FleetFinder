@@ -16,15 +16,9 @@
       <div formGroupName="sessionEnvInfoGroup">
         <h4 class="form-group-heading2">Game Environment</h4>
         <div class="form-row">
-          <div>
             <app-server-dropdown [serverControl]="serverRegion"></app-server-dropdown>
-          </div>
-          <div>
             <app-environment-dropdown [environmentControl]="gameEnvironment"></app-environment-dropdown>
-          </div>
-          <div>
             <app-experience-dropdown [experienceControl]="gameExperience"></app-experience-dropdown>
-          </div>
         </div>
       </div>
 
@@ -44,7 +38,7 @@
           <app-system-dropdown [planetarySystemControl]="planetarySystem"></app-system-dropdown>
           <app-planet-dropdown [planetMoonControl]="planetMoon" [planetarySystemControl]="planetarySystem"></app-planet-dropdown>
         </div>
-        <div class="form-row">
+        <div class="form-row-text-input">
           <app-listing-description-input [descriptionControl]="listingDescription"></app-listing-description-input>
         </div>
       </div>
@@ -65,10 +59,10 @@
           <app-current-party-size-dropdown [currentPartySizeControl]="currentPartySize"></app-current-party-size-dropdown>
           <app-desired-party-size-dropdown [desiredPartySizeControl]="desiredPartySize"></app-desired-party-size-dropdown>
         </div>
-        <div class="form-row">
+        <div class="form-row-text-input">
           <app-available-roles-input [availableRolesControl]="availableRoles"></app-available-roles-input>
         </div>
-        <div class="form-row">
+        <div class="form-row-text-input">
           <app-comms-option-dropdown [commsOptionControl]="commsOption"></app-comms-option-dropdown>
           <app-comms-service-input [commsServiceControl]="commsService" [commsOptionControl]="commsOption"></app-comms-service-input>
         </div>

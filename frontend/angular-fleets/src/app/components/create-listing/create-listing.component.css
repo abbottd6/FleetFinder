@@ -40,6 +40,10 @@
   margin: 0 1rem 3rem 1rem;
 }
 
+app-environment-dropdown {
+  max-width: 90%;
+}
+
 app-listing-title-input {
   display: block;
   width: 100%;
@@ -125,6 +129,19 @@ app-comms-service-input {
 
 @media(min-width: 725px) {
   .form-row {
+    display: grid;
+    grid-template-columns:
+      repeat(auto-fit, minmax(425px, max-content));
+    padding-left: 3rem;
+    padding-right: 3rem;
+    justify-content: flex-start;
+    width: 100%;
+    align-items: center;
+  }
+}
+
+@media(max-width: 724px) {
+  .form-row-text-input {
     display: grid;
     grid-template-columns:
       repeat(auto-fit, minmax(200px, 1fr));

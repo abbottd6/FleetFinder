@@ -1,27 +1,66 @@
 .dropdown-component {
   display: flex;
   flex-direction: row;
-  width: 100%;
+  min-width: 70%;
   flex-wrap: nowrap;
   align-items: center;
   color: var(--bs-gray-900);
+  font-size: clamp(0.7rem, 1vw, 1rem);
 }
 
 .dropdown-component label {
   white-space: nowrap;
-  margin-left: 2.5rem;
+  margin-left: clamp(0.75rem, 2vw, 2.5rem);
 }
 
 .dropdown-component ng-select {
-  margin-left: 1.25rem;
-  margin-right: auto;
+  margin-left: clamp(0.5rem, 1vw, 1.25rem);
+  margin-right: clamp(0.5rem, 1vw, 1.25rem);
   transition: font-size 0.3s ease;
 }
+
+@media(min-width: 725px) {
+  :host ::ng-deep .dropdown-component .ng-select.ng-select-searchable {
+    font-size: clamp(0.7rem, 1vw, 1rem);
+    min-width: 55%;
+  }
+}
+
+@media(max-width: 724px) {
+  :host ::ng-deep .dropdown-component .ng-select.ng-select-searchable {
+    font-size: clamp(0.7rem, 1vw, 1rem);
+    min-width: 50%;
+  }
+}
+
+:host ::ng-deep .dropdown-component ng-select .ng-select-container .ng-value-container {
+  max-width: 90%;
+  height: auto;
+}
+
+/*:host ::ng-deep .dropdown-component ng-select .ng-select-container .ng-value-container input {*/
+/*  max-width: 60%;*/
+/*}*/
+
+@media(min-width: 725px) {
+  :host ::ng-deep .dropdown-component ng-select .ng-select-container {
+    max-height: 6vh;
+    font-size: 1rem;
+  }
+}
+
+@media(max-width: 724px) {
+  :host ::ng-deep .dropdown-component ng-select .ng-select-container {
+    min-height: 4vh;
+    font-size: clamp(0.7rem, 1.5vw, 1rem);
+  }
+}
+
 
 :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
   overflow: hidden;
   text-overflow: ellipsis;
-  width: 90%;
+  min-width: 90%;
   color: rgba(255, 131, 7, 0.5) !important;
   transition: font-size 0.3s ease;
 }
@@ -130,6 +169,7 @@
 mat-error {
   color: rgba(161, 13, 13, 0.4) !important;
   margin-left: 6rem;
+  font-size: clamp(0.7rem, 1vw, 1rem);
 }
 
 /* Validation Styles  */
