@@ -3,11 +3,11 @@
   flex-direction: column;
   flex: 1;
   background-color: rgba(108, 117, 125, 100);
-  height: 74vh;
+  max-height: 74vh;
   margin-left: auto;
   margin-right: auto;
   padding-bottom: 10rem;
-  width: 90vw;
+  min-width: 90vw;
   overflow-y: auto;
   overflow-x: hidden;
   border-top: 5px solid var(--stark-blue);
@@ -16,9 +16,14 @@
 }
 
 .page-title {
-  margin: 1rem auto 0 5rem;
+  margin: 1.2rem auto 0 5rem;
   color: var(--bs-gray-900);
   width: 100%;
+}
+
+.page-title h2 {
+  margin-right: 7rem;
+  font-size: clamp(1.2rem, 3vw, 2rem);
 }
 
 .header-line {
@@ -32,7 +37,7 @@
   flex-direction: column;
   flex: 1;
   width: 90%;
-  margin: 0 0 3rem 0;
+  margin: 0 1rem 3rem 1rem;
 }
 
 app-listing-title-input {
@@ -59,34 +64,76 @@ app-comms-service-input {
   width: 80%;
 }
 
-.form-group-heading1 {
-  padding-left: 23%;
-  padding-top: 1rem;
+/* Listing title heading */
+@media(min-width: 725px) {
+  .form-group-heading1 {
+    padding-left: 23%;
+    padding-top: 1rem;
+    font-size: clamp(1.2rem, 1.3vw, 3rem);
+  }
 }
 
-.form-title-row {
-  display: flex;
-  flex-direction: row;
-  flex: 1;
-  padding-left: 25%;
-  justify-content: flex-start;
-  width: 100%;
-  align-items: center;
+/* Listing title heading */
+@media(max-width: 724px) {
+  .form-group-heading1 {
+    padding-left: 0.25rem;
+    font-size: 1rem;
+  }
+}
+/* listing title input field row */
+@media(min-width: 725px) {
+  .form-title-row {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    padding-left: clamp(0.25rem, 25vw, 25%);
+    justify-content: flex-start;
+    width: 100%;
+    align-items: center;
+  }
 }
 
-.form-group-heading2 {
-  padding-left: 3rem;
-  padding-top: 2rem;
+/* listing title input field ROW */
+@media(max-width: 724px) {
+  .form-title-row {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    justify-content: flex-start;
+    width: 100%;
+    align-items: center;
+  }
 }
 
-.form-row {
-  display: flex;
-  flex-direction: row;
-  flex: 1;
-  padding-left: 3rem;
-  justify-content: flex-start;
-  width: 100%;
-  align-items: center;
+/* form group headers **except for the listing title header */
+@media(min-width: 725px) {
+  .form-group-heading2 {
+    padding-left: 3rem;
+    padding-top: 2rem;
+    font-size: clamp(1.2rem, 1.3vw, 3rem);
+  }
+}
+
+/* form group headers **except for the title header */
+@media(max-width: 724px) {
+  .form-group-heading2 {
+    padding-left: 0.25rem;
+    padding-top: 0.75rem;
+    font-size: 1rem;
+  }
+}
+
+@media(min-width: 725px) {
+  .form-row {
+    display: grid;
+    grid-template-columns:
+      repeat(auto-fit, minmax(200px, 1fr));
+    padding-left: 3rem;
+    padding-right: 3rem;
+    justify-content: flex-start;
+    width: 100%;
+    align-items: center;
+  }
 }
 
 .dropdown-component {
