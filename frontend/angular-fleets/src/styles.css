@@ -21,4 +21,8 @@ body {
 
 html, body { height: 100%; }
 
+app-create-listing {
+  max-width: 90vw;
+}
+
 

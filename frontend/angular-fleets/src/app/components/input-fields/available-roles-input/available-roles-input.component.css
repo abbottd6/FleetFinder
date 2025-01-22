@@ -21,7 +21,7 @@
 
 @media(max-width: 724px) {
   .mat-mdc-form-field {
-    min-width: 110%;
+    min-width: 70%;
     font-family: 'Orbitron', sans-serif;
     transition: color 0.5s ease, font-size 0.5s ease;
     color: rgba(33, 37, 41, .75);

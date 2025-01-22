@@ -13,5 +13,5 @@
 :host ::ng-deep .ng-select-container{
   width: auto !important;
   max-width: 100%;
-
+  font-size: clamp(0.8rem, 1vw, 1.1rem);
 }
