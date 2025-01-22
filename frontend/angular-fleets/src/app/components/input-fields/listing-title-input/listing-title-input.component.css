@@ -1,16 +1,39 @@
 @import '../input-field/input-field-styles.css';
 
-.listing-title-input {
-  display: flex;
-  flex: 1;
-  padding: 1.5rem 0 0 1.5rem;
-  width: 100%;
+@media(min-width: 725px) {
+  .listing-title-input {
+    display: flex;
+    flex: 1;
+    padding: 1.5rem 0 0 1.5rem;
+    width: 100%;
+  }
 }
 
-.mat-mdc-form-field {
-  width: 75%;
-  font-family: 'Orbitron', sans-serif;
-  transition: color 0.5s ease, font-size 0.5s ease;
-  color: rgba(33, 37, 41, .75);
-  font-size: 1.1rem;
+@media(max-width: 724px) {
+  .listing-title-input {
+    display: flex;
+    flex: 1;
+    padding: 0.5rem 0 0 1.5rem;
+    width: 100%;
+  }
+}
+
+@media(min-width: 725px) {
+  .mat-mdc-form-field {
+    min-width: 75%;
+    font-family: 'Orbitron', sans-serif;
+    transition: color 0.5s ease, font-size 0.5s ease;
+    color: rgba(33, 37, 41, .75);
+    font-size: clamp(0.7rem, 1vw, 1rem);
+  }
+}
+
+@media(max-width: 724px) {
+  .mat-mdc-form-field {
+    min-width: 100%;
+    font-family: 'Orbitron', sans-serif;
+    transition: color 0.5s ease, font-size 0.5s ease;
+    color: rgba(33, 37, 41, .75);
+    font-size: 0.7rem;
+  }
 }

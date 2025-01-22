@@ -16,9 +16,15 @@
       <div formGroupName="sessionEnvInfoGroup">
         <h4 class="form-group-heading2">Game Environment</h4>
         <div class="form-row">
-          <app-server-dropdown [serverControl]="serverRegion"></app-server-dropdown>
-          <app-environment-dropdown [environmentControl]="gameEnvironment"></app-environment-dropdown>
-          <app-experience-dropdown [experienceControl]="gameExperience"></app-experience-dropdown>
+          <div>
+            <app-server-dropdown [serverControl]="serverRegion"></app-server-dropdown>
+          </div>
+          <div>
+            <app-environment-dropdown [environmentControl]="gameEnvironment"></app-environment-dropdown>
+          </div>
+          <div>
+            <app-experience-dropdown [experienceControl]="gameExperience"></app-experience-dropdown>
+          </div>
         </div>
       </div>
 

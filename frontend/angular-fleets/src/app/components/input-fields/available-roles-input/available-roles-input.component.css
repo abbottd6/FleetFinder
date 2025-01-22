@@ -1,3 +1,5 @@
+@import '../input-field/input-field-styles.css';
+
 .listing-available-roles-input {
   display: flex;
   flex: 1;
@@ -6,47 +8,26 @@
   justify-content: center;
 }
 
-.mat-mdc-form-field {
-  width: 90%;
-  font-family: 'Orbitron', sans-serif;
-  transition: color 0.5s ease, font-size 0.5s ease;
-  color: rgba(33, 37, 41, .75);
-  text-decoration-color: rgba(255, 131, 7, 0.5);
-  font-size: 1.1rem;
+@media(min-width: 725px) {
+  .mat-mdc-form-field {
+    min-width: 90%;
+    font-family: 'Orbitron', sans-serif;
+    transition: color 0.5s ease, font-size 0.5s ease;
+    color: rgba(33, 37, 41, .75);
+    text-decoration-color: rgba(255, 131, 7, 0.5);
+    font-size: clamp(0.7rem, 1vw, 1rem);
+  }
 }
 
-/* label transition */
-:host ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
-  padding-left: 1rem;
-  transition: color 0.5s ease, font-size 0.5s ease !important;
+@media(max-width: 724px) {
+  .mat-mdc-form-field {
+    min-width: 110%;
+    font-family: 'Orbitron', sans-serif;
+    transition: color 0.5s ease, font-size 0.5s ease;
+    color: rgba(33, 37, 41, .75);
+    text-decoration-color: rgba(255, 131, 7, 0.5);
+    font-size: 0.7rem;
+  }
 }
 
-/* outline transition */
-:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mat-mdc-notch-piece {
-  transition: border-color 0.5s ease !important;
-}
 
-/* label hover */
-:host ::ng-deep .mat-mdc-form-field:hover:not(:focus-within) .mat-mdc-floating-label {
-  color: rgba(255, 131, 7, 0.5) !important;
-  font-size: 105% !important;
-}
-
-/* outline hover */
-:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mat-mdc-notch-piece {
-  border-color: rgba(255, 131, 7, 0.5) !important;
-}
-
-:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):focus-within .mat-mdc-notch-piece {
-  border-color: rgba(255, 131, 7, 0.5) !important;
-}
-
-/* input text/placeholder text */
-:host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
-  padding-left: 1rem;
-  caret-color: rgba(255, 131, 7, 0.5) !important;
-}
-
-.mat-mdc-form-field-hint {
-  color: rgba(33, 37, 41, .75);
-}
