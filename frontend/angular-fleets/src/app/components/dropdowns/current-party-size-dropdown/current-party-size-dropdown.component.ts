@@ -8,11 +8,11 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './current-party-size-dropdown.component.html',
   styleUrl: './current-party-size-dropdown.component.css'
 })
-export class CurrentPartySizeDropdownComponent implements AfterViewInit {
+export class CurrentPartySizeDropdownComponent implements OnInit {
   @Input() currentPartySizeControl!: FormControl;
   partySize: number[] = [];
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.partySize = Array.from({ length: 100 }, (_, i) => i + 1);
   }
 }
