@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -11,13 +11,13 @@ import {FormControl, FormGroup} from "@angular/forms";
   styleUrl: './pvp-status-dropdown.component.css'
 })
 
-export class PvpStatusDropdownComponent implements OnInit{
+export class PvpStatusDropdownComponent implements AfterViewInit{
   @Input() pvpStatusControl!: FormControl;
   pvpStatuses: {pvpStatusId: number, pvpStatus: string}[] = [];
 
   constructor(private lookupService: LookupService) { }
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.fetchPvpStatuses();
   }
 

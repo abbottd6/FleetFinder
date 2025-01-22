@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -10,7 +10,7 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './subcategory-dropdown.component.html',
   styleUrl: './subcategory-dropdown.component.css'
 })
-export class SubcategoryDropdownComponent implements OnInit{
+export class SubcategoryDropdownComponent implements AfterViewInit{
   @Input() subcategoryControl!: FormControl;
   @Input() categoryControl!: FormControl;
   subcategories: {subcategoryId: number, subcategoryName: string, gameplayCategoryName: string}[] = [];
@@ -18,7 +18,7 @@ export class SubcategoryDropdownComponent implements OnInit{
 
   constructor(private lookupService: LookupService) { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.fetchSubcategories();
 
     // Subscribing to gameplay category selection changes to filter subcategories by parent category

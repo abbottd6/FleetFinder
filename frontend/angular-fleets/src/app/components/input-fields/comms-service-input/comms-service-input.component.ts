@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
@@ -8,7 +8,7 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './comms-service-input.component.html',
   styleUrl: './comms-service-input.component.css'
 })
-export class CommsServiceInputComponent implements OnInit{
+export class CommsServiceInputComponent implements AfterViewInit{
   @Input() commsServiceControl!: FormControl;
   @Input() commsOptionControl!: FormControl;
   characterCount: number = 0;
@@ -18,7 +18,7 @@ export class CommsServiceInputComponent implements OnInit{
     this.characterCount = value.length;
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
 
     //subscribing to comms option for enable/disable comms service input field
     this.commsOptionControl?.valueChanges.subscribe(value => {

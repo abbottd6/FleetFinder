@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -10,13 +10,13 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './category-dropdown.component.html',
   styleUrl: './category-dropdown.component.css'
 })
-export class CategoryDropdownComponent implements OnInit{
+export class CategoryDropdownComponent implements AfterViewInit{
   @Input() categoryControl!: FormControl;
   categories: {gameplayCategoryId: number, gameplayCategoryName: string}[] = [];
 
   constructor(private lookupService: LookupService) {}
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.fetchCategories();
   }
 

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -10,13 +10,13 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './system-dropdown.component.html',
   styleUrl: './system-dropdown.component.css'
 })
-export class SystemDropdownComponent implements OnInit{
+export class SystemDropdownComponent implements AfterViewInit{
   @Input() planetarySystemControl!: FormControl;
   systems: {systemId: number, systemName: string}[] = [];
 
   constructor(private lookupService: LookupService) { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.lookupService.getPlanetarySystems()
       .pipe(
         catchError((err) => {

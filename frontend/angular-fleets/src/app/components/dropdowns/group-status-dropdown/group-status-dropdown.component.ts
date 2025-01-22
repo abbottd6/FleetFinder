@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
@@ -10,13 +10,13 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './group-status-dropdown.component.html',
   styleUrl: './group-status-dropdown.component.css'
 })
-export class GroupStatusDropdownComponent implements OnInit{
+export class GroupStatusDropdownComponent implements AfterViewInit{
   @Input() groupStatusControl!: FormControl;
   groupStatuses: {groupStatusId: number, groupStatus: string}[] = [];
 
   constructor(private lookupService: LookupService) {}
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.fetchGroupStatuses()
   }
 
@@ -29,7 +29,7 @@ export class GroupStatusDropdownComponent implements OnInit{
         })
       )
       .subscribe((data) => {this.groupStatuses = data;
-      console.log('Gameplay subcategories dropdown options fetched:', this.groupStatuses);
+      console.log('Group status dropdown options fetched:', this.groupStatuses);
       });
   }
 }
