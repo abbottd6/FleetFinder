@@ -16,6 +16,7 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 import {NgSelectComponent} from "@ng-select/ng-select";
+import { GroupListingModalComponent } from './components/group-listing-modal/group-listing-modal.component';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import {NgSelectComponent} from "@ng-select/ng-select";
     NavBarComponent,
     FooterComponent,
     WelcomeScreenComponent,
+    GroupListingModalComponent,
   ],
   imports: [
     BrowserModule,

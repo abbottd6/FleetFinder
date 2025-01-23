@@ -1,0 +1,206 @@
+<!-- TABLE ITEM MODAL -->
+<div *ngIf="isVisible"
+  class="modal fade"
+  tabindex="-1"
+  [ngClass]="{'show': isVisible}"
+  [style.display]="isVisible ? 'block' : 'none'"
+  role="dialog"
+  aria-modal="true"
+  (click)="closeOnBackdropClick($event)"
+>
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-dash">//</h1><h4 class="modal-title">{{ selectedListing?.listingTitle}}</h4>
+        <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="container-fluid">
+
+          <!-- START OF FIRST GRID-BLOCK -->
+          <div class="modal-listing-container-grid">
+            <div class="modal-listing-block">
+              <div class="modal-listing-row">
+                <span class="modal-listing-field">Listed By:</span>
+                <span class="modal-listing-val">{{selectedListing?.userName}}</span>
+              </div>
+              <div class="modal-listing-row">
+                <span class="modal-listing-field">Server Region:</span>
+                <span class="modal-listing-val">{{selectedListing?.server}}</span>
+              </div>
+            </div>
+          </div>
+          <!-- END OF FIRST GRID-BLOCK -->
+
+
+          <div class="modal-listing-block">
+            <div class="modal-listing-row">
+              <span class="modal-listing-field">Last Updated: </span>
+              <span class="modal-listing-val">{{selectedListing?.lastUpdated | date:'MMM d, h:mm a'}}</span>
+            </div>
+          </div>
+
+
+
+          <div class="modal-listing-block">
+            <div class="column-right" *ngIf="selectedListing?.groupStatus === 'Current/Live'; else separateLineGroupStatus">
+              <ng-container>
+                <span class="modal-listing-field">Group Status:</span>
+                <span class="modal-listing-val">{{selectedListing?.groupStatus}}</span>
+              </ng-container>
+            </div>
+          </div>
+          <ng-template #separateLineGroupStatus>
+            <div class="modal-listing-block column-right">
+              <span class="modal-listing-field">Group Status:</span>
+              <div class="modal-listing-val-overflow">{{selectedListing?.groupStatus}}</div>
+            </div>
+          </ng-template>
+          <div *ngIf="selectedListing?.groupStatus === 'Future/Scheduled' && selectedListing?.eventSchedule as eventSchedule" class="modal-listing-block">
+            <div class="column-left">
+              <span></span>
+            </div>
+          </div>
+
+          <div *ngIf="selectedListing?.groupStatus === 'Future/Scheduled' && selectedListing?.eventSchedule as eventSchedule" class="modal-listing-block">
+            <div class="column-right">
+              <span class="modal-listing-field">Event Scheduled: </span>
+              <span class="modal-listing-val">{{ eventSchedule | date: 'MMM d, h:mm a' }}</span>
+            </div>
+          </div>
+
+
+
+          <div class="modal-listing-sub-body">
+            <div class="modal-listing-block">
+              <div class="column-left">
+                <span class="modal-listing-field">Environment:</span>
+                <span class="modal-listing-val">{{selectedListing?.environment}}</span>
+              </div>
+            </div>
+            <div class="modal-listing-block">
+              <div class="column-right">
+                <span class="modal-listing-field">Comms:</span>
+                <span class="modal-listing-val">{{selectedListing?.commsOption}}</span>
+              </div>
+            </div>
+            <div class="modal-listing-block">
+              <div class="column-left">
+                <span class="modal-listing-field">Experience:</span>
+                <span class="modal-listing-val">{{selectedListing?.experience}}</span>
+              </div>
+            </div>
+
+            <div class="modal-listing-block">
+              <div class="column-right">
+                <span class="modal-listing-field">Comms Service:</span>
+                <ng-template #emptyCommsService>
+                  <!--Blank if no comms service -->
+                </ng-template>
+              </div>
+            </div>
+            <ng-template #emptyCommsDiv>
+              <!-- no extra line if no commsService -->
+            </ng-template>
+            <div class="modal-listing-block" *ngIf="selectedListing?.commsService; else emptyCommsDiv">
+              <ng-container>
+                <div class="column-left">
+                  <!--empty div for comms service spacing -->
+                </div>
+              </ng-container>
+            </div>
+            <div class="modal-listing-block" *ngIf="selectedListing?.commsService; else emptyCommsService">
+              <ng-container>
+                <div class="column-right" id="comms-service">
+                  <span class="modal-listing-val">{{selectedListing?.commsService}}</span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+          <!--  end of second sub-body -->
+          <div class="modal-listing-sub-body">
+            <div class="modal-listing-block">
+              <div class="column-left">
+                <span class="modal-listing-field">System:</span>
+                <span class="modal-listing-val">{{selectedListing?.system}}</span>
+              </div>
+            </div>
+            <div class="modal-listing-block" *ngIf="selectedListing?.planetMoonSystem; else emptyPlanetMoonSystem">
+              <div class="column-right">
+                <span class="modal-listing-field">Planet/Moon:</span>
+                <span>
+                      <ng-container> {{selectedListing?.planetMoonSystem}} </ng-container>
+                    </span>
+              </div>
+            </div>
+            <ng-template #emptyPlanetMoonSystem>
+              <!-- blank if planetMoonSystem null -->
+            </ng-template>
+
+
+            <div class="modal-listing-block">
+              <div class="column-left">
+                <span class="modal-listing-field">Gameplay Category:</span>
+                <span class="modal-listing-val">{{selectedListing?.category}}</span>
+              </div>
+            </div>
+            <div class="modal-listing-block"*ngIf="selectedListing?.subcategory; else emptySubcategory">
+              <div class="column-right">
+                <span class="modal-listing-field">Subcategory:</span>
+                <ng-container >{{ selectedListing?.subcategory}}</ng-container>
+              </div>
+            </div>
+            <ng-template #emptySubcategory>
+              <!--blank if subcategory null -->
+            </ng-template>
+            <div class="modal-listing-block">
+              <div class="column-left">
+                <span class="modal-listing-field">Play Style:</span>
+                <span class="modal-listing-val">{{selectedListing?.playStyle}}</span>
+              </div>
+            </div>
+            <div class="modal-listing-block">
+              <div class="column-right">
+                <span class="modal-listing-field">PvP Status:</span>
+                <span class="modal-listing-val">{{selectedListing?.pvpStatus}}</span>
+              </div>
+            </div>
+            <div class="modal-listing-block">
+              <div class="column-left">
+                <span class="modal-listing-field">Group Size:</span>
+                <span class="modal-listing-val">{{selectedListing?.currentPartySize}} / {{selectedListing?.desiredPartySize}}</span>
+              </div>
+            </div>
+            <div class="modal-listing-block">
+              <div class="column-right">
+                <span class="modal-listing-field">Legality:</span>
+                <span class="modal-listing-val">{{selectedListing?.legality}}</span>
+              </div>
+            </div>
+          </div>
+          <div class="modal-listing-sub-body">
+            <div class="modal-listing-block column-left">
+              <span class="modal-listing-field">Description:</span>
+            </div>
+            <br>
+            <div class="modal-listing-block column-left">
+              <div class="modal-listing-val">{{selectedListing?.listingDescription}}</div>
+            </div>
+          </div>
+          <div class="modal-listing-sub-body">
+            <div class="modal-listing-block">
+              <span class="modal-listing-field">Available Roles:</span><span class="modal-listing-val">{{selectedListing?.availableRoles}}</span>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="modal-buttons" (click)="closeModal()">Close</button>
+            <button type="button" class="modal-buttons">Message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

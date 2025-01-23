@@ -21,7 +21,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let tempListing of groupListings" data-bs-toggle="modal" [attr.data-bs-target]="'#listingModal' + tempListing.groupId">
+    <tr *ngFor="let tempListing of groupListings" (click)="onRowClick(tempListing)">
       <!-- COlUMN 1 -->
       <td>{{ tempListing.userName}}</td>
       <!-- COlUMN 2 -->
@@ -58,90 +58,9 @@
   </table>
 </div>
 
-  <!-- TABLE ITEM MODAL -->
-  <div *ngFor="let tempListing of groupListings" class="modal fade" [id]="'listingModal' + tempListing.groupId" tabindex="-1" role="dialog" aria-labelledby="listingModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-dash">//</h1><h4 class="modal-title" id="exampleModalLabel">{{ tempListing.listingTitle}}</h4>
-          <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="container-fluid">
-            <div class="modal-listing-container">
-              <div class="modal-listing-sub-body-first">
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">Listed By:</span><span class="modal-listing-ml">{{tempListing.userName}}</span>
-                  <span class="modal-listing-fieldR">Last Updated: </span><span class="modal-listing-mr">{{tempListing.lastUpdated | date:'MMM d, h:mm a'}}</span>
-                </div>
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">Server Region:</span><span class="modal-listing-ml">{{tempListing.server}}</span>
-                  <span class="modal-listing-fieldR">Group Status:</span><span class="modal-listing-mr">{{tempListing.groupStatus}}</span>
-                </div>
-                <div *ngIf="tempListing?.groupStatus === 'Future/Scheduled' && tempListing?.eventSchedule as eventSchedule" class="modal-listing-row">
-                    <span class="modal-listing-fieldR">Event Scheduled: </span>
-                    <span class="modal-listing-mr">{{ eventSchedule | date: 'MMM d, h:mm a' }}</span>
-                </div>
-              <div class="modal-listing-sub-body">
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">Environment:</span><span class="modal-listing-ml">{{tempListing.environment}}</span>
-                  <span class="modal-listing-fieldR">Comms:</span><span class="modal-listing-mr">{{tempListing.commsOption}}</span>
-                </div>
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">Experience:</span><span class="modal-listing-ml">{{tempListing.experience}}</span>
-                  <span class="modal-listing-fieldR">Comms Service:</span><span class="modal-listing-mr">{{tempListing.commsService}}</span>
-                </div>
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">System:</span><span class="modal-listing-ml">{{tempListing.system}}
-                    <ng-container *ngIf="tempListing.planetMoonSystem; else emptyPlanetMoonSystem"> - {{tempListing.planetMoonSystem}}
-                    </ng-container>
-                    <ng-template #emptyPlanetMoonSystem>
-                    <!-- blank if planetMoonSystem null -->
-                    </ng-template>
-                  </span>
-                </div>
-              </div>
-              <div class="modal-listing-sub-body">
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">Gameplay Category:</span>
-                  <span class="modal-listing-ml">{{tempListing.category}}
-                    <ng-container *ngIf="tempListing.subcategory; else emptySubcategory"> - {{ tempListing.subcategory}}
-                    </ng-container>
-                    <ng-template #emptySubcategory>
-                    <!--blank if subcategory null -->
-                    </ng-template>
-                  </span>
-                  <span class="modal-listing-fieldR">Play Style:</span><span class="modal-listing-mr">{{tempListing.playStyle}}</span>
-                </div>
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">PvP Status:</span><span class="modal-listing-ml">{{tempListing.pvpStatus}}</span>
-                  <span class="modal-listing-fieldR">Group Size:</span><span class="modal-listing-mr">{{tempListing.currentPartySize}} / {{tempListing.desiredPartySize}}</span>
-                </div>
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">Legality:</span><span class="modal-listing-ml">{{tempListing.legality}}</span>
-                </div>
-              </div>
-              <div class="modal-listing-sub-body">
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">Description:</span><span class="modal-listing-ml">{{tempListing.listingDescription}}</span>
-                </div>
-              </div>
-              <div class="modal-listing-sub-body">
-                <div class="modal-listing-row">
-                  <span class="modal-listing-fieldL">Available Roles:</span><span class="modal-listing-ml">{{tempListing.availableRoles}}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="modal-buttons" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="modal-buttons">Message</button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
+<app-group-listing-modal
+  *ngIf="isModalVisible"
+  [isVisible]="isModalVisible"
+  [selectedListing]="selectedListing"
+  (close)="onModalClose()"
+></app-group-listing-modal>

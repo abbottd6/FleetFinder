@@ -9,10 +9,26 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
     standalone: false
 })
 export class GroupListingsComponent implements OnInit {
-
-  @Input() public groupListings: GroupListingViewModel[] = [];
+  @Input() public groupListings: GroupListingViewModel[] = []
+  selectedListing: GroupListingViewModel | null = null;
+  isModalVisible: boolean = false;
 
   constructor(private groupListingService: GroupListingFetchService) {
+  }
+
+  //on-row-click instructions for groupListing modal popup
+  onRowClick(tempListing: GroupListingViewModel) {
+    this.selectedListing = tempListing;
+    console.log("Logging selected listing ID: ", this.selectedListing.groupId);
+    this.isModalVisible = true;
+    console.log("Parent modal visibility: ", this.isModalVisible);
+  }
+
+  //on close instructions for groupListing modal popup
+  onModalClose() {
+    console.log("Modal closed");
+    this.isModalVisible = false;
+    this.selectedListing = null;
   }
 
   ngOnInit(): void {
