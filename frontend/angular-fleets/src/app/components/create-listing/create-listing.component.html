@@ -62,9 +62,11 @@
         <div class="form-row-text-input">
           <app-available-roles-input [availableRolesControl]="availableRoles"></app-available-roles-input>
         </div>
-        <div class="form-row-text-input">
+        <div class="form-row">
           <app-comms-option-dropdown [commsOptionControl]="commsOption"></app-comms-option-dropdown>
-          <app-comms-service-input [commsServiceControl]="commsService" [commsOptionControl]="commsOption"></app-comms-service-input>
+          <div class="form-row-text-input">
+            <app-comms-service-input [commsServiceControl]="commsService" [commsOptionControl]="commsOption"></app-comms-service-input>
+          </div>
         </div>
       </div>
       <div *ngIf="formSubmitted && listingFormGroup.invalid" class="submit-error">Check required fields</div>

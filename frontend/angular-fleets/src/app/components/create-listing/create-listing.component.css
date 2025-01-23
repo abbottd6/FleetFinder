@@ -15,15 +15,24 @@
   color: var(--bs-gray-900);
 }
 
-.page-title {
-  margin: 1.2rem auto 0 5rem;
-  color: var(--bs-gray-900);
-  width: 100%;
+@media(min-width: 725px) {
+  .page-title {
+    margin: 1.2rem auto 0 5rem;
+    color: var(--bs-gray-900);
+    min-width: 90%;
+  }
+}
+
+@media(max-width: 724px) {
+  .page-title {
+    margin: 1.2rem 2rem 0 2rem;
+    color: var(--bs-gray-900);
+    min-width: 100%;
+  }
 }
 
 .page-title h2 {
-  margin-right: 7rem;
-  font-size: clamp(1.2rem, 3vw, 2rem);
+  font-size: clamp(1.1rem, 3vw, 2rem);
 }
 
 .header-line {
@@ -38,10 +47,6 @@
   flex: 1;
   width: 90%;
   margin: 0 1rem 3rem 1rem;
-}
-
-app-environment-dropdown {
-  max-width: 90%;
 }
 
 app-listing-title-input {
@@ -65,7 +70,7 @@ app-available-roles-input {
 
 app-comms-service-input {
   display: block;
-  width: 80%;
+  width: 100%;
 }
 
 /* Listing title heading */
@@ -145,8 +150,8 @@ app-comms-service-input {
     display: grid;
     grid-template-columns:
       repeat(auto-fit, minmax(200px, 1fr));
-    padding-left: 3rem;
-    padding-right: 3rem;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
     justify-content: flex-start;
     width: 100%;
     align-items: center;
@@ -172,18 +177,31 @@ app-comms-service-input {
   margin-right: auto;
   width: 15%;
 }
+@media(min-width: 725px) {
+  /* datepicker calendar container */
+  ::ng-deep .mat-datepicker-content {
+    background-color: var(--bs-gray-900) !important;
+    color: var(--stark-blue) !important;
+    border-radius: 1rem !important;
+  }
+}
 
-/* datepicker calendar container */
-::ng-deep .mat-datepicker-content {
-  background-color: var(--bs-gray-900) !important;
-  color: var(--stark-blue) !important;
-  border-radius: 1rem !important;
+@media(max-width: 724px) {
+  /* datepicker calendar container */
+  ::ng-deep .mat-datepicker-content {
+    background-color: var(--bs-gray-900) !important;
+    color: var(--stark-blue) !important;
+    border-radius: 1rem !important;
+    margin-bottom: 5rem;
+  }
 }
 
 /* datepicker calendar */
 ::ng-deep .mat-datepicker-content .mat-calendar {
   border: 2px solid rgba(255, 131, 7, 0.5);
   border-radius: 1rem !important;
+  max-height: 40vh;
+  overflow: scroll;
 }
 
 /* datepicker calendar days */
@@ -261,7 +279,7 @@ app-comms-service-input {
   padding: .25rem .75rem .25rem .75rem !important;
   background-color: rgba(33, 37, 41, .4);
   color: rgba(255, 131, 7, .75);
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 1vw, 1.2rem);
   border-radius: .25rem;
   transition: background-color 0.15s ease;
 }
@@ -278,6 +296,6 @@ app-comms-service-input {
   justify-content: center;
   color: rgba(161, 13, 13, 0.5) !important;
   margin: 1rem;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 1vw, 1.2rem);
 }
 
