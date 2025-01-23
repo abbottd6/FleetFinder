@@ -1,0 +1,228 @@
+.modal-content {
+  background-color: var(--bs-gray-900);
+  color: #d8d8d8;
+  font-size: clamp(0.8rem, 1vw, 1.2rem);
+  margin-inline: auto;
+  overflow-y: scroll;
+}
+
+/*The actual main container for the modal: LARGE VW*/
+@media(min-width: 1368px) {
+  .modal-dialog.modal-xl.modal-dialog-centered {
+    border: 5px solid hotpink;
+    max-width: 50vw;
+  }
+}
+
+/*The actual main container for the modal: MED VW*/
+@media(min-width: 992px) and (max-width: 1367px) {
+  .modal-dialog.modal-xl.modal-dialog-centered {
+    border: 5px solid hotpink;
+    max-width: 70vw;
+  }
+}
+
+/*The actual main container for the modal  SMALL VW*/
+@media (max-width: 991px) {
+  .modal-dialog.modal-xl.modal-dialog-centered {
+    border: 5px solid hotpink;
+    max-width: 95vw;
+  }
+}
+
+/* Grid container for modal listing blocks LARGE VW */
+@media(min-width: 1368px) {
+  .modal-listing-container-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0 1.25rem 0;
+  }
+}
+
+/* Grid container for modal listing blocks: MED VW*/
+@media(min-width: 625px) and (max-width: 1367px) {
+  .modal-listing-container-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0 1.25rem 0;
+  }
+}
+
+/* Grid container for modal listing blocks: SMALL VW*/
+@media (max-width: 624px) {
+  .modal-listing-container-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0 1.25rem 0;
+  }
+}
+
+.modal-header {
+  display: flex;
+  flex-direction: row;
+}
+
+.modal-title {
+  font-size: clamp(1rem, 1.2vw, 1.4rem);
+  padding: clamp(0.25rem, 1vw, 1rem);
+}
+.modal-dash {
+  color: rgba(255, 131, 7, .75);
+  margin-left: .25rem;
+  margin-right: .25rem;
+  padding-left: .25rem;
+}
+
+.close {
+  display: flex;
+  margin: -1rem .25rem -1rem auto;
+  border: solid 2px rgba(255, 131, 7, .75);
+  border-radius: .25rem;
+  padding: 0 .5rem .25rem .5rem;
+  background-color: transparent;
+  float: right;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  color: rgba(255, 131, 7, .75);
+  opacity: .75;
+  transition: background-color 0.15s ease;
+}
+
+.close:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+}
+
+.modal-buttons {
+  border: 2px solid rgba(255, 131, 7, .75);
+  padding: .25rem .75rem .25rem .75rem !important;
+  background-color: rgba(33, 37, 41, .4);
+  color: rgba(255, 131, 7, .75);
+  font-size: clamp(1rem, 1vw, 1.2rem);
+  border-radius: .25rem;
+  transition: background-color 0.15s ease;
+}
+
+.modal-buttons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+}
+
+
+
+
+.modal-listing-block {
+  display: flex;
+  flex-direction: column;
+  max-width: 40vw;
+}
+
+.column-left {
+  margin-right: auto;
+}
+
+@media(min-width: 725px) {
+  .column-right {
+    margin-right: 0.25rem;
+    margin-left: auto;
+  }
+}
+
+/* makes right column same as left column */
+@media(max-width: 724px) {
+  .column-right {
+    margin-right: auto;
+  }
+}
+
+.modal-listing-field {
+  /*margin-left: auto;*/
+  /*margin-right: 0;*/
+  /*max-width: 35vw;*/
+  color: rgba(255, 131, 7, .75);
+}
+
+.modal-listing-val {
+  margin-inline: 0.25rem;
+}
+
+/*#comms-service {*/
+/*  max-width: 30vw;*/
+/*  wrap-option: wrap;*/
+/*  overflow-wrap: break-word;*/
+/*}*/
+
+/*.modal-listing-fieldL {*/
+/*  !*margin-left: 0;*!*/
+/*  !*margin-right: 0.5rem;*!*/
+/*  !*max-width: 35vw;*!*/
+/*  color: rgba(255, 131, 7, .75);*/
+/*}*/
+
+
+
+
+
+/*@media(min-width: 725px) {*/
+/*  .modal-listing-val-overflow {*/
+/*    margin-inline: 0.25rem;*/
+/*  }*/
+/*}*/
+
+/*@media(max-width: 724px) {*/
+/*  .modal-listing-val-overflow {*/
+/*    overflow: auto;*/
+/*    text-overflow: ellipsis;*/
+/*  }*/
+/*}*/
+
+/*!*@media(min-width: 725px) {*!*/
+/*!*  .modal-listing-sub-body-first {*!*/
+/*!*    display: grid;*!*/
+/*!*    grid-template-columns:*!*/
+/*!*      repeat(auto-fit, minmax(20vw, 1fr));*!*/
+/*!*    margin: 0 0 1.25rem 0;*!*/
+/*!*  }*!*/
+/*!*}*!*/
+
+/*!*@media(max-width: 724px) {*!*/
+/*!*  .modal-listing-sub-body-first {*!*/
+/*!*    display: grid;*!*/
+/*!*    grid-template-columns:*!*/
+/*!*      repeat(auto-fit, minmax(33vw, 1fr));*!*/
+/*!*    margin: 0 0 1.25rem 0;*!*/
+/*!*  }*!*/
+/*!*}*!*/
+
+/*!*@media(min-width: 725px) {*!*/
+/*!*  .modal-listing-sub-body {*!*/
+/*!*    display: grid;*!*/
+/*!*    grid-template-columns:*!*/
+/*!*        repeat(auto-fit, minmax(20vw, 1fr));*!*/
+/*!*    margin: 1.25rem 0 1.25rem 0;*!*/
+/*!*  }*!*/
+/*!*}*!*/
+
+/*!*@media(max-width: 724px) {*!*/
+/*!*  .modal-listing-sub-body {*!*/
+/*!*    display: grid;*!*/
+/*!*    grid-template-columns:*!*/
+/*!*        repeat(auto-fit, minmax(40vw, 1fr));*!*/
+/*!*    margin: 1.25rem 0 1.25rem 0;*!*/
+/*!*  }*!*/
+/*!*}*!*/
+
+/*.modal-listing-sub-body {*/
+/*  display: block;*/
+/*}*/
+
+/*.modal-listing-row {*/
+/*  display: block;*/
+/*}*/
+

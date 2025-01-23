@@ -2,14 +2,15 @@
   display: flex;
   flex-direction: column;
   background-color: rgba(108, 117, 125, 100);
-  width: 90vw;
+  max-width: 90vw;
+  overflow-x: scroll;
   border-top: 4px solid rgba(255, 131, 7, .75);
   border-left: 4px solid rgba(255, 131, 7, .75);
   font-size: 1.1rem;
   color: var(--bs-gray-900);
   flex-grow: 1;
   min-height: 150px;
-  overflow: auto;
+  /*overflow: auto;*/
   height: 74vh;
 }
 
@@ -19,6 +20,7 @@ table th {
   top: 0;
   background-color: #60646a;
   z-index: 1;
+  font-size: clamp(0.8rem, 1vw, 1.1rem);
 }
 
 .groups-table tbody tr:nth-child(even) {
@@ -34,7 +36,17 @@ table th {
 }
 
 .groups-table tr td {
-  padding: 1rem 1rem 1rem 1.25rem;
+  padding: clamp(0.5rem, 1vw, 0.8rem);
+  font-size: clamp(0.7rem, 1vw, 1.1rem);
+}
+
+@media(max-width: 1100px) {
+  table th, table td {
+    max-height: 4vh;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .groups-table th {
@@ -59,104 +71,5 @@ table th {
 
 .pve-color {
   color: green;
-}
-
-.modal-content {
-  background-color: var(--bs-gray-900);
-  color: #d8d8d8;
-}
-
-.modal-header {
-  display: flex;
-  flex-direction: row;
-}
-.modal-dash {
-  color: rgba(255, 131, 7, .75);
-  margin-left: .25rem;
-  margin-right: .25rem;
-  padding-left: .25rem;
-}
-
-.close {
-  display: flex;
-  margin: -1rem .25rem -1rem auto;
-  border: solid 2px rgba(255, 131, 7, .75);
-  border-radius: .25rem;
-  padding: 0 .5rem .25rem .5rem;
-  background-color: transparent;
-  float: right;
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1;
-  color: rgba(255, 131, 7, .75);
-  opacity: .75;
-  transition: background-color 0.15s ease;
-}
-
-.close:hover {
-  color: var(--bs-gray-900);
-  border-color: rgba(255, 131, 7, .75);
-  background-color: rgba(255, 131, 7, .25);
-}
-
-.modal-buttons {
-  border: 2px solid rgba(255, 131, 7, .75);
-  padding: .25rem .75rem .25rem .75rem !important;
-  background-color: rgba(33, 37, 41, .4);
-  color: rgba(255, 131, 7, .75);
-  font-size: 1.2rem;
-  border-radius: .25rem;
-  transition: background-color 0.15s ease;
-}
-
-.modal-buttons:hover {
-  color: var(--bs-gray-900);
-  border-color: rgba(255, 131, 7, .75);
-  background-color: rgba(255, 131, 7, .25);
-}
-
-.modal-listing-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-listing-row {
-  display: flex;
-  flex-direction: row;
-}
-
-.modal-listing-ml {
-  margin-left: 0;
-  margin-right: auto;
-}
-
-.modal-listing-fieldL {
-  margin-left: 0;
-  margin-right: .5rem;
-  color: rgba(255, 131, 7, .75);
-}
-
-.modal-listing-fieldR {
-  margin-left: auto;
-  margin-right: .5rem;
-  color: rgba(255, 131, 7, .75);
-}
-
-
-.modal-listing-mr {
-  margin-left: 0;
-  margin-right: 0;
-}
-
-.modal-listing-sub-body-first {
-  display: flex;
-  flex-direction: column;
-  margin: 0 0 1.25rem 0;
-}
-
-.modal-listing-sub-body {
-  display: flex;
-  flex-direction: column;
-  margin: 1.25rem 0 1.25rem 0;
 }
 
