@@ -5,10 +5,13 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="navbarNavDropDown">
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav me-auto mb-lg-0">
+        <li class="nav-item-toggle-only">
+          <a class="nav-link" href="#">Account</a>
+        </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="#">Home</a>
+          <a class="nav-link" aria-current="page" data-bs-toggle="collapse" [routerLink]="'welcome-screen'">Home</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#">About</a>
@@ -25,25 +28,29 @@
           </ul>
         </li>
 
-        <li>
-          <form class="navbar-nav form" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search">
-            <button class="btn btn-outline-secondary" id="navbar-search-button" type="submit">Search</button>
-          </form>
-        </li>
+        <div class="navbar-search">
+          <li>
+            <form class="navbar-nav form" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search">
+              <button class="btn btn-outline-secondary" id="navbar-search-button" type="submit">Search</button>
+            </form>
+          </li>
+        </div>
 
       </ul>
-      <span class="navbar-text">
-        <a href="#">
-          <i class="bi bi-chat-fill"></i>
-        </a>
-        <a href="#">
-          <i class="bi bi-bell-fill"></i>
-        </a>
-        <a [routerLink]="['user-account']">
-          <i class="bi bi-person-fill"></i>
-        </a>
-      </span>
+      <div class="navbar-icons">
+        <span class="navbar-text">
+          <a href="#">
+            <i class="bi bi-chat-fill"></i>
+          </a>
+          <a href="#">
+            <i class="bi bi-bell-fill"></i>
+          </a>
+          <a [routerLink]="['user-account']">
+            <i class="bi bi-person-fill"></i>
+          </a>
+        </span>
+      </div>
     </div>
   </div>
 </nav>

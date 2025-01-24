@@ -6,7 +6,7 @@ import { CreateListingComponent} from "./components/create-listing/create-listin
 import { UserComponent} from "./components/user/user.component";
 
 const routes: Routes = [
-  { path: '', component: WelcomeScreenComponent },
+  { path: 'welcome-screen', component: WelcomeScreenComponent },
   { path: 'group-listings', component: GroupListingsComponent },
   { path: 'create-listing', component: CreateListingComponent },
   { path: 'user-account', component: UserComponent },
