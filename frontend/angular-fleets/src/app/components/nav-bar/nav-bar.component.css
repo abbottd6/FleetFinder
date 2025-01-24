@@ -25,7 +25,21 @@
 .nav-item {
   color: var(--bs-gray-900)
 }
+@media(min-width: 1200px) {
+  .nav-item-toggle-only {
+    color: var(--bs-gray-900);
+    display: none;
+  }
+}
 
+@media(min-width: 1199px) {
+  .nav-item-toggle-only {
+    color: var(--bs-gray-900);
+    display: none;
+  }
+}
+
+/* custom dropdown for full display navbar */
 .dropdown-item {
   display: block;
   width: 80%;
@@ -38,10 +52,12 @@
   clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
 }
 
+/* custom dropdown for full display navbar */
 .dropdown-item:hover {
   background-color: rgba(52, 135, 168, 0.25);
 }
 
+/* Custom dropdown for full-display navbar dropdown */
 .navbar-nav .dropdown-menu {
   background-color: var(--bs-gray-dark);
   clip-path: var(--clip-t-right-b-left);
@@ -57,6 +73,69 @@
   justify-content: flex-start;
   margin-left: 3vw !important;
 }
+
+/* removing searchbar and icons when navbar dropdown toggle appears */
+@media(max-width: 1199px) {
+  .navbar-search,
+  .navbar-icons {
+    display: none;
+  }
+}
+.navbar-collapse.collapsing {
+  position: absolute !important;
+  left: auto;
+  top: 100%;
+  right: 0;
+  width: auto;
+  z-index: 1050;
+  background-color: var(--bs-gray-dark);
+  clip-path: var(--clip-t-right-b-left);
+  border-bottom: 1px solid var(--stark-blue);
+  border-right: 1px solid var(--stark-blue);
+  font-size: 120%;
+}
+
+.collapse.show {
+  position: absolute !important;
+  left: auto;
+  top: 100%;
+  right: 0;
+  width: auto;
+  z-index: 1050;
+  background-color: var(--bs-gray-dark);
+  clip-path: polygon(0% 0%, 87.5% 0%, 100% 12.5%, 100% 100%, 12.5% 100%, 0% 87.5%);
+  border-bottom: 2px solid var(--stark-blue);
+  border-left: 2px solid var(--stark-blue);
+  font-size: 120%;
+  overflow: visible;
+}
+
+/* navbar toggle dropdown for smaller screens */
+/*@media(max-width: 1199px) {*/
+/*  .nav-item.dropdown .dropdown-menu.show {*/
+/*    position: absolute !important;*/
+/*    top: 0;*/
+/*    right: -100%;*/
+/*    left: auto;*/
+/*    transform: translateX(-10px);*/
+/*    max-width: 50vw;*/
+/*    max-height: 300px;*/
+/*    z-index: 1050 !important;*/
+/*    background-color: var(--bs-gray-dark);*/
+/*    !*clip-path: polygon(0% 0%, 87.5% 0%, 100% 12.5%, 100% 100%, 12.5% 100%, 0% 87.5%);*!*/
+/*    !*border-bottom: 2px solid var(--stark-blue);*!*/
+/*    !*border-left: 2px solid var(--stark-blue);*!*/
+/*    border: 2px solid hotpink;*/
+/*    font-size: 1rem;*/
+/*    overflow-y: auto;*/
+/*  }*/
+
+/*  .container-fluid,*/
+/*  .navbar{*/
+/*    overflow: visible;*/
+/*  }*/
+
+/*}*/
 
 .navbar-nav form {
   display: flex;
