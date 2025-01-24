@@ -3,14 +3,12 @@
   flex-direction: column;
   background-color: rgba(108, 117, 125, 100);
   max-width: 90vw;
-  overflow-x: scroll;
   border-top: 4px solid rgba(255, 131, 7, .75);
   border-left: 4px solid rgba(255, 131, 7, .75);
   font-size: 1.1rem;
   color: var(--bs-gray-900);
   flex-grow: 1;
   min-height: 150px;
-  /*overflow: auto;*/
   height: 74vh;
 }
 
@@ -43,9 +41,14 @@ table th {
 @media(max-width: 1100px) {
   table th, table td {
     max-height: 4vh;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
     white-space: nowrap;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+    max-height: 58vh;
   }
 }
 

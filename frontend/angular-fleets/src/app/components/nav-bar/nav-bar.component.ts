@@ -8,4 +8,15 @@ import { Component } from '@angular/core';
 })
 export class NavBarComponent {
 
+  closeDropdown() {
+    const dropdown = document.getElementById('navbarNavDropdown');
+    if (dropdown) {
+      dropdown.setAttribute('aria-expanded', 'flase');
+      dropdown.classList.remove('show');
+      const menu =document.querySelector('.dropdown-menu');
+      if (menu) {
+        menu.classList.remove('show');
+      }
+    }
+  }
 }

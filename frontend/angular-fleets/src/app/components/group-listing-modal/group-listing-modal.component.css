@@ -37,7 +37,9 @@
   padding-left: .25rem;
 }
 
-.close {
+.close,
+.modal.fade .close,
+.modal.fade.show .close {
   display: flex;
   margin: -1rem .25rem -1rem auto;
   border: solid 2px rgba(255, 131, 7, .75);

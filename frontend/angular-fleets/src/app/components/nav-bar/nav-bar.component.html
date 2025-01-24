@@ -7,14 +7,25 @@
 
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav me-auto mb-lg-0">
-        <li class="nav-item-toggle-only">
-          <a class="nav-link" href="#">Account</a>
+        <li class="nav-item">
+          <a class="nav-link"
+             [routerLink]="['user-account']"
+             (click)="closeDropdown()"
+          >Account</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" aria-current="page" data-bs-toggle="collapse" [routerLink]="'welcome-screen'">Home</a>
+          <a class="nav-link"
+             aria-current="page"
+             data-bs-toggle="collapse"
+             [routerLink]="''"
+             (click)="closeDropdown()"
+          >Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">About</a>
+          <a class="nav-link"
+             href="#"
+             (click)="closeDropdown()"
+          >About</a>
         </li>
 
         <li class="nav-item dropdown">
@@ -26,6 +37,18 @@
             <li><a class="dropdown-item" href="#">My Listings</a></li>
             <li><a class="dropdown-item" [routerLink]="['create-listing']">Create Listing</a></li>
           </ul>
+        </li>
+        <li class="nav-item toggle-listings-nav">
+          <a class="nav-link"
+             [routerLink]="['group-listings']"
+             (click)="closeDropdown()"
+          >Search Listings</a>
+        </li>
+        <li class="nav-item toggle-listings-nav">
+          <a class="nav-link"
+             [routerLink]="['create-listing']"
+             (click)="closeDropdown()"
+          >Create Listing</a>
         </li>
 
         <div class="navbar-search">

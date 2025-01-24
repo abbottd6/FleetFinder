@@ -74,6 +74,7 @@
   flex-direction: column;
   width: 95%;
   margin-inline: auto;
+  margin-bottom: 2rem;
 }
 
 @media(min-width: 500px) {
