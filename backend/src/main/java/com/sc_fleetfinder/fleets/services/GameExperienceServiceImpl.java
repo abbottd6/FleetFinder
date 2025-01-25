@@ -53,7 +53,7 @@ public class GameExperienceServiceImpl implements GameExperienceService {
         return modelMapper.map(entity, GameExperienceDto.class);
     }
 
-    public GameExperience convertToEntity(GameEnvironmentDto dto) {
+    public GameExperience convertToEntity(GameExperienceDto dto) {
         return modelMapper.map(dto, GameExperience.class);
     }
 }
