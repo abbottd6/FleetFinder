@@ -32,7 +32,6 @@ import java.time.ZonedDateTime;
 @Configuration
 public class CreateGroupListingMapperConfig {
 
-    //private final ModelMapper modelMapper;
     private final MapperLookupService mapperLookupService;
 
     public CreateGroupListingMapperConfig(MapperLookupService mapperLookupService) {
@@ -45,6 +44,8 @@ public class CreateGroupListingMapperConfig {
 
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
+        //converter for date time strings to Instant type
         modelMapper.addConverter(new AbstractConverter<String, Instant>() {
             @Override
             protected Instant convert(String source) {
