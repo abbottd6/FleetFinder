@@ -1,7 +1,9 @@
 package com.sc_fleetfinder.fleets.services;
 
+import com.sc_fleetfinder.fleets.DAO.GameplayCategoryRepository;
 import com.sc_fleetfinder.fleets.DAO.GameplaySubcategoryRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplaySubcategoryDto;
+import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -19,11 +21,14 @@ public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryServic
 
     private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final GameplaySubcategoryRepository gameplaySubcategoryRepository;
+    private final GameplayCategoryRepository gameplayCategoryRepository;
     private final ModelMapper modelMapper;
 
-    public GameplaySubcategoryServiceImpl(GameplaySubcategoryRepository gameplaySubcategoryRepository) {
+    public GameplaySubcategoryServiceImpl(GameplaySubcategoryRepository gameplaySubcategoryRepository,
+                                          GameplayCategoryRepository gameplayCategoryRepository, ModelMapper modelMapper) {
         super();
         this.gameplaySubcategoryRepository = gameplaySubcategoryRepository;
+        this.gameplayCategoryRepository = gameplayCategoryRepository;
         this.modelMapper = new ModelMapper();
     }
 
@@ -53,7 +58,17 @@ public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryServic
     }
 
     public GameplaySubcategory convertToEntity(GameplaySubcategoryDto gameplaySubcategoryDto) {
-        return modelMapper.map(gameplaySubcategoryDto, GameplaySubcategory.class);
+        GameplaySubcategory tempSubcategory = modelMapper.map(gameplaySubcategoryDto, GameplaySubcategory.class);
+
+        //need to search categoryRepository for category with name from subcategoryDto and
+        // then set this as tempSubcategory category name
+        GameplayCategory tempCategory = gameplayCategoryRepository.findByName(gameplaySubcategoryDto.getGameplayCategoryName())
+                .orElseThrow(() -> new ResourceNotFoundException("GameplayCategory with name: " +
+                        gameplaySubcategoryDto.getGameplayCategoryName() + " not found"));
+
+        tempSubcategory.setGameplayCategory(tempCategory);
+
+        return tempSubcategory;
     }
 
 }
