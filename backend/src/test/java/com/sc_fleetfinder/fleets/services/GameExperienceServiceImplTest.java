@@ -75,7 +75,7 @@ public class GameExperienceServiceImplTest {
         assertAll("Get experience by Id=found assertions set:",
                 () -> assertNotNull(result, "Found experienceId should not return null DTO"),
                 () -> assertDoesNotThrow(() -> gameExperienceService.getExperienceById(1),
-                    "getExperienceById should not throw exception Id is found"),
+                    "getExperienceById should not throw exception when Id is found"),
                 () -> verify(experienceRepository, times(2)).findById(1));
     }
 
