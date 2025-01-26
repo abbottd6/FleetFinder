@@ -3,7 +3,6 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.ExperienceRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -59,7 +57,7 @@ public class GameExperienceServiceImplTest {
 
         //then
         assertAll("get all experiences = empty assertions set: ",
-                () -> assertNotNull(result,  "get all experiences should not be null here"),
+                () -> assertNotNull(result,  "get all experiences should not be null"),
                 () -> assertTrue(result.isEmpty(), "get all experiences should be empty here"),
                 () -> verify(experienceRepository, times(1)).findAll());
     }
@@ -77,7 +75,7 @@ public class GameExperienceServiceImplTest {
         assertAll("Get experience by Id=found assertions set:",
                 () -> assertNotNull(result, "Found experienceId should not return null DTO"),
                 () -> assertDoesNotThrow(() -> gameExperienceService.getExperienceById(1),
-                    "getExperienceById should not throw exception when found id"),
+                    "getExperienceById should not throw exception Id is found"),
                 () -> verify(experienceRepository, times(2)).findById(1));
     }
 
@@ -112,7 +110,7 @@ public class GameExperienceServiceImplTest {
         //then
         assertAll("convert experience entity to DTO assertion set:",
                 () -> assertNotNull(result, "convert experience entity should not return null DTO"),
-                () -> assertEquals(2, result.size(), "experience convertToDto should produce 2 " +
+                () -> assertEquals(2, result.size(), "test experience convertToDto should produce 2 " +
                         "elements"),
                 () -> assertEquals(1, result.getFirst().getExperienceId(), "convert experience" +
                         " entity to DTO Id's do not match"),
