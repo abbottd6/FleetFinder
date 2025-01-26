@@ -10,5 +10,7 @@ public class GameplayCategoryDto {
 
     private int gameplayCategoryId;
     private String gameplayCategoryName;
+    //decided the set of subcategories was not necessary, just using the GameplayCategory field in subcategories
+    //for this information
     //private Set<GameplaySubcategoryDto> gameplaySubcategories = new HashSet<>();
 }

@@ -11,5 +11,5 @@ import java.util.Optional;
 @CrossOrigin
 public interface GameplayCategoryRepository extends JpaRepository<GameplayCategory, Integer> {
 
-    Optional<GameplayCategory> findByName(String name);
+    Optional<GameplayCategory> findByCategoryName(String categoryName);
 }
