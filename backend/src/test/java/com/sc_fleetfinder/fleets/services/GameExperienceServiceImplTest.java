@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.ExperienceRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,10 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,6 +25,7 @@ import static org.mockito.Mockito.when;
 public class GameExperienceServiceImplTest {
 
     @Mock
+    //@AfterEach MockitoExtension @Mock resets repo
     private ExperienceRepository experienceRepository;
 
     @InjectMocks
@@ -33,48 +33,69 @@ public class GameExperienceServiceImplTest {
 
     @Test
     void testGetAllExperiences() {
+        //given
         GameExperience mockEntity = new GameExperience();
-        List<GameExperience> mockEntities = List.of(mockEntity);
+        GameExperience mockEntity2 = new GameExperience();
+        List<GameExperience> mockEntities = List.of(mockEntity, mockEntity2);
         when(experienceRepository.findAll()).thenReturn(mockEntities);
 
+        //when
         List<GameExperienceDto> result = gameExperienceService.getAllExperiences();
 
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        verify(experienceRepository, times(1)).findAll();
+        //then
+        assertAll("get all experiences mock entities assertions set:",
+                () -> assertNotNull(result, "get all experiences should not be null here"),
+                () -> assertEquals(2, result.size(), "get all experiences should have 2 elements"),
+                () -> verify(experienceRepository, times(1)).findAll());
     }
 
     @Test
     void testGetAllExperiencesNotFound() {
+        //given
         when(experienceRepository.findAll()).thenReturn(Collections.emptyList());
 
+        //when
         List<GameExperienceDto> result = gameExperienceService.getAllExperiences();
 
-        assertNotNull(result);
-        assertTrue(result.isEmpty());
-        verify(experienceRepository, times(1)).findAll();
+        //then
+        assertAll("get all experiences = empty assertions set: ",
+                () -> assertNotNull(result,  "get all experiences should not be null here"),
+                () -> assertTrue(result.isEmpty(), "get all experiences should be empty here"),
+                () -> verify(experienceRepository, times(1)).findAll());
     }
 
     @Test
     void testGetExperienceById_Found() {
+        //given
         GameExperience mockEntity = new GameExperience();
         when(experienceRepository.findById(1)).thenReturn(Optional.of(mockEntity));
 
+        //when
         GameExperienceDto result = gameExperienceService.getExperienceById(1);
 
-        assertNotNull(result);
-        verify(experienceRepository, times(1)).findById(1);
+        //then
+        assertAll("Get experience by Id=found assertions set:",
+                () -> assertNotNull(result, "Found experienceId should not return null DTO"),
+                () -> assertDoesNotThrow(() -> gameExperienceService.getExperienceById(1),
+                    "getExperienceById should not throw exception when found id"),
+                () -> verify(experienceRepository, times(2)).findById(1));
     }
 
     @Test
     void testGetExperienceById_NotFound() {
+        //given
         when(experienceRepository.findById(1)).thenReturn(Optional.empty());
 
-        assertThrows(ResourceNotFoundException.class, () -> gameExperienceService.getExperienceById(1));
+        //when experienceRepository does not contain experience with given id
+
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> gameExperienceService.getExperienceById(1),
+                "getExperienceById with id not found should throw exception");
     }
 
     @Test
     void testConvertToDto() {
+        //given
         GameExperience mockEntity = new GameExperience();
         mockEntity.setExperienceId(1);
         mockEntity.setExperienceType("Experience1");
@@ -85,27 +106,41 @@ public class GameExperienceServiceImplTest {
         List<GameExperience> mockEntities = List.of(mockEntity, mockEntity2);
         when(experienceRepository.findAll()).thenReturn(mockEntities);
 
+        //when
         List<GameExperienceDto> result = gameExperienceService.getAllExperiences();
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
-        assertEquals(1, result.getFirst().getExperienceId());
-        assertEquals("Experience1", result.getFirst().getExperienceType());
-        assertEquals(2, result.get(1).getExperienceId());
-        assertEquals("Experience2", result.get(1).getExperienceType());
-        verify(experienceRepository, times(1)).findAll();
+        //then
+        assertAll("convert experience entity to DTO assertion set:",
+                () -> assertNotNull(result, "convert experience entity should not return null DTO"),
+                () -> assertEquals(2, result.size(), "experience convertToDto should produce 2 " +
+                        "elements"),
+                () -> assertEquals(1, result.getFirst().getExperienceId(), "convert experience" +
+                        " entity to DTO Id's do not match"),
+                () -> assertEquals("Experience1", result.getFirst().getExperienceType(), "convert" +
+                        "experience entity to DTO experienceTypes do not match"),
+                () -> assertEquals(2, result.get(1).getExperienceId(), "convert experience" +
+                                " entity to DTO Id's do not match"),
+                () -> assertEquals("Experience2", result.get(1).getExperienceType(), "convert" +
+                        "experience entity to DTO experienceTypes do not match"),
+                () -> verify(experienceRepository, times(1)).findAll());
     }
 
     @Test
     void testConvertToEntity() {
+        //given
         GameExperienceDto mockDto = new GameExperienceDto();
         mockDto.setExperienceId(1);
         mockDto.setExperienceType("Experience1");
 
+        //when
         GameExperience mockEntity = gameExperienceService.convertToEntity(mockDto);
 
-        assertNotNull(mockEntity);
-        assertEquals(1, mockEntity.getExperienceId());
-        assertEquals("Experience1", mockEntity.getExperienceType());
+        //then
+        assertAll("gameExperience convertToEntity assertions set:",
+                () -> assertNotNull(mockEntity, "gameExperience convertToEntity should not return null"),
+                () -> assertEquals(1, mockEntity.getExperienceId(), "gameExperience convertToEntity" +
+                        " experienceIds do not match"),
+                () -> assertEquals("Experience1", mockEntity.getExperienceType(), "gameExperience " +
+                        "convertToEntity experienceTypes do not match"));
     }
 }
