@@ -13,6 +13,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,15 +22,15 @@ public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryServic
 
     private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final GameplaySubcategoryRepository gameplaySubcategoryRepository;
-    private final GameplayCategoryRepository gameplayCategoryRepository;
     private final ModelMapper modelMapper;
+    private final GameplayCategoryRepository gameplayCategoryRepository;
 
     public GameplaySubcategoryServiceImpl(GameplaySubcategoryRepository gameplaySubcategoryRepository,
-                                          GameplayCategoryRepository gameplayCategoryRepository, ModelMapper modelMapper) {
+                                          ModelMapper modelMapper, GameplayCategoryRepository gameplayCategoryRepository) {
         super();
         this.gameplaySubcategoryRepository = gameplaySubcategoryRepository;
-        this.gameplayCategoryRepository = gameplayCategoryRepository;
         this.modelMapper = new ModelMapper();
+        this.gameplayCategoryRepository = gameplayCategoryRepository;
     }
 
     @Override
@@ -58,17 +59,19 @@ public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryServic
     }
 
     public GameplaySubcategory convertToEntity(GameplaySubcategoryDto gameplaySubcategoryDto) {
-        GameplaySubcategory tempSubcategory = modelMapper.map(gameplaySubcategoryDto, GameplaySubcategory.class);
+        //checking for Dto id match in repository
+        GameplaySubcategory gameplaySubcategory = gameplaySubcategoryRepository.findById(gameplaySubcategoryDto.getSubcategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Subcategory with ID: " +
+                        gameplaySubcategoryDto.getSubcategoryId() + " not found"));
 
-        //need to search categoryRepository for category with name from subcategoryDto and
-        // then set this as tempSubcategory category name
-        GameplayCategory tempCategory = gameplayCategoryRepository.findByName(gameplaySubcategoryDto.getGameplayCategoryName())
-                .orElseThrow(() -> new ResourceNotFoundException("GameplayCategory with name: " +
-                        gameplaySubcategoryDto.getGameplayCategoryName() + " not found"));
-
-        tempSubcategory.setGameplayCategory(tempCategory);
-
-        return tempSubcategory;
+        //Verifying that the dto name matches the name of the entity with that Id
+        if(!Objects.equals(gameplaySubcategoryDto.getSubcategoryName(), gameplaySubcategory.getSubcategoryName())) {
+            throw new ResourceNotFoundException("Gameplay subcategory name mismatch for DTO with ID: " +
+                    gameplaySubcategoryDto.getSubcategoryId() + " and name: "
+                    + gameplaySubcategoryDto.getSubcategoryName());
+        }
+        //if Id exists in repo and name matches then return entity
+        return gameplaySubcategory;
     }
 
 }

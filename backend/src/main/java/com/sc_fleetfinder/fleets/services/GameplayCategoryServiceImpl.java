@@ -11,6 +11,7 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -52,7 +53,19 @@ public class GameplayCategoryServiceImpl implements GameplayCategoryService {
         return modelMapper.map(entity, GameplayCategoryDto.class);
     }
 
-    public GameplayCategory convertToEntity(GameplayCategoryDto dto) {
-        return modelMapper.map(dto, GameplayCategory.class);
+    public GameplayCategory convertToEntity(GameplayCategoryDto gameplayCategoryDto) {
+
+        //checking for Dto id match in repository
+        GameplayCategory gameplayCategory = gameplayCategoryRepository.findById(gameplayCategoryDto.getGameplayCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Game Category with ID: " +
+                        gameplayCategoryDto.getGameplayCategoryId() + " not found"));
+        //Verifying that the name for the Dto matches the name of the entity with that id
+        if(!Objects.equals(gameplayCategoryDto.getGameplayCategoryName(), gameplayCategory.getCategoryName())) {
+            throw new ResourceNotFoundException("Gameplay Category name mismatch for DTO with ID: " +
+                    gameplayCategoryDto.getGameplayCategoryId() + " and Category name: "
+                    + gameplayCategoryDto.getGameplayCategoryName());
+        }
+        //if Id exists and names match then returns entity
+        return gameplayCategory;
     }
 }

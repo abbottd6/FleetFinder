@@ -1,11 +1,9 @@
 package com.sc_fleetfinder.fleets.services;
 
-import com.sc_fleetfinder.fleets.DAO.GameplayCategoryRepository;
 import com.sc_fleetfinder.fleets.DAO.GameplaySubcategoryRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplaySubcategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,9 +25,6 @@ class GameplaySubcategoryServiceImplTest {
 
     @Mock
     private GameplaySubcategoryRepository gameplaySubcategoryRepository;
-
-    @Mock
-    GameplayCategoryRepository gameplayCategoryRepository;
 
     @InjectMocks
     private GameplaySubcategoryServiceImpl gameplaySubcategoryService;
@@ -142,30 +137,28 @@ class GameplaySubcategoryServiceImplTest {
     }
 
     @Test
-    void testConvertToEntity() {
+    void testConvertToEntity_Found() {
         //given
         //creating a mock subcategory entity to add to mock gameplay category entity set of subcategory entities
-        GameplaySubcategory mockGameplaySubcategory2 = new GameplaySubcategory();
-        mockGameplaySubcategory2.setSubcategoryId(2);
-        mockGameplaySubcategory2.setSubcategoryName("Test Subcategory2");
+        GameplaySubcategory mockGameplaySubcategory1 = new GameplaySubcategory();
+        mockGameplaySubcategory1.setSubcategoryId(1);
+        mockGameplaySubcategory1.setSubcategoryName("Test Subcategory1");
 
         //creating mock gameplay category to allow conversion of subcategory.getGameplayCategoryName conversion to entity
         GameplayCategory mockGameplayCategory = new GameplayCategory();
         mockGameplayCategory.setCategoryId(1);
         mockGameplayCategory.setCategoryName("Test Category");
-        mockGameplayCategory.getGameplaySubcategories().add(mockGameplaySubcategory2);
+        mockGameplayCategory.getGameplaySubcategories().add(mockGameplaySubcategory1);
 
         //setting category for mock subcategory so that I can use assertSame() to test the converted entity's category
-        mockGameplaySubcategory2.setGameplayCategory(mockGameplayCategory);
+        mockGameplaySubcategory1.setGameplayCategory(mockGameplayCategory);
 
         //GameplaySubcategoryDto for conversion to entity
         GameplaySubcategoryDto mockGameplaySubcategoryDto = new GameplaySubcategoryDto();
         mockGameplaySubcategoryDto.setSubcategoryId(1);
-        mockGameplaySubcategoryDto.setSubcategoryName("Mock Subcategory");
+        mockGameplaySubcategoryDto.setSubcategoryName("Test Subcategory1");
         mockGameplaySubcategoryDto.setGameplayCategoryName(mockGameplayCategory.getCategoryName());
-
-        when(gameplayCategoryRepository.findByName(mockGameplaySubcategoryDto.getGameplayCategoryName()))
-                .thenReturn(Optional.of(mockGameplayCategory));
+        when(gameplaySubcategoryRepository.findById(1)).thenReturn(Optional.of(mockGameplaySubcategory1));
 
         //when
         GameplaySubcategory mockEntity = gameplaySubcategoryService.convertToEntity(mockGameplaySubcategoryDto);
@@ -173,11 +166,49 @@ class GameplaySubcategoryServiceImplTest {
         //then
         assertAll("subcategory convertToEntity assertions set:",
                 () -> assertNotNull(mockEntity, "subcategory convertToEntity should not return null"),
-                () -> assertEquals(1, mockEntity.getSubcategoryId(), "subcategory converToEntity " +
+                () -> assertEquals(1, mockEntity.getSubcategoryId(), "subcategory convertToEntity " +
                         "Id's do not match"),
-                () -> assertEquals("Mock Subcategory", mockEntity.getSubcategoryName(), "subcategory " +
+                () -> assertEquals("Test Subcategory1", mockEntity.getSubcategoryName(), "subcategory " +
                         "convertToEntity subcategory names do not match"),
-                () -> assertSame(mockGameplayCategory, mockEntity.getGameplayCategory(), "subcategory" +
-                        "convertToEntity parent-categoryNames do not match"));
+                () -> assertSame(mockGameplaySubcategory1, mockEntity, "Converted entity with ID: "
+                        + mockEntity.getSubcategoryId() + " and subcategoryName " + mockEntity.getSubcategoryName()
+                        + " does not match ID: " + mockGameplaySubcategory1.getSubcategoryId()));
+    }
+
+    @Test
+    void testConvertToEntity_NotFound() {
+        //given
+        GameplaySubcategoryDto mockGameplaySubcategoryDto = new GameplaySubcategoryDto();
+        mockGameplaySubcategoryDto.setSubcategoryId(1);
+        mockGameplaySubcategoryDto.setSubcategoryName("Not Subcategory1");
+        when(gameplaySubcategoryRepository.findById(1)).thenReturn(Optional.empty());
+
+        //when backend entity does not exist with dto ID
+
+        //then
+        assertThrows(ResourceNotFoundException.class, () ->
+                gameplaySubcategoryService.convertToEntity(mockGameplaySubcategoryDto),
+                "convertToEntity with id not found should throw exception");
+    }
+
+    @Test
+    void testConvertToEntity_NameMismatch() {
+        //given
+        GameplaySubcategoryDto mockGameplaySubcategoryDto = new GameplaySubcategoryDto();
+        mockGameplaySubcategoryDto.setSubcategoryId(1);
+        mockGameplaySubcategoryDto.setSubcategoryName("Wrong Subcategory1");
+
+        GameplaySubcategory mockSubcategory = new GameplaySubcategory();
+        mockSubcategory.setSubcategoryId(1);
+        mockSubcategory.setSubcategoryName("Correct Subcategory2");
+
+        when(gameplaySubcategoryRepository.findById(1)).thenReturn(Optional.of(mockSubcategory));
+
+        //when Dto id and name do not match entity id and name
+
+        //then
+        assertThrows(ResourceNotFoundException.class, () ->
+                gameplaySubcategoryService.convertToEntity(mockGameplaySubcategoryDto),
+                "convertToEntity with id/name mismatch should throw exception");
     }
 }
