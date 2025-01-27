@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class PlanetMoonSystemDto {
 
-    private int planetId;
+    private Integer planetId;
     private String planetName;
     private String systemName;
 }

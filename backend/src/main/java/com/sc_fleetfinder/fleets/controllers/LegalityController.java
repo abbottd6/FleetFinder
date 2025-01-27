@@ -23,7 +23,7 @@ public class LegalityController {
     }
 
     @GetMapping("/{id}")
-    public LegalityDto getLegalityById(@PathVariable int id) {
+    public LegalityDto getLegalityById(@PathVariable Integer id) {
         return legalityService.getLegalityById(id);
     }
 

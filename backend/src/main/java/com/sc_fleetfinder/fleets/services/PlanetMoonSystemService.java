@@ -7,5 +7,5 @@ import java.util.List;
 public interface PlanetMoonSystemService {
 
     List<PlanetMoonSystemDto> getAllPlanetMoonSystems();
-    PlanetMoonSystemDto getPlanetMoonSystemById(int id);
+    PlanetMoonSystemDto getPlanetMoonSystemById(Integer id);
 }

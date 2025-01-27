@@ -23,7 +23,7 @@ public class GroupStatusController {
     }
 
     @GetMapping("/{id}")
-    public GroupStatusDto getGroupStatus(@PathVariable int id) {
+    public GroupStatusDto getGroupStatus(@PathVariable Integer id) {
         return groupStatusService.getGroupStatusById(id);
     }
 }

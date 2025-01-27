@@ -23,7 +23,7 @@ public class GameEnvironmentsController {
     }
 
     @GetMapping("/{id}")
-    public GameEnvironmentDto getGameEnvironmentById(@PathVariable int id) {
+    public GameEnvironmentDto getGameEnvironmentById(@PathVariable Integer id) {
         return gameEnvironmentService.getEnvironmentById(id);
     }
 }

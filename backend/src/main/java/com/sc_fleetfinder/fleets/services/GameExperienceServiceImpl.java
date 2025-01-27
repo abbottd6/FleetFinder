@@ -39,7 +39,7 @@ public class GameExperienceServiceImpl implements GameExperienceService {
     }
 
     @Override
-    public GameExperienceDto getExperienceById(int id) {
+    public GameExperienceDto getExperienceById(Integer id) {
         Optional<GameExperience> experience = experienceRepository.findById(id);
         if (experience.isPresent()) {
             return convertToDto(experience.get());

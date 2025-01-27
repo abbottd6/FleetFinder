@@ -1,17 +1,12 @@
 package com.sc_fleetfinder.fleets.entities;
 
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Table(name="server_region")
@@ -21,7 +16,7 @@ public class ServerRegion {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="server_id")
-    private int serverId;
+    private Integer serverId;
 
     @Column(name="server_name")
     private String serverName;

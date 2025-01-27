@@ -7,6 +7,6 @@ import java.util.List;
 public interface PlanetarySystemService {
 
     List<PlanetarySystemDto> getAllPlanetarySystems();
-    PlanetarySystemDto getPlanetarySystemById(int id);
+    PlanetarySystemDto getPlanetarySystemById(Integer id);
 
 }

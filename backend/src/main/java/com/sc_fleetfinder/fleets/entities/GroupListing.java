@@ -109,12 +109,12 @@ public class GroupListing {
     @Column(name="desired_party_size")
     @Min(value = 2, message = "GroupListing entity field 'desiredPartySize' must be at least 2.")
     @Max(value = 1000, message = "GroupListing entity field 'desiredPartySize' cannot exceed 1,000.")
-    private int desiredPartySize;
+    private Integer desiredPartySize;
 
     @Column(name="current_party_size")
     @Min(value = 1, message = "GroupListing entity field 'currentPartySize' must be at least 1.")
     @Max(value = 1000, message = "GroupListing entity field 'currentPartySize' cannot exceed 1,000.")
-    private int currentPartySize;
+    private Integer currentPartySize;
 
     @Column(name="available_roles")
     private String availableRoles;

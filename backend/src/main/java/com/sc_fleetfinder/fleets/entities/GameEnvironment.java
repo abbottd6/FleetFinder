@@ -16,7 +16,7 @@ public class GameEnvironment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="environment_id")
-    private int environmentId;
+    private Integer environmentId;
 
     @Column(name="environment_type")
     private String environmentType;

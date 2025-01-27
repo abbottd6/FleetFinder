@@ -38,7 +38,7 @@ public class PlanetarySystemServiceImpl implements PlanetarySystemService {
     }
 
     @Override
-    public PlanetarySystemDto getPlanetarySystemById(int id) {
+    public PlanetarySystemDto getPlanetarySystemById(Integer id) {
         Optional<PlanetarySystem> planetarySystem = planetarySystemRepository.findById(id);
         if(planetarySystem.isPresent()) {
             return convertToDto(planetarySystem.get());

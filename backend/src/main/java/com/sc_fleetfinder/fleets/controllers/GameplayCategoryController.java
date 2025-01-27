@@ -23,7 +23,7 @@ public class GameplayCategoryController {
     }
 
     @GetMapping("/{id}")
-    public GameplayCategoryDto getGameplayCategory(@PathVariable int id) {
+    public GameplayCategoryDto getGameplayCategory(@PathVariable Integer id) {
         return gameplayCategoryService.getCategoryById(id);
     }
 }

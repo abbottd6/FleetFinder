@@ -30,7 +30,7 @@ class GameplayCategoryServiceImplTest {
     private GameplayCategoryServiceImpl gameplayCategoryService;
 
     @Test
-    void testGetAllCategories() {
+    void testGetAllCategories_Found() {
         //given
         GameplayCategory mockGameplayCategory = new GameplayCategory();
         GameplayCategory mockGameplayCategory2 = new GameplayCategory();
@@ -48,7 +48,7 @@ class GameplayCategoryServiceImplTest {
     }
 
     @Test
-    void testGetAllCategoriesNotFound() {
+    void testGetAllCategories_NotFound() {
         //given
         when(gameplayCategoryRepository.findAll()).thenReturn(Collections.emptyList());
 

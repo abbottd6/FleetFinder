@@ -23,7 +23,7 @@ public class ServerRegionController {
     }
 
     @GetMapping("/{id}")
-    public ServerRegionDto getServerRegionById(@PathVariable int id) {
+    public ServerRegionDto getServerRegionById(@PathVariable Integer id) {
         return serverRegionService.getServerRegionById(id);
     }
 }

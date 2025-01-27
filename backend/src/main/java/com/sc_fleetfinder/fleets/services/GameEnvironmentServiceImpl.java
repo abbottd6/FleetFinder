@@ -38,7 +38,7 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
     }
 
     @Override
-    public GameEnvironmentDto getEnvironmentById(int id) {
+    public GameEnvironmentDto getEnvironmentById(Integer id) {
         Optional<GameEnvironment> environment = environmentRepository.findById(id);
         if (environment.isPresent()) {
             return convertToDto(environment.get());

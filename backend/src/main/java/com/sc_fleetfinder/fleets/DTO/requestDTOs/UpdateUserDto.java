@@ -21,7 +21,7 @@ public class UpdateUserDto {
     @Email(message = "Update user DTO field 'email' must be a valid email address")
     private String email;
 
-    private int serverId;
+    private Integer serverId;
 
     @Size(max = 25, message = "Update user DTO field 'org' cannot exceed 25 characters")
     private String org;

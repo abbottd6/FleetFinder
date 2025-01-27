@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class GameEnvironmentDto {
 
-    private int environmentId;
+    private Integer environmentId;
     private String environmentType;
 }

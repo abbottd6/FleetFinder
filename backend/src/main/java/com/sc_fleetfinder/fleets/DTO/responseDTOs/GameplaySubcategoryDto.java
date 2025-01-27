@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class GameplaySubcategoryDto {
 
-    private int subcategoryId;
+    private Integer subcategoryId;
     private String subcategoryName;
     private String gameplayCategoryName;
 }

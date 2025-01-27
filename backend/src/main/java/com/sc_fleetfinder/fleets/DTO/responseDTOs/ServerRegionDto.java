@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class ServerRegionDto {
 
-    private int serverId;
+    private Integer serverId;
     private String servername;
 }

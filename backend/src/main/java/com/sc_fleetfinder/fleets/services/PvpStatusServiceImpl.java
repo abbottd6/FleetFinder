@@ -38,7 +38,7 @@ public class PvpStatusServiceImpl implements PvpStatusService {
     }
 
     @Override
-    public PvpStatusDto getPvpStatusById(int id) {
+    public PvpStatusDto getPvpStatusById(Integer id) {
         Optional<PvpStatus> optionalPvpStatus = pvpStatusRepository.findById(id);
         if (optionalPvpStatus.isPresent()) {
             return convertToDto(optionalPvpStatus.get());

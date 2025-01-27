@@ -7,5 +7,5 @@ import java.util.List;
 public interface LegalityService {
 
     List<LegalityDto> getAllLegalities();
-    LegalityDto getLegalityById(int id);
+    LegalityDto getLegalityById(Integer id);
 }

@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class GameExperienceDto {
 
-    private int experienceId;
+    private Integer experienceId;
     private String experienceType;
 }

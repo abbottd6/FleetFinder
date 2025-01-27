@@ -38,7 +38,7 @@ public class GroupStatusServiceImpl implements GroupStatusService {
     }
 
     @Override
-    public GroupStatusDto getGroupStatusById(int id) {
+    public GroupStatusDto getGroupStatusById(Integer id) {
         Optional<GroupStatus> groupStatus = groupStatusRepository.findById(id);
         if (groupStatus.isPresent()) {
             return convertToDto(groupStatus.get());
