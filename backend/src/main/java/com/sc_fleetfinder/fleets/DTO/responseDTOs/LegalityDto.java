@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class LegalityDto {
 
-    private int legalityId;
+    private Integer legalityId;
     private String legalityStatus;
 }

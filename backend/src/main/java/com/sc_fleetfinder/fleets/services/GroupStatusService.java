@@ -7,5 +7,5 @@ import java.util.List;
 public interface GroupStatusService {
 
     List<GroupStatusDto> getAllGroupStatuses();
-    GroupStatusDto getGroupStatusById(int id);
+    GroupStatusDto getGroupStatusById(Integer id);
 }

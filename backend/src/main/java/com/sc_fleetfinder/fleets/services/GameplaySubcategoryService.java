@@ -7,5 +7,5 @@ import java.util.List;
 public interface GameplaySubcategoryService {
 
     List<GameplaySubcategoryDto> getAllSubcategories();
-    GameplaySubcategoryDto getSubcategoryById(int id);
+    GameplaySubcategoryDto getSubcategoryById(Integer id);
 }

@@ -7,5 +7,5 @@ import java.util.List;
 public interface GameEnvironmentService {
 
     List<GameEnvironmentDto> getAllEnvironments();
-    GameEnvironmentDto getEnvironmentById(int id);
+    GameEnvironmentDto getEnvironmentById(Integer id);
 }

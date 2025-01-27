@@ -7,5 +7,5 @@ import java.util.List;
 public interface PvpStatusService {
 
     List<PvpStatusDto> getAllPvpStatuses();
-    PvpStatusDto getPvpStatusById(int id);
+    PvpStatusDto getPvpStatusById(Integer id);
 }

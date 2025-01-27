@@ -23,7 +23,7 @@ public class PlanetMoonSystemController {
     }
 
     @GetMapping("/{id}")
-    public PlanetMoonSystemDto getPlanetMoonSystemById(@PathVariable int id) {
+    public PlanetMoonSystemDto getPlanetMoonSystemById(@PathVariable Integer id) {
         return planetMoonSystemService.getPlanetMoonSystemById(id);
     }
 }

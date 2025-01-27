@@ -38,7 +38,7 @@ public class LegalityServiceImpl implements LegalityService {
     }
 
     @Override
-    public LegalityDto getLegalityById(int id) {
+    public LegalityDto getLegalityById(Integer id) {
         Optional<Legality> optionalLegality = legalityRepository.findById(id);
         if (optionalLegality.isPresent()) {
             return convertToDto(optionalLegality.get());

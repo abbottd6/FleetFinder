@@ -7,5 +7,5 @@ import java.util.List;
 public interface GameExperienceService {
 
     List<GameExperienceDto> getAllExperiences();
-    GameExperienceDto getExperienceById(int id);
+    GameExperienceDto getExperienceById(Integer id);
 }

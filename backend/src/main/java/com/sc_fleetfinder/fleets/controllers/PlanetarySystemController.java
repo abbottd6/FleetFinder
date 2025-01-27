@@ -23,7 +23,7 @@ public class PlanetarySystemController {
     }
 
     @GetMapping("/{id}")
-    public PlanetarySystemDto getPlanetarySystemById(@PathVariable int id) {
+    public PlanetarySystemDto getPlanetarySystemById(@PathVariable Integer id) {
         return planetarySystemService.getPlanetarySystemById(id);
     }
 }

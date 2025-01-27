@@ -56,8 +56,6 @@ public class GroupListingServiceImpl implements GroupListingService {
     public ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
         Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
             try {
-                log.info(String.valueOf("DTO TO CONVERT: " + createGroupListingDto));
-
                 GroupListing groupListing = createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
 
                 groupListingRepository.save(groupListing);

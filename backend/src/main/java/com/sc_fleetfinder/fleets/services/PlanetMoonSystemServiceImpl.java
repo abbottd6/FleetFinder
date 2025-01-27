@@ -38,7 +38,7 @@ public class PlanetMoonSystemServiceImpl implements PlanetMoonSystemService {
     }
 
     @Override
-    public PlanetMoonSystemDto getPlanetMoonSystemById(int id) {
+    public PlanetMoonSystemDto getPlanetMoonSystemById(Integer id) {
         Optional<PlanetMoonSystem> optionalPlanetMoonSystem = planetMoonSystemRepository.findById(id);
         if (optionalPlanetMoonSystem.isPresent()) {
             return convertToDto(optionalPlanetMoonSystem.get());

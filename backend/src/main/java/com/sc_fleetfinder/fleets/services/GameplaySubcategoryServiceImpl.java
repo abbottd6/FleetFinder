@@ -44,7 +44,7 @@ public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryServic
     }
 
     @Override
-    public GameplaySubcategoryDto getSubcategoryById(int id) {
+    public GameplaySubcategoryDto getSubcategoryById(Integer id) {
         Optional<GameplaySubcategory> gameplaySubcategory = gameplaySubcategoryRepository.findById(id);
         if (gameplaySubcategory.isPresent()) {
             return convertToDto(gameplaySubcategory.get());

@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class PvpStatusDto {
 
-    private int pvpStatusId;
+    private Integer pvpStatusId;
     private String pvpStatus;
 }

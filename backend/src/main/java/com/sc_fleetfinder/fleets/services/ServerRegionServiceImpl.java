@@ -38,7 +38,7 @@ public class ServerRegionServiceImpl implements ServerRegionService {
     }
 
     @Override
-    public ServerRegionDto getServerRegionById(int id) {
+    public ServerRegionDto getServerRegionById(Integer id) {
         Optional<ServerRegion> optionalServerRegion = serverRegionRepository.findById(id);
         if(optionalServerRegion.isPresent()) {
             return convertToDto(optionalServerRegion.get());

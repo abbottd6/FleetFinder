@@ -21,5 +21,5 @@ public class PvpStatusController {
     public List<PvpStatusDto> getAllPvpStatuses(){ return pvpStatusService.getAllPvpStatuses(); }
 
     @GetMapping("/{id}")
-    public PvpStatusDto getPvpStatusById(@PathVariable int id) { return pvpStatusService.getPvpStatusById(id); }
+    public PvpStatusDto getPvpStatusById(@PathVariable Integer id) { return pvpStatusService.getPvpStatusById(id); }
 }

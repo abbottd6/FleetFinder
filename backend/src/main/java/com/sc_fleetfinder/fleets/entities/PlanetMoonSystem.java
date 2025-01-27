@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,11 +9,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Table(name="planet_moon_system")
@@ -25,7 +21,7 @@ public class PlanetMoonSystem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="planet_id")
-    private int planetId;
+    private Integer planetId;
 
     @Column(name="planet_name")
     private String planetName;

@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class PlayStyleDto {
 
-    private int styleId;
+    private Integer styleId;
     private String playStyle;
 }

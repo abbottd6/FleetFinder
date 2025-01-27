@@ -7,5 +7,5 @@ import java.util.List;
 public interface PlayStyleService {
 
     List<PlayStyleDto> getAllPlayStyles();
-    PlayStyleDto getPlayStyleById(int id);
+    PlayStyleDto getPlayStyleById(Integer id);
 }

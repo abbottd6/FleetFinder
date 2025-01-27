@@ -39,7 +39,7 @@ public class GameplayCategoryServiceImpl implements GameplayCategoryService {
     }
 
     @Override
-    public GameplayCategoryDto getCategoryById(int id) {
+    public GameplayCategoryDto getCategoryById(Integer id) {
         Optional<GameplayCategory> gameplayCategory = gameplayCategoryRepository.findById(id);
         if (gameplayCategory.isPresent()) {
             return convertToDto(gameplayCategory.get());

@@ -23,7 +23,7 @@ public class GameExperienceController {
     }
 
     @GetMapping("/{id}")
-    public GameExperienceDto getGameExperienceById(@PathVariable int id) {
+    public GameExperienceDto getGameExperienceById(@PathVariable Integer id) {
         return gameExperienceService.getExperienceById(id);
     }
 }

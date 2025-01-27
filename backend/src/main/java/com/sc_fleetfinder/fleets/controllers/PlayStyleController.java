@@ -24,7 +24,7 @@ public class PlayStyleController {
     }
 
     @GetMapping("/{id}")
-    public PlayStyleDto getPlayStyleById(@PathVariable int id) {
+    public PlayStyleDto getPlayStyleById(@PathVariable Integer id) {
         return playStyleService.getPlayStyleById(id);
     }
 }

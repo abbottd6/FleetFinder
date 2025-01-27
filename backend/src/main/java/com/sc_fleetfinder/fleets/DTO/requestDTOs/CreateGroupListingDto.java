@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -10,8 +9,6 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
 
 @Data
 public class CreateGroupListingDto {
@@ -20,43 +17,45 @@ public class CreateGroupListingDto {
     private Long userId;
 
     @NotNull(message = "Create group listing DTO field 'serverId' cannot be null")
-    private int serverId;
+    private Integer serverId;
 
     @NotNull(message = "Create group listing DTO field 'environmentId' cannot be null")
-    private int environmentId;
+    private Integer environmentId;
 
     @NotNull(message = "Create group listing DTO field 'experienceId' cannot be null")
-    private int experienceId;
+    private Integer experienceId;
 
     @NotBlank(message = "Create group listing DTO field 'listingTitle' cannot be blank")
     @Size(min = 2, max = 65, message = "Create group listing DTO field 'listing title must be" +
             "between 2 and 65 characters.")
     private String listingTitle;
 
-    private int playStyleId;
+    private Integer playStyleId;
 
     @NotNull(message = "Create group listing DTO field 'legalityId' cannot be null")
-    private int legalityId;
+    private Integer legalityId;
 
     @NotNull(message = "Create group listing DTO field 'groupStatusId' cannot be null")
-    private int groupStatusId;
+    private Integer groupStatusId;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant eventSchedule;
 
     @NotNull(message = "Create group listing DTO field 'categoryId' cannot be null")
-    private int categoryId;
+    private Integer categoryId;
 
+    //is this supposed to be required?
+    //remember to change groupListingServiceImplTest if you make this not required
     @NotNull(message = "Create group listing DTO field 'subcategoryId' cannot be null")
-    private int subcategoryId;
+    private Integer subcategoryId;
 
     @NotNull(message = "Create group listing DTO field 'pvpStatusId' cannot be null")
-    private int pvpStatusId;
+    private Integer pvpStatusId;
 
     @NotNull(message = "Create group listing DTO field 'systemId' cannot be null")
-    private int systemId;
+    private Integer systemId;
 
-    private int planetId;
+    private Integer planetId;
 
     @NotBlank(message = "Create group listing DTO field 'listingDescription' cannot be blank")
     @Size(max = 500, message = "Create group listing DTO field 'listingDescription' cannot exceed 500 characters")
@@ -64,11 +63,13 @@ public class CreateGroupListingDto {
 
     @Min(value = 2, message = "Create group listing DTO field 'desiredPartySize' cannot be less than 2")
     @Max(value = 1000, message = "Create group listing DTO field 'desiredPartySize' cannot exceed 1000")
-    private int desiredPartySize;
+    @NotNull(message = "Create group listing DTO field 'desiredPartySize' cannot be null")
+    private Integer desiredPartySize;
 
     @Min(value = 1, message = "Create listing DTO field 'currentPartySize' cannot be less than 1")
     @Max(value = 1000, message = "Create listing DTO field 'desiredPartySize' cannot exceed 1000")
-    private int currentPartySize;
+    @NotNull(message = "Create group listing DTO field 'currentPartySize' cannot be null")
+    private Integer currentPartySize;
 
     @Size(max = 255, message = "Create listing DTO field 'availableRoles' cannot exceed 255 characters")
     private String availableRoles;

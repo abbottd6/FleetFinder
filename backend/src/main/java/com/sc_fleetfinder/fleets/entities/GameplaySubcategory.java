@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import jakarta.persistence.Cacheable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,8 +11,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
 @Table(name="gameplay_subcategory")
@@ -24,7 +21,7 @@ public class GameplaySubcategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="subcategory_id")
-    private int subcategoryId;
+    private Integer subcategoryId;
 
     @Column(name="subcategory_name")
     private String subcategoryName;

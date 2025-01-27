@@ -7,5 +7,5 @@ import java.util.List;
 public interface GameplayCategoryService {
 
     List<GameplayCategoryDto> getAllCategories();
-    GameplayCategoryDto getCategoryById(int id);
+    GameplayCategoryDto getCategoryById(Integer id);
 }

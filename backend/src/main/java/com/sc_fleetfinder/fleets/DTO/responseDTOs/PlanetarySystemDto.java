@@ -8,7 +8,7 @@ import java.util.Set;
 @Data
 public class PlanetarySystemDto {
 
-    private int systemId;
+    private Integer systemId;
     private String systemName;
     //private Set<PlanetMoonSystemDto> planetMoonSystems = new HashSet<>();
 }

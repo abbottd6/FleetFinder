@@ -38,7 +38,7 @@ public class PlayStyleServiceImpl implements PlayStyleService {
     }
 
     @Override
-    public PlayStyleDto getPlayStyleById(int id) {
+    public PlayStyleDto getPlayStyleById(Integer id) {
         Optional<PlayStyle> optionalPlayStyle = playStyleRepository.findById(id);
         if(optionalPlayStyle.isPresent()) {
             return convertToDto(optionalPlayStyle.get());

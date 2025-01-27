@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class GroupStatusDto {
 
-    private int groupStatusId;
+    private Integer groupStatusId;
     private String groupStatus;
 }

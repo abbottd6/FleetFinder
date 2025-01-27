@@ -62,11 +62,11 @@ public class GroupListingResponseDto {
 
     @Min(value = 2, message = "GroupListingResponseDto field 'desiredPartySize' must be at least 2.")
     @Max(value = 1000, message = "GroupListingResponseDto field 'desiredPartySize' cannot exceed 1,000.")
-    private int desiredPartySize;
+    private Integer desiredPartySize;
 
     @Min(value = 1, message = "GroupListingResponseDto field 'currentPartySize' size must be at least 1.")
     @Max(value = 1000, message = "GroupListingResponseDto field 'currentPartySize' cannot exceed 1,000.")
-    private int currentPartySize;
+    private Integer currentPartySize;
 
     private String availableRoles;
 

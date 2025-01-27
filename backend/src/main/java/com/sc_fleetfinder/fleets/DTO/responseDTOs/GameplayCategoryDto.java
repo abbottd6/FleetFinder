@@ -8,7 +8,7 @@ import java.util.Set;
 @Data
 public class GameplayCategoryDto {
 
-    private int gameplayCategoryId;
+    private Integer gameplayCategoryId;
     private String gameplayCategoryName;
     //decided the set of subcategories was not necessary, just using the GameplayCategory field in subcategories
     //for this information

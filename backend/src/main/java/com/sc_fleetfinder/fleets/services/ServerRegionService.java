@@ -7,5 +7,5 @@ import java.util.List;
 public interface ServerRegionService {
 
     List<ServerRegionDto> getAllServerRegions();
-    ServerRegionDto getServerRegionById(int id);
+    ServerRegionDto getServerRegionById(Integer id);
 }
