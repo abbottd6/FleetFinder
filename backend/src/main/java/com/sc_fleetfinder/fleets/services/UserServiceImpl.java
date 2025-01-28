@@ -42,6 +42,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Validated
     public UserResponseDto createUser(@Valid CreateUserDto createUserDto) {
         Objects.requireNonNull(createUserDto, "userDto cannot be null");
             User user = convertToEntity(createUserDto);
@@ -50,7 +51,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto updateUser(@PathVariable Long id, @Valid UpdateUserDto updateUserDto) {
+    @Validated
+    public UserResponseDto updateUser(Long id, @Valid UpdateUserDto updateUserDto) {
         User user = userRepository.findById(updateUserDto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User with id " + updateUserDto.getUserId() + " not found"));
 

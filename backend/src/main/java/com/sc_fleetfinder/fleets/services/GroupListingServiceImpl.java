@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,19 +28,19 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     private final GroupListingRepository groupListingRepository;
     private final ModelMapper createGroupListingModelMapper;
-    private final ModelMapper groupListingResponseDtoModelMapper;
+    private final ModelMapper groupListingResponseDtoMapper;
     private final ModelMapper modelMapper;
 
 
     public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
                      @Qualifier("createGroupListingModelMapper") ModelMapper createGroupListingModelMapper,
-                     @Qualifier("groupListingResponseDtoMapper") ModelMapper groupListingResponseDtoModelMapper) {
+                     @Qualifier("groupListingResponseDtoMapper") ModelMapper groupListingResponseDtoMapper) {
         super();
 
         this.modelMapper = new ModelMapper();
         this.groupListingRepository = groupListingRepository;
         this.createGroupListingModelMapper = createGroupListingModelMapper;
-        this.groupListingResponseDtoModelMapper = groupListingResponseDtoModelMapper;
+        this.groupListingResponseDtoMapper = groupListingResponseDtoMapper;
     }
 
     @Override
@@ -53,6 +52,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
+    @Validated
     public ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
         Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
             try {
@@ -71,7 +71,8 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    public GroupListing updateGroupListing(@PathVariable Long id, @Valid UpdateGroupListingDto updateGroupListingDto) {
+    @Validated
+    public GroupListing updateGroupListing(Long id, @Valid UpdateGroupListingDto updateGroupListingDto) {
         GroupListing groupListing = groupListingRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Group Listing with id " + id + " not found"));
 
@@ -109,7 +110,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     public GroupListingResponseDto convertListingToDto(GroupListing groupListing) {
-        return groupListingResponseDtoModelMapper.map(groupListing, GroupListingResponseDto.class);
+        return groupListingResponseDtoMapper.map(groupListing, GroupListingResponseDto.class);
     }
 
 
