@@ -6,10 +6,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
-import org.hibernate.sql.Update;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -30,18 +27,21 @@ import java.util.stream.Collectors;
 @Validated
 public class GroupListingServiceImpl implements GroupListingService {
 
-    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final GroupListingRepository groupListingRepository;
     private final ModelMapper createGroupListingModelMapper;
+    private final ModelMapper groupListingResponseDtoModelMapper;
     private final ModelMapper modelMapper;
 
 
-    public GroupListingServiceImpl(GroupListingRepository groupListingRepository, ModelMapper createGroupListingModelMapper) {
+    public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
+                     @Qualifier("createGroupListingModelMapper") ModelMapper createGroupListingModelMapper,
+                     @Qualifier("groupListingResponseDtoMapper") ModelMapper groupListingResponseDtoModelMapper) {
         super();
 
         this.modelMapper = new ModelMapper();
         this.groupListingRepository = groupListingRepository;
         this.createGroupListingModelMapper = createGroupListingModelMapper;
+        this.groupListingResponseDtoModelMapper = groupListingResponseDtoModelMapper;
     }
 
     @Override
@@ -109,7 +109,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     public GroupListingResponseDto convertListingToDto(GroupListing groupListing) {
-        return modelMapper.map(groupListing, GroupListingResponseDto.class);
+        return groupListingResponseDtoModelMapper.map(groupListing, GroupListingResponseDto.class);
     }
 
 

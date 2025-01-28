@@ -9,7 +9,6 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Data
 public class GroupListingResponseDto {
@@ -77,8 +76,8 @@ public class GroupListingResponseDto {
 
     @NotNull(message = "GroupListingResponseDto field 'creationTimestamp' cannot be null")
     @DateTimeFormat(pattern = "MM/dd/yy HH:mm")
-    private LocalDateTime creationTimestamp;
+    private String creationTimestamp;
 
     @DateTimeFormat(pattern = "MM/dd/yy HH:mm")
-    private LocalDateTime lastUpdated;
+    private String lastUpdated;
 }

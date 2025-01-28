@@ -3,6 +3,9 @@ DROP DATABASE IF EXISTS sc_fleetfinder;
 CREATE DATABASE sc_fleetfinder;
 USE sc_fleetfinder;
 
+SET GLOBAL time_zone = '+00:00';
+SET time_zone = '+00:00';
+
 CREATE TABLE IF NOT EXISTS sc_fleetfinder.`user` (
 id_user BIGINT NOT NULL AUTO_INCREMENT,
 user_name VARCHAR(32) NOT NULL,
@@ -239,16 +242,16 @@ style_id INT,
 legality_id INT NOT NULL,
 group_status_id INT NOT NULL,
 event_schedule TIMESTAMP,
-category_id INT,
+category_id INT NOT NULL,
 subcategory_id INT,
 pvp_status_id INT NOT NULL,
-system_id INT,
+system_id INT NOT NULL,
 planet_id INT,
 listing_description VARCHAR(500) NOT NULL,
-desired_party_size TINYINT,
-current_party_size TINYINT,
+desired_party_size TINYINT NOT NULL,
+current_party_size TINYINT NOT NULL,
 available_roles VARCHAR(255),
-comms_options ENUM('REQUIRED', 'OPTIONAL', 'NO COMMS') NOT NULL,
+comms_options ENUM('Required', 'Optional', 'No Comms') NOT NULL,
 comms_service VARCHAR(50),
 last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
@@ -257,12 +260,12 @@ FOREIGN KEY(id_user) REFERENCES `user`(id_user) ON DELETE CASCADE,
 FOREIGN KEY(server_id) REFERENCES server_region(server_id),
 FOREIGN KEY(environment_id) REFERENCES game_environment(environment_id),
 FOREIGN KEY(experience_id) REFERENCES game_experience(experience_id),
-FOREIGN KEY(style_id) REFERENCES play_style(style_id) ON DELETE SET NULL,
+FOREIGN KEY(style_id) REFERENCES play_style(style_id),
 FOREIGN KEY(legality_id) REFERENCES legality(legality_id),
 FOREIGN KEY(group_status_id) REFERENCES group_status(group_status_id),
-FOREIGN KEY(category_id) REFERENCES gameplay_category(category_id) ON DELETE SET NULL,
-FOREIGN KEY(subcategory_id) REFERENCES gameplay_subcategory(subcategory_id) ON DELETE SET NULL,
+FOREIGN KEY(category_id) REFERENCES gameplay_category(category_id),
+FOREIGN KEY(subcategory_id) REFERENCES gameplay_subcategory(subcategory_id),
 FOREIGN KEY(pvp_status_id) REFERENCES pvp_status(pvp_status_id),
-FOREIGN KEY(system_id) REFERENCES sc_fleetfinder.planetary_system(system_id) ON DELETE SET NULL,
-FOREIGN KEY(planet_id) REFERENCES sc_fleetfinder.planet_moon_system(planet_id) ON DELETE SET NULL
+FOREIGN KEY(system_id) REFERENCES sc_fleetfinder.planetary_system(system_id),
+FOREIGN KEY(planet_id) REFERENCES sc_fleetfinder.planet_moon_system(planet_id)
 );
