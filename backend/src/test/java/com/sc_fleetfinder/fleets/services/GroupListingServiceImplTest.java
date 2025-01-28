@@ -10,6 +10,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,16 +18,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,6 +42,8 @@ class GroupListingServiceImplTest {
     @Mock
     private ModelMapper createGroupListingModelMapper;
 
+    private ModelMapper createListingMapperTest;
+
     private static Validator validator;
 
     @InjectMocks
@@ -49,6 +53,11 @@ class GroupListingServiceImplTest {
     static void setUpValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
+    }
+
+    @BeforeEach
+    void setUpMapper() {
+        this.createListingMapperTest = new ModelMapper();
     }
 
 
@@ -98,7 +107,7 @@ class GroupListingServiceImplTest {
         //then create should fail
         assertAll("create listing failing validation assertions set:",
                 () ->  assertFalse(dtoConstraintViolations.isEmpty()),
-                //the following are true or false depending on whether blank input should fail validation
+                //the following are true or false depending on whether null input should fail validation
                 () -> assertTrue(dtoConstraintViolations.stream()
                         .anyMatch(violation -> violation.getMessage().contains("userId")),"blank userId " +
                         "should fail validation create listing"),
@@ -129,9 +138,9 @@ class GroupListingServiceImplTest {
                 () -> assertTrue(dtoConstraintViolations.stream()
                         .anyMatch(violation -> violation.getMessage().contains("categoryId")),"blank " +
                         "categoryId should fail validation create listing"),
-                () -> assertTrue(dtoConstraintViolations.stream()
+                () -> assertFalse(dtoConstraintViolations.stream()
                         .anyMatch(violation -> violation.getMessage().contains("subcategoryId")),"blank " +
-                        "subcategoryId should fail validation create listing"),
+                        "subcategoryId should NOT fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
                         .anyMatch(violation -> violation.getMessage().contains("pvpStatusId")),"blank " +
                         "pvpStatusId should fail validation create listing"),
@@ -161,65 +170,74 @@ class GroupListingServiceImplTest {
                         "commsService should fail validation create listing"));
     }
 
-//    @Test
-//    void createGroupListing_Success() {
-//        //given
-//        //creating valid dto
-//        CreateGroupListingDto validDto = new CreateGroupListingDto();
-//            validDto.setUserId(1L);
-//            validDto.setServerId(2);
-//            validDto.setEnvironmentId(2);
-//            validDto.setExperienceId(1);
-//            validDto.setListingTitle("This is a valid listing title");
-//            validDto.setPlayStyleId(5);
-//            validDto.setLegalityId(3);
-//            validDto.setGroupStatusId(2);
-//            validDto.setEventSchedule(Instant.now());
-//            validDto.setCategoryId(5);
-//            validDto.setSubcategoryId(16);
-//            validDto.setPvpStatusId(1);
-//            validDto.setSystemId(2);
-//            validDto.setPlanetId(6);
-//            validDto.setListingDescription("This is a valid listing description");
-//            validDto.setDesiredPartySize(5);
-//            validDto.setCurrentPartySize(2);
-//            validDto.setAvailableRoles("These are valid available roles");
-//            validDto.setCommsOption("REQUIRED");
-//            validDto.setCommsService("This is a valid comms service");
-//        Set<ConstraintViolation<CreateGroupListingDto>> dtoConstraintViolations = validator.validate(validDto);
-//        GroupListing mockEntity = new GroupListing();
-//        when(groupListingRepository.save(any(GroupListing.class))).thenReturn(mockEntity);
-//        when(createGroupListingModelMapper.map(validDto, GroupListing.class)).thenAnswer(invocation -> {
-//            GroupListing mappedEntity = (GroupListing) invocation.callRealMethod();
-//        });
-//
-//        //when
-//        mockEntity = groupListingService.createGroupListing(validDto);
-//
-//
-//
-//
-//
-//
-//    }
+    @Test
+    void createGroupListing_Success_AllFields() {
+        //given
+        //creating valid dto
+        CreateGroupListingDto validDto = new CreateGroupListingDto();
+            validDto.setUserId(1L);
+            validDto.setServerId(2);
+            validDto.setEnvironmentId(2);
+            validDto.setExperienceId(1);
+            validDto.setListingTitle("This is a valid listing title");
+            validDto.setPlayStyleId(5);
+            validDto.setLegalityId(3);
+            validDto.setGroupStatusId(2);
+            validDto.setEventSchedule(Instant.now());
+            validDto.setCategoryId(5);
+            validDto.setSubcategoryId(16);
+            validDto.setPvpStatusId(1);
+            validDto.setSystemId(2);
+            validDto.setPlanetId(6);
+            validDto.setListingDescription("This is a valid listing description");
+            validDto.setDesiredPartySize(5);
+            validDto.setCurrentPartySize(2);
+            validDto.setAvailableRoles("These are valid available roles");
+            validDto.setCommsOption("REQUIRED");
+            validDto.setCommsService("This is a valid comms service");
+        GroupListing mappedEntity = createListingMapperTest.map(validDto, GroupListing.class);
+        //setting groupId to imitate autogenerate from the database
+            mappedEntity.setGroupId(1L);
+
+        when(createGroupListingModelMapper.map(validDto, GroupListing.class)).thenReturn(mappedEntity);
+        when(groupListingRepository.save(any(GroupListing.class))).thenReturn(mappedEntity);
+
+        //when
+        ResponseEntity<?> response = groupListingService.createGroupListing(validDto);
+
+        Map<String, String> responseBody = (Map<String, String>) response.getBody();
+
+        //then
+        assertAll("successful create listing assertions set: ",
+                () -> assertEquals(HttpStatus.CREATED, response.getStatusCode()),
+                () -> assertNotNull(response.getBody()),
+                () -> assertEquals("This is a valid listing title",  responseBody.get("listingTitle")),
+                () -> verify(createGroupListingModelMapper, times(1)).map(validDto, GroupListing.class),
+                () -> verify(groupListingRepository, times(1)).save(any(GroupListing.class)));
+    }
 
     @Test
+    @Disabled
     void updateGroupListing() {
     }
 
     @Test
+    @Disabled
     void deleteGroupListing() {
     }
 
     @Test
+    @Disabled
     void getGroupListingById() {
     }
 
     @Test
+    @Disabled
     void convertListingToDto() {
     }
 
     @Test
+    @Disabled
     void convertToEntity() {
     }
 }
