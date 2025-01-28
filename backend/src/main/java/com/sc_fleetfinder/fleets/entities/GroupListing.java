@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.springframework.lang.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,7 +22,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name="group_listing")
@@ -61,6 +61,7 @@ public class GroupListing {
     private String listingTitle;
 
     @ManyToOne
+    @Nullable
     @JoinColumn(name="style_id")
     private PlayStyle playStyle;
 
@@ -75,6 +76,7 @@ public class GroupListing {
     private GroupStatus groupStatus;
 
     @Column(name="event_schedule")
+    @Nullable
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant eventSchedule;
 
@@ -85,7 +87,7 @@ public class GroupListing {
 
     @ManyToOne
     @JoinColumn(name="subcategory_id")
-    @NotNull(message = "GroupListing subcategory cannot be null")
+    @Nullable
     private GameplaySubcategory subcategory;
 
     @ManyToOne
@@ -95,10 +97,12 @@ public class GroupListing {
 
     @ManyToOne
     @JoinColumn(name="system_id")
+    @NotNull(message = "GroupListing entity field 'system' cannot be null")
     private PlanetarySystem system;
 
     @ManyToOne
     @JoinColumn(name="planet_id")
+    @Nullable
     private PlanetMoonSystem planetMoonSystem;
 
     @Column(name="listing_description")
@@ -128,9 +132,9 @@ public class GroupListing {
 
     @CreationTimestamp
     @Column(name="creation_timestamp")
-    private LocalDateTime creationTimestamp;
+    private Instant creationTimestamp;
 
     @UpdateTimestamp
     @Column(name="last_updated")
-    private LocalDateTime lastUpdated;
+    private Instant lastUpdated;
 }
