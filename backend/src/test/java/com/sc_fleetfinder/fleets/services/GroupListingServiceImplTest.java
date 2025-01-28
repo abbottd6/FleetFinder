@@ -3,14 +3,13 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
-import com.sc_fleetfinder.fleets.config.mappers.CreateGroupListingMapperConfig;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.User;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +42,8 @@ class GroupListingServiceImplTest {
     @Mock
     private ModelMapper createGroupListingModelMapper;
 
-    private ModelMapper createListingMapperTest;
+    @Mock
+    private MapperLookupService mapperLookupService;
 
     private static Validator validator;
 
@@ -53,11 +54,6 @@ class GroupListingServiceImplTest {
     static void setUpValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
-    }
-
-    @BeforeEach
-    void setUpMapper() {
-        this.createListingMapperTest = new ModelMapper();
     }
 
 
@@ -98,7 +94,7 @@ class GroupListingServiceImplTest {
     void createGroupListingValidators_Fail() {
         //given
         CreateGroupListingDto createGroupListingDto = new CreateGroupListingDto();
-            //setting fields to null
+            //fields are null
 
         Set<ConstraintViolation<CreateGroupListingDto>> dtoConstraintViolations = validator.validate(createGroupListingDto);
 
@@ -109,67 +105,68 @@ class GroupListingServiceImplTest {
                 () ->  assertFalse(dtoConstraintViolations.isEmpty()),
                 //the following are true or false depending on whether null input should fail validation
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("userId")),"blank userId " +
-                        "should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("userId")),
+                        "blank userId should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("serverId")),"blank serverId " +
-                        "should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("serverId")),
+                        "blank serverId should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("environmentId")),"blank " +
-                        "environmentId should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("environmentId")),
+                        "blank environmentId should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("experienceId")),"blank " +
-                        "experienceId should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("experienceId")),
+                        "blank experienceId should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("listingTitle")),"blank " +
-                        "listingTitle should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("listingTitle")),
+                        "blank listingTitle should fail validation create listing"),
                 () -> assertFalse(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("playStyleId")),"blank " +
-                        "playStyleId should NOT fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("playStyleId")),
+                        "blank playStyleId should NOT fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("legalityId")),"blank " +
-                        "legalityId should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("legalityId")),
+                        "blank legalityId should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("groupStatusId")),"blank " +
-                        "groupStatusId should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("groupStatusId")),
+                        "blank groupStatusId should fail validation create listing"),
                 () -> assertFalse(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("eventSchedule")),"blank " +
-                        "eventSchedule should NOT fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("eventSchedule")),
+                        "blank eventSchedule should NOT fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("categoryId")),"blank " +
-                        "categoryId should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("categoryId")),
+                        "blank categoryId should fail validation create listing"),
                 () -> assertFalse(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("subcategoryId")),"blank " +
-                        "subcategoryId should NOT fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("subcategoryId")),
+                        "blank subcategoryId should NOT fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("pvpStatusId")),"blank " +
-                        "pvpStatusId should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("pvpStatusId")),
+                        "blank pvpStatusId should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("systemId")),"blank " +
-                        "systemId should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("systemId")),
+                        "blank systemId should fail validation create listing"),
                 () -> assertFalse(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("planetId")),"blank " +
-                        "planetId should NOT fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("planetId")),
+                        "blank planetId should NOT fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("listingDescription")),"blank " +
-                        "listingDescription should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("listingDescription")),
+                        "blank listingDescription should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("desiredPartySize")),"blank " +
-                        "desiredPartySize should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("desiredPartySize")),
+                        "blank desiredPartySize should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("currentPartySize")),"blank " +
-                        "currentPartySize should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("currentPartySize")),
+                        "blank currentPartySize should fail validation create listing"),
                 () -> assertFalse(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("availableRoles")),"blank " +
-                        "availableRoles should NOT fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("availableRoles")),
+                        "blank availableRoles should NOT fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("commsOption")),"blank " +
-                        "commsOption should fail validation create listing"),
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("commsOption")),
+                        "blank commsOption should fail validation create listing"),
                 () -> assertFalse(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getMessage().contains("commsService")),"blank " +
-                        "commsService should fail validation create listing"));
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("commsService")),
+                        "blank commsService should NOT fail validation create listing"));
     }
 
+    //testing HTTP response from successful create listing
     @Test
     void createGroupListing_Success_AllFields() {
         //given
@@ -193,11 +190,22 @@ class GroupListingServiceImplTest {
             validDto.setDesiredPartySize(5);
             validDto.setCurrentPartySize(2);
             validDto.setAvailableRoles("These are valid available roles");
-            validDto.setCommsOption("REQUIRED");
+            validDto.setCommsOption("Required");
             validDto.setCommsService("This is a valid comms service");
-        GroupListing mappedEntity = createListingMapperTest.map(validDto, GroupListing.class);
+
+        //creating test user
+        User testUser = new User();
+            testUser.setUserId(1L);
+            testUser.setUsername("TestUser");
+
+        //returning new entities from lookup service for test only
+        when(mapperLookupService.findUserById(validDto.getUserId())).thenReturn(testUser);
+
+        GroupListing mappedEntity = new GroupListing();
         //setting groupId to imitate autogenerate from the database
             mappedEntity.setGroupId(1L);
+            mappedEntity.setUser(mapperLookupService.findUserById(validDto.getUserId()));
+            mappedEntity.setListingTitle(validDto.getListingTitle());
 
         when(createGroupListingModelMapper.map(validDto, GroupListing.class)).thenReturn(mappedEntity);
         when(groupListingRepository.save(any(GroupListing.class))).thenReturn(mappedEntity);
@@ -205,39 +213,64 @@ class GroupListingServiceImplTest {
         //when
         ResponseEntity<?> response = groupListingService.createGroupListing(validDto);
 
+        //then
+        assertInstanceOf(Map.class, response.getBody());
         Map<String, String> responseBody = (Map<String, String>) response.getBody();
 
-        //then
         assertAll("successful create listing assertions set: ",
                 () -> assertEquals(HttpStatus.CREATED, response.getStatusCode()),
+                () -> assertNotEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode()),
                 () -> assertNotNull(response.getBody()),
                 () -> assertEquals("This is a valid listing title",  responseBody.get("listingTitle")),
                 () -> verify(createGroupListingModelMapper, times(1)).map(validDto, GroupListing.class),
-                () -> verify(groupListingRepository, times(1)).save(any(GroupListing.class)));
+                () -> verify(groupListingRepository, times(1)).save(any(GroupListing.class)),
+                () -> verify(mapperLookupService, times(1)).findUserById(validDto.getUserId()),
+                () -> verifyNoMoreInteractions(createGroupListingModelMapper, groupListingRepository));
+    }
+
+
+    //testing http response from unsuccessful create listing
+    @Test
+    void testCreateGroupListing_Fail() {
+        //given
+        CreateGroupListingDto invalidDto = new CreateGroupListingDto();
+
+        when(createGroupListingModelMapper.map(invalidDto, GroupListing.class))
+                .thenThrow(new RuntimeException("simulated mapping or database error"));
+
+        //when
+        ResponseEntity<?> response = groupListingService.createGroupListing(invalidDto);
+
+        //then
+        assertAll("create listing failed assertions set:",
+                () -> assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode()),
+                () -> assertEquals("An error occurred while creating the listing.", response.getBody()),
+                () -> verify(createGroupListingModelMapper, times(1)).map(invalidDto, GroupListing.class),
+                () -> verifyNoMoreInteractions(createGroupListingModelMapper, groupListingRepository));
     }
 
     @Test
     @Disabled
-    void updateGroupListing() {
+    void testUpdateGroupListing() {
     }
 
     @Test
     @Disabled
-    void deleteGroupListing() {
+    void testDeleteGroupListing() {
     }
 
     @Test
     @Disabled
-    void getGroupListingById() {
+    void testGetGroupListingById() {
     }
 
     @Test
     @Disabled
-    void convertListingToDto() {
+    void testConvertListingToDto() {
     }
 
     @Test
     @Disabled
-    void convertToEntity() {
+    void testConvertToEntity() {
     }
 }
