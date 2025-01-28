@@ -3,7 +3,6 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.EnvironmentRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.reset;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,7 +32,7 @@ public class GameEnvironmentServiceImplTest {
     private GameEnvironmentServiceImpl gameEnvironmentService;
 
     @Test
-    void testGetAllEnvironments() {
+    void testGetAllEnvironments_Found() {
         //given
         GameEnvironment mockEntity = new GameEnvironment();
         GameEnvironment mockEntity2 = new GameEnvironment();
@@ -43,7 +43,7 @@ public class GameEnvironmentServiceImplTest {
         List<GameEnvironmentDto> result = gameEnvironmentService.getAllEnvironments();
 
         //then
-        assertAll("getAllEnvironments mock entities assertions set:",
+        assertAll("getAllEnvironments get all mock entities assertion set:",
                 () -> assertNotNull(result, "getAllEnvironments should not return null"),
                 () -> assertEquals(2, result.size(), "Get all environments produced unexpected " +
                         "number of results"),
@@ -51,7 +51,7 @@ public class GameEnvironmentServiceImplTest {
     }
 
     @Test
-    void testGetAllEnvironmentsNotFound() {
+    void testGetAllEnvironments_NotFound() {
         //given
         when (environmentRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -60,7 +60,7 @@ public class GameEnvironmentServiceImplTest {
 
         //then
         assertAll("get all environments = empty assertions set:",
-                () -> assertNotNull(result, "getAllEnvironments should have returned null"),
+                () -> assertNotNull(result, "getAllEnvironments should be empty, not null"),
                 () -> assertTrue(result.isEmpty(), "getAllEnvironments returned " + result + " when " +
                         "it should have returned empty"),
                 () -> verify(environmentRepository, times(1)).findAll());
@@ -76,10 +76,10 @@ public class GameEnvironmentServiceImplTest {
         GameEnvironmentDto result = gameEnvironmentService.getEnvironmentById(1);
 
         //then
-        assertAll("Get environment by Id=found assertions set:",
+        assertAll("Get environment by Id=found assertion set:",
                 () -> assertNotNull(result, "Found environmentId should not return a null DTO"),
                 () -> assertDoesNotThrow(() -> gameEnvironmentService.getEnvironmentById(1),
-                        "getEnvironmentById should not throw exception when found id"),
+                        "getEnvironmentById should not throw exception when Id is found"),
                 () -> verify(environmentRepository, times(2)).findById(1));
     }
 
@@ -91,8 +91,10 @@ public class GameEnvironmentServiceImplTest {
         //when environmentRepository does not contain environment with given Id
 
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.getEnvironmentById(1),
-                "getEnvironmentById with id not found should throw exception");
+        assertAll("get environmentById=not found assertion set:",
+                () -> assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.getEnvironmentById(1),
+                "getEnvironmentById with id not found should throw exception"),
+                () -> verify(gameEnvironmentService, never()).convertToDto(any()));
     }
 
     @Test
