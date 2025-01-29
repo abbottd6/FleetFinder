@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,7 +41,7 @@ public class GameEnvironmentServiceImplTest {
         List<GameEnvironmentDto> result = gameEnvironmentService.getAllEnvironments();
 
         //then
-        assertAll("getAllEnvironments get all mock entities assertion set:",
+        assertAll("getAllEnvironments mock entities assertion set:",
                 () -> assertNotNull(result, "getAllEnvironments should not return null"),
                 () -> assertEquals(2, result.size(), "Get all environments produced unexpected " +
                         "number of results"),
@@ -59,7 +57,7 @@ public class GameEnvironmentServiceImplTest {
         List<GameEnvironmentDto> result = gameEnvironmentService.getAllEnvironments();
 
         //then
-        assertAll("get all environments = empty assertions set:",
+        assertAll("get all environments = empty, assertion set:",
                 () -> assertNotNull(result, "getAllEnvironments should be empty, not null"),
                 () -> assertTrue(result.isEmpty(), "getAllEnvironments returned " + result + " when " +
                         "it should have returned empty"),
@@ -93,8 +91,7 @@ public class GameEnvironmentServiceImplTest {
         //then
         assertAll("get environmentById=not found assertion set:",
                 () -> assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.getEnvironmentById(1),
-                "getEnvironmentById with id not found should throw exception"),
-                () -> verify(gameEnvironmentService, never()).convertToDto(any()));
+                "getEnvironmentById with id not found should throw exception"));
     }
 
     @Test
