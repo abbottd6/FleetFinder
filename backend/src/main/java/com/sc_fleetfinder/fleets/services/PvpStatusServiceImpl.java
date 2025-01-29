@@ -3,11 +3,11 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.PvpStatusRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PvpStatusDto;
 import com.sc_fleetfinder.fleets.entities.PvpStatus;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +32,11 @@ public class PvpStatusServiceImpl implements PvpStatusService {
     public List<PvpStatusDto> getAllPvpStatuses() {
         log.info("Caching test: getting all pvp statuses");
         List<PvpStatus> pvpStatuses = pvpStatusRepository.findAll();
+
+        if(pvpStatuses.isEmpty()) {
+            throw new ResourceNotFoundException("pvpStatuses");
+        }
+
         return pvpStatuses.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -44,7 +49,7 @@ public class PvpStatusServiceImpl implements PvpStatusService {
             return convertToDto(optionalPvpStatus.get());
         }
         else {
-            throw new ResourceNotFoundException("Pvp status with id " + id + " not found");
+            throw new ResourceNotFoundException(id);
         }
     }
 

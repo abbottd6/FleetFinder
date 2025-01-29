@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
+    //need tests after v2 refactor
     @Autowired
     private UserService userService;
 

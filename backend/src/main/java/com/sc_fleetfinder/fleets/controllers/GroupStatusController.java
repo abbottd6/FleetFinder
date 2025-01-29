@@ -18,12 +18,12 @@ public class GroupStatusController {
     private GroupStatusService groupStatusService;
 
     @GetMapping
-    public List<GroupStatusDto> getGroupStatuses() {
+    public List<GroupStatusDto> getAllGroupStatuses() {
         return groupStatusService.getAllGroupStatuses();
     }
 
     @GetMapping("/{id}")
-    public GroupStatusDto getGroupStatus(@PathVariable Integer id) {
+    public GroupStatusDto getGroupStatusById(@PathVariable Integer id) {
         return groupStatusService.getGroupStatusById(id);
     }
 }

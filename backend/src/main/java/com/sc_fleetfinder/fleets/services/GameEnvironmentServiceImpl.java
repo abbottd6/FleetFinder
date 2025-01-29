@@ -32,6 +32,10 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
     public List<GameEnvironmentDto> getAllEnvironments() {
         log.info("Caching test: getting all game environments");
         List<GameEnvironment> environments = environmentRepository.findAll();
+
+        if (environments.isEmpty()) {
+            throw new ResourceNotFoundException("Unable to access game environments data");
+        }
         return environments.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());

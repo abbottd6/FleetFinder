@@ -3,11 +3,11 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.PlanetMoonSystemRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
 import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +32,11 @@ public class PlanetMoonSystemServiceImpl implements PlanetMoonSystemService {
     public List<PlanetMoonSystemDto> getAllPlanetMoonSystems() {
         log.info("Caching test: getting all planet moon systems");
         List<PlanetMoonSystem> planetMoonSystems = planetMoonSystemRepository.findAll();
+
+        if(planetMoonSystems.isEmpty()) {
+            throw new ResourceNotFoundException("Unable to access data for planet/moon systems");
+        }
+
         return planetMoonSystems.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -44,7 +49,7 @@ public class PlanetMoonSystemServiceImpl implements PlanetMoonSystemService {
             return convertToDto(optionalPlanetMoonSystem.get());
         }
         else {
-            throw new ResourceNotFoundException("PlanetMoonSystem with id " + id + " not found");
+            throw new ResourceNotFoundException(id);
         }
     }
 

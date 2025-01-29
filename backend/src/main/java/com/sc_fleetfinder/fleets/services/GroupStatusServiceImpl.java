@@ -3,11 +3,11 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.GroupStatusRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
 import com.sc_fleetfinder.fleets.entities.GroupStatus;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +32,11 @@ public class GroupStatusServiceImpl implements GroupStatusService {
     public List<GroupStatusDto> getAllGroupStatuses() {
         log.info("Caching test: getting all group statuses");
         List<GroupStatus> groupStatuses = groupStatusRepository.findAll();
+
+        if(groupStatuses.isEmpty()) {
+            throw new ResourceNotFoundException("Unable to access data for group statuses");
+        }
+
         return groupStatuses.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -44,7 +49,7 @@ public class GroupStatusServiceImpl implements GroupStatusService {
             return convertToDto(groupStatus.get());
         }
         else {
-            throw new ResourceNotFoundException("Group with id " + id + " not found");
+            throw new ResourceNotFoundException(id);
         }
     }
 
