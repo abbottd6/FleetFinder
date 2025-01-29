@@ -3,11 +3,11 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.EnvironmentRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
             return convertToDto(environment.get());
         }
         else {
-            throw new ResourceNotFoundException("Game environment with id " + id + " not found");
+            throw new ResourceNotFoundException(id);
         }
     }
 
