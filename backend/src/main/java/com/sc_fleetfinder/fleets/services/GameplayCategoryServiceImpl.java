@@ -3,11 +3,11 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.GameplayCategoryRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,6 +33,11 @@ public class GameplayCategoryServiceImpl implements GameplayCategoryService {
     public List<GameplayCategoryDto> getAllCategories() {
         log.info("Caching test: getting all gameplay categories");
         List<GameplayCategory> categories = gameplayCategoryRepository.findAll();
+
+        if(categories.isEmpty()) {
+            throw new ResourceNotFoundException("Unable to access data for gameplay categories");
+        }
+
         return categories.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -45,7 +50,7 @@ public class GameplayCategoryServiceImpl implements GameplayCategoryService {
             return convertToDto(gameplayCategory.get());
         }
         else {
-            throw new ResourceNotFoundException("Game Category with id " + id + " not found");
+            throw new ResourceNotFoundException(id);
         }
     }
 

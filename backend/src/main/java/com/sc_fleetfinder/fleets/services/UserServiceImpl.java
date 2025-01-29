@@ -36,6 +36,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponseDto> getAllUsers() {
         List<User> users = userRepository.findAll();
+
+        if(users.isEmpty()) {
+            throw new ResourceNotFoundException("Unable to access data for all Users");
+        }
+
         return users.stream()
                .map(this::convertToDto)
                .collect(Collectors.toList());

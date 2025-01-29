@@ -18,7 +18,7 @@ public class GameEnvironmentsController {
     private GameEnvironmentService gameEnvironmentService;
 
     @GetMapping
-    public List<GameEnvironmentDto> getGameEnvironments() {
+    public List<GameEnvironmentDto> getAllGameEnvironments() {
         return gameEnvironmentService.getAllEnvironments();
     }
 

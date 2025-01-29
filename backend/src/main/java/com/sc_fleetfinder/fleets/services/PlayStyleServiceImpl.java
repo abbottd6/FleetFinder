@@ -3,11 +3,11 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.PlayStyleRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlayStyleDto;
 import com.sc_fleetfinder.fleets.entities.PlayStyle;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,6 +32,11 @@ public class PlayStyleServiceImpl implements PlayStyleService {
     public List<PlayStyleDto> getAllPlayStyles() {
         log.info("Caching test: getting all play styles");
         List<PlayStyle> playStyles = playStyleRepository.findAll();
+
+        if(playStyles.isEmpty()) {
+            throw new ResourceNotFoundException("Unable to access play style data.");
+        }
+
         return playStyles.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -44,7 +49,7 @@ public class PlayStyleServiceImpl implements PlayStyleService {
             return convertToDto(optionalPlayStyle.get());
         }
         else {
-            throw new ResourceNotFoundException("Play style with id " + id + " not found");
+            throw new ResourceNotFoundException(id);
         }
     }
 

@@ -18,12 +18,12 @@ public class GameplayCategoryController {
     private GameplayCategoryService gameplayCategoryService;
 
     @GetMapping
-    public List<GameplayCategoryDto> getGameplayCategories() {
+    public List<GameplayCategoryDto> getAllGameplayCategories() {
         return gameplayCategoryService.getAllCategories();
     }
 
     @GetMapping("/{id}")
-    public GameplayCategoryDto getGameplayCategory(@PathVariable Integer id) {
+    public GameplayCategoryDto getGameplayCategoryById(@PathVariable Integer id) {
         return gameplayCategoryService.getCategoryById(id);
     }
 }

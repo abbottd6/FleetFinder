@@ -18,7 +18,7 @@ public class ServerRegionController {
     private ServerRegionService serverRegionService;
 
     @GetMapping
-    public List<ServerRegionDto> getServerRegions() {
+    public List<ServerRegionDto> getAllServerRegions() {
         return serverRegionService.getAllServerRegions();
     }
 
