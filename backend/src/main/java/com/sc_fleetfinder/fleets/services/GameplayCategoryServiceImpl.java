@@ -55,6 +55,15 @@ public class GameplayCategoryServiceImpl implements GameplayCategoryService {
     }
 
     public GameplayCategoryDto convertToDto(GameplayCategory entity) {
+
+        if(entity.getCategoryId() == null || entity.getCategoryId() == 0) {
+            throw new ResourceNotFoundException("Category id is null or empty");
+        }
+
+        if(entity.getCategoryName() == null || entity.getCategoryName().isEmpty()) {
+            throw new ResourceNotFoundException("Category name is null or empty");
+        }
+
         return modelMapper.map(entity, GameplayCategoryDto.class);
     }
 

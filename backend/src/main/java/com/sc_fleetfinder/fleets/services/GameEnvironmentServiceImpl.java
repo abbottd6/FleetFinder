@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,6 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
     @Override
     @Cacheable(value = "environmentsCache", key = "'allEnvironmentsCache'")
     public List<GameEnvironmentDto> getAllEnvironments() {
-        log.info("Caching test: getting all game environments");
         List<GameEnvironment> environments = environmentRepository.findAll();
 
         if (environments.isEmpty()) {
@@ -53,10 +53,31 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
     }
 
     public GameEnvironmentDto convertToDto(GameEnvironment entity) {
+
+        if(entity.getEnvironmentId() == null || entity.getEnvironmentId() == 0) {
+            throw new ResourceNotFoundException("Environment id is null or empty");
+        }
+
+        if(entity.getEnvironmentType() == null || entity.getEnvironmentType().isEmpty()) {
+            throw new ResourceNotFoundException("Environment type is null or empty");
+        }
+
         return modelMapper.map(entity, GameEnvironmentDto.class);
     }
 
     public GameEnvironment convertToEntity(GameEnvironmentDto dto) {
-        return modelMapper.map(dto, GameEnvironment.class);
+
+        //checking for Dto id match in repository
+        GameEnvironment entity = environmentRepository.findById(dto.getEnvironmentId())
+                .orElseThrow(() -> new ResourceNotFoundException("Environment with ID: " + dto.getEnvironmentId()
+                 + " not found"));
+        //verifying name/id match for dto and entity
+        if(!Objects.equals(dto.getEnvironmentType(), entity.getEnvironmentType())) {
+            throw new ResourceNotFoundException("Environment type mismatch for Dto: "
+                    + dto.getEnvironmentType() + ", " + dto.getEnvironmentId() + " and entity: "
+                    + entity.getEnvironmentId() + ", " + entity.getEnvironmentType());
+        }
+        //if Id exists and names match then returns entity
+        return entity;
     }
 }
