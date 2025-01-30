@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class CategoryConvertToDtoMapperConfig {
 
+    //Category entity to CategoryDto, for fetching responses
     @Bean
     public ModelMapper CategoryConvertToDtoMapper() {
 
