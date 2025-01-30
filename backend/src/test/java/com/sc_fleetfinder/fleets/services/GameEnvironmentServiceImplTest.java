@@ -8,9 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +32,11 @@ public class GameEnvironmentServiceImplTest {
     void testGetAllEnvironments_Found() {
         //given
         GameEnvironment mockEntity = new GameEnvironment();
+            mockEntity.setEnvironmentId(1);
+            mockEntity.setEnvironmentType("Test Env1");
         GameEnvironment mockEntity2 = new GameEnvironment();
+            mockEntity2.setEnvironmentId(2);
+            mockEntity2.setEnvironmentType("Test Env2");
         List<GameEnvironment> mockEntities = List.of(mockEntity, mockEntity2);
         when(environmentRepository.findAll()).thenReturn(mockEntities);
 
@@ -50,17 +53,12 @@ public class GameEnvironmentServiceImplTest {
 
     @Test
     void testGetAllEnvironments_NotFound() {
-        //given
-        when (environmentRepository.findAll()).thenReturn(Collections.emptyList());
+        //given environments repo is empty
 
         //when
-        List<GameEnvironmentDto> result = gameEnvironmentService.getAllEnvironments();
-
         //then
-        assertAll("get all environments = empty, assertion set:",
-                () -> assertNotNull(result, "getAllEnvironments should be empty, not null"),
-                () -> assertTrue(result.isEmpty(), "getAllEnvironments returned " + result + " when " +
-                        "it should have returned empty"),
+        assertAll("getAllEnvironments = empty assertion set: ",
+                () -> assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.getAllEnvironments()),
                 () -> verify(environmentRepository, times(1)).findAll());
     }
 
@@ -68,6 +66,8 @@ public class GameEnvironmentServiceImplTest {
     void testGetEnvironmentById_Found() {
         //given
         GameEnvironment mockEntity = new GameEnvironment();
+        mockEntity.setEnvironmentId(1);
+        mockEntity.setEnvironmentType("Test Env1");
         when(environmentRepository.findById(1)).thenReturn(Optional.of(mockEntity));
 
         //when
@@ -83,19 +83,18 @@ public class GameEnvironmentServiceImplTest {
 
     @Test
     void testGetEnvironmentById_NotFound() {
-        //given
-        when(environmentRepository.findById(1)).thenReturn(Optional.empty());
+        //given environmentRepository does not contain environment with given Id
 
-        //when environmentRepository does not contain environment with given Id
-
+        //when
         //then
-        assertAll("get environmentById=not found assertion set:",
+        assertAll("getEnvironmentById = not found assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.getEnvironmentById(1),
-                "getEnvironmentById with id not found should throw exception"));
+                "getEnvironmentById with id not found should throw exception"),
+                () -> verify(environmentRepository, times(1)).findById(1));
     }
 
     @Test
-    void testConvertToDto() {
+    void testConvertToDto_Success() {
         //given
         GameEnvironment mockEntity = new GameEnvironment();
         mockEntity.setEnvironmentId(1);
@@ -113,6 +112,8 @@ public class GameEnvironmentServiceImplTest {
         //then
         assertAll("convert environment entity to DTO assertion set:",
                 () -> assertNotNull(result, "convert environment entity to DTO should not return null"),
+                () -> assertDoesNotThrow(() -> gameEnvironmentService.getAllEnvironments(),
+                        "convert environment entity to DTO should NOT throw an exception"),
                 () -> assertEquals(2, result.size(), "environment convertToDto should produce" +
                         "2 elements"),
                 () -> assertEquals(1, result.getFirst().getEnvironmentId(), "convert environment" +
@@ -123,25 +124,120 @@ public class GameEnvironmentServiceImplTest {
                         "entity to DTO Id's do not match"),
                 () -> assertEquals("Environment2", result.get(1).getEnvironmentType(), "convert" +
                         " environment to DTO environment types do not match"),
-                () -> verify(environmentRepository, times(1)).findAll());
+                () -> verify(environmentRepository, times(2)).findAll());
     }
 
     @Test
-    void testConvertToEntity() {
+    void testConvertToDto_FailIdNull() {
+        //given
+        GameEnvironment mockEntity = new GameEnvironment();
+        mockEntity.setEnvironmentId(null);
+        mockEntity.setEnvironmentType("Environment1");
+
+        //when
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToDto(mockEntity),
+                "convert environment entity to dto should throw exception when Id is null");
+    }
+
+    @Test
+    void testConvertToDto_FailIdZero() {
+        //given
+        GameEnvironment mockEntity = new GameEnvironment();
+        mockEntity.setEnvironmentId(0);
+        mockEntity.setEnvironmentType("Environment1");
+
+        //when
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToDto(mockEntity),
+                "convert environment entity to dto should throw exception when Id is null");
+    }
+
+    @Test
+    void testConvertToDto_FailTypeIsNull() {
+        //given
+        GameEnvironment mockEntity = new GameEnvironment();
+        mockEntity.setEnvironmentId(1);
+        mockEntity.setEnvironmentType(null);
+
+        //when
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToDto(mockEntity),
+                "convert environment entity to dto should throw exception when Id is null");
+    }
+
+    @Test
+    void testConvertToDto_FailTypeIsEmptyString() {
+        //given
+        GameEnvironment mockEntity = new GameEnvironment();
+        mockEntity.setEnvironmentId(1);
+        mockEntity.setEnvironmentType("");
+
+        //when
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToDto(mockEntity),
+                "convert environment entity to dto should throw exception when Id is null");
+    }
+
+    @Test
+    void testConvertToEntity_Found() {
         //given
         GameEnvironmentDto mockDto = new GameEnvironmentDto();
         mockDto.setEnvironmentId(1);
         mockDto.setEnvironmentType("Environment1");
 
+        GameEnvironment mockEntity = new GameEnvironment();
+        mockEntity.setEnvironmentId(1);
+        mockEntity.setEnvironmentType("Environment1");
+
+        when(environmentRepository.findById(mockDto.getEnvironmentId())).thenReturn(Optional.of(mockEntity));
+
         //when
-        GameEnvironment mockEntity = gameEnvironmentService.convertToEntity(mockDto);
+        GameEnvironment result = gameEnvironmentService.convertToEntity(mockDto);
 
         //then
         assertAll("gameEnvironment convertToEntity assertions set:",
-                () -> assertNotNull(mockEntity, "gameEnvironment convertToEntity should not return null"),
-                () -> assertEquals(1, mockEntity.getEnvironmentId(), "gameEnvironment convertToEntity" +
+                () -> assertNotNull(result, "gameEnvironment convertToEntity should not return null"),
+                () -> assertDoesNotThrow(() -> gameEnvironmentService.convertToEntity(mockDto),
+                        "Valid dto converting to entity should not throw an exception"),
+                () -> assertEquals(1, result.getEnvironmentId(), "gameEnvironment convertToEntity" +
                         " environmentIds do not match"),
-                () -> assertEquals("Environment1", mockEntity.getEnvironmentType(), "gameEnvironment " +
-                        "convertToEntity environmentTypes do not match"));
+                () -> assertEquals("Environment1", result.getEnvironmentType(), "gameEnvironment " +
+                        "convertToEntity environmentTypes do not match"),
+                () -> assertSame(result, mockEntity, "convert environment entity to entity do not match"));
+    }
+
+    @Test
+    void testConvertToEntity_NotFound() {
+        //given
+        GameEnvironmentDto mockEnvironmentDto = new GameEnvironmentDto();
+        mockEnvironmentDto.setEnvironmentId(1);
+        mockEnvironmentDto.setEnvironmentType("Not Environment1");
+
+        //when backend entity does not exist with dto ID
+
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToEntity(mockEnvironmentDto),
+                "convertToEntity with id not found should throw exception");
+    }
+
+    @Test
+    void testConvertToEntity_NameMismatch() {
+        //given dto and entity
+        GameEnvironmentDto mockDto = new GameEnvironmentDto();
+            mockDto.setEnvironmentId(1);
+            mockDto.setEnvironmentType("Incorrect Environment1");
+
+        GameEnvironment mockEntity = new GameEnvironment();
+            mockEntity.setEnvironmentId(1);
+            mockEntity.setEnvironmentType("Correct Environment1");
+
+        when(environmentRepository.findById(mockDto.getEnvironmentId())).thenReturn(Optional.of(mockEntity));
+
+
+        //when dto and entity type fields do not match
+
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToEntity(mockDto));
     }
 }
