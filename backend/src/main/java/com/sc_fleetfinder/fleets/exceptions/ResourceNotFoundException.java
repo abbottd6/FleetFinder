@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.exceptions;
 
+import jakarta.annotation.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -23,6 +24,11 @@ public class ResourceNotFoundException extends RuntimeException {
 
     //searching by type Integer id
     public ResourceNotFoundException(Integer id) {
+        super(String.format("Resource with id: [%d] not found", id));
+    }
+
+    //searching by type Long id
+    public ResourceNotFoundException(Long id) {
         super(String.format("Resource with id: [%d] not found", id));
     }
 
