@@ -53,7 +53,7 @@ public class GameExperienceServiceImpl implements GameExperienceService {
     public GameExperienceDto convertToDto(GameExperience entity) {
         //id valid check
         if(entity.getExperienceId() == null || entity.getExperienceId() == 0) {
-            throw new ResourceNotFoundException("Experience id is null or empty");
+            throw new ResourceNotFoundException("Experience id is null or 0");
         }
 
         //type/name valid check
