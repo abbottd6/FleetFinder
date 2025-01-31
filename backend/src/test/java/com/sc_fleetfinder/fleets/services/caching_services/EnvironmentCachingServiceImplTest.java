@@ -33,6 +33,7 @@ class EnvironmentCachingServiceImplTest {
     @Test
     void testCacheAllEnvironments_Found() {
         //given
+        //mock entities for findAll
         GameEnvironment mockEntity = new GameEnvironment();
         mockEntity.setEnvironmentId(1);
         mockEntity.setEnvironmentType("Test Env1");
@@ -41,6 +42,8 @@ class EnvironmentCachingServiceImplTest {
         mockEntity2.setEnvironmentType("Test Env2");
         List<GameEnvironment> mockEntities = List.of(mockEntity, mockEntity2);
         when(environmentRepository.findAll()).thenReturn(mockEntities);
+
+        //Mock dtoes to return from conversion in cacheAll
         GameEnvironmentDto mockDto = new GameEnvironmentDto();
         mockDto.setEnvironmentId(1);
         mockDto.setEnvironmentType("Test Env1");
@@ -58,6 +61,14 @@ class EnvironmentCachingServiceImplTest {
                 () -> assertNotNull(result, "getAllEnvironments should not return null"),
                 () -> assertEquals(2, result.size(), "Get all environments produced unexpected " +
                         "number of results"),
+                () -> assertEquals(1, result.getFirst().getEnvironmentId(), "cacheAllEnvironments " +
+                        "produced dto with incorrect id"),
+                () -> assertEquals( "Test Env1", result.getFirst().getEnvironmentType(),
+                        "cacheAllEnvironments produced dto with incorrect type"),
+                () -> assertEquals(2, result.get(1).getEnvironmentId(), "cacheAllEnvironments " +
+                        "produced dto with incorrect id"),
+                () -> assertEquals("Test Env2", result.get(1).getEnvironmentType(),
+                        "cacheAllEnvironments produced dto with incorrect type"),
                 () -> verify(environmentRepository, times(1)).findAll());
     }
 
@@ -67,7 +78,7 @@ class EnvironmentCachingServiceImplTest {
 
         //when
         //then
-        assertAll("getAllEnvironments = empty assertion set: ",
+        assertAll("cacheAllEnvironments = empty assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class, () -> environmentCachingService.cacheAllEnvironments()),
                 () -> verify(environmentRepository, times(1)).findAll());
     }
