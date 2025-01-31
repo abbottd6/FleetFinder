@@ -45,7 +45,7 @@ public class GameExperienceServiceImplTest {
 
         //then
         assertAll("getAllExperiences mock entities assertion set:",
-                () -> assertNotNull(result, "getAllExperiences should not be null here"),
+                () -> assertNotNull(result, "getAllExperiences should not return null"),
                 () -> assertEquals(2, result.size(), "getAllExperiences should have 2 mock Dtoes"),
                 () -> verify(experienceCachingService, times(1)).cacheAllExperiences());
     }
@@ -204,7 +204,7 @@ public class GameExperienceServiceImplTest {
         GameExperience result = gameExperienceService.convertToEntity(mockDto);
 
         //then
-        assertAll("gameExperience convertToEntity assertions set:",
+        assertAll("gameExperience convertToEntity assertion set:",
                 () -> assertNotNull(result, "gameExperience convertToEntity should not return null"),
                 () -> assertDoesNotThrow(() -> gameExperienceService.convertToEntity(mockDto),
                         "converting valid dto to entity should not throw an exception"),
