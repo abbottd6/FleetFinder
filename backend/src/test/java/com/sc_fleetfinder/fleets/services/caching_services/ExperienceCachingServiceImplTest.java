@@ -59,7 +59,7 @@ class ExperienceCachingServiceImplTest {
         //then
         assertAll("cacheAllExperiences mock entities assertion set:",
                 () -> assertNotNull(result, "cacheAllExperiences should not return null"),
-                () -> assertEquals(2, result.size(), "cacheAllExperiences should return 2  mock DTOs"),
+                () -> assertEquals(2, result.size(), "cacheAllExperiences should return 2 mock DTOs"),
                 () -> assertEquals(1, result.getFirst().getExperienceId(), "cacheAllExperiences " +
                         "produced dto with incorrect id"),
                 () -> assertEquals("Test Exp1", result.getFirst().getExperienceType(),
@@ -72,7 +72,7 @@ class ExperienceCachingServiceImplTest {
     }
 
     @Test
-    void testCacheAllExperiencesNotFound() {
+    void testCacheAllExperiences_NotFound() {
         //given experiences repo is empty
 
         //when

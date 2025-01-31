@@ -60,6 +60,7 @@ public class GameExperienceServiceImplTest {
         //when
         //then
         assertAll("getAllExperiences = empty assertion set: ",
+                //verifying that the exception propagates from the caching service
                 () -> assertThrows(ResourceNotFoundException.class, () -> gameExperienceService.getAllExperiences()),
                 () -> verify(experienceCachingService, times(1)).cacheAllExperiences());
     }
@@ -103,11 +104,11 @@ public class GameExperienceServiceImplTest {
     void testConvertToDto_Success() {
         //given
         GameExperience mockEntity = new GameExperience();
-        mockEntity.setExperienceId(1);
-        mockEntity.setExperienceType("Experience1");
+            mockEntity.setExperienceId(1);
+            mockEntity.setExperienceType("Experience1");
         GameExperience mockEntity2 = new GameExperience();
-        mockEntity2.setExperienceId(2);
-        mockEntity2.setExperienceType("Experience2");
+            mockEntity2.setExperienceId(2);
+            mockEntity2.setExperienceType("Experience2");
 
         //when
         List<GameExperienceDto> result = List.of(gameExperienceService.convertToDto(mockEntity),
@@ -134,10 +135,10 @@ public class GameExperienceServiceImplTest {
 
     @Test
     void testConvertToDto_FailIdNull() {
-        //given
+        //given: entity with a null id value (invalid id)
         GameExperience mockEntity = new GameExperience();
-        mockEntity.setExperienceId(null);
-        mockEntity.setExperienceType("Experience1");
+            mockEntity.setExperienceId(null);
+            mockEntity.setExperienceType("Experience1");
 
         //when
         //then
@@ -158,6 +159,7 @@ public class GameExperienceServiceImplTest {
                 "convert experience entity to dto should throw exception when id is 0");
     }
 
+    //type/NAME is null
     @Test
     void testConvertToDto_FailTypeIsNull() {
         //given: entity with a null type value
@@ -171,6 +173,7 @@ public class GameExperienceServiceImplTest {
                 "convert experience entity to dto should throw an exception when type value is null");
     }
 
+    //type/NAME is empty
     @Test
     void testConvertToDto_FailTypeIsEmpty() {
         //given: entity with an empty string for type
