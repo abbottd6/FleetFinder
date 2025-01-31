@@ -4,56 +4,47 @@ import com.sc_fleetfinder.fleets.DAO.GameplayCategoryRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.caching_services.CategoryCachingServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class GameplayCategoryServiceImpl implements GameplayCategoryService {
 
     private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final GameplayCategoryRepository gameplayCategoryRepository;
+    private final CategoryCachingServiceImpl categoryCachingService;
     private final ModelMapper modelMapper;
 
-    public GameplayCategoryServiceImpl(GameplayCategoryRepository gameplayCategoryRepository) {
+    public GameplayCategoryServiceImpl(GameplayCategoryRepository gameplayCategoryRepository,
+                                       CategoryCachingServiceImpl categoryCachingService) {
         super();
+        this.categoryCachingService = categoryCachingService;
         this.gameplayCategoryRepository = gameplayCategoryRepository;
         this.modelMapper = new ModelMapper();
     }
 
     @Override
-    @Cacheable(value = "categoryCache", key= "'allCategoriesCache'")
     public List<GameplayCategoryDto> getAllCategories() {
-        log.info("Caching test: getting all gameplay categories");
-        List<GameplayCategory> categories = gameplayCategoryRepository.findAll();
-
-        if(categories.isEmpty()) {
-            throw new ResourceNotFoundException("Unable to access data for gameplay categories");
-        }
-
-        return categories.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return categoryCachingService.cacheAllCategories();
     }
 
     @Override
     public GameplayCategoryDto getCategoryById(Integer id) {
-        Optional<GameplayCategory> gameplayCategory = gameplayCategoryRepository.findById(id);
-        if (gameplayCategory.isPresent()) {
-            return convertToDto(gameplayCategory.get());
-        }
-        else {
-            throw new ResourceNotFoundException(id);
-        }
+        List<GameplayCategoryDto> cachedCategories = categoryCachingService.cacheAllCategories();
+
+        return cachedCategories.stream()
+                .filter(category -> category.getGameplayCategoryId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
+    @Override
     public GameplayCategoryDto convertToDto(GameplayCategory entity) {
 
         if(entity.getCategoryId() == null || entity.getCategoryId() == 0) {

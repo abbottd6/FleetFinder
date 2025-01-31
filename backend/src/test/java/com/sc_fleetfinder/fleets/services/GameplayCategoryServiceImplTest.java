@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.caching_services.CategoryCachingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
@@ -26,22 +26,23 @@ class GameplayCategoryServiceImplTest {
     @Mock
     private GameplayCategoryRepository gameplayCategoryRepository;
 
+    @Mock
+    private CategoryCachingServiceImpl categoryCachingService;
+
     @InjectMocks
     private GameplayCategoryServiceImpl gameplayCategoryService;
 
     @Test
     void testGetAllCategories_Found() {
         //given
-        GameplayCategory mockGameplayCategory = new GameplayCategory();
-            mockGameplayCategory.setCategoryId(1);
-            mockGameplayCategory.setCategoryName("Test Category");
-            mockGameplayCategory.setGameplaySubcategories(Set.of(new GameplaySubcategory(), new GameplaySubcategory()));
-        GameplayCategory mockGameplayCategory2 = new GameplayCategory();
-            mockGameplayCategory2.setCategoryId(2);
-            mockGameplayCategory2.setCategoryName("Test Category2");
-            mockGameplayCategory2.setGameplaySubcategories(Set.of(new GameplaySubcategory(), new GameplaySubcategory()));
-        List<GameplayCategory> mockEntities = List.of(mockGameplayCategory, mockGameplayCategory2);
-        when(gameplayCategoryRepository.findAll()).thenReturn(mockEntities);
+        GameplayCategoryDto mockDto1 = new GameplayCategoryDto();
+            mockDto1.setGameplayCategoryId(1);
+            mockDto1.setGameplayCategoryName("Test Category");
+        GameplayCategoryDto mockDto2 = new GameplayCategoryDto();
+            mockDto2.setGameplayCategoryId(2);
+            mockDto2.setGameplayCategoryName("Test Category2");
+        List<GameplayCategoryDto> mockDtoes = List.of(mockDto1, mockDto2);
+        when(categoryCachingService.cacheAllCategories()).thenReturn(mockDtoes);
 
         //when
         List<GameplayCategoryDto> result = gameplayCategoryService.getAllCategories();
@@ -50,28 +51,34 @@ class GameplayCategoryServiceImplTest {
         assertAll("get all categories mock entities assertions set:",
                 () -> assertNotNull(result, "get all categories should not be null here"),
                 () -> assertEquals(2, result.size(), "get all categories should have 2 elements here"),
-                () -> verify(gameplayCategoryRepository, times(1)).findAll());
+                () -> verify(categoryCachingService, times(1)).cacheAllCategories());
     }
 
     @Test
     void testGetAllCategories_NotFound() {
         //given categories repo is empty
 
+        //telling test to throw an exception when it tries to cache an empty repo
+        when(categoryCachingService.cacheAllCategories()).thenThrow(ResourceNotFoundException.class);
+
         //when
         //then
         assertAll("getAllCategories = empty assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryService.getAllCategories()),
-                () -> verify(gameplayCategoryRepository, times(1)).findAll());
+                () -> verify(categoryCachingService, times(1)).cacheAllCategories());
     }
 
     @Test
     void testGetCategoryById_Found() {
         //given
-        GameplayCategory mockGameplayCategory = new GameplayCategory();
-            mockGameplayCategory.setCategoryId(1);
-            mockGameplayCategory.setCategoryName("Test Category");
-            mockGameplayCategory.setGameplaySubcategories(Set.of(new GameplaySubcategory(), new GameplaySubcategory()));
-        when(gameplayCategoryRepository.findById(1)).thenReturn(Optional.of(mockGameplayCategory));
+        GameplayCategoryDto mockDto1 = new GameplayCategoryDto();
+            mockDto1.setGameplayCategoryId(1);
+            mockDto1.setGameplayCategoryName("Test Category");
+        GameplayCategoryDto mockDto2 = new GameplayCategoryDto();
+            mockDto2.setGameplayCategoryId(2);
+            mockDto2.setGameplayCategoryName("Test Category2");
+        List<GameplayCategoryDto> mockDtoes = List.of(mockDto1, mockDto2);
+        when(categoryCachingService.cacheAllCategories()).thenReturn(mockDtoes);
 
         //when
         GameplayCategoryDto result = gameplayCategoryService.getCategoryById(1);
@@ -81,7 +88,7 @@ class GameplayCategoryServiceImplTest {
                 () -> assertNotNull(result, "Found categoryId should not return null DTO"),
                 () -> assertDoesNotThrow(() -> gameplayCategoryService.getCategoryById(1),
                         "getCategoryById should not throw exception when Id is found"),
-                () -> verify(gameplayCategoryRepository, times(2)).findById(1));
+                () -> verify(categoryCachingService, times(2)).cacheAllCategories());
     }
 
     @Test
@@ -93,29 +100,30 @@ class GameplayCategoryServiceImplTest {
         assertAll("getCategoryById = not found assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryService.getCategoryById(1),
                 "getCategoryById with id not found should throw exception"),
-                () -> verify(gameplayCategoryRepository, times(1)).findById(1));
+                () -> verify(categoryCachingService, times(1)).cacheAllCategories());
     }
 
     @Test
     void testConvertToDto_Success() {
         //given
-        GameplayCategory mockGameplayCategory = new GameplayCategory();
-        mockGameplayCategory.setCategoryId(1);
-        mockGameplayCategory.setCategoryName("Test Category1");
-        GameplayCategory mockGameplayCategory2 = new GameplayCategory();
-        mockGameplayCategory2.setCategoryId(2);
-        mockGameplayCategory2.setCategoryName("Test Category2");
-
-        List<GameplayCategory> mockEntities = List.of(mockGameplayCategory, mockGameplayCategory2);
-        when(gameplayCategoryRepository.findAll()).thenReturn(mockEntities);
+        GameplayCategory mockEntity1 = new GameplayCategory();
+            mockEntity1.setCategoryId(1);
+            mockEntity1.setCategoryName("Test Category1");
+        GameplayCategory mockEntity2 = new GameplayCategory();
+            mockEntity2.setCategoryId(2);
+            mockEntity2.setCategoryName("Test Category2");
 
         //when
-        List<GameplayCategoryDto> result = gameplayCategoryService.getAllCategories();
+        List<GameplayCategoryDto> result = List.of(gameplayCategoryService.convertToDto(mockEntity1),
+                gameplayCategoryService.convertToDto(mockEntity2));
 
         //then
         assertAll("convert category entity to DTO assertions set",
                 () -> assertNotNull(result, "convert category entity to DTO should not return null"),
-                () -> assertDoesNotThrow(() -> gameplayCategoryService.getAllCategories()),
+                () -> assertDoesNotThrow(() -> gameplayCategoryService.convertToDto(mockEntity1),
+                        "convert Category entity to Dto should NOT throw an exception when fields are valid"),
+                () -> assertDoesNotThrow(() -> gameplayCategoryService.convertToDto(mockEntity2),
+                        "convert Category entity to Dto should NOT throw an exception when fields are valid"),
                 () -> assertEquals(2, result.size(), "test category convertToDto should produce" +
                         "2 elements"),
                 () -> assertEquals(1, result.getFirst().getGameplayCategoryId(), "convert category" +
@@ -125,45 +133,51 @@ class GameplayCategoryServiceImplTest {
                 () -> assertEquals(2, result.get(1).getGameplayCategoryId(), "convert category" +
                         " entity to DTO Id's do not match"),
                 () -> assertEquals("Test Category2", result.get(1).getGameplayCategoryName(),
-                        "convert category entity to DTO categoryNames do not match"),
-                () -> verify(gameplayCategoryRepository, times(2)).findAll());
+                        "convert category entity to DTO categoryNames do not match"));
     }
 
     @Test
-    void testCategoryEntityToDtoMapping_FailureNullId() {
+    void testConvertToDtoMapping_FailNullId() {
+        //given: entity with a null id value (invalid id)
         GameplayCategory mockCategory = new GameplayCategory();
-        mockCategory.setCategoryId(null);
-        mockCategory.setCategoryName("Test Category1");
+            mockCategory.setCategoryId(null);
+            mockCategory.setCategoryName("Test Category1");
 
+        //when
+        //then
         assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryService.convertToDto(mockCategory),
                 "null CategoryId for entity to Dto conversion should throw exception" );
     }
 
     @Test
-    void testCategoryEntityToDtoMapping_FailureIdZero() {
+    void testConvertToDtoMapping_FailIdZero() {
+        //given: entity with an id value of 0 (invalid)
         GameplayCategory mockCategory = new GameplayCategory();
-        mockCategory.setCategoryId(0);
-        mockCategory.setCategoryName("Test Category1");
+            mockCategory.setCategoryId(0);
+            mockCategory.setCategoryName("Test Category1");
 
+        //when
+        //then
         assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryService.convertToDto(mockCategory),
                 "null CategoryId for entity to Dto conversion should throw exception" );
     }
 
     @Test
-    void testCategoryEntityToDtoMapping_FailureNullName() {
+    void testConvertToDtoMapping_FailureNullName() {
+        //given: an en
         GameplayCategory mockCategory = new GameplayCategory();
-        mockCategory.setCategoryId(1);
-        mockCategory.setCategoryName(null);
+            mockCategory.setCategoryId(1);
+            mockCategory.setCategoryName(null);
 
         assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryService.convertToDto(mockCategory),
                 "null CategoryName for entity to Dto conversion should throw exception" );
     }
 
     @Test
-    void testCategoryEntityToDtoMapping_FailureEmptyName() {
+    void testConvertToDtoMapping_FailureEmptyName() {
         GameplayCategory mockCategory = new GameplayCategory();
-        mockCategory.setCategoryId(1);
-        mockCategory.setCategoryName("");
+            mockCategory.setCategoryId(1);
+            mockCategory.setCategoryName("");
 
         assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryService.convertToDto(mockCategory),
                 "Empty CategoryName for entity to Dto conversion should throw exception" );
@@ -175,13 +189,13 @@ class GameplayCategoryServiceImplTest {
 
         //Mock subcategory to add to Category hashset of subcategories
         GameplaySubcategory mockGameplaySubcategory = new GameplaySubcategory();
-        mockGameplaySubcategory.setSubcategoryId(1);
-        mockGameplaySubcategory.setSubcategoryName("Test Subcategory1");
+            mockGameplaySubcategory.setSubcategoryId(1);
+            mockGameplaySubcategory.setSubcategoryName("Test Subcategory1");
 
         //Mock category to test entity equivalence after conversion
         GameplayCategory mockGameplayCategory = new GameplayCategory();
-        mockGameplayCategory.setCategoryId(1);
-        mockGameplayCategory.setCategoryName("Test Category1");
+            mockGameplayCategory.setCategoryId(1);
+            mockGameplayCategory.setCategoryName("Test Category1");
 
         //assigning mock Category to mock subcategory and vice versa
         mockGameplaySubcategory.setGameplayCategory(mockGameplayCategory);
@@ -189,8 +203,8 @@ class GameplayCategoryServiceImplTest {
 
         //mock DTO to convert to entity
         GameplayCategoryDto mockCategoryDto = new GameplayCategoryDto();
-        mockCategoryDto.setGameplayCategoryId(1);
-        mockCategoryDto.setGameplayCategoryName("Test Category1");
+            mockCategoryDto.setGameplayCategoryId(1);
+            mockCategoryDto.setGameplayCategoryName("Test Category1");
         when(gameplayCategoryRepository.findById(1)).thenReturn(Optional.of(mockGameplayCategory));
 
         //when
@@ -228,12 +242,12 @@ class GameplayCategoryServiceImplTest {
     void testConvertToEntity_NameMismatch() {
         //given
         GameplayCategoryDto mockCategoryDto = new GameplayCategoryDto();
-        mockCategoryDto.setGameplayCategoryId(1);
-        mockCategoryDto.setGameplayCategoryName("Wrong Category");
+            mockCategoryDto.setGameplayCategoryId(1);
+            mockCategoryDto.setGameplayCategoryName("Wrong Category");
 
         GameplayCategory mockCategory = new GameplayCategory();
-        mockCategory.setCategoryId(1);
-        mockCategory.setCategoryName("Correct Category");
+            mockCategory.setCategoryId(1);
+            mockCategory.setCategoryName("Correct Category");
 
         when(gameplayCategoryRepository.findById(mockCategoryDto.getGameplayCategoryId())).thenReturn(Optional.of(mockCategory));
 
