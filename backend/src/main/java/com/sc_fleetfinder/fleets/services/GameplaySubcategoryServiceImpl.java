@@ -8,12 +8,10 @@ import com.sc_fleetfinder.fleets.services.caching_services.SubcategoryCachingSer
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryService {

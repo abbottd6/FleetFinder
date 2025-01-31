@@ -61,6 +61,7 @@ public class GameEnvironmentServiceImplTest {
 
         //telling the test to throw an exception when it tries to cache an empty repo
         when(environmentCachingService.cacheAllEnvironments()).thenThrow(ResourceNotFoundException.class);
+
         //when
         //then
         assertAll("getAllEnvironments = empty assertion set: ",
@@ -94,7 +95,7 @@ public class GameEnvironmentServiceImplTest {
 
     @Test
     void testGetEnvironmentById_NotFound() {
-        //given environmentRepository does not contain environment with given Id
+        //given: environmentRepository does not contain environment with given Id
 
         //when
         //then
@@ -121,8 +122,10 @@ public class GameEnvironmentServiceImplTest {
         //then
         assertAll("convert environment entity to DTO assertion set:",
                 () -> assertNotNull(result, "convert environment entity to DTO should not return null"),
-                () -> assertDoesNotThrow(() -> gameEnvironmentService.getAllEnvironments(),
-                        "convert environment entity to DTO should NOT throw an exception"),
+                () -> assertDoesNotThrow(() -> gameEnvironmentService.convertToDto(mockEntity),
+                        "convert environment entity to DTO should NOT throw an exception when fields are valid"),
+                () -> assertDoesNotThrow(() -> gameEnvironmentService.convertToDto(mockEntity2),
+                        "convert environment entity to DTO should NOT throw an exception when fields are valid"),
                 () -> assertEquals(2, result.size(), "environment convertToDto should produce" +
                         "2 elements"),
                 () -> assertEquals(1, result.getFirst().getEnvironmentId(), "convert environment" +
@@ -150,7 +153,7 @@ public class GameEnvironmentServiceImplTest {
 
     @Test
     void testConvertToDto_FailIdZero() {
-        //given
+        //given: an entity with id of 0 (invalid id)
         GameEnvironment mockEntity = new GameEnvironment();
         mockEntity.setEnvironmentId(0);
         mockEntity.setEnvironmentType("Environment1");
@@ -158,7 +161,7 @@ public class GameEnvironmentServiceImplTest {
         //when
         //then
         assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToDto(mockEntity),
-                "convert environment entity to dto should throw exception when Id is null");
+                "convert environment entity to dto should throw exception when Id is 0");
     }
 
     @Test
@@ -171,12 +174,12 @@ public class GameEnvironmentServiceImplTest {
         //when
         //then
         assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToDto(mockEntity),
-                "convert environment entity to dto should throw exception when Id is null");
+                "convert environment entity to dto should throw exception when type is null");
     }
 
     @Test
     void testConvertToDto_FailTypeIsEmptyString() {
-        //given
+        //given: entity with a null type value
         GameEnvironment mockEntity = new GameEnvironment();
         mockEntity.setEnvironmentId(1);
         mockEntity.setEnvironmentType("");
@@ -184,7 +187,8 @@ public class GameEnvironmentServiceImplTest {
         //when
         //then
         assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToDto(mockEntity),
-                "convert environment entity to dto should throw exception when Id is null");
+                "convert environment entity to dto should throw an exception when type " +
+                        "value is an empty string");
     }
 
     @Test
@@ -212,7 +216,8 @@ public class GameEnvironmentServiceImplTest {
                         " environmentIds do not match"),
                 () -> assertEquals("Environment1", result.getEnvironmentType(), "gameEnvironment " +
                         "convertToEntity environmentTypes do not match"),
-                () -> assertSame(result, mockEntity, "convert environment entity to entity do not match"));
+                () -> assertSame(mockEntity, result, "converted environment dto to entity does not match " +
+                        "target entity"));
     }
 
     @Test
@@ -226,7 +231,8 @@ public class GameEnvironmentServiceImplTest {
 
         //then
         assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.convertToEntity(mockEnvironmentDto),
-                "convertToEntity with id not found should throw exception");
+                "convert environment dto to entity where dto id is not found in repo should throw " +
+                        "an exception");
     }
 
     @Test

@@ -6,6 +6,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.caching_services.ExperienceCachingService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,40 +23,33 @@ public class GameExperienceServiceImpl implements GameExperienceService {
 
     private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final ExperienceRepository experienceRepository;
+    private final ExperienceCachingService experienceCachingService;
     private final ModelMapper modelMapper;
 
-    public GameExperienceServiceImpl(ExperienceRepository experienceRepository) {
+    public GameExperienceServiceImpl(ExperienceRepository experienceRepository,
+                                     ExperienceCachingService experienceCachingService) {
         super();
+        this.experienceCachingService = experienceCachingService;
         this.experienceRepository = experienceRepository;
         this.modelMapper = new ModelMapper();
     }
 
     @Override
-    @Cacheable(value = "experienceCache", key = "'allExperiencesCache'")
     public List<GameExperienceDto> getAllExperiences() {
-        log.info("Caching test: getting all game experiences");
-        List<GameExperience> experiences = experienceRepository.findAll();
-
-        if(experiences.isEmpty()) {
-            throw new ResourceNotFoundException("Unable to access data for game experiences");
-        }
-
-        return experiences.stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+        return experienceCachingService.cacheAllExperiences();
     }
 
     @Override
     public GameExperienceDto getExperienceById(Integer id) {
-        Optional<GameExperience> experience = experienceRepository.findById(id);
-        if (experience.isPresent()) {
-            return convertToDto(experience.get());
-        }
-        else {
-            throw new ResourceNotFoundException(id);
-        }
+        List<GameExperienceDto> cachedExperiences = experienceCachingService.cacheAllExperiences();
+
+        return cachedExperiences.stream()
+                .filter(experience -> experience.getExperienceId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
+    @Override
     public GameExperienceDto convertToDto(GameExperience entity) {
         //id valid check
         if(entity.getExperienceId() == null || entity.getExperienceId() == 0) {
