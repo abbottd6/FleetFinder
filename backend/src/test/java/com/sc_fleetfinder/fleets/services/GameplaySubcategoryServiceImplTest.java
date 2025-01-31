@@ -4,16 +4,17 @@ import com.sc_fleetfinder.fleets.DAO.GameplaySubcategoryRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplaySubcategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.caching_services.SubcategoryCachingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
@@ -26,16 +27,19 @@ class GameplaySubcategoryServiceImplTest {
     @Mock
     private GameplaySubcategoryRepository gameplaySubcategoryRepository;
 
+    @Mock
+    private SubcategoryCachingServiceImpl subcategoryCachingService;
+
     @InjectMocks
     private GameplaySubcategoryServiceImpl gameplaySubcategoryService;
 
     @Test
-    void testGetAllSubcategories() {
+    void testGetAllSubcategories_Found() {
         //given
-        GameplaySubcategory mockGameplaySubcategory1 = new GameplaySubcategory();
-        GameplaySubcategory mockGameplaySubcategory2 = new GameplaySubcategory();
-        List<GameplaySubcategory> mockEntities = List.of(mockGameplaySubcategory1, mockGameplaySubcategory2);
-        when(gameplaySubcategoryRepository.findAll()).thenReturn(mockEntities);
+        GameplaySubcategoryDto mockDto1 = new GameplaySubcategoryDto();
+        GameplaySubcategoryDto mockDto2 = new GameplaySubcategoryDto();
+        List<GameplaySubcategoryDto> mockDtoes = List.of(mockDto1, mockDto2);
+        when(subcategoryCachingService.cacheAllSubcategories()).thenReturn(mockDtoes);
 
         //when
         List<GameplaySubcategoryDto> result = gameplaySubcategoryService.getAllSubcategories();
@@ -44,29 +48,47 @@ class GameplaySubcategoryServiceImplTest {
         assertAll("get all subcategories mock entities assertions set:",
                 () -> assertNotNull(result, "get all subcategories should not return null"),
                 () -> assertEquals(2, result.size(), "get all subcategories should contain 2 elements."),
-                () -> verify(gameplaySubcategoryRepository, times(1)).findAll());
+                () -> verify(subcategoryCachingService, times(1)).cacheAllSubcategories());
     }
 
     @Test
-    void testGetAllSubcategoriesNotFound() {
-        //given
-        when(gameplaySubcategoryRepository.findAll()).thenReturn(Collections.emptyList());
+    void testGetAllSubcategories_NotFound() {
+        //given subcategories repo is empty
+
+        //telling the test to throw an exception when it tries to cache an empty repo
+        when(subcategoryCachingService.cacheAllSubcategories()).thenThrow(ResourceNotFoundException.class);
 
         //when
-        List<GameplaySubcategoryDto> result = gameplaySubcategoryService.getAllSubcategories();
-
         //then
         assertAll("get all subcategories = empty assertions set:",
-                () -> assertNotNull(result, "get all subcategories should not return null"),
-                () -> assertTrue(result.isEmpty(), "get all subcategories should return empty here"),
-                () -> verify(gameplaySubcategoryRepository, times(1)).findAll());
+                () -> assertThrows(ResourceNotFoundException.class,
+                        () -> gameplaySubcategoryService.getAllSubcategories()),
+                () -> verify(subcategoryCachingService, times(1)).cacheAllSubcategories());
     }
 
     @Test
     void testGetSubcategoryById_Found() {
         //given
-        GameplaySubcategory mockGameplaySubcategory = new GameplaySubcategory();
-        when(gameplaySubcategoryRepository.findById(1)).thenReturn(Optional.of(mockGameplaySubcategory));
+        GameplaySubcategoryDto mockDto = new GameplaySubcategoryDto();
+            mockDto.setSubcategoryId(1);
+            mockDto.setSubcategoryName("Test1");
+            mockDto.setGameplayCategoryName("mockCat");
+        GameplaySubcategoryDto mockDto2 = new GameplaySubcategoryDto();
+            mockDto2.setSubcategoryId(2);
+            mockDto2.setSubcategoryName("Test2");
+            mockDto2.setGameplayCategoryName("mockCat");
+        List<GameplaySubcategoryDto> mockDtoes = List.of(mockDto, mockDto2);
+        when(subcategoryCachingService.cacheAllSubcategories()).thenReturn(mockDtoes);
+
+        GameplayCategory mockCategory = new GameplayCategory();
+            mockCategory.setCategoryId(1);
+            mockCategory.setCategoryName("mockCat");
+            mockCategory.setGameplaySubcategories(Set.of(new GameplaySubcategory(), new GameplaySubcategory()));
+
+        GameplaySubcategory mockEntity = new GameplaySubcategory();
+            mockEntity.setSubcategoryId(1);
+            mockEntity.setSubcategoryName("Test1");
+            mockEntity.setGameplayCategory(mockCategory);
 
         //when
         GameplaySubcategoryDto result = gameplaySubcategoryService.getSubcategoryById(1);
@@ -76,24 +98,24 @@ class GameplaySubcategoryServiceImplTest {
                 () -> assertNotNull(result, "Found subcategoryId should not return null DTO"),
                 () -> assertDoesNotThrow(() -> gameplaySubcategoryService.getSubcategoryById(1),
                         "getSubcategoryById should not throw exception when Id is found"),
-                () -> verify(gameplaySubcategoryRepository, times(2)).findById(1));
+                () -> verify(subcategoryCachingService, times(2)).cacheAllSubcategories());
     }
 
     @Test
     void testGetSubcategoryById_NotFound() {
-        //given
-        when(gameplaySubcategoryRepository.findById(1)).thenReturn(Optional.empty());
+        //given: subcategory repository does not contain subcategory with given id
 
-        //when subcategory repository does not contain subcategory with given id
-
+        //when
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameplaySubcategoryService.getSubcategoryById(1),
-                "getSubcategoryById with id not found should throw exception");
+        assertAll("getSubcategoryById = not found assertion set: ",
+                () -> assertThrows(ResourceNotFoundException.class, () -> gameplaySubcategoryService.getSubcategoryById(1),
+                "getSubcategoryById with id not found should throw exception"),
+                () -> verify(subcategoryCachingService, times(1)).cacheAllSubcategories());
 
     }
 
     @Test
-    void testConvertToDto() {
+    void testConvertToDto_Success() {
         //given
         GameplayCategory mockGameplayCategory = new GameplayCategory();
         mockGameplayCategory.setCategoryId(1);
@@ -110,11 +132,10 @@ class GameplaySubcategoryServiceImplTest {
 
         mockGameplayCategory.getGameplaySubcategories().addAll(List.of(mockGameplaySubcategory1, mockGameplaySubcategory2));
 
-        List<GameplaySubcategory> mockEntities = List.of(mockGameplaySubcategory1, mockGameplaySubcategory2);
-        when(gameplaySubcategoryRepository.findAll()).thenReturn(mockEntities);
 
         //when
-        List<GameplaySubcategoryDto> result = gameplaySubcategoryService.getAllSubcategories();
+        List<GameplaySubcategoryDto> result = List.of(gameplaySubcategoryService.convertToDto(mockGameplaySubcategory1),
+                gameplaySubcategoryService.convertToDto(mockGameplaySubcategory2));
 
         //then
         assertAll("convert subcategory entity to DTO assertion set:",
@@ -132,8 +153,7 @@ class GameplaySubcategoryServiceImplTest {
                 () -> assertEquals("Test Subcategory2", result.get(1).getSubcategoryName(), "convert " +
                         "subcategory entity to DTO subcategoryNames do not match"),
                 () -> assertEquals("Test Category", result.get(1).getGameplayCategoryName(), "convert " +
-                        "subcategory entity to DTO parent-categoryNames deo not match"),
-                () -> verify(gameplaySubcategoryRepository, times(1)).findAll());
+                        "subcategory entity to DTO parent-categoryNames deo not match"));
     }
 
     @Test

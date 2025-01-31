@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.EnvironmentRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
+import com.sc_fleetfinder.fleets.services.caching_services.EnvironmentCachingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,20 +26,23 @@ public class GameEnvironmentServiceImplTest {
     //@AfterEach MockitoExtension @Mock resets repo
     private EnvironmentRepository environmentRepository;
 
+    @Mock
+    private EnvironmentCachingServiceImpl environmentCachingService;
+
     @InjectMocks
     private GameEnvironmentServiceImpl gameEnvironmentService;
 
     @Test
     void testGetAllEnvironments_Found() {
         //given
-        GameEnvironment mockEntity = new GameEnvironment();
-            mockEntity.setEnvironmentId(1);
-            mockEntity.setEnvironmentType("Test Env1");
-        GameEnvironment mockEntity2 = new GameEnvironment();
-            mockEntity2.setEnvironmentId(2);
-            mockEntity2.setEnvironmentType("Test Env2");
-        List<GameEnvironment> mockEntities = List.of(mockEntity, mockEntity2);
-        when(environmentRepository.findAll()).thenReturn(mockEntities);
+        GameEnvironmentDto mockDto = new GameEnvironmentDto();
+        mockDto.setEnvironmentId(1);
+        mockDto.setEnvironmentType("Test Env1");
+        GameEnvironmentDto mockDto2 = new GameEnvironmentDto();
+        mockDto2.setEnvironmentId(2);
+        mockDto2.setEnvironmentType("Test Env2");
+        List<GameEnvironmentDto> mockDtoes = List.of(mockDto, mockDto2);
+        when(environmentCachingService.cacheAllEnvironments()).thenReturn(mockDtoes);
 
         //when
         List<GameEnvironmentDto> result = gameEnvironmentService.getAllEnvironments();
@@ -48,27 +52,34 @@ public class GameEnvironmentServiceImplTest {
                 () -> assertNotNull(result, "getAllEnvironments should not return null"),
                 () -> assertEquals(2, result.size(), "Get all environments produced unexpected " +
                         "number of results"),
-                () -> verify(environmentRepository, times(1)).findAll());
+                () -> verify(environmentCachingService, times(1)).cacheAllEnvironments());
     }
 
     @Test
     void testGetAllEnvironments_NotFound() {
-        //given environments repo is empty
+        //given: environments repo is empty
 
+        //telling the test to throw an exception when it tries to cache an empty repo
+        when(environmentCachingService.cacheAllEnvironments()).thenThrow(ResourceNotFoundException.class);
         //when
         //then
         assertAll("getAllEnvironments = empty assertion set: ",
+                //verifies that the exception propagates correctly to the getAll method
                 () -> assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.getAllEnvironments()),
-                () -> verify(environmentRepository, times(1)).findAll());
+                () -> verify(environmentCachingService, times(1)).cacheAllEnvironments());
     }
 
     @Test
     void testGetEnvironmentById_Found() {
         //given
-        GameEnvironment mockEntity = new GameEnvironment();
-        mockEntity.setEnvironmentId(1);
-        mockEntity.setEnvironmentType("Test Env1");
-        when(environmentRepository.findById(1)).thenReturn(Optional.of(mockEntity));
+        GameEnvironmentDto mockDto = new GameEnvironmentDto();
+        mockDto.setEnvironmentId(1);
+        mockDto.setEnvironmentType("Test Env1");
+        GameEnvironmentDto mockDto2 = new GameEnvironmentDto();
+        mockDto2.setEnvironmentId(2);
+        mockDto2.setEnvironmentType("Test Env2");
+        List<GameEnvironmentDto> mockDtoes = List.of(mockDto, mockDto2);
+        when(environmentCachingService.cacheAllEnvironments()).thenReturn(mockDtoes);
 
         //when
         GameEnvironmentDto result = gameEnvironmentService.getEnvironmentById(1);
@@ -78,7 +89,7 @@ public class GameEnvironmentServiceImplTest {
                 () -> assertNotNull(result, "Found environmentId should not return a null DTO"),
                 () -> assertDoesNotThrow(() -> gameEnvironmentService.getEnvironmentById(1),
                         "getEnvironmentById should not throw exception when Id is found"),
-                () -> verify(environmentRepository, times(2)).findById(1));
+                () -> verify(environmentCachingService, times(2)).cacheAllEnvironments());
     }
 
     @Test
@@ -90,7 +101,7 @@ public class GameEnvironmentServiceImplTest {
         assertAll("getEnvironmentById = not found assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentService.getEnvironmentById(1),
                 "getEnvironmentById with id not found should throw exception"),
-                () -> verify(environmentRepository, times(1)).findById(1));
+                () -> verify(environmentCachingService, times(1)).cacheAllEnvironments());
     }
 
     @Test
@@ -103,11 +114,9 @@ public class GameEnvironmentServiceImplTest {
         mockEntity2.setEnvironmentId(2);
         mockEntity2.setEnvironmentType("Environment2");
 
-        List<GameEnvironment> mockEntities = List.of(mockEntity, mockEntity2);
-        when(environmentRepository.findAll()).thenReturn(mockEntities);
-
         //when
-        List<GameEnvironmentDto> result = gameEnvironmentService.getAllEnvironments();
+        List<GameEnvironmentDto> result = List.of(gameEnvironmentService.convertToDto(mockEntity),
+                gameEnvironmentService.convertToDto(mockEntity2));
 
         //then
         assertAll("convert environment entity to DTO assertion set:",
@@ -123,8 +132,7 @@ public class GameEnvironmentServiceImplTest {
                 () -> assertEquals(2, result.get(1).getEnvironmentId(),"convert environment" +
                         "entity to DTO Id's do not match"),
                 () -> assertEquals("Environment2", result.get(1).getEnvironmentType(), "convert" +
-                        " environment to DTO environment types do not match"),
-                () -> verify(environmentRepository, times(2)).findAll());
+                        " environment to DTO environment types do not match"));
     }
 
     @Test
