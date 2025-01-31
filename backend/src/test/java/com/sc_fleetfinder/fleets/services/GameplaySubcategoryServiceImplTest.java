@@ -118,17 +118,17 @@ class GameplaySubcategoryServiceImplTest {
     void testConvertToDto_Success() {
         //given
         GameplayCategory mockGameplayCategory = new GameplayCategory();
-        mockGameplayCategory.setCategoryId(1);
-        mockGameplayCategory.setCategoryName("Test Category");
+            mockGameplayCategory.setCategoryId(1);
+            mockGameplayCategory.setCategoryName("Test Category");
 
         GameplaySubcategory mockGameplaySubcategory1 = new GameplaySubcategory();
-        mockGameplaySubcategory1.setSubcategoryId(1);
-        mockGameplaySubcategory1.setSubcategoryName("Test Subcategory1");
-        mockGameplaySubcategory1.setGameplayCategory(mockGameplayCategory);
+            mockGameplaySubcategory1.setSubcategoryId(1);
+            mockGameplaySubcategory1.setSubcategoryName("Test Subcategory1");
+            mockGameplaySubcategory1.setGameplayCategory(mockGameplayCategory);
         GameplaySubcategory mockGameplaySubcategory2 = new GameplaySubcategory();
-        mockGameplaySubcategory2.setSubcategoryId(2);
-        mockGameplaySubcategory2.setSubcategoryName("Test Subcategory2");
-        mockGameplaySubcategory2.setGameplayCategory(mockGameplayCategory);
+            mockGameplaySubcategory2.setSubcategoryId(2);
+            mockGameplaySubcategory2.setSubcategoryName("Test Subcategory2");
+            mockGameplaySubcategory2.setGameplayCategory(mockGameplayCategory);
 
         mockGameplayCategory.getGameplaySubcategories().addAll(List.of(mockGameplaySubcategory1, mockGameplaySubcategory2));
 
@@ -161,23 +161,23 @@ class GameplaySubcategoryServiceImplTest {
         //given
         //creating a mock subcategory entity to add to mock gameplay category entity set of subcategory entities
         GameplaySubcategory mockGameplaySubcategory1 = new GameplaySubcategory();
-        mockGameplaySubcategory1.setSubcategoryId(1);
-        mockGameplaySubcategory1.setSubcategoryName("Test Subcategory1");
+            mockGameplaySubcategory1.setSubcategoryId(1);
+            mockGameplaySubcategory1.setSubcategoryName("Test Subcategory1");
 
         //creating mock gameplay category to allow conversion of subcategory.getGameplayCategoryName conversion to entity
         GameplayCategory mockGameplayCategory = new GameplayCategory();
-        mockGameplayCategory.setCategoryId(1);
-        mockGameplayCategory.setCategoryName("Test Category");
-        mockGameplayCategory.getGameplaySubcategories().add(mockGameplaySubcategory1);
+            mockGameplayCategory.setCategoryId(1);
+            mockGameplayCategory.setCategoryName("Test Category");
+            mockGameplayCategory.getGameplaySubcategories().add(mockGameplaySubcategory1);
 
         //setting category for mock subcategory so that I can use assertSame() to test the converted entity's category
         mockGameplaySubcategory1.setGameplayCategory(mockGameplayCategory);
 
         //GameplaySubcategoryDto for conversion to entity
         GameplaySubcategoryDto mockGameplaySubcategoryDto = new GameplaySubcategoryDto();
-        mockGameplaySubcategoryDto.setSubcategoryId(1);
-        mockGameplaySubcategoryDto.setSubcategoryName("Test Subcategory1");
-        mockGameplaySubcategoryDto.setGameplayCategoryName(mockGameplayCategory.getCategoryName());
+            mockGameplaySubcategoryDto.setSubcategoryId(1);
+            mockGameplaySubcategoryDto.setSubcategoryName("Test Subcategory1");
+            mockGameplaySubcategoryDto.setGameplayCategoryName(mockGameplayCategory.getCategoryName());
         when(gameplaySubcategoryRepository.findById(1)).thenReturn(Optional.of(mockGameplaySubcategory1));
 
         //when
@@ -199,8 +199,8 @@ class GameplaySubcategoryServiceImplTest {
     void testConvertToEntity_NotFound() {
         //given
         GameplaySubcategoryDto mockGameplaySubcategoryDto = new GameplaySubcategoryDto();
-        mockGameplaySubcategoryDto.setSubcategoryId(1);
-        mockGameplaySubcategoryDto.setSubcategoryName("Not Subcategory1");
+            mockGameplaySubcategoryDto.setSubcategoryId(1);
+            mockGameplaySubcategoryDto.setSubcategoryName("Not Subcategory1");
         when(gameplaySubcategoryRepository.findById(1)).thenReturn(Optional.empty());
 
         //when backend entity does not exist with dto ID
@@ -215,12 +215,12 @@ class GameplaySubcategoryServiceImplTest {
     void testConvertToEntity_NameMismatch() {
         //given
         GameplaySubcategoryDto mockGameplaySubcategoryDto = new GameplaySubcategoryDto();
-        mockGameplaySubcategoryDto.setSubcategoryId(1);
-        mockGameplaySubcategoryDto.setSubcategoryName("Wrong Subcategory1");
+            mockGameplaySubcategoryDto.setSubcategoryId(1);
+            mockGameplaySubcategoryDto.setSubcategoryName("Wrong Subcategory1");
 
         GameplaySubcategory mockSubcategory = new GameplaySubcategory();
-        mockSubcategory.setSubcategoryId(1);
-        mockSubcategory.setSubcategoryName("Correct Subcategory2");
+            mockSubcategory.setSubcategoryId(1);
+            mockSubcategory.setSubcategoryName("Correct Subcategory2");
 
         when(gameplaySubcategoryRepository.findById(1)).thenReturn(Optional.of(mockSubcategory));
 
