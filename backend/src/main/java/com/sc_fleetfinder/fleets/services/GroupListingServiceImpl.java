@@ -29,7 +29,6 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final GroupListingRepository groupListingRepository;
     private final ModelMapper createGroupListingModelMapper;
     private final ModelMapper groupListingResponseDtoMapper;
-    private final ModelMapper modelMapper;
 
 
     public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
@@ -37,7 +36,6 @@ public class GroupListingServiceImpl implements GroupListingService {
                      @Qualifier("groupListingResponseDtoMapper") ModelMapper groupListingResponseDtoMapper) {
         super();
 
-        this.modelMapper = new ModelMapper();
         this.groupListingRepository = groupListingRepository;
         this.createGroupListingModelMapper = createGroupListingModelMapper;
         this.groupListingResponseDtoMapper = groupListingResponseDtoMapper;
@@ -116,6 +114,6 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     //need to create an updatelisting version of this
     public GroupListing convertToEntity(CreateGroupListingDto createGroupListingDto) {
-        return modelMapper.map(createGroupListingDto, GroupListing.class);
+        return createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
     }
 }
