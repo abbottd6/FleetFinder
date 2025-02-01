@@ -193,6 +193,7 @@ class LegalityServiceImplTest {
     void testConvertToEntity_FailInvalid() {
         //given: dto that does not match a backend entity
         LegalityDto mockDto = new LegalityDto();
+            //the id does not exist
             mockDto.setLegalityId(1);
             mockDto.setLegalityStatus("Not Legality1");
         assertThrows(ResourceNotFoundException.class, () -> legalityService.convertToEntity(mockDto),
@@ -203,6 +204,7 @@ class LegalityServiceImplTest {
             mockDto2.setLegalityId(2);
             mockDto2.setLegalityStatus("Incorrect Legality");
 
+        //mock entity for verifying an exception is thrown when id's match but names do not
         Legality mockEntity = new Legality();
             mockEntity.setLegalityId(2);
             mockEntity.setLegalityStatus("Correct Legality");
