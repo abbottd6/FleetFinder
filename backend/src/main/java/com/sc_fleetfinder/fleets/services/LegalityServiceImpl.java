@@ -16,7 +16,7 @@ import java.util.Objects;
 @Service
 public class LegalityServiceImpl implements LegalityService {
 
-    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(LegalityServiceImpl.class);
     private final LegalityRepository legalityRepository;
     private final LegalityCachingService legalityCachingService;
     private final ModelMapper modelMapper;

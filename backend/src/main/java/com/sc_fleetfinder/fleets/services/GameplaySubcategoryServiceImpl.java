@@ -16,7 +16,7 @@ import java.util.Objects;
 @Service
 public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryService {
 
-    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(GameplaySubcategoryServiceImpl.class);
     private final GameplaySubcategoryRepository gameplaySubcategoryRepository;
     private final SubcategoryCachingService subcategoryCachingService;
     private final ModelMapper modelMapper;

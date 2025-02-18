@@ -117,10 +117,12 @@ class GameplaySubcategoryServiceImplTest {
     @Test
     void testConvertToDto_Success() {
         //given
+        //parent gameplay category
         GameplayCategory mockGameplayCategory = new GameplayCategory();
             mockGameplayCategory.setCategoryId(1);
             mockGameplayCategory.setCategoryName("Test Category");
 
+        //gameplay subcategories
         GameplaySubcategory mockGameplaySubcategory1 = new GameplaySubcategory();
             mockGameplaySubcategory1.setSubcategoryId(1);
             mockGameplaySubcategory1.setSubcategoryName("Test Subcategory1");
@@ -130,6 +132,7 @@ class GameplaySubcategoryServiceImplTest {
             mockGameplaySubcategory2.setSubcategoryName("Test Subcategory2");
             mockGameplaySubcategory2.setGameplayCategory(mockGameplayCategory);
 
+        //adding subcategories to parent gameplay category set
         mockGameplayCategory.getGameplaySubcategories().addAll(List.of(mockGameplaySubcategory1, mockGameplaySubcategory2));
 
 

@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class GroupStatusServiceImpl implements GroupStatusService {
 
-    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(GroupStatusServiceImpl.class);
     private final GroupStatusRepository groupStatusRepository;
     private final GroupStatusCachingService groupStatusCachingService;
     private final ModelMapper modelMapper;
