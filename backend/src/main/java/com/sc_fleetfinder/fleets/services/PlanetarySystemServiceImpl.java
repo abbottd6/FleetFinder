@@ -16,7 +16,7 @@ import java.util.Objects;
 @Service
 public class PlanetarySystemServiceImpl implements PlanetarySystemService {
 
-    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PlanetarySystemServiceImpl.class);
     private final PlanetarySystemRepository planetarySystemRepository;
     private final PlanetarySystemCachingService planetarySystemCachingService;
     private final ModelMapper modelMapper;

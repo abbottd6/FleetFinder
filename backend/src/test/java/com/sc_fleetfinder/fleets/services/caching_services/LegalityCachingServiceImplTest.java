@@ -31,7 +31,7 @@ class LegalityCachingServiceImplTest {
     private LegalityCachingServiceImpl legalityCachingService;
 
     @Test
-    void testGetAllLegalities_Found() {
+    void testCacheAllLegalities_Found() {
         //given mock entities for find all
         Legality mockEntity1 = new Legality();
             mockEntity1.setLegalityId(1);

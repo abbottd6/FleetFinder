@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class GameExperienceServiceImpl implements GameExperienceService {
 
-    private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(GameExperienceServiceImpl.class);
     private final ExperienceRepository experienceRepository;
     private final ExperienceCachingService experienceCachingService;
     private final ModelMapper modelMapper;
