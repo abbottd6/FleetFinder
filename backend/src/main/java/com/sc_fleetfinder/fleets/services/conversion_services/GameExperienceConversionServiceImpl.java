@@ -1,47 +1,28 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DAO.ExperienceRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.caching_services.ExperienceCachingService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
-public class GameExperienceServiceImpl implements GameExperienceService {
+public class GameExperienceConversionServiceImpl implements GameExperienceConversionService {
 
-    private static final Logger log = LoggerFactory.getLogger(GameExperienceServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(GameExperienceConversionServiceImpl.class);
     private final ExperienceRepository experienceRepository;
-    private final ExperienceCachingService experienceCachingService;
     private final ModelMapper modelMapper;
 
-    public GameExperienceServiceImpl(ExperienceRepository experienceRepository,
-                                     ExperienceCachingService experienceCachingService) {
-        super();
-        this.experienceCachingService = experienceCachingService;
+    @Autowired
+    public GameExperienceConversionServiceImpl(ExperienceRepository experienceRepository) {
         this.experienceRepository = experienceRepository;
         this.modelMapper = new ModelMapper();
-    }
-
-    @Override
-    public List<GameExperienceDto> getAllExperiences() {
-        return experienceCachingService.cacheAllExperiences();
-    }
-
-    @Override
-    public GameExperienceDto getExperienceById(Integer id) {
-        List<GameExperienceDto> cachedExperiences = experienceCachingService.cacheAllExperiences();
-
-        return cachedExperiences.stream()
-                .filter(experience -> experience.getExperienceId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     @Override
@@ -59,6 +40,7 @@ public class GameExperienceServiceImpl implements GameExperienceService {
         return modelMapper.map(entity, GameExperienceDto.class);
     }
 
+    @Override
     public GameExperience convertToEntity(GameExperienceDto dto) {
         //checking repository for entity matching Dto id
         GameExperience entity = experienceRepository.findById(dto.getExperienceId())

@@ -1,4 +1,4 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -12,10 +12,6 @@ import java.util.List;
 @Service
 public class GameEnvironmentServiceImpl implements GameEnvironmentService {
 
-    //I am getting a circular bean dependencies error when running the app. I think this is because the
-    //environment service injects the caching service and the caching service injects the environment
-    //service so that it can use the convert to dto method. I probably need to move the convert to DTO
-    //methods to the caching service or a separate service on its own to resolve this.
     private static final Logger log = LoggerFactory.getLogger(GameEnvironmentServiceImpl.class);
     private final EnvironmentCachingService environmentCachingService;
 

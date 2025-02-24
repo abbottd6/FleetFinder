@@ -21,9 +21,8 @@ public class GameEnvironmentConversionServiceImpl implements GameEnvironmentConv
 
     @Autowired
     public GameEnvironmentConversionServiceImpl(EnvironmentRepository environmentRepository) {
-        super();
         this.environmentRepository = environmentRepository;
-        modelMapper = new ModelMapper();
+        this.modelMapper = new ModelMapper();
     }
 
     @Override
