@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.ExperienceRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GameExperienceService;
+import com.sc_fleetfinder.fleets.services.conversion_services.GameExperienceConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -16,12 +16,13 @@ import java.util.stream.Collectors;
 public class ExperienceCachingServiceImpl implements ExperienceCachingService {
 
     private final ExperienceRepository experienceRepository;
-    private final GameExperienceService gameExperienceService;
+    private final GameExperienceConversionService gameExperienceConversionService;
 
     @Autowired
-    public ExperienceCachingServiceImpl(ExperienceRepository environmentRepository, GameExperienceService gameExperienceService) {
+    public ExperienceCachingServiceImpl(ExperienceRepository environmentRepository,
+                                        GameExperienceConversionService gameExperienceConversionService) {
         this.experienceRepository = environmentRepository;
-        this.gameExperienceService = gameExperienceService;
+        this.gameExperienceConversionService = gameExperienceConversionService;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class ExperienceCachingServiceImpl implements ExperienceCachingService {
         }
 
         return experiences.stream()
-                .map(gameExperienceService::convertToDto)
+                .map(gameExperienceConversionService::convertToDto)
                 .collect(Collectors.toList());
     }
 }

@@ -2,7 +2,7 @@ package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GameEnvironmentService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.GameEnvironmentService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

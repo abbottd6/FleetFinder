@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.ExperienceRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GameExperienceServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.GameExperienceConversionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ class ExperienceCachingServiceImplTest {
     private ExperienceRepository experienceRepository;
 
     @Mock
-    private GameExperienceServiceImpl experienceService;
+    private GameExperienceConversionServiceImpl experienceConversionService;
 
     @InjectMocks
     private ExperienceCachingServiceImpl experienceCachingService;
@@ -50,8 +50,8 @@ class ExperienceCachingServiceImplTest {
         GameExperienceDto mockDto2 = new GameExperienceDto();
             mockDto2.setExperienceId(2);
             mockDto2.setExperienceType("Test Exp2");
-        when(experienceService.convertToDto(mockEntity)).thenReturn(mockDto1);
-        when(experienceService.convertToDto(mockEntity2)).thenReturn(mockDto2);
+        when(experienceConversionService.convertToDto(mockEntity)).thenReturn(mockDto1);
+        when(experienceConversionService.convertToDto(mockEntity2)).thenReturn(mockDto2);
 
         //when
         List<GameExperienceDto> result = experienceCachingService.cacheAllExperiences();
