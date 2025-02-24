@@ -1,47 +1,28 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DAO.GameplayCategoryRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.caching_services.CategoryCachingServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
-public class GameplayCategoryServiceImpl implements GameplayCategoryService {
+public class GameplayCategoryConversionServiceImpl implements GameplayCategoryConversionService {
 
-    private static final Logger log = LoggerFactory.getLogger(GameplayCategoryServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(GameplayCategoryConversionServiceImpl.class);
     private final GameplayCategoryRepository gameplayCategoryRepository;
-    private final CategoryCachingServiceImpl categoryCachingService;
     private final ModelMapper modelMapper;
 
-    public GameplayCategoryServiceImpl(GameplayCategoryRepository gameplayCategoryRepository,
-                                       CategoryCachingServiceImpl categoryCachingService) {
-        super();
-        this.categoryCachingService = categoryCachingService;
+    @Autowired
+    public GameplayCategoryConversionServiceImpl(GameplayCategoryRepository gameplayCategoryRepository) {
         this.gameplayCategoryRepository = gameplayCategoryRepository;
         this.modelMapper = new ModelMapper();
-    }
-
-    @Override
-    public List<GameplayCategoryDto> getAllCategories() {
-        return categoryCachingService.cacheAllCategories();
-    }
-
-    @Override
-    public GameplayCategoryDto getCategoryById(Integer id) {
-        List<GameplayCategoryDto> cachedCategories = categoryCachingService.cacheAllCategories();
-
-        return cachedCategories.stream()
-                .filter(category -> category.getGameplayCategoryId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     @Override
@@ -58,6 +39,7 @@ public class GameplayCategoryServiceImpl implements GameplayCategoryService {
         return modelMapper.map(entity, GameplayCategoryDto.class);
     }
 
+    @Override
     public GameplayCategory convertToEntity(GameplayCategoryDto gameplayCategoryDto) {
 
         //checking for Dto id match in repository
