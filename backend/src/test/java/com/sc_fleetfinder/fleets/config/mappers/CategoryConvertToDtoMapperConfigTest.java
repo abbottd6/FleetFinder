@@ -2,13 +2,9 @@ package com.sc_fleetfinder.fleets.config.mappers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
-import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GameplayCategoryService;
-import com.sc_fleetfinder.fleets.services.GameplayCategoryServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.GameplayCategoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.config.Configuration;

@@ -5,7 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GameplayCategoryService;
+import com.sc_fleetfinder.fleets.services.conversion_services.GameplayCategoryConversionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,7 +27,7 @@ class CategoryCachingServiceImplTest {
     private GameplayCategoryRepository gameplayCategoryRepository;
 
     @Mock
-    private GameplayCategoryService gameplayCategoryService;
+    private GameplayCategoryConversionServiceImpl gameplayCategoryConversionService;
 
     @InjectMocks
     private CategoryCachingServiceImpl categoryCachingService;
@@ -53,8 +53,8 @@ class CategoryCachingServiceImplTest {
         GameplayCategoryDto mockDto2 = new GameplayCategoryDto();
             mockDto2.setGameplayCategoryId(2);
             mockDto2.setGameplayCategoryName("Test Category2");
-        when(gameplayCategoryService.convertToDto(mockGameplayCategory)).thenReturn(mockDto);
-        when(gameplayCategoryService.convertToDto(mockGameplayCategory2)).thenReturn(mockDto2);
+        when(gameplayCategoryConversionService.convertToDto(mockGameplayCategory)).thenReturn(mockDto);
+        when(gameplayCategoryConversionService.convertToDto(mockGameplayCategory2)).thenReturn(mockDto2);
 
         //when
         List<GameplayCategoryDto> result = categoryCachingService.cacheAllCategories();
