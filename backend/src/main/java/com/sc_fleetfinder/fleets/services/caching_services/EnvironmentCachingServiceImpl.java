@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.EnvironmentRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GameEnvironmentService;
+import com.sc_fleetfinder.fleets.services.conversion_services.GameEnvironmentConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -16,13 +16,13 @@ import java.util.stream.Collectors;
 public class EnvironmentCachingServiceImpl implements EnvironmentCachingService {
 
     private final EnvironmentRepository environmentRepository;
-    private final GameEnvironmentService gameEnvironmentService;
+    private final GameEnvironmentConversionService gameEnvironmentConversionService;
 
     @Autowired
-    public EnvironmentCachingServiceImpl(EnvironmentRepository environmentRepository
-            , GameEnvironmentService gameEnvironmentService) {
+    public EnvironmentCachingServiceImpl(EnvironmentRepository environmentRepository,
+                                         GameEnvironmentConversionService gameEnvironmentConversionService) {
         this.environmentRepository = environmentRepository;
-        this.gameEnvironmentService = gameEnvironmentService;
+        this.gameEnvironmentConversionService = gameEnvironmentConversionService;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class EnvironmentCachingServiceImpl implements EnvironmentCachingService 
             throw new ResourceNotFoundException("Unable to access game environments data");
         }
         return environments.stream()
-                .map(gameEnvironmentService::convertToDto)
+                .map(gameEnvironmentConversionService::convertToDto)
                 .collect(Collectors.toList());
     }
 }
