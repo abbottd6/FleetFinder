@@ -9,5 +9,4 @@ public interface GameEnvironmentService {
 
     List<GameEnvironmentDto> getAllEnvironments();
     GameEnvironmentDto getEnvironmentById(Integer id);
-    GameEnvironmentDto convertToDto(GameEnvironment gameEnvironment);
 }

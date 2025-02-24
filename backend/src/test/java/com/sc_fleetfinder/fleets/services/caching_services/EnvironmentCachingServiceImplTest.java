@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.EnvironmentRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GameEnvironmentServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.GameEnvironmentConversionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ class EnvironmentCachingServiceImplTest {
     private EnvironmentRepository environmentRepository;
 
     @Mock
-    private GameEnvironmentServiceImpl gameEnvironmentService;
+    private GameEnvironmentConversionServiceImpl gameEnvironmentConversionService;
 
     @InjectMocks
     private EnvironmentCachingServiceImpl environmentCachingService;
@@ -50,8 +50,8 @@ class EnvironmentCachingServiceImplTest {
         GameEnvironmentDto mockDto2 = new GameEnvironmentDto();
         mockDto2.setEnvironmentId(2);
         mockDto2.setEnvironmentType("Test Env2");
-        when(gameEnvironmentService.convertToDto(mockEntity)).thenReturn(mockDto);
-        when(gameEnvironmentService.convertToDto(mockEntity2)).thenReturn(mockDto2);
+        when(gameEnvironmentConversionService.convertToDto(mockEntity)).thenReturn(mockDto);
+        when(gameEnvironmentConversionService.convertToDto(mockEntity2)).thenReturn(mockDto2);
 
         //when
         List<GameEnvironmentDto> result = environmentCachingService.cacheAllEnvironments();
