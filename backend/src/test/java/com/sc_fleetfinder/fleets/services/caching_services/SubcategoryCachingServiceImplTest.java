@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.GameplaySubcategoryRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplaySubcategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GameplaySubcategoryServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.GameplaySubcategoryConversionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ class SubcategoryCachingServiceImplTest {
     private GameplaySubcategoryRepository subcategoryRepository;
 
     @Mock
-    private GameplaySubcategoryServiceImpl subcategoryService;
+    private GameplaySubcategoryConversionServiceImpl gameplaySubcategoryConversionService;
 
     @InjectMocks
     private SubcategoryCachingServiceImpl subcategoryCachingService;
@@ -40,8 +40,8 @@ class SubcategoryCachingServiceImplTest {
 
         GameplaySubcategoryDto mockDto1 = new GameplaySubcategoryDto();
         GameplaySubcategoryDto mockDto2 = new GameplaySubcategoryDto();
-        when(subcategoryService.convertToDto(mockGameplaySubcategory1)).thenReturn(mockDto1);
-        when(subcategoryService.convertToDto(mockGameplaySubcategory2)).thenReturn(mockDto2);
+        when(gameplaySubcategoryConversionService.convertToDto(mockGameplaySubcategory1)).thenReturn(mockDto1);
+        when(gameplaySubcategoryConversionService.convertToDto(mockGameplaySubcategory2)).thenReturn(mockDto2);
 
         //when
         List<GameplaySubcategoryDto> result = subcategoryCachingService.cacheAllSubcategories();

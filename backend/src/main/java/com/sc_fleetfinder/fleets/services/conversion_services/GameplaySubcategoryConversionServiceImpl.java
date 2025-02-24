@@ -1,47 +1,28 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DAO.GameplaySubcategoryRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplaySubcategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.caching_services.SubcategoryCachingService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
-public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryService {
+public class GameplaySubcategoryConversionServiceImpl implements GameplaySubcategoryConversionService {
 
-    private static final Logger log = LoggerFactory.getLogger(GameplaySubcategoryServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(GameplaySubcategoryConversionServiceImpl.class);
     private final GameplaySubcategoryRepository gameplaySubcategoryRepository;
-    private final SubcategoryCachingService subcategoryCachingService;
     private final ModelMapper modelMapper;
 
-    public GameplaySubcategoryServiceImpl(GameplaySubcategoryRepository gameplaySubcategoryRepository,
-                                          SubcategoryCachingService subcategoryCachingService) {
-        super();
-        this.subcategoryCachingService = subcategoryCachingService;
+    @Autowired
+    public GameplaySubcategoryConversionServiceImpl(GameplaySubcategoryRepository gameplaySubcategoryRepository) {
         this.gameplaySubcategoryRepository = gameplaySubcategoryRepository;
         this.modelMapper = new ModelMapper();
-    }
-
-    @Override
-    public List<GameplaySubcategoryDto> getAllSubcategories() {
-        return subcategoryCachingService.cacheAllSubcategories();
-    }
-
-    @Override
-    public GameplaySubcategoryDto getSubcategoryById(Integer id) {
-        List<GameplaySubcategoryDto> cachedSubcategories = subcategoryCachingService.cacheAllSubcategories();
-
-        return cachedSubcategories.stream()
-                .filter(subcategory -> subcategory.getSubcategoryId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     @Override
@@ -59,6 +40,7 @@ public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryServic
         return modelMapper.map(entity, GameplaySubcategoryDto.class);
     }
 
+    @Override
     public GameplaySubcategory convertToEntity(GameplaySubcategoryDto gameplaySubcategoryDto) {
         //checking for Dto id match in repository
         GameplaySubcategory gameplaySubcategory = gameplaySubcategoryRepository.findById(gameplaySubcategoryDto.getSubcategoryId())
@@ -74,5 +56,4 @@ public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryServic
         //if Id exists in repo and name matches then return entity
         return gameplaySubcategory;
     }
-
 }
