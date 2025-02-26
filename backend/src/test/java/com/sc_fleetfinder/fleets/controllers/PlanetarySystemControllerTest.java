@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetarySystemDto;
-import com.sc_fleetfinder.fleets.services.PlanetarySystemService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.PlanetarySystemService;
 import org.junit.jupiter.api.Test;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -18,8 +18,6 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @WebMvcTest(controllers = PlanetarySystemController.class)
 class PlanetarySystemControllerTest {
