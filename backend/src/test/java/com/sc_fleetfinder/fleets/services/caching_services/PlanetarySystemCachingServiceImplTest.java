@@ -5,7 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetarySystemDto;
 import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
 import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.PlanetarySystemServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.PlanetarySystemConversionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,7 +27,7 @@ class PlanetarySystemCachingServiceImplTest {
     private PlanetarySystemRepository planetarySystemRepository;
 
     @Mock
-    private PlanetarySystemServiceImpl planetarySystemService;
+    private PlanetarySystemConversionServiceImpl planetarySystemConversionService;
 
     @InjectMocks
     private PlanetarySystemCachingServiceImpl planetarySystemCachingService;
@@ -54,8 +54,8 @@ class PlanetarySystemCachingServiceImplTest {
         PlanetarySystemDto mockDto2 = new PlanetarySystemDto();
             mockDto2.setSystemId(2);
             mockDto2.setSystemName("System2");
-        when(planetarySystemService.convertToDto(mockEntity1)).thenReturn(mockDto1);
-        when(planetarySystemService.convertToDto(mockEntity2)).thenReturn(mockDto2);
+        when(planetarySystemConversionService.convertToDto(mockEntity1)).thenReturn(mockDto1);
+        when(planetarySystemConversionService.convertToDto(mockEntity2)).thenReturn(mockDto2);
 
         //when
         List<PlanetarySystemDto> result = planetarySystemCachingService.cacheAllPlanetarySystems();

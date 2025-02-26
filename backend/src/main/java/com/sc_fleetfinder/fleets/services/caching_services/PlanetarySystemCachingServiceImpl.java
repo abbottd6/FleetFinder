@@ -4,7 +4,8 @@ import com.sc_fleetfinder.fleets.DAO.PlanetarySystemRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetarySystemDto;
 import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.PlanetarySystemService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.PlanetarySystemService;
+import com.sc_fleetfinder.fleets.services.conversion_services.PlanetarySystemConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -16,14 +17,14 @@ import java.util.stream.Collectors;
 public class PlanetarySystemCachingServiceImpl implements PlanetarySystemCachingService {
 
     private final PlanetarySystemRepository planetarySystemRepository;
-    private final PlanetarySystemService planetarySystemService;
+    private final PlanetarySystemConversionService planetarySystemConversionService;
 
     @Autowired
     public PlanetarySystemCachingServiceImpl(PlanetarySystemRepository planetarySystemRepository,
-                                             PlanetarySystemService planetarySystemservice) {
+                                             PlanetarySystemConversionService planetarySystemConversionService) {
 
         this.planetarySystemRepository = planetarySystemRepository;
-        this.planetarySystemService = planetarySystemservice;
+        this.planetarySystemConversionService = planetarySystemConversionService;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class PlanetarySystemCachingServiceImpl implements PlanetarySystemCaching
         }
 
         return planetarySystems.stream()
-                .map(planetarySystemService::convertToDto)
+                .map(planetarySystemConversionService::convertToDto)
                 .collect(Collectors.toList());
     }
 }
