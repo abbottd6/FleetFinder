@@ -1,46 +1,28 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DAO.LegalityRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
 import com.sc_fleetfinder.fleets.entities.Legality;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.caching_services.LegalityCachingService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
-public class LegalityServiceImpl implements LegalityService {
+public class LegalityConversionServiceImpl implements LegalityConversionService {
 
-    private static final Logger log = LoggerFactory.getLogger(LegalityServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(LegalityConversionServiceImpl.class);
     private final LegalityRepository legalityRepository;
-    private final LegalityCachingService legalityCachingService;
     private final ModelMapper modelMapper;
 
-    public LegalityServiceImpl(LegalityRepository legalityRepository, LegalityCachingService legalityCachingService) {
-        super();
+    @Autowired
+    public LegalityConversionServiceImpl(LegalityRepository legalityRepository) {
         this.legalityRepository = legalityRepository;
-        this.legalityCachingService = legalityCachingService;
         this.modelMapper = new ModelMapper();
-    }
-
-    @Override
-    public List<LegalityDto> getAllLegalities() {
-        return legalityCachingService.cacheAllLegalities();
-    }
-
-    @Override
-    public LegalityDto getLegalityById(Integer id) {
-        List<LegalityDto> cachedLegalities = legalityCachingService.cacheAllLegalities();
-
-        return cachedLegalities.stream()
-                .filter(legality -> legality.getLegalityId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     @Override
@@ -57,6 +39,7 @@ public class LegalityServiceImpl implements LegalityService {
         return modelMapper.map(entity, LegalityDto.class);
     }
 
+    @Override
     public Legality convertToEntity(LegalityDto dto) {
         //checking repository for entity matching Dto id
         Legality entity = legalityRepository.findById(dto.getLegalityId())

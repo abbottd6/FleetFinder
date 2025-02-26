@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.LegalityRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
 import com.sc_fleetfinder.fleets.entities.Legality;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.LegalityService;
+import com.sc_fleetfinder.fleets.services.conversion_services.LegalityConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public class LegalityCachingServiceImpl implements LegalityCachingService{
 
     private final LegalityRepository legalityRepository;
-    private final LegalityService legalityService;
+    private final LegalityConversionService legalityConversionService;
 
     @Autowired
-    public LegalityCachingServiceImpl(LegalityRepository legalityRepository, LegalityService legalityService) {
+    public LegalityCachingServiceImpl(LegalityRepository legalityRepository, LegalityConversionService legalityConversionService) {
         this.legalityRepository = legalityRepository;
-        this.legalityService = legalityService;
+        this.legalityConversionService = legalityConversionService;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class LegalityCachingServiceImpl implements LegalityCachingService{
         }
 
         return legalities.stream()
-                .map(legalityService::convertToDto)
+                .map(legalityConversionService::convertToDto)
                 .collect(Collectors.toList());
     }
 }

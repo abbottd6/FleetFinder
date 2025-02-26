@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.LegalityRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
 import com.sc_fleetfinder.fleets.entities.Legality;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.LegalityServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.LegalityConversionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ class LegalityCachingServiceImplTest {
     private LegalityRepository legalityRepository;
 
     @Mock
-    private LegalityServiceImpl legalityService;
+    private LegalityConversionServiceImpl legalityConversionService;
 
     @InjectMocks
     private LegalityCachingServiceImpl legalityCachingService;
@@ -49,8 +49,8 @@ class LegalityCachingServiceImplTest {
         LegalityDto mockDto2 = new LegalityDto();
             mockDto2.setLegalityId(2);
             mockDto2.setLegalityStatus("Status2");
-        when(legalityService.convertToDto(mockEntity1)).thenReturn(mockDto1);
-        when(legalityService.convertToDto(mockEntity2)).thenReturn(mockDto2);
+        when(legalityConversionService.convertToDto(mockEntity1)).thenReturn(mockDto1);
+        when(legalityConversionService.convertToDto(mockEntity2)).thenReturn(mockDto2);
 
         //when
         List<LegalityDto> result = legalityCachingService.cacheAllLegalities();
