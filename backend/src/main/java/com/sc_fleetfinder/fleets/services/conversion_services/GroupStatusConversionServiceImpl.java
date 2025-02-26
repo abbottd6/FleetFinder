@@ -1,50 +1,28 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupStatusRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
 import com.sc_fleetfinder.fleets.entities.GroupStatus;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.caching_services.GroupStatusCachingService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class GroupStatusServiceImpl implements GroupStatusService {
+public class GroupStatusConversionServiceImpl implements GroupStatusConversionService {
 
-    private static final Logger log = LoggerFactory.getLogger(GroupStatusServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(GroupStatusConversionServiceImpl.class);
     private final GroupStatusRepository groupStatusRepository;
-    private final GroupStatusCachingService groupStatusCachingService;
     private final ModelMapper modelMapper;
 
-    public GroupStatusServiceImpl(GroupStatusRepository groupStatusRepository,
-                                  GroupStatusCachingService groupStatusCachingService) {
-        super();
-        this.groupStatusCachingService = groupStatusCachingService;
+    @Autowired
+    public GroupStatusConversionServiceImpl(GroupStatusRepository groupStatusRepository) {
         this.groupStatusRepository = groupStatusRepository;
         this.modelMapper = new ModelMapper();
-    }
-
-    @Override
-    public List<GroupStatusDto> getAllGroupStatuses() {
-        return groupStatusCachingService.cacheAllGroupStatuses();
-    }
-
-    @Override
-    public GroupStatusDto getGroupStatusById(Integer id) {
-        List<GroupStatusDto> cachedGroupStatuses = groupStatusCachingService.cacheAllGroupStatuses();
-
-        return cachedGroupStatuses.stream()
-                .filter(groupStatus -> groupStatus.getGroupStatusId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     @Override
@@ -62,6 +40,7 @@ public class GroupStatusServiceImpl implements GroupStatusService {
         return modelMapper.map(entity, GroupStatusDto.class);
     }
 
+    @Override
     public GroupStatus convertToEntity(GroupStatusDto dto) {
         //checking repository for entity that matches Dto id
         GroupStatus entity = groupStatusRepository.findById(dto.getGroupStatusId())
@@ -77,5 +56,4 @@ public class GroupStatusServiceImpl implements GroupStatusService {
         //if Id exists and names match then returns entity
         return entity;
     }
-
 }
