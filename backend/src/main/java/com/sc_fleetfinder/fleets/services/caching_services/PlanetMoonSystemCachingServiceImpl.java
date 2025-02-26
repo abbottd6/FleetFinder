@@ -4,7 +4,8 @@ import com.sc_fleetfinder.fleets.DAO.PlanetMoonSystemRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
 import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.PlanetMoonSystemService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.PlanetMoonSystemService;
+import com.sc_fleetfinder.fleets.services.conversion_services.PlanetMoonSystemConversionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,13 @@ public class PlanetMoonSystemCachingServiceImpl implements PlanetMoonSystemCachi
 
     private static final Logger logger = LoggerFactory.getLogger(PlanetMoonSystemCachingServiceImpl.class);
     private final PlanetMoonSystemRepository planetMoonSystemRepository;
-    private final PlanetMoonSystemService planetMoonSystemService;
+    private final PlanetMoonSystemConversionService planetMoonSystemConversionService;
 
     @Autowired
     public PlanetMoonSystemCachingServiceImpl(PlanetMoonSystemRepository planetMoonSystemRepository,
-                                              PlanetMoonSystemService service) {
+                                              PlanetMoonSystemConversionService planetMoonSystemConversionService) {
         this.planetMoonSystemRepository = planetMoonSystemRepository;
-        this.planetMoonSystemService = service;
+        this.planetMoonSystemConversionService = planetMoonSystemConversionService;
     }
 
     @Override
@@ -38,7 +39,7 @@ public class PlanetMoonSystemCachingServiceImpl implements PlanetMoonSystemCachi
         }
 
         return planetMoonSystems.stream()
-                .map(planetMoonSystemService::convertToDto)
+                .map(planetMoonSystemConversionService::convertToDto)
                 .collect(Collectors.toList());
     }
 }

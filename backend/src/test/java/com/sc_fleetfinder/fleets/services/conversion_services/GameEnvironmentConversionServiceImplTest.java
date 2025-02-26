@@ -128,7 +128,7 @@ class GameEnvironmentConversionServiceImplTest {
         GameEnvironment result = gameEnvironmentConversionService.convertToEntity(mockDto);
 
         //then
-        assertAll("gameEnvironment convertToEntity assertions set:",
+        assertAll("gameEnvironment convertToEntity assertion set:",
                 () -> assertNotNull(result, "gameEnvironment convertToEntity should not return null"),
                 () -> assertDoesNotThrow(() -> gameEnvironmentConversionService.convertToEntity(mockDto),
                         "Valid dto converting to entity should not throw an exception"),
