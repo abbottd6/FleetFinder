@@ -4,7 +4,8 @@ import com.sc_fleetfinder.fleets.DAO.GroupStatusRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
 import com.sc_fleetfinder.fleets.entities.GroupStatus;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GroupStatusService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.GroupStatusService;
+import com.sc_fleetfinder.fleets.services.conversion_services.GroupStatusConversionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -16,13 +17,13 @@ import java.util.stream.Collectors;
 public class GroupStatusCachingServiceImpl implements GroupStatusCachingService {
 
     private final GroupStatusRepository groupStatusRepository;
-    private final GroupStatusService groupStatusService;
+    private final GroupStatusConversionService groupStatusConversionService;
 
     @Autowired
     public GroupStatusCachingServiceImpl(GroupStatusRepository groupStatusRepository,
-                                         GroupStatusService groupStatusService) {
+                                         GroupStatusConversionService groupStatusConversionService) {
         this.groupStatusRepository = groupStatusRepository;
-        this.groupStatusService = groupStatusService;
+        this.groupStatusConversionService = groupStatusConversionService;
     }
 
     @Override
@@ -35,7 +36,7 @@ public class GroupStatusCachingServiceImpl implements GroupStatusCachingService 
         }
 
         return groupStatuses.stream()
-                .map(groupStatusService::convertToDto)
+                .map(groupStatusConversionService::convertToDto)
                 .collect(Collectors.toList());
     }
 }

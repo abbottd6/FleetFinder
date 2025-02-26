@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.GroupStatusRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
 import com.sc_fleetfinder.fleets.entities.GroupStatus;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GroupStatusServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.GroupStatusConversionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ class GroupStatusCachingServiceImplTest {
     private GroupStatusRepository groupStatusRepository;
 
     @Mock
-    private GroupStatusServiceImpl groupStatusService;
+    private GroupStatusConversionServiceImpl groupStatusConversionService;
 
     @InjectMocks
     private GroupStatusCachingServiceImpl groupStatusCachingService;
@@ -50,8 +50,8 @@ class GroupStatusCachingServiceImplTest {
         GroupStatusDto mockDto2 = new GroupStatusDto();
             mockDto2.setGroupStatusId(2);
             mockDto2.setGroupStatus("Test2");
-        when(groupStatusService.convertToDto(mockEntity1)).thenReturn(mockDto1);
-        when(groupStatusService.convertToDto(mockEntity2)).thenReturn(mockDto2);
+        when(groupStatusConversionService.convertToDto(mockEntity1)).thenReturn(mockDto1);
+        when(groupStatusConversionService.convertToDto(mockEntity2)).thenReturn(mockDto2);
 
         //when
         List<GroupStatusDto> result = groupStatusCachingService.cacheAllGroupStatuses();
