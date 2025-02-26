@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
-import com.sc_fleetfinder.fleets.services.PlanetMoonSystemService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.PlanetMoonSystemService;
 import org.junit.jupiter.api.Test;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -18,8 +18,6 @@ import java.util.List;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @WebMvcTest(controllers = PlanetMoonSystemController.class)
 class PlanetMoonSystemControllerTest {

@@ -1,51 +1,28 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DAO.PlanetMoonSystemRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
 import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
-import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.caching_services.PlanetMoonSystemCachingService;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
-public class PlanetMoonSystemServiceImpl implements PlanetMoonSystemService {
+public class PlanetMoonSystemConversionServiceImpl implements PlanetMoonSystemConversionService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlanetMoonSystemServiceImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(PlanetMoonSystemConversionServiceImpl.class);
     private final PlanetMoonSystemRepository planetMoonSystemRepository;
-    private final PlanetMoonSystemCachingService planetMoonSystemCachingService;
     private final ModelMapper modelMapper;
 
-    public PlanetMoonSystemServiceImpl(PlanetMoonSystemRepository planetMoonSystemRepository,
-                                       PlanetMoonSystemCachingService planetMoonSystemCachingService) {
-        super();
-        this.planetMoonSystemCachingService = planetMoonSystemCachingService;
+    @Autowired
+    public PlanetMoonSystemConversionServiceImpl(PlanetMoonSystemRepository planetMoonSystemRepository) {
         this.planetMoonSystemRepository = planetMoonSystemRepository;
         this.modelMapper = new ModelMapper();
-    }
-
-    @Override
-    public List<PlanetMoonSystemDto> getAllPlanetMoonSystems() {
-        return planetMoonSystemCachingService.cacheAllPlanetMoonSystems();
-    }
-
-    @Override
-    public PlanetMoonSystemDto getPlanetMoonSystemById(Integer id) {
-        List<PlanetMoonSystemDto> cachedPlanets = planetMoonSystemCachingService.cacheAllPlanetMoonSystems();
-
-        return cachedPlanets.stream()
-                .filter(planet -> planet.getPlanetId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
     @Override
@@ -89,12 +66,14 @@ public class PlanetMoonSystemServiceImpl implements PlanetMoonSystemService {
             return null;
         }
     }
+
     //this method is never used in v1 and is unlikely to be used later
+    @Override
     public PlanetMoonSystem convertToEntity(PlanetMoonSystemDto dto) {
         //checking repository for entity matching Dto id
         PlanetMoonSystem entity = planetMoonSystemRepository.findById(dto.getPlanetId())
                 .orElseThrow(() -> new ResourceNotFoundException("PlanetMoonSystem with ID: " + dto.getPlanetId()
-                + " not found"));
+                        + " not found"));
         //verifying name/id match for dto and entity
         if(!Objects.equals(dto.getPlanetName(), entity.getPlanetName())) {
             logger.error("Received wrong planet name while converting PlanetMoonSystem to Entity");
