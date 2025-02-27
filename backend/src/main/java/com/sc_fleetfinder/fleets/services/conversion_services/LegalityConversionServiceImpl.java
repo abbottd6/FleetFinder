@@ -29,10 +29,12 @@ public class LegalityConversionServiceImpl implements LegalityConversionService 
     public LegalityDto convertToDto(Legality entity) {
         //id valid check
         if(entity.getLegalityId() == null || entity.getLegalityId() == 0) {
+            log.error("Encountered null or zero legality id when converting from entity to Dto");
             throw new ResourceNotFoundException("Legality Id is null or 0");
         }
         //type/name valid check
         if(entity.getLegalityStatus() == null || entity.getLegalityStatus().isEmpty()) {
+            log.error("Encountered null or empty status when converting from entity to Dto");
             throw new ResourceNotFoundException("Legality status is null or empty");
         }
 
@@ -43,10 +45,16 @@ public class LegalityConversionServiceImpl implements LegalityConversionService 
     public Legality convertToEntity(LegalityDto dto) {
         //checking repository for entity matching Dto id
         Legality entity = legalityRepository.findById(dto.getLegalityId())
-                .orElseThrow(() -> new ResourceNotFoundException("Legality with ID: " + dto.getLegalityId() +
-                        " not found"));
+                .orElseGet(() -> {
+                    log.error("Encountered legality dto with unmatched Id: {}, when converting from dto to entity",
+                            dto.getLegalityId());
+                    throw new ResourceNotFoundException("Legality with ID: " + dto.getLegalityId() +
+                            " not found");
+                });
         //verifying name/id match for dto and entity
         if(!Objects.equals(dto.getLegalityStatus(), entity.getLegalityStatus())) {
+            log.error("Encountered legality with status name and Id mismatch: {}, when converting from Dto to " +
+                            "entity", dto.getLegalityStatus());
             throw new ResourceNotFoundException("Legality status mismatch for Dto: " + dto.getLegalityStatus() +
                     ", ID: " + dto.getLegalityId() + " and entity: " + entity.getLegalityStatus() + ", ID: " +
                     entity.getLegalityId());

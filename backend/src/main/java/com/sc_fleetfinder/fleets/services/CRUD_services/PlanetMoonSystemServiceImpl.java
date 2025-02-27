@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 public class PlanetMoonSystemServiceImpl implements PlanetMoonSystemService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlanetMoonSystemServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PlanetMoonSystemServiceImpl.class);
     private final PlanetMoonSystemCachingService planetMoonSystemCachingService;
 
     public PlanetMoonSystemServiceImpl(PlanetMoonSystemCachingService planetMoonSystemCachingService) {
@@ -31,6 +31,9 @@ public class PlanetMoonSystemServiceImpl implements PlanetMoonSystemService {
         return cachedPlanets.stream()
                 .filter(planet -> planet.getPlanetId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseGet(() -> {
+                    log.error("No planet moon system found with id {} in the cached planet moon systems", id);
+                    throw new ResourceNotFoundException(id);
+                });
     }
 }

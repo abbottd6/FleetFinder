@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
-import com.sc_fleetfinder.fleets.DAO.PlanetarySystemRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetarySystemDto;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.caching_services.PlanetarySystemCachingServiceImpl;
@@ -21,9 +20,6 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class PlanetarySystemServiceImplTest {
-
-    @Mock
-    private PlanetarySystemRepository planetarySystemRepository;
 
     @Mock
     private PlanetarySystemCachingServiceImpl planetarySystemCachingService;
