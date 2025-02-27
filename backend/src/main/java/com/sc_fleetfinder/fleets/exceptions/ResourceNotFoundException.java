@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.exceptions;
 
-import jakarta.annotation.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 

@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class PlanetMoonSystemCachingServiceImpl implements PlanetMoonSystemCachingService {
 
-    private static final Logger logger = LoggerFactory.getLogger(PlanetMoonSystemCachingServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(PlanetMoonSystemCachingServiceImpl.class);
     private final PlanetMoonSystemRepository planetMoonSystemRepository;
     private final PlanetMoonSystemConversionService planetMoonSystemConversionService;
 
@@ -35,6 +35,7 @@ public class PlanetMoonSystemCachingServiceImpl implements PlanetMoonSystemCachi
         List<PlanetMoonSystem> planetMoonSystems = planetMoonSystemRepository.findAll();
 
         if(planetMoonSystems.isEmpty()) {
+            log.error("Unable to access planet moon system data for caching");
             throw new ResourceNotFoundException("Unable to access data for planet/moon systems");
         }
 
