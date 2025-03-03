@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PvpStatusDto;
-import com.sc_fleetfinder.fleets.services.PvpStatusService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.PvpStatusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

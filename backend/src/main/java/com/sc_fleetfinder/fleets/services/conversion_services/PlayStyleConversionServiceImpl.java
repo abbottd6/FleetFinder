@@ -29,13 +29,13 @@ public class PlayStyleConversionServiceImpl implements PlayStyleConversionServic
     public PlayStyleDto convertToDto(PlayStyle entity) {
         //id valid check
         if(entity.getStyleId() == null || entity.getStyleId() == 0) {
-            log.error("Encountered null or zero legality Id when converting from entity to Dto");
+            log.error("Encountered null or zero play style Id when converting from entity to Dto");
             throw new ResourceNotFoundException("Encountered null or zero legality Id");
         }
 
         //type/name valid check
         if(entity.getPlayStyle() == null || entity.getPlayStyle().isEmpty()) {
-            log.error("Encountered null or empty status when converting from entity to Dto");
+            log.error("Encountered null or empty play style name when converting from entity to Dto");
             throw new ResourceNotFoundException("Encountered null or empty status");
         }
 
