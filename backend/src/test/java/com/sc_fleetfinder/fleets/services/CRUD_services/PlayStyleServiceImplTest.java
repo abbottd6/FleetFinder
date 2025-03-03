@@ -76,6 +76,10 @@ class PlayStyleServiceImplTest {
                 () -> assertNotNull(result, "getPlayStyleById should not return null when expected found"),
                 () -> assertDoesNotThrow(() -> playStyleService.getPlayStyleById(1),
                         "getPlayStyleById should not throw an exception when expected Id to be found"),
+                () -> assertEquals(1, result.getStyleId(), "getPlayStyleById produced a dto with " +
+                        "the incorrect id"),
+                () -> assertEquals("Style1", result.getPlayStyle(), "getPlayStyleById produced a " +
+                        "dto with the incorrect style name"),
                 () -> verify(playStyleCachingService, times(2)).cacheAllPlayStyles());
     }
 

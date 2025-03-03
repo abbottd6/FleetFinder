@@ -47,22 +47,22 @@ class PlayStyleConversionServiceImplTest {
                         "convert play style entity to DTO should NOT throw an exception when fields are valid"),
                 () -> assertDoesNotThrow(() -> playStyleConversionService.convertToDto(mockEntity2),
                         "convert play style entity to  DTO should NOT throw an exception when fields are valid"),
-                () -> assertEquals(2, result.size(), "test convert play styles to Dto's should produce" +
-                        "2 elements"),
+                () -> assertEquals(2, result.size(), "test convert play styles to Dto's should " +
+                        "produce 2 elements"),
                 () -> assertEquals(1, result.getFirst().getStyleId(), "play style convert to DTO" +
                         "produced a Dto with the incorrect Id"),
-                () -> assertEquals("Style1", result.getFirst().getPlayStyle(), "play style convert to " +
-                        "Dto produced a Dto with an incorrect style name"),
-                () -> assertEquals(2, result.get(1).getStyleId(), "play style convert to Dto produced " +
-                        "a Dto with the incorrect Id"),
-                () -> assertEquals("Style2", result.get(1).getPlayStyle(), "play style convert to Dto " +
-                        "produced a Dto with the incorrect style name"),
-                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "successful play style conversion " +
-                        "to entity should NOT produce any error logs"));
+                () -> assertEquals("Style1", result.getFirst().getPlayStyle(), "play style convert " +
+                        "to Dto produced a Dto with an incorrect style name"),
+                () -> assertEquals(2, result.get(1).getStyleId(), "play style convert to Dto " +
+                        "produced a Dto with the incorrect Id"),
+                () -> assertEquals("Style2", result.get(1).getPlayStyle(), "play style convert to " +
+                        "Dto produced a Dto with the incorrect style name"),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "successful play style " +
+                        "conversion to entity should NOT produce any error logs"));
     }
 
     @Test
-    void testConvertToEntity_Null_ID_Failure() {
+    void testConvertToDto_Null_ID_Failure() {
         LogCaptor logCaptor = LogCaptor.forClass(PlayStyleConversionServiceImpl.class);
         //given a play style entity with a null id
         PlayStyle mockEntity1 = new PlayStyle();
@@ -75,8 +75,8 @@ class PlayStyleConversionServiceImplTest {
                 () -> assertThrows(ResourceNotFoundException.class, () ->
                         playStyleConversionService.convertToDto(mockEntity1)),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
-                        .anyMatch(log -> log.contains("Encountered null or zero legality Id when converting from entity " +
-                                "to Dto"))));
+                        .anyMatch(log -> log.contains("Encountered null or zero play style Id when converting from " +
+                                "entity to Dto"))));
     }
 
     @Test
@@ -93,8 +93,8 @@ class PlayStyleConversionServiceImplTest {
                 () -> assertThrows(ResourceNotFoundException.class, () ->
                         playStyleConversionService.convertToDto(mockEntity1)),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
-                        .anyMatch(log -> log.contains("Encountered null or zero legality Id when converting from entity " +
-                                "to Dto"))));
+                        .anyMatch(log -> log.contains("Encountered null or zero play style Id when converting from " +
+                                "entity to Dto"))));
     }
 
     @Test
@@ -111,8 +111,8 @@ class PlayStyleConversionServiceImplTest {
                 () -> assertThrows(ResourceNotFoundException.class, () ->
                         playStyleConversionService.convertToDto(mockEntity1)),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
-                        .anyMatch(log -> log.contains("Encountered null or empty status when converting from entity " +
-                                "to Dto"))));
+                        .anyMatch(log -> log.contains("Encountered null or empty play style name when converting " +
+                                "from entity to Dto"))));
     }
 
     @Test
@@ -129,8 +129,8 @@ class PlayStyleConversionServiceImplTest {
                 () -> assertThrows(ResourceNotFoundException.class, () ->
                         playStyleConversionService.convertToDto(mockEntity1)),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
-                        .anyMatch(log -> log.contains("Encountered null or empty status when converting from entity " +
-                                "to Dto"))));
+                        .anyMatch(log -> log.contains("Encountered null or empty play style name when converting " +
+                                "from entity to Dto"))));
     }
 
     @Test
