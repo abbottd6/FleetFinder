@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.LegalityRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
 import com.sc_fleetfinder.fleets.entities.Legality;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,7 @@ class LegalityConversionServiceImplTest {
 
     @Test
     void testConvertToDto_Success() {
+        LogCaptor logCaptor = LogCaptor.forClass(LegalityConversionServiceImpl.class);
         //given
         Legality mockEntity1 = new Legality();
         mockEntity1.setLegalityId(1);
@@ -39,6 +41,7 @@ class LegalityConversionServiceImplTest {
         List<LegalityDto> result = List.of(legalityConversionService.convertToDto(mockEntity1),
                 legalityConversionService.convertToDto(mockEntity2));
 
+        //then
         assertAll("Legality convertToDto assertion set: ",
                 () -> assertNotNull(result, "legality convertToDto should not return a null dto"),
                 () -> assertDoesNotThrow(() -> legalityConversionService.convertToDto(mockEntity1),
@@ -54,11 +57,14 @@ class LegalityConversionServiceImplTest {
                 () -> assertEquals(2, result.get(1).getLegalityId(), "legality convertToDto " +
                         "produced a dto with the incorrect id"),
                 () -> assertEquals("Status2", result.get(1).getLegalityStatus(),
-                        "legality convertToDto produced a dto with the incorrect legality status"));
+                        "legality convertToDto produced a dto with the incorrect legality status"),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "successful Legality " +
+                        "convertToDto should not produce any error logs."));
     }
 
     @Test
     void testConvertToDto_FailInvalid() {
+        LogCaptor logCaptor = LogCaptor.forClass(LegalityConversionServiceImpl.class);
         //given: entity with a null id value (invalid id)
         Legality mockEntity1 = new Legality();
         mockEntity1.setLegalityId(null);
@@ -79,15 +85,24 @@ class LegalityConversionServiceImplTest {
         //when
         //then
         assertAll("legality convertToDto fail invalid assertion set: ",
-                () -> assertThrows(ResourceNotFoundException.class, () -> legalityConversionService.convertToDto(mockEntity1),
-                        "legality convertToDto should throw an exception when the id is null"),
-                () -> assertThrows(ResourceNotFoundException.class, () -> legalityConversionService.convertToDto(mockEntity2),
-                        "legality convertToDto should throw an exception when the id is 0"),
-                () -> assertThrows(ResourceNotFoundException.class, () -> legalityConversionService.convertToDto(mockEntity3),
-                        "legality convertToDto should throw an exception when the legality status is null"),
-                () -> assertThrows(ResourceNotFoundException.class, () -> legalityConversionService.convertToDto(mockEntity4),
-                        "legality convertToDto should throw an exception when the legality status is " +
-                                "an empty string"));
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                                legalityConversionService.convertToDto(mockEntity1), "legality convertToDto " +
+                                "should throw an exception when the id is null"),
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                                legalityConversionService.convertToDto(mockEntity2), "legality convertToDto " +
+                                "should throw an exception when the id is 0"),
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                                legalityConversionService.convertToDto(mockEntity3), "legality convertToDto " +
+                                "should throw an exception when the legality status is null"),
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                                legalityConversionService.convertToDto(mockEntity4), "legality convertToDto " +
+                                "should throw an exception when the legality status is an empty string"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Encountered null or zero legality id when converting from " +
+                                "entity to Dto"))),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Encountered null or empty status when converting from entity " +
+                                "to Dto"))));
     }
 
     @Test
@@ -118,6 +133,7 @@ class LegalityConversionServiceImplTest {
 
     @Test
     void testConvertToEntity_FailInvalid() {
+        LogCaptor logCaptor = LogCaptor.forClass(LegalityConversionServiceImpl.class);
         //given: dto that does not match a backend entity
         LegalityDto mockDto = new LegalityDto();
         //the id does not exist
@@ -139,8 +155,13 @@ class LegalityConversionServiceImplTest {
 
         //when
         //then
-        assertThrows(ResourceNotFoundException.class, () -> legalityConversionService.convertToEntity(mockDto2),
-                "legality convertToEntity should throw an exception when the dto name/id does" +
-                        " not match the name/id of the entity in repo");
+        assertAll("Legality convertToEntity_Fail_Invalid assertion set: ",
+                () -> assertThrows(IllegalArgumentException.class, () ->
+                        legalityConversionService.convertToEntity(mockDto2), "Legality convertToEntity " +
+                        "should throw an exception when dto legality status does not match the status name of the " +
+                        "entity with the same id."),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Encountered legality with status name and Id mismatch: " +
+                                "Incorrect Legality, when converting from Dto to entity"))));
     }
 }

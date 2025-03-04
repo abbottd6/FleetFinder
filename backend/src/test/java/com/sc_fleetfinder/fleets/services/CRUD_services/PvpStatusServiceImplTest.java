@@ -9,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,16 +47,12 @@ class PvpStatusServiceImplTest {
     @Test
     void testGetAllPvpStatuses_NotFound() {
         //given
-        when(pvpStatusCachingService.cacheAllPvpStatuses()).thenReturn(Collections.emptyList());
+        when(pvpStatusCachingService.cacheAllPvpStatuses()).thenThrow(ResourceNotFoundException.class);
 
         //when
-        List<PvpStatusDto> result = pvpStatusService.getAllPvpStatuses();
-
         //then
         assertAll("getAllPvpStatuses = empty, assertion set: ",
-                () -> assertNotNull(result, "getAllPvpStatuses should return empty, not null"),
-                () -> assertTrue(result.isEmpty(), "getAllPvpStatuses returned " + result +
-                        " when it was expected to be empty"),
+                () -> assertThrows(ResourceNotFoundException.class, () -> pvpStatusService.getAllPvpStatuses()),
                 () -> verify(pvpStatusCachingService, times(1)).cacheAllPvpStatuses());
     }
 

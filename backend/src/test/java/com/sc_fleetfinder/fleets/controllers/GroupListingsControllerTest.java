@@ -76,8 +76,8 @@ class GroupListingsControllerTest {
         mockListing1.setAvailableRoles("Here are some available roles");
         mockListing1.setCommsOption("Required");
         mockListing1.setCommsService("This is a comms service");
-        mockListing1.setCreationTimestamp(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString());
-        mockListing1.setLastUpdated(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString());
+        mockListing1.setCreationTimestamp(Instant.parse(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
+        mockListing1.setLastUpdated(Instant.parse(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
 
 
 
@@ -103,8 +103,8 @@ class GroupListingsControllerTest {
         mockListing2.setAvailableRoles("Here are some available roles");
         mockListing2.setCommsOption("Optional");
         mockListing2.setCommsService("");
-        mockListing2.setCreationTimestamp(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString());
-        mockListing2.setLastUpdated(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString());
+        mockListing2.setCreationTimestamp(Instant.parse(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
+        mockListing2.setLastUpdated(Instant.parse(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
 
         mockGroupListings = Arrays.asList(mockListing1, mockListing2);
     }
