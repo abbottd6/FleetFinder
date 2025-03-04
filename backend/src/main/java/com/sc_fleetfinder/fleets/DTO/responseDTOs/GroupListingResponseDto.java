@@ -75,9 +75,9 @@ public class GroupListingResponseDto {
     private String commsService;
 
     @NotNull(message = "GroupListingResponseDto field 'creationTimestamp' cannot be null")
-    @DateTimeFormat(pattern = "MM/dd/yy HH:mm")
-    private String creationTimestamp;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant creationTimestamp;
 
-    @DateTimeFormat(pattern = "MM/dd/yy HH:mm")
-    private String lastUpdated;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant lastUpdated;
 }

@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
 import com.sc_fleetfinder.fleets.entities.Legality;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.LegalityConversionServiceImpl;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ class LegalityCachingServiceImplTest {
 
     @Test
     void testCacheAllLegalities_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(LegalityCachingServiceImpl.class);
         //given mock entities for find all
         Legality mockEntity1 = new Legality();
             mockEntity1.setLegalityId(1);
@@ -67,17 +69,22 @@ class LegalityCachingServiceImplTest {
                         "produced a dto with the incorrect id"),
                 () -> assertEquals("Status2", result.get(1).getLegalityStatus(),
                 "cacheAllLegalities produced a dto with the incorrect legality status"),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "successful " +
+                        "cacheAllLegalities should not produce any error logs."),
                 () -> verify(legalityRepository, times(1)).findAll());
     }
 
     @Test
     void testCacheAllLegalities_NotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(LegalityCachingServiceImpl.class);
         //given legality repo is empty
 
         //when
         //then
         assertAll("cacheAllLegalities = empty assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class, () -> legalityCachingService.cacheAllLegalities()),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Unable to access legalities data for caching."))),
                 () -> verify(legalityRepository, times(1)).findAll());
     }
 }

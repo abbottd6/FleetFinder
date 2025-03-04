@@ -20,9 +20,6 @@ import static org.mockito.Mockito.when;
 class LegalityServiceImplTest {
 
     @Mock
-    private LegalityRepository legalityRepository;
-
-    @Mock
     private LegalityCachingServiceImpl legalityCachingService;
 
     @InjectMocks
@@ -81,6 +78,8 @@ class LegalityServiceImplTest {
                 () -> assertNotNull(result, "getLegalityById should not return null when Id is found"),
                 () -> assertDoesNotThrow(() -> legalityService.getLegalityById(1), "getLegalityById " +
                         "should not throw an exception when the Id is found"),
+                () -> assertEquals("Status1", result.getLegalityStatus(), "getLegalityById " +
+                        "returned the wrong legality status."),
                 () -> verify(legalityCachingService, times(2)).cacheAllLegalities());
     }
 
