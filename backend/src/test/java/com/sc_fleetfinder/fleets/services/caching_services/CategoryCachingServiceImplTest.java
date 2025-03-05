@@ -6,6 +6,7 @@ import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.GameplayCategoryConversionServiceImpl;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,7 +34,8 @@ class CategoryCachingServiceImplTest {
     private CategoryCachingServiceImpl categoryCachingService;
 
     @Test
-    void testGetAllCategories_Found() {
+    void testCacheAllCategories_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(CategoryCachingServiceImpl.class);
         //given
         GameplayCategory mockGameplayCategory = new GameplayCategory();
             mockGameplayCategory.setCategoryId(1);
@@ -61,6 +63,8 @@ class CategoryCachingServiceImplTest {
 
         //then
         assertAll("cacheAllCategories mock entities assertion set:",
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful " +
+                        "cacheAllCategories should not produce any error logs."),
                 () -> assertNotNull(result, "cacheAllCategories should not return null"),
                 () -> assertEquals(2, result.size(), "cacheAllCategories should return 2 mock DTOs"),
                 () -> assertEquals(1, result.getFirst().getGameplayCategoryId(),
@@ -76,12 +80,15 @@ class CategoryCachingServiceImplTest {
 
     @Test
     void testCacheAllCategories_NotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(CategoryCachingServiceImpl.class);
         //given category repository is empty
 
         //when
         //then
         assertAll("cacheAllCategories = empty assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class, () -> categoryCachingService.cacheAllCategories()),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Unable to access gameplay category data for caching."))),
                 () -> verify(gameplayCategoryRepository, times(1)).findAll());
     }
 }

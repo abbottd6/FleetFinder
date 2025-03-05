@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplaySubcategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.GameplaySubcategoryConversionServiceImpl;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ class SubcategoryCachingServiceImplTest {
 
     @Test
     void testCacheAllSubcategories_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(SubcategoryCachingServiceImpl.class);
         //given
         GameplaySubcategory mockGameplaySubcategory1 = new GameplaySubcategory();
         GameplaySubcategory mockGameplaySubcategory2 = new GameplaySubcategory();
@@ -48,6 +50,8 @@ class SubcategoryCachingServiceImplTest {
 
         //then
         assertAll("get all subcategories mock entities assertions set:",
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful " +
+                        "cacheAllSubcategories should not produce any error logs."),
                 () -> assertNotNull(result, "get all subcategories should not return null"),
                 () -> assertEquals(2, result.size(), "get all subcategories should contain 2 elements."),
                 () -> verify(subcategoryRepository, times(1)).findAll());
@@ -55,12 +59,16 @@ class SubcategoryCachingServiceImplTest {
 
     @Test
     void testCacheAllSubcategories_NotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(SubcategoryCachingServiceImpl.class);
         //given subcategories repo is empty
 
         //when
         //then
         assertAll("get all subcategories = empty assertions set:",
-                () -> assertThrows(ResourceNotFoundException.class, () -> subcategoryCachingService.cacheAllSubcategories()),
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                        subcategoryCachingService.cacheAllSubcategories()),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Unable to access Subcategory data for caching."))),
                 () -> verify(subcategoryRepository, times(1)).findAll());
     }
 }
