@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.entities.GameExperience;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.GameExperienceConversionServiceImpl;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ class ExperienceCachingServiceImplTest {
 
     @Test
     void testCacheAllExperiences_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(ExperienceCachingServiceImpl.class);
         //given
         //mock entities for find all
         GameExperience mockEntity = new GameExperience();
@@ -58,6 +60,8 @@ class ExperienceCachingServiceImplTest {
 
         //then
         assertAll("cacheAllExperiences mock entities assertion set:",
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful " +
+                        "cacheAllExperiences should not produce any error logs."),
                 () -> assertNotNull(result, "cacheAllExperiences should not return null"),
                 () -> assertEquals(2, result.size(), "cacheAllExperiences should return 2 mock DTOs"),
                 () -> assertEquals(1, result.getFirst().getExperienceId(), "cacheAllExperiences " +
@@ -73,12 +77,16 @@ class ExperienceCachingServiceImplTest {
 
     @Test
     void testCacheAllExperiences_NotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(ExperienceCachingServiceImpl.class);
         //given: experiences repo is empty
 
         //when
         //then
         assertAll("cacheAllExperiences = empty assertion set: ",
-                () -> assertThrows(ResourceNotFoundException.class, () -> experienceCachingService.cacheAllExperiences()),
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                        experienceCachingService.cacheAllExperiences()),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Unable to access Experience data for caching."))),
                 () -> verify(experienceRepository, times(1)).findAll());
     }
 }

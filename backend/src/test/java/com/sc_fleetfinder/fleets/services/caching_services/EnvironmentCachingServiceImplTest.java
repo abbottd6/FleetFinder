@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.GameEnvironmentConversionServiceImpl;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ class EnvironmentCachingServiceImplTest {
 
     @Test
     void testCacheAllEnvironments_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(EnvironmentCachingServiceImpl.class);
         //given
         //mock entities for findAll
         GameEnvironment mockEntity = new GameEnvironment();
@@ -58,6 +60,8 @@ class EnvironmentCachingServiceImplTest {
 
         //then
         assertAll("getAllEnvironments mock entities assertion set:",
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful " +
+                        "cacheAllEnvironments should not produce any error logs."),
                 () -> assertNotNull(result, "getAllEnvironments should not return null"),
                 () -> assertEquals(2, result.size(), "Get all environments produced unexpected " +
                         "number of results"),
@@ -74,12 +78,16 @@ class EnvironmentCachingServiceImplTest {
 
     @Test
     void testCacheAllEnvironments_NotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(EnvironmentCachingServiceImpl.class);
         //given environments repo is empty
 
         //when
         //then
         assertAll("cacheAllEnvironments = empty assertion set: ",
-                () -> assertThrows(ResourceNotFoundException.class, () -> environmentCachingService.cacheAllEnvironments()),
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                        environmentCachingService.cacheAllEnvironments()),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Unable to access Game Environment data for caching."))),
                 () -> verify(environmentRepository, times(1)).findAll());
     }
 }

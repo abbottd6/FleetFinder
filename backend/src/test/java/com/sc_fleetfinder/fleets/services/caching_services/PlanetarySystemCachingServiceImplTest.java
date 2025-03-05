@@ -6,6 +6,7 @@ import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
 import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.PlanetarySystemConversionServiceImpl;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -34,6 +35,7 @@ class PlanetarySystemCachingServiceImplTest {
 
     @Test
     void testCacheAllPlanetarySystems_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(PlanetarySystemCachingServiceImpl.class);
         //given
         //mock entities for find all
         PlanetarySystem mockEntity1 = new PlanetarySystem();
@@ -62,6 +64,8 @@ class PlanetarySystemCachingServiceImplTest {
 
         //then
         assertAll("cacheAllPlanetarySystems mock entities assertion set: ",
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful " +
+                        "cacheAllPlanetarySystems should not produce any error logs."),
                 () -> assertNotNull(result, "cacheAllPlanetarySystems should not return null"),
                 () -> assertEquals(2, result.size(), "cacheAllPlanetary systems should return a list " +
                         "of 2 mock Dtos"),
@@ -78,6 +82,7 @@ class PlanetarySystemCachingServiceImplTest {
 
     @Test
     void testCacheAllPlanetarySystems_NotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(PlanetarySystemCachingServiceImpl.class);
         //given: planetary systems repo is empty
 
         //when
@@ -85,6 +90,8 @@ class PlanetarySystemCachingServiceImplTest {
         assertAll("cacheAllPlanetarySystems = empty assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class,
                         () -> planetarySystemCachingService.cacheAllPlanetarySystems()),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Unable to access Planetary System data for caching."))),
                 () -> verify(planetarySystemRepository, times(1)).findAll());
     }
 }

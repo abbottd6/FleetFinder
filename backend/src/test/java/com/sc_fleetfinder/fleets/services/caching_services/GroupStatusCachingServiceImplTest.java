@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
 import com.sc_fleetfinder.fleets.entities.GroupStatus;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupStatusConversionServiceImpl;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,6 +33,7 @@ class GroupStatusCachingServiceImplTest {
 
     @Test
     void testCacheAllGroupStatuses_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupStatusCachingServiceImpl.class);
         //given
         //mock entities for find all
         GroupStatus mockEntity1 = new GroupStatus();
@@ -58,6 +60,8 @@ class GroupStatusCachingServiceImplTest {
 
         //then
         assertAll("cacheAllGroupStatuses mock entities assertion set:",
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful " +
+                        "cacheAllGroupStatuses should not produce any error logs."),
                 () -> assertNotNull(result, "get all groupStatuses should not return null"),
                 () -> assertEquals(2, result.size(), "get all groupStatuses should return a list " +
                         "containing 2 mock entities"),
@@ -74,6 +78,7 @@ class GroupStatusCachingServiceImplTest {
 
     @Test
     void testCacheAllGroupStatuses_NotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupStatusCachingServiceImpl.class);
         //given group status repo is empty
 
         //when
@@ -81,6 +86,8 @@ class GroupStatusCachingServiceImplTest {
         assertAll("cacheAllGroupStatuses = empty assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class, () ->
                         groupStatusCachingService.cacheAllGroupStatuses()),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Unable to access Group Status data for caching."))),
                 () -> verify(groupStatusRepository, times(1)).findAll());
     }
 }
