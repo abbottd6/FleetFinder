@@ -29,12 +29,14 @@ public class GameExperienceConversionServiceImpl implements GameExperienceConver
     public GameExperienceDto convertToDto(GameExperience entity) {
         //id valid check
         if(entity.getExperienceId() == null || entity.getExperienceId() == 0) {
-            throw new ResourceNotFoundException("Experience id is null or 0");
+            log.error("Experience convertToDto encountered an id that is null or 0.");
+            throw new IllegalArgumentException("Experience id is null or 0");
         }
 
         //type/name valid check
         if(entity.getExperienceType() == null || entity.getExperienceType().isEmpty()) {
-            throw new ResourceNotFoundException("Experience type is null or empty");
+            log.error("Experience convertToDto encountered an type that is null or empty.");
+            throw new IllegalArgumentException("Experience type is null or empty");
         }
 
         return modelMapper.map(entity, GameExperienceDto.class);
@@ -44,10 +46,16 @@ public class GameExperienceConversionServiceImpl implements GameExperienceConver
     public GameExperience convertToEntity(GameExperienceDto dto) {
         //checking repository for entity matching Dto id
         GameExperience entity = experienceRepository.findById(dto.getExperienceId())
-                .orElseThrow(() -> new ResourceNotFoundException("Experience with ID: " + dto.getExperienceId()
-                        + " not found"));
+                .orElseGet(() -> {
+                    log.error("GameExperience convertToEntity could not find Experience with Id: {}",
+                            dto.getExperienceId());
+                    throw  new ResourceNotFoundException("Experience with ID: " + dto.getExperienceId()
+                            + " not found");
+                });
         //verifying name/id match for dto and entity
         if(!Objects.equals(dto.getExperienceType(), entity.getExperienceType())) {
+            log.error("GameExperience convertToEntity encountered an id/name mismatch for Id: {}, and experience: {}",
+                    dto.getExperienceId(), dto.getExperienceType());
             throw new ResourceNotFoundException("Experience type mismatch for Dto: " + dto.getExperienceType()
                     + ", ID: " + dto.getExperienceId() + " and entity: " + entity.getExperienceType()
                     + ", ID: " + entity.getExperienceId());

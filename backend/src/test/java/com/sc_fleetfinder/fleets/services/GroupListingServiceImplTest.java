@@ -261,7 +261,8 @@ class GroupListingServiceImplTest {
 
     @Test
     @Disabled
-    void testGetGroupListingById() {
+    void testGetGroupListingById_Success() {
+
     }
 
     @Test

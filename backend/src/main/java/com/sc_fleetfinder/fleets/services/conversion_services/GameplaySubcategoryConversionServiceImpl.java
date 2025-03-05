@@ -29,29 +29,37 @@ public class GameplaySubcategoryConversionServiceImpl implements GameplaySubcate
     public GameplaySubcategoryDto convertToDto(GameplaySubcategory entity) {
         //id valid check
         if(entity.getSubcategoryId() == null || entity.getSubcategoryId() == 0) {
-            throw new ResourceNotFoundException("Subcategory id is null or empty");
+            log.error("Subcategory convertToDto encountered an entity with an id that is null or 0.");
+            throw new IllegalArgumentException("Subcategory id is null or empty");
         }
 
         //type/name valid check
         if(entity.getSubcategoryName() == null || entity.getSubcategoryName().isEmpty()) {
-            throw new ResourceNotFoundException("Subcategory name is null or empty");
+            log.error("Subcategory convertToDto encountered an entity with an name that is null or empty.");
+            throw new IllegalArgumentException("Subcategory name is null or empty");
         }
         //mapping to Dto if entity is valid
         return modelMapper.map(entity, GameplaySubcategoryDto.class);
     }
 
     @Override
-    public GameplaySubcategory convertToEntity(GameplaySubcategoryDto gameplaySubcategoryDto) {
+    public GameplaySubcategory convertToEntity(GameplaySubcategoryDto dto) {
         //checking for Dto id match in repository
-        GameplaySubcategory gameplaySubcategory = gameplaySubcategoryRepository.findById(gameplaySubcategoryDto.getSubcategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Subcategory with ID: " +
-                        gameplaySubcategoryDto.getSubcategoryId() + " not found"));
+        GameplaySubcategory gameplaySubcategory = gameplaySubcategoryRepository.findById(dto.getSubcategoryId())
+                .orElseGet(() -> {
+                    log.error("Subcategory convertToEntity could not find entity with Id: {}",
+                            dto.getSubcategoryId());
+                    throw new ResourceNotFoundException("Subcategory with ID: " +
+                            dto.getSubcategoryId() + " not found");
+                });
 
         //Verifying that the dto name matches the name of the entity with that Id
-        if(!Objects.equals(gameplaySubcategoryDto.getSubcategoryName(), gameplaySubcategory.getSubcategoryName())) {
+        if(!Objects.equals(dto.getSubcategoryName(), gameplaySubcategory.getSubcategoryName())) {
+            log.error("Subcategory convertToEntity encountered a id/name mismatch for Id: {}, and subcategory: {}",
+                    dto.getSubcategoryId(), dto.getSubcategoryName());
             throw new ResourceNotFoundException("Gameplay subcategory name mismatch for DTO with ID: " +
-                    gameplaySubcategoryDto.getSubcategoryId() + " and name: "
-                    + gameplaySubcategoryDto.getSubcategoryName());
+                    dto.getSubcategoryId() + " and name: "
+                    + dto.getSubcategoryName());
         }
         //if Id exists in repo and name matches then return entity
         return gameplaySubcategory;

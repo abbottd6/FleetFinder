@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetarySystemDto;
 import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
 import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,6 +30,8 @@ class PlanetarySystemConversionServiceImplTest {
 
     @Test
     void testConvertToDto_Success() {
+        LogCaptor logCaptor = LogCaptor.forClass(PlanetarySystemConversionServiceImpl.class);
+        //given: mock entities to convert
         PlanetarySystem mockEntity1 = new PlanetarySystem();
         mockEntity1.setSystemId(1);
         mockEntity1.setSystemName("System1");
@@ -47,6 +50,8 @@ class PlanetarySystemConversionServiceImplTest {
                         "planetary system convertToDto should not throw an exception when input is valid"),
                 () -> assertDoesNotThrow(() -> planetarySystemConversionService.convertToDto(mockEntity2),
                         "planetary system convertToDto should not throw an exception when input is valid"),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful Planetary system " +
+                        "convertToDto should not produce any error logs."),
                 () -> assertEquals(2, result.size(), "the test for planetarySystem covnertToDto is " +
                         "expected to produce 2 mock Dtos"),
                 () -> assertEquals(1, result.getFirst().getSystemId(),
@@ -55,12 +60,13 @@ class PlanetarySystemConversionServiceImplTest {
                         "planetarySystem convertToDto produced a Dto with an incorrect system name"),
                 () -> assertEquals(2, result.get(1).getSystemId(), "planetary system convertToDto " +
                         "produced a dto with an incorrect id"),
-                () -> assertEquals("System2", result.get(1).getSystemName(), "planetary system convertToDto " +
-                        "produced a dto with an incorrect system name"));
+                () -> assertEquals("System2", result.get(1).getSystemName(), "planetary system " +
+                        "convertToDto produced a dto with an incorrect system name"));
     }
 
     @Test
     void testConvertToDto_FailInvalid() {
+        LogCaptor logCaptor = LogCaptor.forClass(PlanetarySystemConversionServiceImpl.class);
         //given: entity with a null id value
         PlanetarySystem mockEntity1 = new PlanetarySystem();
         mockEntity1.setSystemId(null);
@@ -87,18 +93,30 @@ class PlanetarySystemConversionServiceImplTest {
         //when
         //then
         assertAll("planetarySystem convertToDto_FailInvalid assertion set: ",
-                () -> assertThrows(ResourceNotFoundException.class, () -> planetarySystemConversionService.convertToDto(mockEntity1),
+                () -> assertThrows(IllegalArgumentException.class, () ->
+                                planetarySystemConversionService.convertToDto(mockEntity1),
                         "planetary system convertToDto should throw an exception when input id is null"),
-                () -> assertThrows(ResourceNotFoundException.class, () -> planetarySystemConversionService.convertToDto(mockEntity2),
+                () -> assertThrows(IllegalArgumentException.class, () ->
+                                planetarySystemConversionService.convertToDto(mockEntity2),
                         "planetary system convertToDto should throw an exception when input id is 0"),
-                () -> assertThrows(ResourceNotFoundException.class, () -> planetarySystemConversionService.convertToDto(mockEntity3),
+                () -> assertThrows(IllegalArgumentException.class, () ->
+                                planetarySystemConversionService.convertToDto(mockEntity3),
                         "planetary system convertToDto should throw an exception when system name is null"),
-                () -> assertThrows(ResourceNotFoundException.class, () -> planetarySystemConversionService.convertToDto(mockEntity4),
-                        "planetary system convertToDto should throw an exception when system name is empty string"));
+                () -> assertThrows(IllegalArgumentException.class, () ->
+                                planetarySystemConversionService.convertToDto(mockEntity4),
+                        "planetary system convertToDto should throw an exception when system name is " +
+                                "empty string"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Planetary system convertToDto encountered an Id that is " +
+                                "null or 0."))),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Planetary system convertToDto encountered an Name that " +
+                                "is null or empty."))));
     }
 
     @Test
     void testConvertToEntity_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(PlanetarySystemConversionServiceImpl.class);
         //given: a dto that matches an entity
         PlanetarySystemDto mockDto = new PlanetarySystemDto();
         mockDto.setSystemId(1);
@@ -113,28 +131,30 @@ class PlanetarySystemConversionServiceImplTest {
 
         //then
         assertAll("planetary system convertToEntity_Found assertion set: ",
-                () -> assertNotNull(result, "planetary system convertToEntity expected to find a matching entity," +
-                        " should not return null"),
+                () -> assertNotNull(result, "planetary system convertToEntity expected to find a matching " +
+                        "entity,should not return null"),
                 () -> assertDoesNotThrow(() -> planetarySystemConversionService.convertToEntity(mockDto),
-                        "planetary system convertToEntity should not throw an exception when input dto is valid" +
-                                "and found"),
+                        "planetary system convertToEntity should not throw an exception when input dto is " +
+                                "valid and found"),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful Planetary System " +
+                        "convertToEntity should not produce any error logs."),
                 () -> assertEquals(1, result.getSystemId(), "planetary system covnertToEntity " +
                         "produced an entity with the incorrect ID"),
-                () -> assertEquals("System1", result.getSystemName(), "planetary system convertToEntity " +
-                        "produced an entity with the incorrect system name"),
-                () -> assertSame(mockEntity, result, "planetary system convertToEntity was expected to match " +
-                        "target entity but it did not"));
+                () -> assertEquals("System1", result.getSystemName(), "planetary system " +
+                        "convertToEntity produced an entity with the incorrect system name"),
+                () -> assertSame(mockEntity, result, "planetary system convertToEntity was expected to " +
+                        "match target entity but it did not"));
     }
 
     @Test
     void testConvertToEntity_FailInvalid() {
+        LogCaptor logCaptor = LogCaptor.forClass(PlanetarySystemConversionServiceImpl.class);
         //given
         //dto with an ID that does not match an existing entity
         PlanetarySystemDto mockDto = new PlanetarySystemDto();
         mockDto.setSystemId(1);
         mockDto.setSystemName("System1");
-        assertThrows(ResourceNotFoundException.class, () -> planetarySystemConversionService.convertToEntity(mockDto),
-                "planetary system convertToEntity should throw an exception when the id is not foudn in repo");
+        when(planetarySystemRepository.findById(mockDto.getSystemId())).thenReturn(Optional.empty());
 
         //and given: dto with a name that does not match that of the entity with the same id
         PlanetarySystemDto mockDto2 = new PlanetarySystemDto();
@@ -149,8 +169,19 @@ class PlanetarySystemConversionServiceImplTest {
 
         //when
         //then
-        assertThrows(ResourceNotFoundException.class, () -> planetarySystemConversionService.convertToEntity(mockDto2),
-                "planetary system convertToEntity should throw an exception when the dto name/id does " +
-                        "not match the name of the entity with the same id");
+        assertAll("Planetary System convertToEntity_FailInvalid assertion set: ",
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                        planetarySystemConversionService.convertToEntity(mockDto), "Planetary System " +
+                        "convertToEntity should throw an exception when the dto to convert is not found in repo."),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Planetary system convertToEntity could not find an " +
+                                "entity with Id: 1"))),
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                                planetarySystemConversionService.convertToEntity(mockDto2)," planetary system " +
+                                "convertToEntity should throw an exception when the dto name/id does not match " +
+                                "the name of the entity with the same id"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Planetary system convertToEntity encountered an Id/name " +
+                                "mismatch for dto with Id: 2, and system name: Incorrect System2"))));
     }
 }

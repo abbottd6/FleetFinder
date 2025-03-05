@@ -31,6 +31,9 @@ public class GameExperienceServiceImpl implements GameExperienceService {
         return cachedExperiences.stream()
                 .filter(experience -> experience.getExperienceId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseGet(() -> {
+                    log.error("Unable to find experience with id {}", id);
+                    throw new ResourceNotFoundException(id);
+                });
     }
 }

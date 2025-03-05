@@ -16,7 +16,6 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
     private final EnvironmentCachingService environmentCachingService;
 
     public GameEnvironmentServiceImpl(EnvironmentCachingService environmentCachingService) {
-        super();
         this.environmentCachingService = environmentCachingService;
     }
 
@@ -32,6 +31,9 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
         return cachedEnvironments.stream()
                 .filter(environment -> environment.getEnvironmentId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseGet(() -> {
+                    log.error("Unable to find game environment with requested id: {}", id);
+                    throw new ResourceNotFoundException(id);
+                });
     }
 }

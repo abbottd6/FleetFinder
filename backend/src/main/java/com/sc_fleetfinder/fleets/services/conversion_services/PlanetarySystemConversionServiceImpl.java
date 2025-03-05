@@ -29,11 +29,13 @@ public class PlanetarySystemConversionServiceImpl implements PlanetarySystemConv
     public PlanetarySystemDto convertToDto(PlanetarySystem entity) {
         //id valid check
         if(entity.getSystemId() == null || entity.getSystemId() == 0) {
-            throw new ResourceNotFoundException("Planetary system id is null or empty");
+            log.error("Planetary system convertToDto encountered an Id that is null or 0.");
+            throw new IllegalArgumentException("Planetary system id is null or empty");
         }
         //type/name valid check
         if(entity.getSystemName() == null || entity.getSystemName().isEmpty()) {
-            throw new ResourceNotFoundException("Planetary system name is null or empty");
+            log.error("Planetary system convertToDto encountered an Name that is null or empty.");
+            throw new IllegalArgumentException("Planetary system name is null or empty");
         }
 
         return modelMapper.map(entity, PlanetarySystemDto.class);
@@ -43,10 +45,16 @@ public class PlanetarySystemConversionServiceImpl implements PlanetarySystemConv
     public PlanetarySystem convertToEntity(PlanetarySystemDto dto) {
         //checking repository for entity matching Dto id
         PlanetarySystem entity = planetarySystemRepository.findById(dto.getSystemId())
-                .orElseThrow(() -> new ResourceNotFoundException("Planetary system with ID: " + dto.getSystemId() +
-                        " not found"));
+                .orElseGet(() -> {
+                    log.error("Planetary system convertToEntity could not find an entity with Id: {}",
+                            dto.getSystemId());
+                    throw new ResourceNotFoundException("Planetary system with ID: " + dto.getSystemId() +
+                            " not found");
+                });
         //verifying name/id match for dto and entity
         if(!Objects.equals(dto.getSystemName(), entity.getSystemName())) {
+            log.error("Planetary system convertToEntity encountered an Id/name mismatch for dto with Id: {}, " +
+                    "and system name: {}", dto.getSystemId(), dto.getSystemName());
             throw new ResourceNotFoundException("System name mismatch for Dto: " + dto.getSystemName() +
                     ", ID: " + dto.getSystemId() + " and entity: " + entity.getSystemName() + ", and ID: " +
                     entity.getSystemId());

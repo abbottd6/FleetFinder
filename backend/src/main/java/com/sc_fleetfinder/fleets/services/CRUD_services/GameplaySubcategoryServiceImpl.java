@@ -31,6 +31,9 @@ public class GameplaySubcategoryServiceImpl implements GameplaySubcategoryServic
         return cachedSubcategories.stream()
                 .filter(subcategory -> subcategory.getSubcategoryId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseGet(() -> {
+                    log.error("Subcategory with id {} not found", id);
+                    throw new ResourceNotFoundException(id);
+                });
     }
 }
