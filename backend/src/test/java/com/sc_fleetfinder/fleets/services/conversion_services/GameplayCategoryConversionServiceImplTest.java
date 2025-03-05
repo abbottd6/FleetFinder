@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,6 +29,7 @@ class GameplayCategoryConversionServiceImplTest {
 
     @Test
     void testConvertToDto_Success() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameplayCategoryConversionServiceImpl.class);
         //given
         GameplayCategory mockEntity1 = new GameplayCategory();
         mockEntity1.setCategoryId(1);
@@ -47,6 +49,8 @@ class GameplayCategoryConversionServiceImplTest {
                         "convert Category entity to Dto should NOT throw an exception when fields are valid"),
                 () -> assertDoesNotThrow(() -> gameplayCategoryConversionService.convertToDto(mockEntity2),
                         "convert Category entity to Dto should NOT throw an exception when fields are valid"),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful category " +
+                        "convertToDto should not produce any error logs."),
                 () -> assertEquals(2, result.size(), "test category convertToDto should produce" +
                         "2 elements"),
                 () -> assertEquals(1, result.getFirst().getGameplayCategoryId(), "convert category" +
@@ -61,6 +65,7 @@ class GameplayCategoryConversionServiceImplTest {
 
     @Test
     void testConvertToDtoMapping_FailNullId() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameplayCategoryConversionServiceImpl.class);
         //given: entity with a null id value (invalid id)
         GameplayCategory mockCategory = new GameplayCategory();
         mockCategory.setCategoryId(null);
@@ -68,12 +73,17 @@ class GameplayCategoryConversionServiceImplTest {
 
         //when
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryConversionService.convertToDto(mockCategory),
-                "null CategoryId for entity to Dto conversion should throw exception" );
+        assertAll("Category convertToDtoMapping_FailNullId assertion set: ",
+                () -> assertThrows(IllegalArgumentException.class, () -> gameplayCategoryConversionService.convertToDto(mockCategory),
+                "null CategoryId for entity to Dto conversion should throw exception" ),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Category convertToDto encountered an Id that is null" +
+                                " or zero."))));
     }
 
     @Test
     void testConvertToDtoMapping_FailIdZero() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameplayCategoryConversionServiceImpl.class);
         //given: entity with an id value of 0 (invalid)
         GameplayCategory mockCategory = new GameplayCategory();
         mockCategory.setCategoryId(0);
@@ -81,33 +91,53 @@ class GameplayCategoryConversionServiceImplTest {
 
         //when
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryConversionService.convertToDto(mockCategory),
-                "null CategoryId for entity to Dto conversion should throw exception" );
+        assertAll("Category convertToDtoMapping_FailIdZero assertion set: ",
+                () -> assertThrows(IllegalArgumentException.class, () -> gameplayCategoryConversionService.convertToDto(mockCategory),
+                "null CategoryId for entity to Dto conversion should throw exception" ),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Category convertToDto encountered an Id that is null" +
+                                " or zero."))));
     }
 
     @Test
     void testConvertToDtoMapping_FailureNullName() {
-        //given: an en
+        LogCaptor logCaptor = LogCaptor.forClass(GameplayCategoryConversionServiceImpl.class);
+        //given: an entity with a null category name
         GameplayCategory mockCategory = new GameplayCategory();
         mockCategory.setCategoryId(1);
         mockCategory.setCategoryName(null);
 
-        assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryConversionService.convertToDto(mockCategory),
-                "null CategoryName for entity to Dto conversion should throw exception" );
+        //when
+        //then
+        assertAll("Category convertToDtoMapping_FailureNullName assertion set: ",
+                () -> assertThrows(IllegalArgumentException.class, () -> gameplayCategoryConversionService.convertToDto(mockCategory),
+                "null CategoryName for entity to Dto conversion should throw exception" ),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Category convertToDto encountered an Name that is null " +
+                                "or empty."))));
     }
 
     @Test
     void testConvertToDtoMapping_FailureEmptyName() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameplayCategoryConversionServiceImpl.class);
+        //given: an entity with an empty string for category name
         GameplayCategory mockCategory = new GameplayCategory();
         mockCategory.setCategoryId(1);
         mockCategory.setCategoryName("");
 
-        assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryConversionService.convertToDto(mockCategory),
-                "Empty CategoryName for entity to Dto conversion should throw exception" );
+        //when
+        //then
+        assertAll("Category convertToDtoMapping_FailureEmptyName assertion set: ",
+                () -> assertThrows(IllegalArgumentException.class, () -> gameplayCategoryConversionService.convertToDto(mockCategory),
+                "Empty CategoryName for entity to Dto conversion should throw exception" ),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Category convertToDto encountered an Name that is null " +
+                                "or empty."))));
     }
 
     @Test
     void testConvertToEntity_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameplayCategoryConversionServiceImpl.class);
         //given
 
         //Mock subcategory to add to Category hashset of subcategories
@@ -138,6 +168,8 @@ class GameplayCategoryConversionServiceImplTest {
                 () -> assertNotNull(mockGameplayCategory, "gameplayCategory convertToEntity should " +
                         "not return null"),
                 () -> assertDoesNotThrow(() -> gameplayCategoryConversionService.convertToEntity(mockCategoryDto)),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful Category " +
+                        "convertToEntity should not produce any error logs."),
                 () -> assertEquals(1, mockEntity.getCategoryId(), "gameplayCategory" +
                         " convertToEntity categoryIds do not match"),
                 () -> assertEquals("Test Category1", mockEntity.getCategoryName(),
@@ -149,7 +181,8 @@ class GameplayCategoryConversionServiceImplTest {
 
     @Test
     void testConvertToEntity_NotFound() {
-        //given
+        LogCaptor logCaptor = LogCaptor.forClass(GameplayCategoryConversionServiceImpl.class);
+        //given a dto that does not exist in the repo
         GameplayCategoryDto mockCategoryDto = new GameplayCategoryDto();
         mockCategoryDto.setGameplayCategoryId(1);
         mockCategoryDto.setGameplayCategoryName("Not Category1");
@@ -157,12 +190,16 @@ class GameplayCategoryConversionServiceImplTest {
         //when backend entity does not exist with dto ID
 
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryConversionService.convertToEntity(mockCategoryDto),
-                "convertToEntity with id not found should throw exception");
+        assertAll("Category convertToEntity_NotFound assertion set: ",
+                () -> assertThrows(ResourceNotFoundException.class, () -> gameplayCategoryConversionService.convertToEntity(mockCategoryDto),
+                "convertToEntity with id not found should throw exception"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Category convertToEntity could not find entity with Id: 1"))));
     }
 
     @Test
     void testConvertToEntity_NameMismatch() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameplayCategoryConversionServiceImpl.class);
         //given
         GameplayCategoryDto mockCategoryDto = new GameplayCategoryDto();
         mockCategoryDto.setGameplayCategoryId(1);
@@ -177,8 +214,12 @@ class GameplayCategoryConversionServiceImplTest {
         //when Dto id and name do not match entity id and name
 
         //then
-        assertThrows(ResourceNotFoundException.class, () ->
+        assertAll("Category convertToEntity_NameMismatch assertion set: ",
+                () -> assertThrows(ResourceNotFoundException.class, () ->
                         gameplayCategoryConversionService.convertToEntity(mockCategoryDto),
-                "convertToEntity with id/name mismatch should throw exception");
+                "convertToEntity with id/name mismatch should throw exception"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Category convertToEntity encountered an Id/name mismatch " +
+                                "for Id: 1, and category: Wrong Category"))));
     }
 }

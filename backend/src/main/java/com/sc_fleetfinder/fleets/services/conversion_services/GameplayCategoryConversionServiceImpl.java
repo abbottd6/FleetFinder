@@ -29,11 +29,13 @@ public class GameplayCategoryConversionServiceImpl implements GameplayCategoryCo
     public GameplayCategoryDto convertToDto(GameplayCategory entity) {
 
         if(entity.getCategoryId() == null || entity.getCategoryId() == 0) {
-            throw new ResourceNotFoundException("Category id is null or empty");
+            log.error("Category convertToDto encountered an Id that is null or zero.");
+            throw new IllegalArgumentException("Category id is null or empty");
         }
 
         if(entity.getCategoryName() == null || entity.getCategoryName().isEmpty()) {
-            throw new ResourceNotFoundException("Category name is null or empty");
+            log.error("Category convertToDto encountered an Name that is null or empty.");
+            throw new IllegalArgumentException("Category name is null or empty");
         }
 
         return modelMapper.map(entity, GameplayCategoryDto.class);
@@ -44,10 +46,16 @@ public class GameplayCategoryConversionServiceImpl implements GameplayCategoryCo
 
         //checking for Dto id match in repository
         GameplayCategory gameplayCategory = gameplayCategoryRepository.findById(gameplayCategoryDto.getGameplayCategoryId())
-                .orElseThrow(() -> new ResourceNotFoundException("Game Category with ID: " +
-                        gameplayCategoryDto.getGameplayCategoryId() + " not found"));
+                .orElseGet(() -> {
+                    log.error("Category convertToEntity could not find entity with Id: {}",
+                            gameplayCategoryDto.getGameplayCategoryId());
+                    throw new ResourceNotFoundException("Game Category with ID: " +
+                            gameplayCategoryDto.getGameplayCategoryId() + " not found");
+                });
         //Verifying that the name for the Dto matches the name of the entity with that id
         if(!Objects.equals(gameplayCategoryDto.getGameplayCategoryName(), gameplayCategory.getCategoryName())) {
+            log.error("Category convertToEntity encountered an Id/name mismatch for Id: {}, and category: {}",
+                    gameplayCategoryDto.getGameplayCategoryId(), gameplayCategoryDto.getGameplayCategoryName());
             throw new ResourceNotFoundException("Gameplay Category name mismatch for DTO with ID: " +
                     gameplayCategoryDto.getGameplayCategoryId() + " and Category name: "
                     + gameplayCategoryDto.getGameplayCategoryName());

@@ -7,6 +7,8 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 @Validated
 public class GroupListingServiceImpl implements GroupListingService {
 
+    private static final Logger log = LoggerFactory.getLogger(GroupListingServiceImpl.class);
     private final GroupListingRepository groupListingRepository;
     private final ModelMapper createGroupListingModelMapper;
     private final ModelMapper groupListingResponseDtoMapper;
@@ -103,6 +106,7 @@ public class GroupListingServiceImpl implements GroupListingService {
             return convertListingToDto(groupListing.get());
         }
         else {
+
             throw new ResourceNotFoundException("GroupListing with id " + id + " not found");
         }
     }

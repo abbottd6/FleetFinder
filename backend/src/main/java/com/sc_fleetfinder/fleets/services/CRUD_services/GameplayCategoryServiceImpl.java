@@ -33,7 +33,10 @@ public class GameplayCategoryServiceImpl implements GameplayCategoryService {
         return cachedCategories.stream()
                 .filter(category -> category.getGameplayCategoryId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseGet(() -> {
+                    log.error("Category with id {} not found", id);
+                    throw new ResourceNotFoundException(id);
+                });
     }
 
 

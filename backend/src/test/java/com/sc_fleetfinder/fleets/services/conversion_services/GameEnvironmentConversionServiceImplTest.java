@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.EnvironmentRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -27,6 +28,7 @@ class GameEnvironmentConversionServiceImplTest {
 
     @Test
     void testConvertToDto_Success() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameEnvironmentConversionServiceImpl.class);
         //given
         GameEnvironment mockEntity = new GameEnvironment();
         mockEntity.setEnvironmentId(1);
@@ -46,6 +48,8 @@ class GameEnvironmentConversionServiceImplTest {
                         "convert environment entity to DTO should NOT throw an exception when fields are valid"),
                 () -> assertDoesNotThrow(() -> gameEnvironmentConversionService.convertToDto(mockEntity2),
                         "convert environment entity to DTO should NOT throw an exception when fields are valid"),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "successful environment " +
+                        "convertToDto should not produce any error logs."),
                 () -> assertEquals(2, result.size(), "environment convertToDto should produce" +
                         "2 elements"),
                 () -> assertEquals(1, result.getFirst().getEnvironmentId(), "convert environment" +
@@ -60,6 +64,7 @@ class GameEnvironmentConversionServiceImplTest {
 
     @Test
     void testConvertToDto_FailIdNull() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameEnvironmentConversionServiceImpl.class);
         //given
         GameEnvironment mockEntity = new GameEnvironment();
         mockEntity.setEnvironmentId(null);
@@ -67,12 +72,16 @@ class GameEnvironmentConversionServiceImplTest {
 
         //when
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentConversionService.convertToDto(mockEntity),
-                "convert environment entity to dto should throw exception when Id is null");
+        assertAll("Environment convertToDto_FailIdNull assertion set: ",
+                () -> assertThrows(IllegalArgumentException.class, () -> gameEnvironmentConversionService.convertToDto(mockEntity),
+                "convert environment entity to dto should throw exception when Id is null"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Environment convertToDto encountered a null or zero Id value."))));
     }
 
     @Test
     void testConvertToDto_FailIdZero() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameEnvironmentConversionServiceImpl.class);
         //given: an entity with id of 0 (invalid id)
         GameEnvironment mockEntity = new GameEnvironment();
         mockEntity.setEnvironmentId(0);
@@ -80,12 +89,16 @@ class GameEnvironmentConversionServiceImplTest {
 
         //when
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentConversionService.convertToDto(mockEntity),
-                "convert environment entity to dto should throw exception when Id is 0");
+        assertAll("Environment convertToDto_FailIdZero assertion set: ",
+                () -> assertThrows(IllegalArgumentException.class, () -> gameEnvironmentConversionService.convertToDto(mockEntity),
+                "convert environment entity to dto should throw exception when Id is 0"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Environment convertToDto encountered a null or zero Id value."))));
     }
 
     @Test
     void testConvertToDto_FailTypeIsNull() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameEnvironmentConversionServiceImpl.class);
         //given
         GameEnvironment mockEntity = new GameEnvironment();
         mockEntity.setEnvironmentId(1);
@@ -93,12 +106,16 @@ class GameEnvironmentConversionServiceImplTest {
 
         //when
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentConversionService.convertToDto(mockEntity),
-                "convert environment entity to dto should throw exception when type is null");
+        assertAll("Environment convertToDto_FailTypeIsNull assertion set: ",
+                () -> assertThrows(IllegalArgumentException.class, () -> gameEnvironmentConversionService.convertToDto(mockEntity),
+                "convert environment entity to dto should throw exception when type is null"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Environment convertToDto environment type is null or empty."))));
     }
 
     @Test
     void testConvertToDto_FailTypeIsEmptyString() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameEnvironmentConversionServiceImpl.class);
         //given: entity with a null type value
         GameEnvironment mockEntity = new GameEnvironment();
         mockEntity.setEnvironmentId(1);
@@ -106,13 +123,17 @@ class GameEnvironmentConversionServiceImplTest {
 
         //when
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentConversionService.convertToDto(mockEntity),
+        assertAll("Environment convertToDto_FailTypeIsEmptyString assertion set: ",
+                () -> assertThrows(IllegalArgumentException.class, () -> gameEnvironmentConversionService.convertToDto(mockEntity),
                 "convert environment entity to dto should throw an exception when type " +
-                        "value is an empty string");
+                        "value is an empty string"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Environment convertToDto environment type is null or empty."))));
     }
 
     @Test
     void testConvertToEntity_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameEnvironmentConversionServiceImpl.class);
         //given
         GameEnvironmentDto mockDto = new GameEnvironmentDto();
         mockDto.setEnvironmentId(1);
@@ -132,6 +153,8 @@ class GameEnvironmentConversionServiceImplTest {
                 () -> assertNotNull(result, "gameEnvironment convertToEntity should not return null"),
                 () -> assertDoesNotThrow(() -> gameEnvironmentConversionService.convertToEntity(mockDto),
                         "Valid dto converting to entity should not throw an exception"),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "successful Environment " +
+                        "convertToEntity should not produce any error logs."),
                 () -> assertEquals(1, result.getEnvironmentId(), "gameEnvironment convertToEntity" +
                         " environmentIds do not match"),
                 () -> assertEquals("Environment1", result.getEnvironmentType(), "gameEnvironment " +
@@ -142,6 +165,7 @@ class GameEnvironmentConversionServiceImplTest {
 
     @Test
     void testConvertToEntity_NotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameEnvironmentConversionServiceImpl.class);
         //given
         GameEnvironmentDto mockEnvironmentDto = new GameEnvironmentDto();
         mockEnvironmentDto.setEnvironmentId(1);
@@ -150,13 +174,18 @@ class GameEnvironmentConversionServiceImplTest {
         //when backend entity does not exist with dto ID
 
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentConversionService.convertToEntity(mockEnvironmentDto),
+        assertAll("Environment convertToEntity_NotFound assertion set: ",
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                        gameEnvironmentConversionService.convertToEntity(mockEnvironmentDto),
                 "convert environment dto to entity where dto id is not found in repo should throw " +
-                        "an exception");
+                        "an exception"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Environment convertToEntity could not find env with Id: 1"))));
     }
 
     @Test
     void testConvertToEntity_NameMismatch() {
+        LogCaptor logCaptor = LogCaptor.forClass(GameEnvironmentConversionServiceImpl.class);
         //given dto and entity
         GameEnvironmentDto mockDto = new GameEnvironmentDto();
         mockDto.setEnvironmentId(1);
@@ -172,6 +201,12 @@ class GameEnvironmentConversionServiceImplTest {
         //when dto and entity type fields do not match
 
         //then
-        assertThrows(ResourceNotFoundException.class, () -> gameEnvironmentConversionService.convertToEntity(mockDto));
+        assertAll("EnvironmentConvertToEntity_NameMismatch assertion set: ",
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                        gameEnvironmentConversionService.convertToEntity(mockDto), "environment " +
+                        "convertToEntity should throw an exception when there is an id/name mismatch"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("Environment convertToEntity encountered a id/name mismatch " +
+                                "with Id: 1, and environment type: Incorrect Environment1"))));
     }
 }

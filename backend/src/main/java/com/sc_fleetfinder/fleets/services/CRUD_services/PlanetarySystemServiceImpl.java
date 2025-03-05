@@ -31,6 +31,9 @@ public class PlanetarySystemServiceImpl implements PlanetarySystemService {
         return cachedPlanetarySystems.stream()
                 .filter(system -> system.getSystemId().equals(id))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseGet(() -> {
+                    log.error("Planetary System with id: {} not found", id);
+                    throw new ResourceNotFoundException(id);
+                });
     }
 }

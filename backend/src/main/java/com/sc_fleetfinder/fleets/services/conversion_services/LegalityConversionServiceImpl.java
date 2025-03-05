@@ -31,13 +31,13 @@ public class LegalityConversionServiceImpl implements LegalityConversionService 
         if(entity.getLegalityId() == null || entity.getLegalityId() == 0) {
             log.error("Encountered null or zero legality id when converting from entity to Dto");
             //this should be an illegal argument exception
-            throw new ResourceNotFoundException("Legality Id is null or 0");
+            throw new IllegalArgumentException("Legality Id is null or 0");
         }
         //type/name valid check
         if(entity.getLegalityStatus() == null || entity.getLegalityStatus().isEmpty()) {
             log.error("Encountered null or empty status when converting from entity to Dto");
             //this should be an illegal argument exception
-            throw new ResourceNotFoundException("Legality status is null or empty");
+            throw new IllegalArgumentException("Legality status is null or empty");
         }
 
         return modelMapper.map(entity, LegalityDto.class);

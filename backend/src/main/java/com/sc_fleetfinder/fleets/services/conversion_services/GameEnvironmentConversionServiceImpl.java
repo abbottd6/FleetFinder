@@ -29,11 +29,13 @@ public class GameEnvironmentConversionServiceImpl implements GameEnvironmentConv
     public GameEnvironmentDto convertToDto(GameEnvironment entity) {
 
         if(entity.getEnvironmentId() == null || entity.getEnvironmentId() == 0) {
-            throw new ResourceNotFoundException("Environment id is null or empty");
+            log.error("Environment convertToDto encountered a null or zero Id value.");
+            throw new IllegalArgumentException("Environment id is null or zero");
         }
 
         if(entity.getEnvironmentType() == null || entity.getEnvironmentType().isEmpty()) {
-            throw new ResourceNotFoundException("Environment type is null or empty");
+            log.error("Environment convertToDto environment type is null or empty.");
+            throw new IllegalArgumentException("Environment type is null or empty");
         }
 
         return modelMapper.map(entity, GameEnvironmentDto.class);
@@ -44,10 +46,15 @@ public class GameEnvironmentConversionServiceImpl implements GameEnvironmentConv
 
         //checking repository for entity matching Dto id
         GameEnvironment entity = environmentRepository.findById(dto.getEnvironmentId())
-                .orElseThrow(() -> new ResourceNotFoundException("Environment with ID: " + dto.getEnvironmentId()
-                        + " not found"));
+                .orElseGet(() -> {
+                    log.error("Environment convertToEntity could not find env with Id: {}", dto.getEnvironmentId());
+                    throw new ResourceNotFoundException("Environment with ID: " + dto.getEnvironmentId()
+                            + " not found");
+                });
         //verifying name/id match for dto and entity
         if(!Objects.equals(dto.getEnvironmentType(), entity.getEnvironmentType())) {
+            log.error("Environment convertToEntity encountered a id/name mismatch with Id: {}, " +
+                    "and environment type: {}", dto.getEnvironmentId(),  dto.getEnvironmentType());
             throw new ResourceNotFoundException("Environment type mismatch for Dto: "
                     + dto.getEnvironmentType() + ", ID: " + dto.getEnvironmentId() + " and entity: "
                     + entity.getEnvironmentId() + ", ID: " + entity.getEnvironmentType());
