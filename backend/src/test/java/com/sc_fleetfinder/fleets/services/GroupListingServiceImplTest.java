@@ -5,10 +5,12 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.User;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -23,6 +25,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Map;
 
@@ -59,6 +62,7 @@ class GroupListingServiceImplTest {
 
     @Test
     void getAllGroupListings_Found() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
         //given
         GroupListing mockListing1 = new GroupListing();
         GroupListing mockListing2 = new GroupListing();
@@ -70,6 +74,8 @@ class GroupListingServiceImplTest {
 
         //then
         assertAll("get all group listings mock entities assertions set:",
+                () -> assertEquals(0, logCaptor.getInfoLogs().size(), "getAllGroupListings should find " +
+                        "listings and not produce any info logs."),
                 () -> assertNotNull(result, "get all listings should not be null"),
                 () -> assertEquals(2, result.size(), "get all listings should have 2 elements here"),
                 () -> verify(groupListingRepository, times(1)).findAll());
@@ -77,6 +83,7 @@ class GroupListingServiceImplTest {
 
     @Test
     void getAllGroupListings_NotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
         //given
         when(groupListingRepository.findAll()).thenReturn(Collections.emptyList());
 
@@ -85,6 +92,8 @@ class GroupListingServiceImplTest {
 
         //then
         assertAll("get all listings = empty assertions set: ",
+                () -> assertTrue(logCaptor.getInfoLogs().stream()
+                        .anyMatch(log -> log.contains("No group listings found."))),
                 () -> assertNotNull(result, "get all listings should not be null"),
                 () -> assertTrue(result.isEmpty(), "get all listings should be empty"),
                 () -> verify(groupListingRepository, times(1)).findAll());
@@ -169,6 +178,7 @@ class GroupListingServiceImplTest {
     //testing HTTP response from successful create listing
     @Test
     void createGroupListing_Success_AllFields() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
         //given
         //creating valid dto
         CreateGroupListingDto validDto = new CreateGroupListingDto();
@@ -218,6 +228,8 @@ class GroupListingServiceImplTest {
         Map<String, String> responseBody = (Map<String, String>) response.getBody();
 
         assertAll("successful create listing assertions set: ",
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful " +
+                        "createGrouplisting should not produce any error logs."),
                 () -> assertEquals(HttpStatus.CREATED, response.getStatusCode()),
                 () -> assertNotEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode()),
                 () -> assertNotNull(response.getBody()),
@@ -232,6 +244,7 @@ class GroupListingServiceImplTest {
     //testing http response from unsuccessful create listing
     @Test
     void testCreateGroupListing_Fail() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
         //given
         CreateGroupListingDto invalidDto = new CreateGroupListingDto();
 
@@ -243,8 +256,10 @@ class GroupListingServiceImplTest {
 
         //then
         assertAll("create listing failed assertions set:",
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("CreateGroupListing failed. Reason: "))),
                 () -> assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode()),
-                () -> assertEquals("An error occurred while creating the listing.", response.getBody()),
+                () -> assertEquals("An error occurred while creating your listing.", response.getBody()),
                 () -> verify(createGroupListingModelMapper, times(1)).map(invalidDto, GroupListing.class),
                 () -> verifyNoMoreInteractions(createGroupListingModelMapper, groupListingRepository));
     }
@@ -260,14 +275,58 @@ class GroupListingServiceImplTest {
     }
 
     @Test
-    @Disabled
     void testGetGroupListingById_Success() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
+        //given: dto with a valid and existing Id
+        GroupListingResponseDto mockDto = new GroupListingResponseDto();
+            mockDto.setGroupId(2L);
+
+        //and group listing entities in repository
+        GroupListing mockEntity1 = new GroupListing();
+            mockEntity1.setGroupId(1L);
+        GroupListing mockEntity2 = new GroupListing();
+            mockEntity2.setGroupId(2L);
+        when(groupListingRepository.findById(mockDto.getGroupId())).thenReturn(Optional.of(mockEntity2));
+        when(groupListingService.convertListingToResponseDto(mockEntity2)).thenReturn(mockDto);
+
+        //when
+        GroupListingResponseDto response = groupListingService.getGroupListingById(mockDto.getGroupId());
+
+        //then
+        assertAll("GetGroupListingById_Success assertion set: ",
+                () -> assertNotNull(response, "Successful getGroupListingById should not return a null " +
+                        "entity"),
+                () -> assertDoesNotThrow(() -> groupListingRepository.findById(mockDto.getGroupId()),
+                        "Successful getGroupListingById should not throw an exception."),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(), "Successful " +
+                        "getGroupListingById should not produce any error logs."),
+                () -> assertEquals(mockEntity2.getGroupId(), response.getGroupId(), "getGroupListingById " +
+                        "produced a Dto with the incorrect Id."),
+                () -> verify(groupListingRepository, times(2)).findById(mockDto.getGroupId()));
+    }
+
+    @Test
+    void testGetGroupListingById_Fail() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
+        //given: a dto with an id that does not exist in repo
+        GroupListingResponseDto mockDto = new GroupListingResponseDto();
+            mockDto.setGroupId(1L);
+
+        //when
+        //then
+        assertAll("GetGroupListingById_Fail assertion set: ",
+                () -> assertThrows(ResourceNotFoundException.class, () ->
+                        groupListingService.getGroupListingById(mockDto.getGroupId()), "getGroupListingById " +
+                        "should throw an exception when the Id is not found."),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("GetGroupListingById failed to find an entity with the " +
+                                "given group Id: "))));
 
     }
 
     @Test
     @Disabled
-    void testConvertListingToDto() {
+    void testConvertListingToResponseDto() {
     }
 
     @Test
