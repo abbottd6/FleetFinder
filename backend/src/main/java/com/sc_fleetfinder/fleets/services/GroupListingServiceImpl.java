@@ -5,13 +5,13 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
                      @Qualifier("createGroupListingModelMapper") ModelMapper createGroupListingModelMapper,
                      @Qualifier("groupListingResponseDtoMapper") ModelMapper groupListingResponseDtoMapper) {
-        super();
+//        super();
 
         this.groupListingRepository = groupListingRepository;
         this.createGroupListingModelMapper = createGroupListingModelMapper;
@@ -47,8 +47,12 @@ public class GroupListingServiceImpl implements GroupListingService {
     @Override
     public List<GroupListingResponseDto> getAllGroupListings() {
         List<GroupListing> groupListings = groupListingRepository.findAll();
+
+        if(groupListings.isEmpty()) {
+            log.info("No group listings found.");
+        }
         return groupListings.stream()
-                .map(this::convertListingToDto)
+                .map(this::convertListingToResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -66,6 +70,7 @@ public class GroupListingServiceImpl implements GroupListingService {
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
             catch (Exception e) {
+                log.error("CreateGroupListing failed. Reason: {}", e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("An error occurred while creating your listing.");
             }
@@ -75,7 +80,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     @Validated
     public GroupListing updateGroupListing(Long id, @Valid UpdateGroupListingDto updateGroupListingDto) {
         GroupListing groupListing = groupListingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Group Listing with id " + id + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(id));
 
 
         //ADD LOGIC TO CHECK THE NUMBER OF GROUPLISTINGS ASSOCIATED WITH A USER.
@@ -96,22 +101,22 @@ public class GroupListingServiceImpl implements GroupListingService {
         //ADD LOGIC TO REMOVE this.groupListing FROM THE USER's SET OF GROUPLISTINGS AS IT GETS DELETED
 
         groupListingRepository.delete(groupListingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Group Listing with id " + id + "not found")));
+                .orElseThrow(() -> new ResourceNotFoundException(id)));
     }
 
     @Override
     public GroupListingResponseDto getGroupListingById(Long id) {
         Optional<GroupListing> groupListing = groupListingRepository.findById(id);
         if(groupListing.isPresent()) {
-            return convertListingToDto(groupListing.get());
+            return convertListingToResponseDto(groupListing.get());
         }
         else {
-
-            throw new ResourceNotFoundException("GroupListing with id " + id + " not found");
+            log.error("GetGroupListingById failed to find an entity with the given group Id: {}.", id);
+            throw new ResourceNotFoundException(id);
         }
     }
 
-    public GroupListingResponseDto convertListingToDto(GroupListing groupListing) {
+    public GroupListingResponseDto convertListingToResponseDto(GroupListing groupListing) {
         return groupListingResponseDtoMapper.map(groupListing, GroupListingResponseDto.class);
     }
 
