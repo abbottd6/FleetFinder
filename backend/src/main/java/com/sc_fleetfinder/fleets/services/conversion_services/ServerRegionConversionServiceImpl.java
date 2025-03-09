@@ -49,10 +49,10 @@ public class ServerRegionConversionServiceImpl implements ServerRegionConversion
     public ServerRegion convertToEntity(ServerRegionDto dto) {
         //checking repository for entity matching Dto id
         ServerRegion entity = serverRegionRepository.findById(dto.getServerId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Encountered server with unmatched Id: {}, when converting from dto to entity",
                             dto.getServerId());
-                    throw new ResourceNotFoundException("Encountered server with unmatched Id: " +
+                    return new ResourceNotFoundException("Encountered server with unmatched Id: " +
                             dto.getServerId() + " when converting from dto to entity");
                 });
 

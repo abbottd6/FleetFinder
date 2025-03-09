@@ -46,10 +46,10 @@ public class GroupStatusConversionServiceImpl implements GroupStatusConversionSe
     public GroupStatus convertToEntity(GroupStatusDto dto) {
         //checking repository for entity that matches Dto id
         GroupStatus entity = groupStatusRepository.findById(dto.getGroupStatusId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Group status convertToEntity could not find an entity with Id: {}",
                             dto.getGroupStatusId());
-                    throw new ResourceNotFoundException("Group status with ID: " + dto.getGroupStatusId() +
+                    return new ResourceNotFoundException("Group status with ID: " + dto.getGroupStatusId() +
                             " not found");
                 });
 

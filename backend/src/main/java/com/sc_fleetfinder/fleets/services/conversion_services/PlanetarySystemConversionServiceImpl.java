@@ -45,10 +45,10 @@ public class PlanetarySystemConversionServiceImpl implements PlanetarySystemConv
     public PlanetarySystem convertToEntity(PlanetarySystemDto dto) {
         //checking repository for entity matching Dto id
         PlanetarySystem entity = planetarySystemRepository.findById(dto.getSystemId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Planetary system convertToEntity could not find an entity with Id: {}",
                             dto.getSystemId());
-                    throw new ResourceNotFoundException("Planetary system with ID: " + dto.getSystemId() +
+                    return new ResourceNotFoundException("Planetary system with ID: " + dto.getSystemId() +
                             " not found");
                 });
         //verifying name/id match for dto and entity

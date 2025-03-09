@@ -44,10 +44,10 @@ public class PvpStatusConversionServiceImpl implements PvpStatusConversionServic
     public PvpStatus convertToEntity(PvpStatusDto dto) {
         //check repository for entity matching dto id
         PvpStatus entity = pvpStatusRepository.findById(dto.getPvpStatusId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Encountered pvp status with unmatched Id: {}, when converting from dto to entity",
                             dto.getPvpStatusId());
-                    throw new ResourceNotFoundException("Pvp status with Id: {} not found", dto.getPvpStatusId());
+                    return new ResourceNotFoundException("Pvp status with Id: {} not found", dto.getPvpStatusId());
                 });
 
         //verifying name/id match for dto and entity

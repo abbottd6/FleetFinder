@@ -47,10 +47,10 @@ public class LegalityConversionServiceImpl implements LegalityConversionService 
     public Legality convertToEntity(LegalityDto dto) {
         //checking repository for entity matching Dto id
         Legality entity = legalityRepository.findById(dto.getLegalityId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Encountered legality dto with unmatched Id: {}, when converting from dto to entity",
                             dto.getLegalityId());
-                    throw new ResourceNotFoundException("Legality with ID: " + dto.getLegalityId() +
+                    return new ResourceNotFoundException("Legality with ID: " + dto.getLegalityId() +
                             " not found");
                 });
         //verifying name/id match for dto and entity

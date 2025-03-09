@@ -46,9 +46,9 @@ public class GameEnvironmentConversionServiceImpl implements GameEnvironmentConv
 
         //checking repository for entity matching Dto id
         GameEnvironment entity = environmentRepository.findById(dto.getEnvironmentId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Environment convertToEntity could not find env with Id: {}", dto.getEnvironmentId());
-                    throw new ResourceNotFoundException("Environment with ID: " + dto.getEnvironmentId()
+                    return new ResourceNotFoundException("Environment with ID: " + dto.getEnvironmentId()
                             + " not found");
                 });
         //verifying name/id match for dto and entity

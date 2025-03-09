@@ -14,10 +14,14 @@ import java.util.List;
 public interface GroupListingService {
 
     List<GroupListingResponseDto> getAllGroupListings();
+
     @Validated
     ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto);
+
     @Validated
     GroupListing updateGroupListing(Long id, @Valid UpdateGroupListingDto updateGroupListingDto);
+
     void deleteGroupListing(Long id);
+
     GroupListingResponseDto getGroupListingById(Long id);
 }

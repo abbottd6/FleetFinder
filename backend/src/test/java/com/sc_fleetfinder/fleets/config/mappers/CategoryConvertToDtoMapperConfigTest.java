@@ -2,20 +2,15 @@ package com.sc_fleetfinder.fleets.config.mappers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.entities.GameplayCategory;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GameplayCategoryServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.config.Configuration;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CategoryConvertToDtoMapperConfigTest {
-
-    @MockitoBean
-    GameplayCategoryServiceImpl mockCategoryService;
 
     private ModelMapper modelMapper = new ModelMapper();
 

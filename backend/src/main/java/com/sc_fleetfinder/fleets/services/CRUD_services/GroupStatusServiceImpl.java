@@ -31,9 +31,9 @@ public class GroupStatusServiceImpl implements GroupStatusService {
         return cachedGroupStatuses.stream()
                 .filter(groupStatus -> groupStatus.getGroupStatusId().equals(id))
                 .findFirst()
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Group Status with id {} not found", id);
-                    throw new ResourceNotFoundException(id);
+                    return new ResourceNotFoundException(id);
                 });
     }
 }

@@ -6,6 +6,8 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.User;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
+import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -47,6 +49,9 @@ class GroupListingServiceImplTest {
 
     @Mock
     private MapperLookupService mapperLookupService;
+
+    @Mock
+    private GroupListingConversionServiceImpl groupListingConversionService;
 
     private static Validator validator;
 
@@ -217,7 +222,7 @@ class GroupListingServiceImplTest {
             mappedEntity.setUser(mapperLookupService.findUserById(validDto.getUserId()));
             mappedEntity.setListingTitle(validDto.getListingTitle());
 
-        when(createGroupListingModelMapper.map(validDto, GroupListing.class)).thenReturn(mappedEntity);
+        when(groupListingConversionService.convertToEntity(validDto)).thenReturn(mappedEntity);
         when(groupListingRepository.save(any(GroupListing.class))).thenReturn(mappedEntity);
 
         //when
@@ -234,7 +239,7 @@ class GroupListingServiceImplTest {
                 () -> assertNotEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode()),
                 () -> assertNotNull(response.getBody()),
                 () -> assertEquals("This is a valid listing title",  responseBody.get("listingTitle")),
-                () -> verify(createGroupListingModelMapper, times(1)).map(validDto, GroupListing.class),
+                () -> verify(groupListingConversionService, times(1)).convertToEntity(validDto),
                 () -> verify(groupListingRepository, times(1)).save(any(GroupListing.class)),
                 () -> verify(mapperLookupService, times(1)).findUserById(validDto.getUserId()),
                 () -> verifyNoMoreInteractions(createGroupListingModelMapper, groupListingRepository));
@@ -248,9 +253,6 @@ class GroupListingServiceImplTest {
         //given
         CreateGroupListingDto invalidDto = new CreateGroupListingDto();
 
-        when(createGroupListingModelMapper.map(invalidDto, GroupListing.class))
-                .thenThrow(new RuntimeException("simulated mapping or database error"));
-
         //when
         ResponseEntity<?> response = groupListingService.createGroupListing(invalidDto);
 
@@ -260,8 +262,7 @@ class GroupListingServiceImplTest {
                         .anyMatch(log -> log.contains("CreateGroupListing failed. Reason: "))),
                 () -> assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode()),
                 () -> assertEquals("An error occurred while creating your listing.", response.getBody()),
-                () -> verify(createGroupListingModelMapper, times(1)).map(invalidDto, GroupListing.class),
-                () -> verifyNoMoreInteractions(createGroupListingModelMapper, groupListingRepository));
+                () -> verify(groupListingConversionService, times(1)).convertToEntity(invalidDto));
     }
 
     @Test
@@ -287,7 +288,7 @@ class GroupListingServiceImplTest {
         GroupListing mockEntity2 = new GroupListing();
             mockEntity2.setGroupId(2L);
         when(groupListingRepository.findById(mockDto.getGroupId())).thenReturn(Optional.of(mockEntity2));
-        when(groupListingService.convertListingToResponseDto(mockEntity2)).thenReturn(mockDto);
+        when(groupListingConversionService.convertListingToResponseDto(mockEntity2)).thenReturn(mockDto);
 
         //when
         GroupListingResponseDto response = groupListingService.getGroupListingById(mockDto.getGroupId());

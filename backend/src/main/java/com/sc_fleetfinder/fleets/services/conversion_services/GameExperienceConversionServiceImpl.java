@@ -46,10 +46,10 @@ public class GameExperienceConversionServiceImpl implements GameExperienceConver
     public GameExperience convertToEntity(GameExperienceDto dto) {
         //checking repository for entity matching Dto id
         GameExperience entity = experienceRepository.findById(dto.getExperienceId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("GameExperience convertToEntity could not find Experience with Id: {}",
                             dto.getExperienceId());
-                    throw  new ResourceNotFoundException("Experience with ID: " + dto.getExperienceId()
+                    return new ResourceNotFoundException("Experience with ID: " + dto.getExperienceId()
                             + " not found");
                 });
         //verifying name/id match for dto and entity

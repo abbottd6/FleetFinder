@@ -25,7 +25,6 @@ import com.sc_fleetfinder.fleets.entities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.User;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 @Service
