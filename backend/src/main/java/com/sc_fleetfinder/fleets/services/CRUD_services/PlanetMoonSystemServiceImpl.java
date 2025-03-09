@@ -31,9 +31,9 @@ public class PlanetMoonSystemServiceImpl implements PlanetMoonSystemService {
         return cachedPlanets.stream()
                 .filter(planet -> planet.getPlanetId().equals(id))
                 .findFirst()
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("No planet moon system found with id {} in the cached planet moon systems", id);
-                    throw new ResourceNotFoundException(id);
+                    return new ResourceNotFoundException(id);
                 });
     }
 }

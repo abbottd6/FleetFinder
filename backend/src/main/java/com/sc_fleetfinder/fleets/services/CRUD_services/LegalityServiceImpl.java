@@ -31,9 +31,9 @@ public class LegalityServiceImpl implements LegalityService {
         return cachedLegalities.stream()
                 .filter(legality -> legality.getLegalityId().equals(id))
                 .findFirst()
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Legality requested but not found for Id: {}", id);
-                    throw new ResourceNotFoundException(id);
+                    return new ResourceNotFoundException(id);
                 });
     }
 

@@ -46,10 +46,10 @@ public class GameplayCategoryConversionServiceImpl implements GameplayCategoryCo
 
         //checking for Dto id match in repository
         GameplayCategory gameplayCategory = gameplayCategoryRepository.findById(gameplayCategoryDto.getGameplayCategoryId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Category convertToEntity could not find entity with Id: {}",
                             gameplayCategoryDto.getGameplayCategoryId());
-                    throw new ResourceNotFoundException("Game Category with ID: " +
+                    return new ResourceNotFoundException("Game Category with ID: " +
                             gameplayCategoryDto.getGameplayCategoryId() + " not found");
                 });
         //Verifying that the name for the Dto matches the name of the entity with that id

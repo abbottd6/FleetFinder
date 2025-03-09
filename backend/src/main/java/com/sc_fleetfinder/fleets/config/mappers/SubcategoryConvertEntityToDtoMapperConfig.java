@@ -9,6 +9,7 @@ import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+//this is not used currently
 @Configuration
 public class SubcategoryConvertEntityToDtoMapperConfig {
 

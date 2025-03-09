@@ -31,9 +31,9 @@ public class PlayStyleServiceImpl implements PlayStyleService {
         return cachedPlayStyles.stream()
                 .filter(style -> style.getStyleId().equals(id))
                 .findFirst()
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Could not find play style with id {} in the cached play styles", id);
-                    throw new ResourceNotFoundException(id);
+                    return new ResourceNotFoundException(id);
                 });
     }
 }

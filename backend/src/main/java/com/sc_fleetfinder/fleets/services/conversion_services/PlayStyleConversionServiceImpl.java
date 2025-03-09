@@ -46,10 +46,10 @@ public class PlayStyleConversionServiceImpl implements PlayStyleConversionServic
     public PlayStyle convertToEntity(PlayStyleDto dto) {
         //checking repository for entity matching dto Id
         PlayStyle entity = playStyleRepository.findById(dto.getStyleId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Encountered play style with unmatched Id: {}, when converting from dto to entity",
                             dto.getStyleId());
-                    throw new ResourceNotFoundException("Play style with Id: {} not found", dto.getStyleId());
+                    return new ResourceNotFoundException("Play style with Id: {} not found", dto.getStyleId());
                 });
 
         //verifying name/id match for dto  and entity

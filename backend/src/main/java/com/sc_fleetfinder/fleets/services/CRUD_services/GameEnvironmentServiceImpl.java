@@ -31,9 +31,9 @@ public class GameEnvironmentServiceImpl implements GameEnvironmentService {
         return cachedEnvironments.stream()
                 .filter(environment -> environment.getEnvironmentId().equals(id))
                 .findFirst()
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Unable to find game environment with requested id: {}", id);
-                    throw new ResourceNotFoundException(id);
+                    return new ResourceNotFoundException(id);
                 });
     }
 }

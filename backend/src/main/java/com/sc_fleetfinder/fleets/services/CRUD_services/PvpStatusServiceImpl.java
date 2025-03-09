@@ -31,9 +31,9 @@ public class PvpStatusServiceImpl implements PvpStatusService {
         return cachedPvpStatuses.stream()
                 .filter(status -> status.getPvpStatusId().equals(id))
                 .findFirst()
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Could not find pvp status with id {} in the cached pvp statuses", id);
-                    throw new ResourceNotFoundException(id);
+                    return new ResourceNotFoundException(id);
                 });
     }
 }

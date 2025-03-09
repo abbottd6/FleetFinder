@@ -31,10 +31,9 @@ public class ServerRegionServiceImpl implements ServerRegionService {
         return cachedServerRegions.stream()
                 .filter(server -> server.getServerId().equals(id))
                 .findFirst()
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Server Region requested but not found for Id: {}", id);
-                    throw new ResourceNotFoundException("Server Region requested but not found for Id: " +
-                            id);
+                    return new ResourceNotFoundException("Server Region requested but not found for Id: " + id);
                 });
     }
 }

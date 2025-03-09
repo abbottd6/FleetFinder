@@ -46,10 +46,10 @@ public class GameplaySubcategoryConversionServiceImpl implements GameplaySubcate
     public GameplaySubcategory convertToEntity(GameplaySubcategoryDto dto) {
         //checking for Dto id match in repository
         GameplaySubcategory gameplaySubcategory = gameplaySubcategoryRepository.findById(dto.getSubcategoryId())
-                .orElseGet(() -> {
+                .orElseThrow(() -> {
                     log.error("Subcategory convertToEntity could not find entity with Id: {}",
                             dto.getSubcategoryId());
-                    throw new ResourceNotFoundException("Subcategory with ID: " +
+                    return new ResourceNotFoundException("Subcategory with ID: " +
                             dto.getSubcategoryId() + " not found");
                 });
 

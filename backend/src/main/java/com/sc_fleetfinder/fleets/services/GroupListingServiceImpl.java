@@ -6,12 +6,11 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import jakarta.validation.Valid;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,18 +28,14 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     private static final Logger log = LoggerFactory.getLogger(GroupListingServiceImpl.class);
     private final GroupListingRepository groupListingRepository;
-    private final ModelMapper createGroupListingModelMapper;
-    private final ModelMapper groupListingResponseDtoMapper;
+    private final GroupListingConversionService groupListingConversionService;
 
 
     public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
-                     @Qualifier("createGroupListingModelMapper") ModelMapper createGroupListingModelMapper,
-                     @Qualifier("groupListingResponseDtoMapper") ModelMapper groupListingResponseDtoMapper) {
-//        super();
+                                   GroupListingConversionService groupListingConversionService) {
 
         this.groupListingRepository = groupListingRepository;
-        this.createGroupListingModelMapper = createGroupListingModelMapper;
-        this.groupListingResponseDtoMapper = groupListingResponseDtoMapper;
+        this.groupListingConversionService = groupListingConversionService;
     }
 
     @Override
@@ -52,7 +46,7 @@ public class GroupListingServiceImpl implements GroupListingService {
             log.info("No group listings found.");
         }
         return groupListings.stream()
-                .map(this::convertListingToResponseDto)
+                .map(groupListingConversionService::convertListingToResponseDto)
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +55,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     public ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
         Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
             try {
-                GroupListing groupListing = createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
+                GroupListing groupListing = groupListingConversionService.convertToEntity(createGroupListingDto);
 
                 groupListingRepository.save(groupListing);
 
@@ -106,23 +100,12 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     @Override
     public GroupListingResponseDto getGroupListingById(Long id) {
-        Optional<GroupListing> groupListing = groupListingRepository.findById(id);
-        if(groupListing.isPresent()) {
-            return convertListingToResponseDto(groupListing.get());
-        }
-        else {
-            log.error("GetGroupListingById failed to find an entity with the given group Id: {}.", id);
-            throw new ResourceNotFoundException(id);
-        }
-    }
+        GroupListing groupListing = groupListingRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error("GetGroupListingById failed to find an entity with the given group Id: {}.", id);
+                    return new ResourceNotFoundException(id);
+                });
 
-    public GroupListingResponseDto convertListingToResponseDto(GroupListing groupListing) {
-        return groupListingResponseDtoMapper.map(groupListing, GroupListingResponseDto.class);
-    }
-
-
-    //need to create an updatelisting version of this
-    public GroupListing convertToEntity(CreateGroupListingDto createGroupListingDto) {
-        return createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
+        return groupListingConversionService.convertListingToResponseDto(groupListing);
     }
 }
