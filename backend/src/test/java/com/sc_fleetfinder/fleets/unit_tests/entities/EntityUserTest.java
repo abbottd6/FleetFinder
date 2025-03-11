@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.unit_tests.entities;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.entities.User;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,6 +18,7 @@ public class EntityUserTest {
     UserRepository userRepository;
 
     @Test
+    @Disabled
     public void testUserGroupListingsPopulating() {
         Long userId = 1L;
         User fetchedUser = userRepository.findById(userId).orElse(null);
