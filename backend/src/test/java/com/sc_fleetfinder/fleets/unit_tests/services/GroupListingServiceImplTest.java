@@ -8,7 +8,6 @@ import com.sc_fleetfinder.fleets.entities.User;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.GroupListingServiceImpl;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
-import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
