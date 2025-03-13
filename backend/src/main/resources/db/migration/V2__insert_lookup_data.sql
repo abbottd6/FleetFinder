@@ -15,51 +15,64 @@ VALUES
     ('Racing'),
     ('Event'),
     ('Other');
-    
+
+
+SET @ship_combat_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Ship Combat');
+SET @fps_combat_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'FPS Combat');
+SET @piracy_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Piracy');
+SET @cargo_trade_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Cargo/Trade');
+SET @mining_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Mining');
+SET @salvage_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Salvage');
+SET @mission_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Mission');
+SET @exploration_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Exploration');
+SET @medical_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Medical');
+SET @racing_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Racing');
+SET @event_id = (SELECT category_id FROM gameplay_category WHERE category_name = 'Event');
+
 -- gameplay_sub_category insert
 INSERT INTO gameplay_subcategory (subcategory_name, category_id)
 VALUES
-	('Bounty Hunting PVP', (SELECT category_id FROM gameplay_category WHERE category_name = 'Ship Combat')),
-    ('Dueling', (SELECT category_id FROM gameplay_category WHERE category_name = 'Ship Combat')),
-    ('Bounty Hunting PVE', (SELECT category_id FROM gameplay_category WHERE category_name = 'Ship Combat')),
-    ('Other - Ship Combat', (SELECT category_id FROM gameplay_category WHERE category_name = 'Ship Combat')),
-    ('Combat Missions', (SELECT category_id FROM gameplay_category WHERE category_name = 'FPS Combat')),
-    ('Bunkers', (SELECT category_id FROM gameplay_category WHERE category_name = 'FPS Combat')),
-    ('Raid', (SELECT category_id FROM gameplay_category WHERE category_name = 'FPS Combat')),
-    ('Other - FPS Combat', (SELECT category_id FROM gameplay_category WHERE category_name = 'FPS Combat')),
-    ('Cargo Piracy', (SELECT category_id FROM gameplay_category WHERE category_name = 'Piracy')),
-    ('Extortion', (SELECT category_id FROM gameplay_category WHERE category_name = 'Piracy')),
-    ('General Marauding', (SELECT category_id FROM gameplay_category WHERE category_name = 'Piracy')),
-    ('Other - Piracy', (SELECT category_id FROM gameplay_category WHERE category_name = 'Piracy')),
-    ('Cargo Hauling', (SELECT category_id FROM gameplay_category WHERE category_name = 'Cargo/Trade')),
-    ('Drug Smuggling', (SELECT category_id FROM gameplay_category WHERE category_name = 'Cargo/Trade')),
-    ('Other - Cargo', (SELECT category_id FROM gameplay_category WHERE category_name = 'Cargo/Trade')),
-    ('Ship Mining', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mining')),
-    ('Ground Vehicle Mining', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mining')),
-    ('FPS Mining', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mining')),
-    ('Other - Mining', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mining')),
-    ('Ship Operated Salvage', (SELECT category_id FROM gameplay_category WHERE category_name = 'Salvage')),
-    ('FPS Salvage', (SELECT category_id FROM gameplay_category WHERE category_name = 'Salvage')),
-    ('Other - Salvage', (SELECT category_id FROM gameplay_category WHERE category_name = 'Salvage')),
-    ('Delivery', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mission')),
-    ('Search', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mission')),
-    ('Investigation', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mission')),
-    ('Mercenary', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mission')),
-    ('Maintenance', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mission')),
-    ('Bounty Hunting', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mission')),
-    ('ECN Alerts', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mission')),
-    ('Other - Mission', (SELECT category_id FROM gameplay_category WHERE category_name = 'Mission')),
-    ('Prospecting', (SELECT category_id FROM gameplay_category WHERE category_name = 'Exploration')),
-    ('Service', (SELECT category_id FROM gameplay_category WHERE category_name = 'Exploration')),
-    ('Other - Exploration', (SELECT category_id FROM gameplay_category WHERE category_name = 'Exploration')),
-    ('For Hire', (SELECT category_id FROM gameplay_category WHERE category_name = 'Medical')),
-    ('Beacon Response', (SELECT category_id FROM gameplay_category WHERE category_name = 'Medical')),
-    ('Other - Medical', (SELECT category_id FROM gameplay_category WHERE category_name = 'Medical')),
-    ('Organized', (SELECT category_id FROM gameplay_category WHERE category_name = 'Racing')),
-    ('Casual', (SELECT category_id FROM gameplay_category WHERE category_name = 'Racing')),
-    ('Other - Racing', (SELECT category_id FROM gameplay_category WHERE category_name = 'Racing')),
-    ('Current Event', (SELECT category_id FROM gameplay_category WHERE category_name = 'Event')),
-    ('Other - Event', (SELECT category_id FROM gameplay_category WHERE category_name = 'Event'));
+	('Bounty Hunting PVP', @ship_combat_id),
+    ('Dueling', @ship_combat_id),
+    ('Bounty Hunting PVE', @ship_combat_id),
+    ('Other - Ship Combat', @ship_combat_id),
+    ('Combat Missions', @fps_combat_id),
+    ('Bunkers', @fps_combat_id),
+    ('Raid', @fps_combat_id),
+    ('Other - FPS Combat', @fps_combat_id),
+    ('Cargo Piracy', @piracy_id),
+    ('Extortion', @piracy_id),
+    ('General Marauding', @piracy_id),
+    ('Other - Piracy', @piracy_id),
+    ('Cargo Hauling', @cargo_trade_id),
+    ('Drug Smuggling', @cargo_trade_id),
+    ('Other - Cargo', @cargo_trade_id),
+    ('Ship Mining', @mining_id),
+    ('Ground Vehicle Mining', @mining_id),
+    ('FPS Mining', @mining_id),
+    ('Other - Mining', @mining_id),
+    ('Ship Operated Salvage', @salvage_id),
+    ('FPS Salvage', @salvage_id),
+    ('Other - Salvage', @salvage_id),
+    ('Delivery', @mission_id),
+    ('Search', @mission_id),
+    ('Investigation', @mission_id),
+    ('Mercenary', @mission_id),
+    ('Maintenance', @mission_id),
+    ('Bounty Hunting', @mission_id),
+    ('ECN Alerts', @mission_id),
+    ('Other - Mission', @mission_id),
+    ('Prospecting', @exploration_id),
+    ('Service', @exploration_id),
+    ('Other - Exploration', @exploration_id),
+    ('For Hire', @medical_id),
+    ('Beacon Response', @medical_id),
+    ('Other - Medical', @medical_id),
+    ('Organized', @racing_id),
+    ('Casual', @racing_id),
+    ('Other - Racing', @racing_id),
+    ('Current Event', @event_id),
+    ('Other - Event', @event_id);
     
     -- Inserting available planetary systems
 INSERT INTO planetary_system (system_name)
@@ -67,22 +80,25 @@ VALUES
 	('Stanton'),
     ('Pyro'),
     ('Any');
+
+SET @stanton_id = (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton');
+SET @pyro_id = (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro');
     
 -- Inserting planet/moon systems
 INSERT INTO planet_moon_system (planet_name, system_id)
 VALUES
-	('Hurston: Stanton I', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
-    ('Crusader: Stanton II', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
-    ('ArcCorp: Stanton III', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
-    ('MicroTech: Stanton IV', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
-    ('Other - Stanton', (SELECT system_id FROM planetary_system WHERE system_name = 'Stanton')),
-    ('Pyro I', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
-    ('Monox: Pyro II', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
-    ('Bloom: Pyro III', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
-    ('Pyro IV', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
-    ('Pyro V', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
-    ('Terminus: Pyro VI', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro')),
-    ('Other - Pyro', (SELECT system_id FROM planetary_system WHERE system_name = 'Pyro'));
+	('Hurston: Stanton I', @stanton_id),
+    ('Crusader: Stanton II', @stanton_id),
+    ('ArcCorp: Stanton III', @stanton_id),
+    ('MicroTech: Stanton IV', @stanton_id),
+    ('Other - Stanton', @stanton_id),
+    ('Pyro I', @pyro_id),
+    ('Monox: Pyro II', @pyro_id),
+    ('Bloom: Pyro III', @pyro_id),
+    ('Pyro IV', @pyro_id),
+    ('Pyro V', @pyro_id),
+    ('Terminus: Pyro VI', @pyro_id),
+    ('Other - Pyro', @pyro_id);
     
 -- Inserting available server regions
 INSERT INTO server_region (server_name)
