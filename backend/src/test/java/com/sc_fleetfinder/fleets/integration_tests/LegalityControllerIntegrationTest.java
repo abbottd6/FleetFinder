@@ -18,33 +18,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ContextConfiguration(initializers = TestEnvironmentLoader.class)
-public class EnvironmentsControllerIntegrationTest {
+public class LegalityControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    //testing that correct number of game environments exist
+    //testing responseDtoes exist
     @Test
-    void testGetAllGameEnvironments_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments"))
+    void testGetAllLegalities_Success_200() throws Exception {
+        mockMvc.perform(get("/api/legalities"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(4))
-                .andExpect(jsonPath("$[0].environmentId").exists())
-                .andExpect(jsonPath("$[0].environmentType").exists());
+                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$[0].legalityId").exists())
+                .andExpect(jsonPath("$[0].legalityStatus").exists());
     }
 
     //testing responseDto values
     @Test
-    void testGetEnvironmentById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments/1"))
+    void testGetLegalityById_Success_200() throws Exception {
+        mockMvc.perform(get("/api/legalities/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.environmentId").value(1))
-                .andExpect(jsonPath("$.environmentType").value("LIVE"));
+                .andExpect(jsonPath("$.legalityId").value(1))
+                .andExpect(jsonPath("$.legalityStatus").value("Lawful"));
     }
 
     @Test
-    void testGetEnvironmentById_invalidId_404() throws Exception {
-        mockMvc.perform(get("/api/environments/5000"))
+    void testGetLegalityById_Failure_404() throws Exception {
+        mockMvc.perform(get("/api/legalities/500"))
                 .andExpect(status().isNotFound());
     }
 }
