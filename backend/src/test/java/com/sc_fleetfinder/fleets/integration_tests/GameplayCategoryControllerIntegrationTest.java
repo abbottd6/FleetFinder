@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
+import com.sc_fleetfinder.fleets.services.CRUD_services.GameplayCategoryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,33 +19,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ContextConfiguration(initializers = TestEnvironmentLoader.class)
-public class EnvironmentsControllerIntegrationTest {
+public class GameplayCategoryControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
+    @Autowired
+    private GameplayCategoryService gameplayCategoryService;
 
-    //testing that correct number of game environments exist
+    //troubleshooting failed tests (problem was field names did not match responseDto fields)
     @Test
-    void testGetAllGameEnvironments_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments"))
+    void debugTestData() {
+        System.out.println("gameplay categories in test DB: " + gameplayCategoryService.getAllCategories());
+    }
+
+    //testing responseDtoes exist
+    @Test
+    void testGetAllGameplayCategories_Success_200() throws Exception {
+        mockMvc.perform(get("/api/gameplayCategories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(4))
-                .andExpect(jsonPath("$[0].environmentId").exists())
-                .andExpect(jsonPath("$[0].environmentType").exists());
+                .andExpect(jsonPath("$.length()").value(12))
+                .andExpect(jsonPath("$[0].gameplayCategoryId").exists())
+                .andExpect(jsonPath("$[0].gameplayCategoryName").exists());
     }
 
     //testing responseDto values
     @Test
-    void testGetEnvironmentById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments/1"))
+    void testGetGameplayCategoryById_Success_200() throws Exception {
+        mockMvc.perform(get("/api/gameplayCategories/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.environmentId").value(1))
-                .andExpect(jsonPath("$.environmentType").value("LIVE"));
+                .andExpect(jsonPath("$.gameplayCategoryId").value(1))
+                .andExpect(jsonPath("$.gameplayCategoryName").value("Ship Combat"));
     }
 
     @Test
-    void testGetEnvironmentById_invalidId_404() throws Exception {
-        mockMvc.perform(get("/api/environments/5000"))
+    void testGetGameplayCategoryById_invalidId_404() throws Exception {
+        mockMvc.perform(get("/api/gameplay/gameplayCategories/500"))
                 .andExpect(status().isNotFound());
     }
 }

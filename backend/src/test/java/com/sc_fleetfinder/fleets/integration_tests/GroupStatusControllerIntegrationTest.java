@@ -18,33 +18,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ContextConfiguration(initializers = TestEnvironmentLoader.class)
-public class EnvironmentsControllerIntegrationTest {
+public class GroupStatusControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    //testing that correct number of game environments exist
+    //testing responseDtoes exist
     @Test
-    void testGetAllGameEnvironments_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments"))
+    void testGetAllGroupStatuses_Success_200() throws Exception {
+        mockMvc.perform(get("/api/groupStatuses"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(4))
-                .andExpect(jsonPath("$[0].environmentId").exists())
-                .andExpect(jsonPath("$[0].environmentType").exists());
+                .andExpect(jsonPath("$.length()").value(2))
+                .andExpect(jsonPath("$[0].groupStatusId").exists())
+                .andExpect(jsonPath("$[0].groupStatus").exists());
     }
 
     //testing responseDto values
     @Test
-    void testGetEnvironmentById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments/1"))
+    void testGetGroupStatusById_Success_200() throws Exception {
+        mockMvc.perform(get("/api/groupStatuses/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.environmentId").value(1))
-                .andExpect(jsonPath("$.environmentType").value("LIVE"));
+                .andExpect(jsonPath("$.groupStatusId").value(1))
+                .andExpect(jsonPath("$.groupStatus").value("Current/Live"));
     }
 
     @Test
-    void testGetEnvironmentById_invalidId_404() throws Exception {
-        mockMvc.perform(get("/api/environments/5000"))
+    void testGetGroupStatusById_Failure_404() throws Exception {
+        mockMvc.perform(get("/api/groupStatuses/500"))
                 .andExpect(status().isNotFound());
     }
 }

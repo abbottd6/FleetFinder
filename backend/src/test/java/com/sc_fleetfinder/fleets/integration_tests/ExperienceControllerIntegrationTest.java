@@ -23,15 +23,17 @@ public class ExperienceControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
+    //testing that correct number of game experiences exist
     @Test
     void testGetAllGameExperiences_Success_200() throws Exception {
         mockMvc.perform(get("/api/gameExperiences"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(greaterThan(0)))
+                .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].experienceId").exists())
                 .andExpect(jsonPath("$[0].experienceType").exists());
     }
 
+    //testing responseDto values
     @Test
     void testGetExperienceById_Success_200() throws Exception {
         mockMvc.perform(get("/api/gameExperiences/1"))

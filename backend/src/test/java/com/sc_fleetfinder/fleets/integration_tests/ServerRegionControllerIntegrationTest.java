@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ServerRegionService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,7 +10,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,33 +18,33 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ContextConfiguration(initializers = TestEnvironmentLoader.class)
-public class EnvironmentsControllerIntegrationTest {
+public class ServerRegionControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    //testing that correct number of game environments exist
+    //testing that the correct number of server regions exist
     @Test
-    void testGetAllGameEnvironments_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments"))
+    void testGetAllServerRegions_Success() throws Exception {
+        mockMvc.perform(get("/api/serverRegions"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(4))
-                .andExpect(jsonPath("$[0].environmentId").exists())
-                .andExpect(jsonPath("$[0].environmentType").exists());
+                .andExpect(jsonPath("$.length()").value(5))
+                .andExpect(jsonPath("$[0].serverId").exists())
+                .andExpect(jsonPath("$[0].servername").exists());
     }
 
-    //testing responseDto values
+    //testing the server region attribute values
     @Test
-    void testGetEnvironmentById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments/1"))
+    void testGetServerRegionById_Success() throws Exception {
+        mockMvc.perform(get("/api/serverRegions/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.environmentId").value(1))
-                .andExpect(jsonPath("$.environmentType").value("LIVE"));
+                .andExpect(jsonPath("$.serverId").value(1))
+                .andExpect(jsonPath("$.servername").value("USA"));
     }
 
     @Test
-    void testGetEnvironmentById_invalidId_404() throws Exception {
-        mockMvc.perform(get("/api/environments/5000"))
+    void testGetServerRegionById_NotFound() throws Exception {
+        mockMvc.perform(get("/api/serverRegions/200"))
                 .andExpect(status().isNotFound());
     }
 }

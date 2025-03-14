@@ -9,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,33 +17,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ContextConfiguration(initializers = TestEnvironmentLoader.class)
-public class EnvironmentsControllerIntegrationTest {
+public class PlanetMoonSystemControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    //testing that correct number of game environments exist
+    //testing that correct number of planets exist
     @Test
-    void testGetAllGameEnvironments_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments"))
+    void testGetAllPlanetMoons_Success_200() throws Exception {
+        mockMvc.perform(get("/api/planetMoonSystems"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(4))
-                .andExpect(jsonPath("$[0].environmentId").exists())
-                .andExpect(jsonPath("$[0].environmentType").exists());
+                .andExpect(jsonPath("$.length()").value(12))
+                .andExpect(jsonPath("$[0].planetId").exists())
+                .andExpect(jsonPath("$[0].planetName").exists())
+                .andExpect(jsonPath("$[0].systemName").exists());
     }
 
-    //testing responseDto values
+    //testing planet attributes
     @Test
-    void testGetEnvironmentById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments/1"))
+    void testGetPlanetByIdSuccess_200() throws Exception {
+        mockMvc.perform(get("/api/planetMoonSystems/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.environmentId").value(1))
-                .andExpect(jsonPath("$.environmentType").value("LIVE"));
+                .andExpect(jsonPath("$.planetId").value(1))
+                .andExpect(jsonPath("$.planetName").value("Hurston: Stanton I"))
+                .andExpect(jsonPath("$.systemName").value("Stanton"));
     }
 
     @Test
-    void testGetEnvironmentById_invalidId_404() throws Exception {
-        mockMvc.perform(get("/api/environments/5000"))
+    void testGetPlanetByIdFailure_404() throws Exception {
+        mockMvc.perform(get("/api/planetMoonSystems/500"))
                 .andExpect(status().isNotFound());
     }
 }
