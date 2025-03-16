@@ -7,6 +7,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -14,8 +15,10 @@ public class TestEnvironmentLoader implements ApplicationContextInitializer<Conf
 
     @Override
     public void initialize(ConfigurableApplicationContext context) {
+        String envDir = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize().toString();
         Dotenv dotenv = Dotenv.configure()
-                .filename("backend/.env")
+                .directory(envDir)
+                .filename(".env")
                 .ignoreIfMissing()
                 .load();
 
