@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/playStyles")
+@RequestMapping("/api/lookup/play-styles")
 public class PlayStyleController {
 
     @Autowired

@@ -26,7 +26,7 @@ public class ServerRegionControllerIntegrationTest {
     //testing that the correct number of server regions exist
     @Test
     void testGetAllServerRegions_Success() throws Exception {
-        mockMvc.perform(get("/api/serverRegions"))
+        mockMvc.perform(get("/api/lookup/server-regions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(5))
                 .andExpect(jsonPath("$[0].serverId").exists())
@@ -36,7 +36,7 @@ public class ServerRegionControllerIntegrationTest {
     //testing the server region attribute values
     @Test
     void testGetServerRegionById_Success() throws Exception {
-        mockMvc.perform(get("/api/serverRegions/1"))
+        mockMvc.perform(get("/api/lookup/server-regions/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.serverId").value(1))
                 .andExpect(jsonPath("$.servername").value("USA"));
@@ -44,7 +44,7 @@ public class ServerRegionControllerIntegrationTest {
 
     @Test
     void testGetServerRegionById_NotFound() throws Exception {
-        mockMvc.perform(get("/api/serverRegions/200"))
+        mockMvc.perform(get("/api/lookup/server-regions/200"))
                 .andExpect(status().isNotFound());
     }
 }

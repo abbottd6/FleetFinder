@@ -47,7 +47,7 @@ class PvpStatusControllerTest {
     void testGetAllPvpStatuses_FoundList() throws Exception {
         when(pvpStatusService.getAllPvpStatuses()).thenReturn(mockPvpStatuses);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/pvpStatuses"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/pvp-statuses"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].pvpStatusId").value(1))
                 .andExpect(jsonPath("$[0].pvpStatus").value("PvP"))
@@ -60,7 +60,7 @@ class PvpStatusControllerTest {
         when(pvpStatusService.getAllPvpStatuses())
                 .thenThrow(new ResourceNotFoundException("Unable to access PvP status data"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/pvpStatuses"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/pvp-statuses"))
                 .andExpect(status().isNotFound());
     }
 
@@ -68,7 +68,7 @@ class PvpStatusControllerTest {
     void testGetPvpStatusById_Found() throws Exception {
         when(pvpStatusService.getPvpStatusById(1)).thenReturn(mockPvpStatuses.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/pvpStatuses/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/pvp-statuses/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.pvpStatusId").value(1))
                 .andExpect(jsonPath("$.pvpStatus").value("PvP"));
@@ -78,7 +78,7 @@ class PvpStatusControllerTest {
     void testGetPvpStatusById_NotFound() throws Exception {
         when(pvpStatusService.getPvpStatusById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/pvpStatuses/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/pvp-statuses/33"))
                 .andExpect(status().isNotFound());
     }
 }
