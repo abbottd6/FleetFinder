@@ -26,7 +26,7 @@ public class GroupStatusControllerIntegrationTest {
     //testing responseDtoes exist
     @Test
     void testGetAllGroupStatuses_Success_200() throws Exception {
-        mockMvc.perform(get("/api/groupStatuses"))
+        mockMvc.perform(get("/api/lookup/group-statuses"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].groupStatusId").exists())
@@ -36,7 +36,7 @@ public class GroupStatusControllerIntegrationTest {
     //testing responseDto values
     @Test
     void testGetGroupStatusById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/groupStatuses/1"))
+        mockMvc.perform(get("/api/lookup/group-statuses/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.groupStatusId").value(1))
                 .andExpect(jsonPath("$.groupStatus").value("Current/Live"));
@@ -44,7 +44,7 @@ public class GroupStatusControllerIntegrationTest {
 
     @Test
     void testGetGroupStatusById_Failure_404() throws Exception {
-        mockMvc.perform(get("/api/groupStatuses/500"))
+        mockMvc.perform(get("/api/lookup/group-statuses/500"))
                 .andExpect(status().isNotFound());
     }
 }

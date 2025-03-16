@@ -47,7 +47,7 @@ class PlanetMoonSystemControllerTest {
     void testGetAllPlanetMoonSystems_FoundList() throws Exception {
         when(planetMoonSystemService.getAllPlanetMoonSystems()).thenReturn(mockPlanetDtos);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/planetMoonSystems"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/planet-moon-systems"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].planetId").value(1))
                 .andExpect(jsonPath("$[0].planetName").value("Stanton I"))
@@ -60,7 +60,7 @@ class PlanetMoonSystemControllerTest {
         when(planetMoonSystemService.getAllPlanetMoonSystems())
                 .thenThrow(new ResourceNotFoundException("Unable to access data for planet moon systems"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/planetMoonSystems"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/planet-moon-systems"))
                 .andExpect(status().isNotFound());
     }
 
@@ -68,7 +68,7 @@ class PlanetMoonSystemControllerTest {
     void testGetPlanetMoonSystemById_Found() throws Exception {
         when(planetMoonSystemService.getPlanetMoonSystemById(1)).thenReturn(mockPlanetDtos.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/planetMoonSystems/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/planet-moon-systems/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.planetId").value(1))
                 .andExpect(jsonPath("$.planetName").value("Stanton I"));
@@ -78,7 +78,7 @@ class PlanetMoonSystemControllerTest {
     void testGetPlanetMoonSystemById_NotFound() throws Exception {
         when(planetMoonSystemService.getPlanetMoonSystemById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/planetMoonSystems/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/planet-moon-systems/33"))
                 .andExpect(status().isNotFound());
     }
 }

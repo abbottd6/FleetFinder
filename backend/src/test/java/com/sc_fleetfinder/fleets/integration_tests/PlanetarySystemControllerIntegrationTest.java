@@ -25,7 +25,7 @@ public class PlanetarySystemControllerIntegrationTest {
     //testing correct number of planetary systems exist
     @Test
     void testGetAllPlanetarySystems_Success_200() throws Exception {
-        mockMvc.perform(get("/api/planetarySystems"))
+        mockMvc.perform(get("/api/lookup/planetary-systems"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(3))
                 .andExpect(jsonPath("$[0].systemId").exists())
@@ -35,7 +35,7 @@ public class PlanetarySystemControllerIntegrationTest {
     //testing response dto values
     @Test
     void testGetPlanetarySystemByIdSuccess_200() throws Exception {
-        mockMvc.perform(get("/api/planetarySystems/1"))
+        mockMvc.perform(get("/api/lookup/planetary-systems/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.systemId").value(1))
                 .andExpect(jsonPath("$.systemName").value("Stanton"));
@@ -43,7 +43,7 @@ public class PlanetarySystemControllerIntegrationTest {
 
     @Test
     void testGetPlanetarySystemByIdFailure_404() throws Exception {
-        mockMvc.perform(get("/api/planetarySystems/500"))
+        mockMvc.perform(get("/api/lookup/planetary-systems/500"))
                 .andExpect(status().isNotFound());
     }
 }

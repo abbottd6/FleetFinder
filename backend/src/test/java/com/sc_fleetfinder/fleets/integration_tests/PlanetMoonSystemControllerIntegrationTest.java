@@ -25,7 +25,7 @@ public class PlanetMoonSystemControllerIntegrationTest {
     //testing that correct number of planets exist
     @Test
     void testGetAllPlanetMoons_Success_200() throws Exception {
-        mockMvc.perform(get("/api/planetMoonSystems"))
+        mockMvc.perform(get("/api/lookup/planet-moon-systems"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(12))
                 .andExpect(jsonPath("$[0].planetId").exists())
@@ -36,7 +36,7 @@ public class PlanetMoonSystemControllerIntegrationTest {
     //testing planet attributes
     @Test
     void testGetPlanetByIdSuccess_200() throws Exception {
-        mockMvc.perform(get("/api/planetMoonSystems/1"))
+        mockMvc.perform(get("/api/lookup/planet-moon-systems/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.planetId").value(1))
                 .andExpect(jsonPath("$.planetName").value("Hurston: Stanton I"))
@@ -45,7 +45,7 @@ public class PlanetMoonSystemControllerIntegrationTest {
 
     @Test
     void testGetPlanetByIdFailure_404() throws Exception {
-        mockMvc.perform(get("/api/planetMoonSystems/500"))
+        mockMvc.perform(get("/api/lookup/planet-moon-systems/500"))
                 .andExpect(status().isNotFound());
     }
 }
