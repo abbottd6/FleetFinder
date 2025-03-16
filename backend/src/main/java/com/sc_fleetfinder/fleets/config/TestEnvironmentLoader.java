@@ -15,7 +15,7 @@ public class TestEnvironmentLoader implements ApplicationContextInitializer<Conf
     @Override
     public void initialize(ConfigurableApplicationContext context) {
         Dotenv dotenv = Dotenv.configure()
-                .filename(".env")
+                .filename("backend/.env")
                 .ignoreIfMissing()
                 .load();
 
@@ -27,5 +27,8 @@ public class TestEnvironmentLoader implements ApplicationContextInitializer<Conf
 
         PropertySource<Map<String, Object>> propertySource = new MapPropertySource("dotenv", envMap);
         context.getEnvironment().getPropertySources().addFirst(propertySource);
+
+        System.out.println("Loaded DB_USERNAME: " + dotenv.get("DB_USERNAME"));
+        System.out.println("Working Directory: " + System.getProperty("user.dir"));
     }
 }
