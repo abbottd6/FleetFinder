@@ -26,7 +26,7 @@ public class LegalityControllerIntegrationTest {
     //testing responseDtoes exist
     @Test
     void testGetAllLegalities_Success_200() throws Exception {
-        mockMvc.perform(get("/api/legalities"))
+        mockMvc.perform(get("/api/lookup/legalities"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(3))
                 .andExpect(jsonPath("$[0].legalityId").exists())
@@ -36,7 +36,7 @@ public class LegalityControllerIntegrationTest {
     //testing responseDto values
     @Test
     void testGetLegalityById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/legalities/1"))
+        mockMvc.perform(get("/api/lookup/legalities/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.legalityId").value(1))
                 .andExpect(jsonPath("$.legalityStatus").value("Lawful"));
@@ -44,7 +44,7 @@ public class LegalityControllerIntegrationTest {
 
     @Test
     void testGetLegalityById_Failure_404() throws Exception {
-        mockMvc.perform(get("/api/legalities/500"))
+        mockMvc.perform(get("/api/lookup/legalities/500"))
                 .andExpect(status().isNotFound());
     }
 }

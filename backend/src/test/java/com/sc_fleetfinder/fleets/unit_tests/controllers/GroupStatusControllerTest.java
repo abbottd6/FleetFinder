@@ -48,7 +48,7 @@ class GroupStatusControllerTest {
     void testGetAllGroupStatuses_FoundList() throws Exception {
         when(groupStatusService.getAllGroupStatuses()).thenReturn(mockGroupStatuses);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/groupStatuses"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/group-statuses"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].groupStatusId").value(1))
                 .andExpect(jsonPath("$[0].groupStatus").value("Current/Live"))
@@ -61,7 +61,7 @@ class GroupStatusControllerTest {
         when(groupStatusService.getAllGroupStatuses())
                 .thenThrow(new ResourceNotFoundException("Unable to access group status data"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/groupStatuses"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/group-statuses"))
                 .andExpect(status().isNotFound());
     }
 
@@ -69,7 +69,7 @@ class GroupStatusControllerTest {
     void testGetGroupStatusById_Found() throws Exception {
         when(groupStatusService.getGroupStatusById(1)).thenReturn(mockGroupStatuses.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/groupStatuses/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/group-statuses/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.groupStatusId").value(1))
                 .andExpect(jsonPath("$.groupStatus").value("Current/Live"));
@@ -79,7 +79,7 @@ class GroupStatusControllerTest {
     void testGetGroupStatusById_NotFound() throws Exception {
         when(groupStatusService.getGroupStatusById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/groupStatuses/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/group-statuses/33"))
                 .andExpect(status().isNotFound());
     }
 }

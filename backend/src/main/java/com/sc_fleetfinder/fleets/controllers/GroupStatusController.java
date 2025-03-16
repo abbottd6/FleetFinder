@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/groupStatuses")
+@RequestMapping("/api/lookup/group-statuses")
 public class GroupStatusController {
 
     @Autowired

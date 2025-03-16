@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/planetMoonSystems")
+@RequestMapping("/api/lookup/planet-moon-systems")
 public class PlanetMoonSystemController {
 
     @Autowired

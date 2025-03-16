@@ -28,11 +28,11 @@ export class LookupService {
   }
 
   getLegalities(): Observable<any[]> {
-    return this.http.get<any[]>('/api/legalities');
+    return this.http.get<any[]>('/api/lookup/legalities');
   }
 
   getGroupStatuses(): Observable<any[]> {
-    return this.http.get<any[]>('/api/groupStatuses')
+    return this.http.get<any[]>('/api/lookup/group-statuses')
   }
 
   getGameplayCategories(): Observable<any[]> {
@@ -49,11 +49,11 @@ export class LookupService {
 
   //Broader systems: Stanton, Pyro, etc.
   getPlanetarySystems(): Observable<any[]> {
-    return this.http.get<any[]>('/api/planetarySystems');
+    return this.http.get<any[]>('/api/lookup/planetary-systems');
   }
 
   //Subsystems: Hurston, Microtech, etc.
   getPlanetMoonSystems(): Observable<any[]> {
-    return this.http.get<any[]>('/api/planetMoonSystems');
+    return this.http.get<any[]>('/api/lookup/planet-moon-systems');
   }
 }

@@ -47,7 +47,7 @@ class PlanetarySystemControllerTest {
     void testGetAllPlanetarySystems_FoundList() throws Exception {
         when(planetarySystemService.getAllPlanetarySystems()).thenReturn(mockSystems);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/planetarySystems"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/planetary-systems"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].systemId").value(1))
                 .andExpect(jsonPath("$[0].systemName").value("Stanton"))
@@ -60,7 +60,7 @@ class PlanetarySystemControllerTest {
         when(planetarySystemService.getAllPlanetarySystems())
         .thenThrow(new ResourceNotFoundException("Unable to access data for planetary systems"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/planetarySystems"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/planetary-systems"))
                 .andExpect(status().isNotFound());
     }
 
@@ -68,7 +68,7 @@ class PlanetarySystemControllerTest {
     void testGetPlanetarySystemById() throws Exception {
         when(planetarySystemService.getPlanetarySystemById(1)).thenReturn(mockSystems.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/planetarySystems/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/planetary-systems/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.systemId").value(1))
                 .andExpect(jsonPath("$.systemName").value("Stanton"));
@@ -78,7 +78,7 @@ class PlanetarySystemControllerTest {
     void testGetPlanetarySystemByIdNotFound() throws Exception {
         when(planetarySystemService.getPlanetarySystemById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/planetarySystems/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/planetary-systems/33"))
                 .andExpect(status().isNotFound());
     }
 }

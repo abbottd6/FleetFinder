@@ -47,7 +47,7 @@ class LegalityControllerTest {
     void testGetAllLegalities_FoundList() throws Exception {
         when(legalityService.getAllLegalities()).thenReturn(mockLegalities);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/legalities"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/legalities"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].legalityId").value(1))
@@ -61,7 +61,7 @@ class LegalityControllerTest {
         when(legalityService.getAllLegalities())
                 .thenThrow(new ResourceNotFoundException("Unable to access data for legalities"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/legalities"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/legalities"))
                 .andExpect(status().isNotFound());
     }
 
@@ -69,7 +69,7 @@ class LegalityControllerTest {
     void testGetLegalityById_Found() throws Exception {
         when(legalityService.getLegalityById(1)).thenReturn(mockLegalities.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/legalities/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/legalities/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.legalityId").value(1))
                 .andExpect(jsonPath("$.legalityStatus").value("Lawful"));
@@ -79,7 +79,7 @@ class LegalityControllerTest {
     void testGetLegalityById_NotFound() throws Exception {
         when(legalityService.getLegalityById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/legalities/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/legalities/33"))
                 .andExpect(status().isNotFound());
     }
 }
