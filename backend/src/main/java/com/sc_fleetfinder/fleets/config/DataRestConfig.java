@@ -11,6 +11,7 @@ import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.entities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ServerRegion;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -21,13 +22,16 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 @Configuration
 public class DataRestConfig implements RepositoryRestConfigurer {
 
+    @Value("${allowed.origins}")
+    private String[] theAllowedOrigins;
+
     @Override
     public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
 //        RepositoryRestConfigurer.super.configureRepositoryRestConfiguration(config, cors);
 
         HttpMethod[] unsupportedMethods = { HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.PATCH };
 
-        cors.addMapping("/api/**").allowedOrigins("http://localhost:4200");
+        cors.addMapping(config.getBasePath() + "/**").allowedOrigins(theAllowedOrigins);
         //User and Group Listing support GET, POST, PUT, DELETE
         //Other entities should be immutable
 

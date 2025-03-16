@@ -23,6 +23,9 @@ import java.util.List;
 public class UserController {
 
     //need tests after v2 refactor
+    //and refactoring for security to make user info minimally (or not at all) accessible through api endpoints
+    //getter methods for users should not return passwords and should require admin status in order to view the
+    // endpoints
     @Autowired
     private UserService userService;
 
