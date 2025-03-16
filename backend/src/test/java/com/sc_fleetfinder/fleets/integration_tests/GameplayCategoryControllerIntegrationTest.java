@@ -35,7 +35,7 @@ public class GameplayCategoryControllerIntegrationTest {
     //testing responseDtoes exist
     @Test
     void testGetAllGameplayCategories_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameplayCategories"))
+        mockMvc.perform(get("/api/lookup/gameplay-categories"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(12))
                 .andExpect(jsonPath("$[0].gameplayCategoryId").exists())
@@ -45,7 +45,7 @@ public class GameplayCategoryControllerIntegrationTest {
     //testing responseDto values
     @Test
     void testGetGameplayCategoryById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameplayCategories/1"))
+        mockMvc.perform(get("/api/lookup/gameplay-categories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.gameplayCategoryId").value(1))
                 .andExpect(jsonPath("$.gameplayCategoryName").value("Ship Combat"));
@@ -53,7 +53,7 @@ public class GameplayCategoryControllerIntegrationTest {
 
     @Test
     void testGetGameplayCategoryById_invalidId_404() throws Exception {
-        mockMvc.perform(get("/api/gameplay/gameplayCategories/500"))
+        mockMvc.perform(get("/api/lookup/gameplay-categories/500"))
                 .andExpect(status().isNotFound());
     }
 }

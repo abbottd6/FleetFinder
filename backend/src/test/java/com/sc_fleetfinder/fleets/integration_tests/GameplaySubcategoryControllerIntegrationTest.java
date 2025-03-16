@@ -25,7 +25,7 @@ public class GameplaySubcategoryControllerIntegrationTest {
     //testing responseDtoes exist
     @Test
     void testGetAllSubcategories_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameplaySubcategories"))
+        mockMvc.perform(get("/api/lookup/gameplay-subcategories"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(41))
                 .andExpect(jsonPath("$[0].subcategoryId").exists())
@@ -36,7 +36,7 @@ public class GameplaySubcategoryControllerIntegrationTest {
     //testing responseDto values
     @Test
     void testGetSubcategoryById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameplaySubcategories/1"))
+        mockMvc.perform(get("/api/lookup/gameplay-subcategories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.subcategoryId").value(1))
                 .andExpect(jsonPath("$.subcategoryName").value("Bounty Hunting PVP"))
@@ -45,7 +45,7 @@ public class GameplaySubcategoryControllerIntegrationTest {
 
     @Test
     void testGetSubcategoryById_invalidId_404() throws Exception {
-        mockMvc.perform(get("/api/gameplaySubcategories/500"))
+        mockMvc.perform(get("/api/lookup/gameplay-subcategories/500"))
                 .andExpect(status().isNotFound());
     }
 }

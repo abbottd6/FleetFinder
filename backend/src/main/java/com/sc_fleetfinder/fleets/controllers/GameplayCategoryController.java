@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/gameplayCategories")
+@RequestMapping("/api/lookup/gameplay-categories")
 public class GameplayCategoryController {
 
     @Autowired

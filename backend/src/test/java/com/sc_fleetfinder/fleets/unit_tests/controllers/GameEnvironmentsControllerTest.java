@@ -46,7 +46,7 @@ class GameEnvironmentsControllerTest {
     void testGetAllGameEnvironments_FoundList() throws Exception {
         when(gameEnvironmentService.getAllEnvironments()).thenReturn(mockEnvironments);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameEnvironments"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/game-environments"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].environmentId").value(1))
@@ -60,7 +60,7 @@ class GameEnvironmentsControllerTest {
         when(gameEnvironmentService.getAllEnvironments())
                 .thenThrow(new ResourceNotFoundException("Unable to access game environments data"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameEnvironments"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/game-environments"))
                 .andExpect(status().isNotFound());
     }
 
@@ -68,7 +68,7 @@ class GameEnvironmentsControllerTest {
     void testGetGameEnvironmentById_Found() throws Exception{
         when(gameEnvironmentService.getEnvironmentById(1)).thenReturn(mockEnvironments.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameEnvironments/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/game-environments/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.environmentId").value(1))
                 .andExpect(jsonPath("$.environmentType").value("LIVE"));
@@ -78,7 +78,7 @@ class GameEnvironmentsControllerTest {
     void testGetGameEnvironmentById_NotFound() throws Exception{
         when(gameEnvironmentService.getEnvironmentById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameEnvironments/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/game-environments/33"))
                 .andExpect(status().isNotFound());
     }
 }
