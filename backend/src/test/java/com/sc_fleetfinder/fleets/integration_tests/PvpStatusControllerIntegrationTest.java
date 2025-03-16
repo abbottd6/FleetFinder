@@ -25,7 +25,7 @@ public class PvpStatusControllerIntegrationTest {
     //testing the correct number of pvp statuses exist
     @Test
     void testGetAllPvpStatuses_Success() throws Exception {
-        mockMvc.perform(get("/api/pvpStatuses"))
+        mockMvc.perform(get("/api/lookup/pvp-statuses"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(3))
                 .andExpect(jsonPath("$[0].pvpStatusId").exists())
@@ -35,7 +35,7 @@ public class PvpStatusControllerIntegrationTest {
     //testing pvp status attribute values
     @Test
     void testGetPvpStatusById_Success() throws Exception {
-        mockMvc.perform(get("/api/pvpStatuses/1"))
+        mockMvc.perform(get("/api/lookup/pvp-statuses/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.pvpStatusId").value(1))
                 .andExpect(jsonPath("$.pvpStatus").value("PvP"));
@@ -43,7 +43,7 @@ public class PvpStatusControllerIntegrationTest {
 
     @Test
     void testGetPvpStatusById_NotFound() throws Exception {
-        mockMvc.perform(get("/api/pvpStatuses/200"))
+        mockMvc.perform(get("/api/lookup/pvp-statuses/200"))
                 .andExpect(status().isNotFound());
     }
 }

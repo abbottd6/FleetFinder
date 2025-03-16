@@ -25,7 +25,7 @@ public class PlayStyleControllerIntegrationTest {
     //testing correct number of play styles
     @Test
     void testGetAllPlayStyles_Success_200() throws Exception {
-        mockMvc.perform(get("/api/playStyles"))
+        mockMvc.perform(get("/api/lookup/play-styles"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(11))
                 .andExpect(jsonPath("$[0].styleId").exists())
@@ -35,7 +35,7 @@ public class PlayStyleControllerIntegrationTest {
     //testing play style attribute values
     @Test
     void testGetPlayStyleById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/playStyles/1"))
+        mockMvc.perform(get("/api/lookup/play-styles/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.styleId").value(1))
                 .andExpect(jsonPath("$.playStyle").value("Casual"));
@@ -43,7 +43,7 @@ public class PlayStyleControllerIntegrationTest {
 
     @Test
     void testGetPlayStyleById_Failure_404() throws Exception {
-        mockMvc.perform(get("/api/playStyles/500"))
+        mockMvc.perform(get("/api/lookup/play-styles/500"))
                 .andExpect(status().isNotFound());
     }
 }

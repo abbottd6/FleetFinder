@@ -12,7 +12,7 @@ export class LookupService {
   constructor(private http: HttpClient) { }
 
   getServerRegions(): Observable<any[]> {
-    return this.http.get<any[]>('/api/serverRegions')
+    return this.http.get<any[]>('/api/lookup/server-regions')
   }
 
   getGameEnvironments(): Observable<any[]> {
@@ -24,7 +24,7 @@ export class LookupService {
   }
 
   getPlayStyles(): Observable<any[]> {
-    return this.http.get<any[]>('/api/playStyles')
+    return this.http.get<any[]>('/api/lookup/play-styles')
   }
 
   getLegalities(): Observable<any[]> {
@@ -44,7 +44,7 @@ export class LookupService {
   }
 
   getPvpStatuses(): Observable<any[]> {
-    return this.http.get<any[]>('/api/pvpStatuses');
+    return this.http.get<any[]>('/api/lookup/pvp-statuses');
   }
 
   //Broader systems: Stanton, Pyro, etc.

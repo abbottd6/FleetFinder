@@ -47,7 +47,7 @@ class ServerRegionControllerTest {
     void testGetAllServerRegions_FoundList() throws Exception {
         when(serverRegionService.getAllServerRegions()).thenReturn(mockServerRegions);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/serverRegions"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/server-regions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].serverId").value(1))
                 .andExpect(jsonPath("$[0].servername").value("USA"))
@@ -60,7 +60,7 @@ class ServerRegionControllerTest {
         when(serverRegionService.getAllServerRegions())
                 .thenThrow(new ResourceNotFoundException("Unable to access server region data"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/serverRegions"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/server-regions"))
                 .andExpect(status().isNotFound());
     }
 
@@ -68,7 +68,7 @@ class ServerRegionControllerTest {
     void testGetServerRegionById_Found() throws Exception {
         when(serverRegionService.getServerRegionById(1)).thenReturn(mockServerRegions.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/serverRegions/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/server-regions/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.serverId").value(1))
                 .andExpect(jsonPath("$.servername").value("USA"));
@@ -78,7 +78,7 @@ class ServerRegionControllerTest {
     void testGetServerRegionById_NotFound() throws Exception {
         when(serverRegionService.getServerRegionById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/serverRegions/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/server-regions/33"))
                 .andExpect(status().isNotFound());
     }
 }

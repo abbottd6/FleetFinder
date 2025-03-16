@@ -47,7 +47,7 @@ class PlayStyleControllerTest {
     void testGetAllPlayStyles_FoundList() throws Exception {
         when(playStyleService.getAllPlayStyles()).thenReturn(mockPlayStyles);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/playStyles"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/play-styles"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].styleId").value(1))
@@ -61,7 +61,7 @@ class PlayStyleControllerTest {
         when(playStyleService.getAllPlayStyles())
                 .thenThrow(new ResourceNotFoundException("Unable to access play style data"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/playStyles"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/play-styles"))
                 .andExpect(status().isNotFound());
     }
 
@@ -69,7 +69,7 @@ class PlayStyleControllerTest {
     void testGetPlayStyleById_Found()  throws Exception {
         when(playStyleService.getPlayStyleById(1)).thenReturn(mockPlayStyles.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/playStyles/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/play-styles/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.styleId").value(1))
                 .andExpect(jsonPath("$.playStyle").value("Casual"));
@@ -79,7 +79,7 @@ class PlayStyleControllerTest {
     void testGetPlayStyleById_NotFound()  throws Exception {
         when(playStyleService.getPlayStyleById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/playStyles/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/play-styles/33"))
                 .andExpect(status().isNotFound());
     }
 }
