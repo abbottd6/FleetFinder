@@ -7,8 +7,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Optional;
 
-@RepositoryRestResource
-@CrossOrigin
+@RepositoryRestResource(exported = false)
 public interface GameplayCategoryRepository extends JpaRepository<GameplayCategory, Integer> {
 
     Optional<GameplayCategory> findByCategoryName(String categoryName);
