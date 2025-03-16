@@ -84,6 +84,8 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    //this needs to be moved to a conversion service in v2 and configured to not pass sensitive info to the front end or
+    //api endpoints
     public UserResponseDto convertToDto(User user) {
 
         //Entity 'User' contains a set of groupListing entities that also need to be converted to the response dto
