@@ -1,0 +1,11 @@
+<div class="dropdown-component">
+  <label id="time-zone-dropdown">Time Zone:</label>
+  <ng-select
+    [items]="timeZones"
+    bindValue="value"
+    bindLabel="label"
+    [formControl]="eventScheduleZoneControl"
+    placeholder="Select..."
+    [attr.aria-labelledby]="'time-zone-dropdown'">
+  </ng-select>
+</div>

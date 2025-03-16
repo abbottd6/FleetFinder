@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,12 +21,13 @@ public class GameplaySubcategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="subcategory_id")
-    private int subcategoryId;
+    private Integer subcategoryId;
 
     @Column(name="subcategory_name")
     private String subcategoryName;
 
     @ManyToOne
     @JoinColumn(name="category_id", nullable = false)
+    @JsonBackReference
     private GameplayCategory gameplayCategory;
 }

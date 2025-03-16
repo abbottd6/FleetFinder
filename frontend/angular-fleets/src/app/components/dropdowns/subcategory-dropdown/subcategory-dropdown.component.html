@@ -1,0 +1,11 @@
+<div class="dropdown-component">
+  <label id="subcategories-dropdown">Subcategory:</label>
+  <ng-select
+    [items]="filteredSubcategories"
+    bindLabel="subcategoryName"
+    bindValue="subcategoryId"
+    [formControl]="subcategoryControl"
+    placeholder="Select subcategory..."
+    [attr.aria-labelledby]="'subcategories-dropdown'">
+  </ng-select>
+</div>

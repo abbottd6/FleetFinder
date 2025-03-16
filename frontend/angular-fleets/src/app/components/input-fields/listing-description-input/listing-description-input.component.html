@@ -1,0 +1,23 @@
+<div class="listing-description-input">
+  <mat-form-field id="listing-description-input">
+    <mat-label>Listing Description</mat-label>
+    <mat-error *ngIf="descriptionControl?.hasError && (descriptionControl.dirty || !descriptionControl.untouched)">
+      <span *ngIf="descriptionControl?.hasError?.('minlength')">
+        Description must be at least 15 characters
+      </span>
+      <span *ngIf="descriptionControl?.hasError?.('required')">
+        Description is required
+      </span>
+    </mat-error>
+    <textarea
+      matInput
+      [formControl]="descriptionControl"
+      rows="5"
+      maxlength="500"
+      placeholder="Enter a detailed description"
+      (input)="updateCharacterCount()"
+      [attr.aria-labelledby]="'listing-description-input'">
+    </textarea>
+    <mat-hint align="start">{{ characterCount }}/500</mat-hint>
+  </mat-form-field>
+</div>

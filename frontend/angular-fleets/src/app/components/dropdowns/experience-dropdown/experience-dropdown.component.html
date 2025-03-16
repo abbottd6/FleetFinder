@@ -1,0 +1,14 @@
+<div class="dropdown-component">
+  <label id="experience-dropdown">Game Experience:</label>
+  <ng-select
+    [items]="experiences"
+    bindLabel="experienceType"
+    bindValue="experienceId"
+    [formControl]="experienceControl"
+    placeholder="Select experience..."
+    [attr.aria-labelledby]="'experience-dropdown'">
+  </ng-select>
+</div>
+<mat-error *ngIf="experienceControl?.hasError?.('required') && (experienceControl.dirty || !experienceControl.untouched)">
+  <span>Game Experience required</span>
+</mat-error>

@@ -1,0 +1,13 @@
+<div class="dropdown-component">
+  <label id="commsOption-dropdown">Comms:</label>
+  <ng-select
+    [items]="commsOptions"
+    bindLabel="option"
+    [formControl]="commsOptionControl"
+    placeholder="Select comms..."
+    [attr.aria-labelledby]="'commsOption-dropdown'">
+  </ng-select>
+</div>
+<mat-error *ngIf="commsOptionControl?.hasError?.('required') && (commsOptionControl.dirty || !commsOptionControl.untouched)">
+  <span>Game Experience required</span>
+</mat-error>

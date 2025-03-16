@@ -1,0 +1,13 @@
+<div class="dropdown-component">
+  <label id="system-dropdown">Star System:</label>
+  <ng-select
+    [items]="systems"
+    bindLabel="systemName"
+    [formControl]="planetarySystemControl"
+    placeholder="Select star system..."
+    [attr.aria-labelledby]="'system-dropdown'">
+  </ng-select>
+</div>
+<mat-error *ngIf="planetarySystemControl?.hasError?.('required') && (planetarySystemControl.dirty || !planetarySystemControl.untouched)">
+  <span>Star system required</span>
+</mat-error>

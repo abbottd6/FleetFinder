@@ -16,7 +16,7 @@ public class GameExperience {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="experience_id")
-    private int experienceId;
+    private Integer experienceId;
 
     @Column(name="experience_type")
     private String experienceType;
