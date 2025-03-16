@@ -26,7 +26,7 @@ public class ExperienceControllerIntegrationTest {
     //testing that correct number of game experiences exist
     @Test
     void testGetAllGameExperiences_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameExperiences"))
+        mockMvc.perform(get("/api/lookup/game-experiences"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
                 .andExpect(jsonPath("$[0].experienceId").exists())
@@ -36,7 +36,7 @@ public class ExperienceControllerIntegrationTest {
     //testing responseDto values
     @Test
     void testGetExperienceById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameExperiences/1"))
+        mockMvc.perform(get("/api/lookup/game-experiences/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.experienceId").value(1))
                 .andExpect(jsonPath("$.experienceType").value("Persistent Universe"));
@@ -44,7 +44,7 @@ public class ExperienceControllerIntegrationTest {
 
     @Test
     void testGetExperienceById_Failure_404() throws Exception {
-        mockMvc.perform(get("/api/gameExperiences/500"))
+        mockMvc.perform(get("/api/lookup/game-experiences/500"))
                 .andExpect(status().isNotFound());
     }
 }

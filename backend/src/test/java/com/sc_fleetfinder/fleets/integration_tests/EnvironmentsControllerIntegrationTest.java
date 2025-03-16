@@ -25,7 +25,7 @@ public class EnvironmentsControllerIntegrationTest {
     //testing that correct number of game environments exist
     @Test
     void testGetAllGameEnvironments_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments"))
+        mockMvc.perform(get("/api/lookup/game-environments"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(4))
                 .andExpect(jsonPath("$[0].environmentId").exists())
@@ -35,7 +35,7 @@ public class EnvironmentsControllerIntegrationTest {
     //testing responseDto values
     @Test
     void testGetEnvironmentById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/gameEnvironments/1"))
+        mockMvc.perform(get("/api/lookup/game-environments/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.environmentId").value(1))
                 .andExpect(jsonPath("$.environmentType").value("LIVE"));
@@ -43,7 +43,7 @@ public class EnvironmentsControllerIntegrationTest {
 
     @Test
     void testGetEnvironmentById_invalidId_404() throws Exception {
-        mockMvc.perform(get("/api/environments/5000"))
+        mockMvc.perform(get("/api/lookup/game-environments/5000"))
                 .andExpect(status().isNotFound());
     }
 }

@@ -46,7 +46,7 @@ class GameExperienceControllerTest {
     void testGetAllGameExperiences_FoundList() throws Exception {
         when(gameExperienceService.getAllExperiences()).thenReturn(mockExperiences);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameExperiences"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/game-experiences"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].experienceId").value(1))
@@ -60,7 +60,7 @@ class GameExperienceControllerTest {
         when(gameExperienceService.getAllExperiences())
                 .thenThrow(new ResourceNotFoundException("Unable to access data for game experiences"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameExperiences"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/game-experiences"))
                 .andExpect(status().isNotFound());
     }
 
@@ -68,7 +68,7 @@ class GameExperienceControllerTest {
     void testGetGameExperienceById_Found() throws Exception {
         when(gameExperienceService.getExperienceById(1)).thenReturn(mockExperiences.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameExperiences/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/game-experiences/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.experienceId").value(1))
                 .andExpect(jsonPath("$.experienceType").value("Persistent Universe"));
@@ -78,7 +78,7 @@ class GameExperienceControllerTest {
     void testGetGameExperienceById_NotFound() throws Exception {
         when(gameExperienceService.getExperienceById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameExperiences/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/game-experiences/33"))
                 .andExpect(status().isNotFound());
     }
 

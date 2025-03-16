@@ -49,7 +49,7 @@ class GameplaySubcategoryControllerTest {
     void testGetAllGameplaySubcategories_FoundList() throws Exception {
         when(gameplaySubcategoryService.getAllSubcategories()).thenReturn(mockSubcategoryDtos);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameplaySubcategories"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/gameplay-subcategories"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].subcategoryId").value(1))
@@ -63,7 +63,7 @@ class GameplaySubcategoryControllerTest {
         when(gameplaySubcategoryService.getAllSubcategories())
                 .thenThrow(new ResourceNotFoundException("Unable to access data for gameplay subcategories"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameplaySubcategories"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/gameplay-subcategories"))
                 .andExpect(status().isNotFound());
     }
 
@@ -71,7 +71,7 @@ class GameplaySubcategoryControllerTest {
     void testGetGameplaySubcategoryById_Found() throws Exception {
         when(gameplaySubcategoryService.getSubcategoryById(1)).thenReturn(mockSubcategoryDtos.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameplaySubcategories/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/gameplay-subcategories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.subcategoryId").value(1))
                 .andExpect(jsonPath("$.subcategoryName").value("Dueling"));
@@ -81,7 +81,7 @@ class GameplaySubcategoryControllerTest {
     void testGetGameplaySubcategoryById_NotFound() throws Exception {
         when(gameplaySubcategoryService.getSubcategoryById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameplaySubcategoryById/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/gameplay-subcategories/33"))
                 .andExpect(status().isNotFound());
     }
 }

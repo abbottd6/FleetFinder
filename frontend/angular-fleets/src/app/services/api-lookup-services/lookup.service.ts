@@ -16,11 +16,11 @@ export class LookupService {
   }
 
   getGameEnvironments(): Observable<any[]> {
-    return this.http.get<any[]>('/api/gameEnvironments')
+    return this.http.get<any[]>('/api/lookup/game-environments')
   }
 
   getGameExperiences(): Observable<any[]> {
-    return this.http.get<any[]>('/api/gameExperiences')
+    return this.http.get<any[]>('/api/lookup/game-experiences')
   }
 
   getPlayStyles(): Observable<any[]> {
@@ -36,11 +36,11 @@ export class LookupService {
   }
 
   getGameplayCategories(): Observable<any[]> {
-    return this.http.get<any[]>('/api/gameplayCategories');
+    return this.http.get<any[]>('/api/lookup/gameplay-categories');
   }
 
   getGameplaySubcategories(): Observable<any[]> {
-    return this.http.get<any[]>('/api/gameplaySubcategories');
+    return this.http.get<any[]>('/api/lookup/gameplay-subcategories');
   }
 
   getPvpStatuses(): Observable<any[]> {

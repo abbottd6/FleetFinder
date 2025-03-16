@@ -46,7 +46,7 @@ class GameplayCategoryControllerTest {
     void testGetAllGameplayCategories_FoundList() throws Exception {
         when(gameplayCategoryService.getAllCategories()).thenReturn(mockCategories);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameplayCategories"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/gameplay-categories"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(2))
                 .andExpect(jsonPath("$[0].gameplayCategoryId").value(1))
@@ -60,7 +60,7 @@ class GameplayCategoryControllerTest {
         when(gameplayCategoryService.getAllCategories())
                 .thenThrow(new ResourceNotFoundException("Unable to access data for gameplay categories"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameplayCategories"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/gameplay-categories"))
                 .andExpect(status().isNotFound());
     }
 
@@ -68,7 +68,7 @@ class GameplayCategoryControllerTest {
     void testGetGameplayCategoryById_Found() throws Exception {
         when(gameplayCategoryService.getCategoryById(1)).thenReturn(mockCategories.getFirst());
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameplayCategories/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/gameplay-categories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.gameplayCategoryId").value(1))
                 .andExpect(jsonPath("$.gameplayCategoryName").value("Ship Combat"));
@@ -77,7 +77,7 @@ class GameplayCategoryControllerTest {
     @Test void testGetGameplayCategoryById_NotFound() throws Exception {
         when(gameplayCategoryService.getCategoryById(33)).thenThrow(new ResourceNotFoundException(33));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/gameplayCategories/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/lookup/gameplay-categories/33"))
                 .andExpect(status().isNotFound());
     }
 }
