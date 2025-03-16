@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 @CrossOrigin
 @RestController
-@RequestMapping("/api/groupListings")
+@RequestMapping("/api/group-listings")
 public class GroupListingsController {
 
     @Autowired
