@@ -8,7 +8,7 @@ import {Observable} from "rxjs";
 })
 export class CreateListingService {
 
-  private createListingUrl = 'http://localhost:8080/api/groupListings/create_listing';
+  private createListingUrl = 'http://localhost:8080/api/group-listings/create_listing';
 
   constructor(private httpClient: HttpClient) {
   }

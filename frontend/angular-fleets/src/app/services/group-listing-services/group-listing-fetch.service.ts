@@ -8,7 +8,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 })
 export class GroupListingFetchService {
 
-  private baseUrl = '/api/groupListings';
+  private baseUrl = '/api/group-listings';
 
   constructor(private httpClient: HttpClient) { }
 

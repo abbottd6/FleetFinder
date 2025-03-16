@@ -39,7 +39,7 @@ public class GroupListingsControllerIntegrationTest {
 
     @Test
     void testGetAllGroupListings_Success() throws Exception {
-        mockMvc.perform(get("/api/groupListings"))
+        mockMvc.perform(get("/api/group-listings"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("_embedded.groupListingResponseDtoes[0].groupId").value("1"));
@@ -47,7 +47,7 @@ public class GroupListingsControllerIntegrationTest {
 
     @Test
     void testGetGroupListingByIdSuccess() throws Exception {
-        mockMvc.perform(get("/api/groupListings/1"))
+        mockMvc.perform(get("/api/group-listings/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.groupId").value("1"))
                 .andExpect(jsonPath(
@@ -104,7 +104,7 @@ public class GroupListingsControllerIntegrationTest {
 
     @Test
     void testGetGroupListingByIdFailure() throws Exception {
-        mockMvc.perform(get("/api/groupListings/500"))
+        mockMvc.perform(get("/api/group-listings/500"))
                 .andExpect(status().isNotFound());
     }
 
@@ -135,7 +135,7 @@ public class GroupListingsControllerIntegrationTest {
             testDto.setCommsService("Discord");
 
         //posting the listing to call createGroupListing
-        mockMvc.perform(post("/api/groupListings/create_listing")
+        mockMvc.perform(post("/api/group-listings/create_listing")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isCreated())
@@ -147,7 +147,7 @@ public class GroupListingsControllerIntegrationTest {
         Long testId = jdbcTemplate.queryForObject("SELECT MAX(id_group) FROM group_listing", Long.class);
 
         //performing a get request for this id to check the response dto matches what was input in the createListingDto
-        mockMvc.perform(get("/api/groupListings/" + testId))
+        mockMvc.perform(get("/api/group-listings/" + testId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName").value("TestUser"))
                 .andExpect(jsonPath("$.server").value("USA"))
@@ -190,7 +190,7 @@ public class GroupListingsControllerIntegrationTest {
         testDto.setCommsOption("Optional");
 
         //posting the listing to call createGroupListing
-        mockMvc.perform(post("/api/groupListings/create_listing")
+        mockMvc.perform(post("/api/group-listings/create_listing")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isCreated())
@@ -202,7 +202,7 @@ public class GroupListingsControllerIntegrationTest {
         Long testId = jdbcTemplate.queryForObject("SELECT MAX(id_group) FROM group_listing", Long.class);
 
         //performing a get request for this id to check the response dto matches what was input in the createListingDto
-        mockMvc.perform(get("/api/groupListings/" + testId))
+        mockMvc.perform(get("/api/group-listings/" + testId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName").value("TestUser"))
                 .andExpect(jsonPath("$.server").value("USA"))
@@ -245,7 +245,7 @@ public class GroupListingsControllerIntegrationTest {
         testDto.setCurrentPartySize(2);
         testDto.setCommsOption("Optional");
 
-        mockMvc.perform(post("/api/groupListings/create_listing")
+        mockMvc.perform(post("/api/group-listings/create_listing")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isInternalServerError())
@@ -256,7 +256,7 @@ public class GroupListingsControllerIntegrationTest {
     void testCreateGroupListing_BadRequest_MissingRequiredFields() throws Exception {
         CreateGroupListingDto testDto = new CreateGroupListingDto();
 
-        mockMvc.perform(post("/api/groupListings/create_listing")
+        mockMvc.perform(post("/api/group-listings/create_listing")
             .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isBadRequest());

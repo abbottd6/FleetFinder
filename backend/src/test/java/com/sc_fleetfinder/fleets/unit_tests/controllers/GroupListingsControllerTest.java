@@ -115,7 +115,7 @@ class GroupListingsControllerTest {
         when(groupListingService.getAllGroupListings()).thenReturn(mockGroupListings);
 
         //Results for [0] are matched to mockListing1 and [1] is matched to mockListing2 in @BeforeEach
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/groupListings")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/group-listings")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$._embedded.groupListingResponseDtoes.size()").value(2))
@@ -229,7 +229,7 @@ class GroupListingsControllerTest {
         when(groupListingService.getAllGroupListings())
                 .thenThrow(new ResourceNotFoundException("There are no current group listings"));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/groupListings"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/group-listings"))
                 .andExpect(status().isNotFound());
     }
 
@@ -238,7 +238,7 @@ class GroupListingsControllerTest {
         when(groupListingService.getGroupListingById(1L)).thenReturn(mockGroupListings.getFirst());
 
         //results are matched to mockListing1 in @BeforeEach
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/groupListings/1")
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/group-listings/1")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andDo(print())
@@ -298,7 +298,7 @@ class GroupListingsControllerTest {
     void testGetGroupListingById_NotFound() throws Exception {
         when(groupListingService.getGroupListingById(33L)).thenThrow(new ResourceNotFoundException(33L));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/groupListings/33"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/api/group-listings/33"))
                 .andExpect(status().isNotFound());
     }
 
@@ -336,7 +336,7 @@ class GroupListingsControllerTest {
         }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class));
 
 
-        mockMvc.perform(post("/api/groupListings/create_listing")
+        mockMvc.perform(post("/api/group-listings/create_listing")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(mockDto)))
                 .andExpect(status().isCreated())
@@ -377,7 +377,7 @@ class GroupListingsControllerTest {
         }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class));
 
 
-        mockMvc.perform(post("/api/groupListings/create_listing")
+        mockMvc.perform(post("/api/group-listings/create_listing")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockDto)))
                 .andExpect(status().isCreated())
@@ -415,7 +415,7 @@ class GroupListingsControllerTest {
                     .body("An error occurred while creating your listing");
         }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class));
 
-        mockMvc.perform(post("/api/groupListings/create_listing")
+        mockMvc.perform(post("/api/group-listings/create_listing")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(mockDto)))
                 .andDo(print())
@@ -430,7 +430,7 @@ class GroupListingsControllerTest {
 
         //empty dto: fails all validations
 
-        mockMvc.perform(post("/api/groupListings/create_listing")
+        mockMvc.perform(post("/api/group-listings/create_listing")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidDto)))
                 .andDo(print())
