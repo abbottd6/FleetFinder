@@ -1,0 +1,79 @@
+<div class="main-body">
+  <span class="page-title"><h2>Create your group listing</h2></span>
+  <div class="header-line"></div>
+  <div>
+    <form class="form-body" [formGroup]="listingFormGroup" (ngSubmit)="onSubmit()">
+
+      <!-- titleGroup -->
+      <div formGroupName="titleGroup">
+        <h4 class="form-group-heading1">Listing Title</h4>
+        <div class="form-title-row">
+          <app-listing-title-input [titleControl]="listingTitle"></app-listing-title-input>
+        </div>
+      </div>
+
+      <!-- sessionEnvInfoGroup -->
+      <div formGroupName="sessionEnvInfoGroup">
+        <h4 class="form-group-heading2">Game Environment</h4>
+        <div class="form-row">
+            <app-server-dropdown [serverControl]="serverRegion"></app-server-dropdown>
+            <app-environment-dropdown [environmentControl]="gameEnvironment"></app-environment-dropdown>
+            <app-experience-dropdown [experienceControl]="gameExperience"></app-experience-dropdown>
+        </div>
+      </div>
+
+      <!-- gameplayInfoGroup -->
+      <div formGroupName="gameplayInfoGroup">
+        <h4 class="form-group-heading2">Gameplay Details</h4>
+        <div class="form-row">
+          <app-playstyle-dropdown [playStyleControl]="playStyle"></app-playstyle-dropdown>
+          <app-category-dropdown [categoryControl]="category"></app-category-dropdown>
+          <app-subcategory-dropdown [subcategoryControl]="subcategory" [categoryControl]="category"></app-subcategory-dropdown>
+        </div>
+        <div class="form-row">
+          <app-legality-dropdown [legalityControl]="legality"></app-legality-dropdown>
+          <app-pvp-status-dropdown [pvpStatusControl]="pvpStatus"></app-pvp-status-dropdown>
+        </div>
+        <div class="form-row">
+          <app-system-dropdown [planetarySystemControl]="planetarySystem"></app-system-dropdown>
+          <app-planet-dropdown [planetMoonControl]="planetMoon" [planetarySystemControl]="planetarySystem"></app-planet-dropdown>
+        </div>
+        <div class="form-row-text-input">
+          <app-listing-description-input [descriptionControl]="listingDescription"></app-listing-description-input>
+        </div>
+      </div>
+
+      <!-- groupSpecInfoGroup -->
+      <div formGroupName="groupSpecInfoGroup">
+        <h4 class="form-group-heading2">Group Specs</h4>
+        <div class="form-row">
+          <app-group-status-dropdown [groupStatusControl]="groupStatus"></app-group-status-dropdown>
+          <app-event-schedule-datepicker-input [eventScheduleDateControl]="eventScheduleDate" [groupStatusControl]="groupStatus"></app-event-schedule-datepicker-input>
+          <app-schedule-time-dropdown [eventScheduleTimeControl]="eventScheduleTime" [groupStatusControl]="groupStatus"></app-schedule-time-dropdown>
+          <app-schedule-time-zone-dropdown [eventScheduleZoneControl]="eventScheduleZone" [groupStatusControl]="groupStatus"></app-schedule-time-zone-dropdown>
+        </div>
+        <div *ngIf="isEventScheduleInvalid" class="error-row">
+          <mat-error>Event schedule fields: date, time, and time zone are required when group status is "Future/Scheduled"</mat-error>
+        </div>
+        <div class="form-row">
+          <app-current-party-size-dropdown [currentPartySizeControl]="currentPartySize"></app-current-party-size-dropdown>
+          <app-desired-party-size-dropdown [desiredPartySizeControl]="desiredPartySize"></app-desired-party-size-dropdown>
+        </div>
+        <div class="form-row-text-input">
+          <app-available-roles-input [availableRolesControl]="availableRoles"></app-available-roles-input>
+        </div>
+        <div class="form-row">
+          <app-comms-option-dropdown [commsOptionControl]="commsOption"></app-comms-option-dropdown>
+          <div class="form-row-text-input">
+            <app-comms-service-input [commsServiceControl]="commsService" [commsOptionControl]="commsOption"></app-comms-service-input>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="formSubmitted && listingFormGroup.invalid" class="submit-error">Check required fields</div>
+      <div class="submit-button-container">
+        <button type="submit" class="submit-button">Create Listing</button>
+      </div>
+    </form>
+  </div>
+</div>
+

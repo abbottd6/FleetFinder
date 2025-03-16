@@ -1,0 +1,24 @@
+<div class="welcome-container">
+  <h1>Welcome to FleetFinder</h1>
+  <div class="welcome-main-body">
+    <div class="image-container">
+      <div class="image-border">
+        <img src="/images/Pico%20Gunners.jpg" id="welcome-image" alt="Pico is the best">
+      </div>
+    </div>
+    <div class="text-body-container">
+      <span id="body-title"><h2>Need a better crew?</h2></span>
+      <span class="text-body">FleetFinder is a fan-operated companion tool for the Star Citizen MMO,
+        helping players connect and form groups based on shared interests.</span>
+      <div id="entry-buttons-container">
+        <a [routerLink]="['/create-listing']">
+          <button class="entry-buttons" onclick="window.location.href='/create-listing'">Create Group Listing</button>
+        </a>
+        <a [routerLink]="['/group-listings']">
+          <button class="entry-buttons" onclick="window.location.href='/group-listings'">Search Existing Groups</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+

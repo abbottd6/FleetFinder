@@ -1,0 +1,16 @@
+@import '../dropdown-module/dropdown-styles.css';
+
+.dropdown-component ng-select {
+  width: 13rem;
+}
+
+:host ::ng-deep .ng-select.ng-select-single .ng-select-container .ng-value-container,
+.ng-select.ng-select-single .ng-select-container .ng-value-container .ng-value {
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+:host ::ng-deep .ng-select-container{
+  width: auto !important;
+  max-width: 100%;
+}

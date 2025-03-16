@@ -1,0 +1,14 @@
+<div class="dropdown-component">
+  <label id="groupStatuses-dropdown">Group Status:</label>
+  <ng-select
+    [items]="groupStatuses"
+    bindLabel="groupStatus"
+    bindValue="groupStatusId"
+    [formControl]="groupStatusControl"
+    placeholder="Select status..."
+    [attr.aria-labelledby]="'groupStatuses-dropdown'">
+  </ng-select>
+</div>
+<mat-error *ngIf="groupStatusControl?.hasError?.('required') && (groupStatusControl.dirty || !groupStatusControl.untouched)">
+  <span>Group status required</span>
+</mat-error>

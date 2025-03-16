@@ -1,0 +1,78 @@
+.table-container {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(108, 117, 125, 100);
+  max-width: 90vw;
+  border-top: 4px solid rgba(255, 131, 7, .75);
+  border-left: 4px solid rgba(255, 131, 7, .75);
+  font-size: 1.1rem;
+  color: var(--bs-gray-900);
+  flex-grow: 1;
+  min-height: 150px;
+  height: 74vh;
+}
+
+
+table th {
+  position: sticky;
+  top: 0;
+  background-color: #60646a;
+  z-index: 1;
+  font-size: clamp(0.8rem, 1vw, 1.1rem);
+}
+
+.groups-table tbody tr:nth-child(even) {
+  background-color: #2c2c2c;
+}
+
+.groups-table tbody tr:nth-child(odd) {
+  background-color: #3c3c3c;
+}
+
+.groups-table {
+  color: #d8d8d8;
+}
+
+.groups-table tr td {
+  padding: clamp(0.5rem, 1vw, 0.8rem);
+  font-size: clamp(0.7rem, 1vw, 1.1rem);
+}
+
+@media(max-width: 1100px) {
+  table th, table td {
+    max-height: 4vh;
+    /*overflow: hidden;*/
+    /*text-overflow: ellipsis;*/
+    white-space: nowrap;
+  }
+
+  .table-container {
+    overflow-x: scroll;
+    max-height: 58vh;
+  }
+}
+
+.groups-table th {
+  padding: 1rem;
+}
+
+.groups-table tbody tr {
+  transition: background-color 0.15s ease;
+  cursor:  pointer;
+}
+.groups-table tbody tr:hover {
+  background-color: rgba(69, 69, 74, 0.75);
+}
+
+.pvp-color {
+  color: rgba(255, 0, 0, .75);
+}
+
+.pvx-color {
+  color: rgba(255, 131, 7, .75);
+}
+
+.pve-color {
+  color: green;
+}
+

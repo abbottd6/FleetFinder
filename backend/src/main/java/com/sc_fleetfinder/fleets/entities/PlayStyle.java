@@ -16,7 +16,7 @@ public class PlayStyle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="style_id")
-    private int styleId;
+    private Integer styleId;
 
     @Column(name="play_style")
     private String playStyle;

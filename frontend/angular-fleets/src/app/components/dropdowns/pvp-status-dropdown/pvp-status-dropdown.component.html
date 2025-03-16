@@ -1,0 +1,14 @@
+<div class="dropdown-component">
+  <label id="pvpStatus-dropdown">PvP Status:</label>
+  <ng-select
+    [items]="pvpStatuses"
+    bindLabel="pvpStatus"
+    bindValue="pvpStatusId"
+    [formControl]="pvpStatusControl"
+    placeholder="Select pvp status..."
+    [attr.aria-labelledby]="'pvpStatus-dropdown'">
+  </ng-select>
+</div>
+<mat-error *ngIf="pvpStatusControl?.hasError?.('required') && (pvpStatusControl.dirty || !pvpStatusControl.untouched)">
+  <span>PvP status required</span>
+</mat-error>

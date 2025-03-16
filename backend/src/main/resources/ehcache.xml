@@ -1,0 +1,134 @@
+<config xmlns='http://www.ehcache.org/v3'
+        xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core.xsd">
+
+    <cache alias="environmentsCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">4</heap>
+        </resources>
+    </cache>
+
+
+    <cache alias="experienceCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>2</heap>
+        </resources>
+    </cache>
+
+
+    <cache alias="categoryCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>12</heap>
+        </resources>
+    </cache>
+
+
+    <cache alias="subcategoriesCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>45</heap>
+        </resources>
+    </cache>
+
+
+    <cache alias="groupStatusesCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>2</heap>
+        </resources>
+    </cache>
+
+
+    <cache alias="legalitiesCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>3</heap>
+        </resources>
+    </cache>
+
+
+    <cache alias="planetarySystemsCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>5</heap>
+        </resources>
+    </cache>
+
+
+    <cache alias="planetsCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>15</heap>
+        </resources>
+    </cache>
+
+    <cache alias="playStylesCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>12</heap>
+        </resources>
+    </cache>
+
+
+    <cache alias="pvpStatusesCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>3</heap>
+        </resources>
+    </cache>
+
+
+    <cache alias="serverRegionsCache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+        <expiry>
+            <ttl>3600</ttl>
+        </expiry>
+        <resources>
+            <heap>8</heap>
+        </resources>
+    </cache>
+</config>

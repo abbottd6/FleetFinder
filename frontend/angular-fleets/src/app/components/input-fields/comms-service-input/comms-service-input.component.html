@@ -1,0 +1,13 @@
+<div class="comms-service-input">
+  <mat-form-field>
+    <mat-label>Comms Service: Optional</mat-label>
+    <input
+      matInput
+      [formControl]="commsServiceControl"
+      (input)="updateCharacterCount()"
+      maxlength="50"
+      placeholder="Ex: Discord..."
+      [attr.aria-labelledby]="'comms-service-input'">
+    <mat-hint align="start">{{ characterCount }}/50</mat-hint>
+  </mat-form-field>
+</div>

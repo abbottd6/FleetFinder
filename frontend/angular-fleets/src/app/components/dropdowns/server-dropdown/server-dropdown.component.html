@@ -1,0 +1,14 @@
+<div class="dropdown-component">
+  <label id="server-dropdown">Server Region:</label>
+  <ng-select
+    [items]="servers"
+    bindLabel="servername"
+    bindValue="serverId"
+    [formControl]="serverControl"
+    placeholder="Select server..."
+    [attr.aria-labelledby]="'server-dropdown'">
+  </ng-select>
+</div>
+<mat-error *ngIf="serverControl?.hasError?.('required') && (serverControl.dirty || !serverControl.untouched)">
+  <span>Server Region required</span>
+</mat-error>

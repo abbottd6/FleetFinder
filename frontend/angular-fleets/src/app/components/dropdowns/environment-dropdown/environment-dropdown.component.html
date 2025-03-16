@@ -1,0 +1,14 @@
+<div class="dropdown-component">
+  <label id="environment-dropdown">Game Environment:</label>
+  <ng-select
+    [items]="environments"
+    bindLabel="environmentType"
+    bindValue="environmentId"
+    [formControl]="environmentControl"
+    placeholder="Select environment..."
+    [attr.aria-labelledby]="'environment-dropdown'">
+  </ng-select>
+</div>
+<mat-error *ngIf="environmentControl?.hasError?.('required') && (environmentControl.dirty || !environmentControl.untouched)">
+  <span>Game Environment required</span>
+</mat-error>

@@ -1,26 +1,27 @@
 package com.sc_fleetfinder.fleets.entities;
 
-import com.sc_fleetfinder.fleets.util.CommsOption;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.springframework.lang.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Data;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import com.sc_fleetfinder.fleets.util.GroupStatus;
-import com.sc_fleetfinder.fleets.util.Legality;
-import com.sc_fleetfinder.fleets.util.PvpStatus;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name="group_listing")
@@ -31,78 +32,111 @@ public class GroupListing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_group")
-    private int groupId;
+    private Long groupId;
 
     @ManyToOne
     @JoinColumn(name="id_user", nullable = false)
+    @NotNull(message = "GroupListing entity field 'user' cannot be null")
+    @JsonBackReference
     private User user;
 
-    @Column(name="server_id")
-    private int serverId;
+    @ManyToOne
+    @JoinColumn(name="server_id")
+    @NotNull(message = "GroupListing entity field 'server' cannot be null")
+    private ServerRegion server;
 
-    @Column(name="environment_id")
-    private int environmentId;
+    @ManyToOne
+    @JoinColumn(name="environment_id")
+    @NotNull(message = "GroupListing entity field 'environment' cannot be null")
+    private GameEnvironment environment;
 
-    @Column(name="experience_id")
-    private int experienceId;
+    @ManyToOne
+    @JoinColumn(name="experience_id")
+    @NotNull(message = "GroupListing entity field 'experience' cannot be null")
+    private GameExperience experience;
 
     @Column(name="listing_title")
+    @NotBlank(message = "GroupListing entity field 'listingTitle' cannot be blank")
+    @Size(min = 3, max = 65, message = "GroupListing entity field 'listingTitle' must be between 2 and 65 characters")
     private String listingTitle;
 
-    @Column(name="listing_user")
-    private String listingUser;
+    @ManyToOne
+    @Nullable
+    @JoinColumn(name="style_id")
+    private PlayStyle playStyle;
 
-    @Column(name="style_id")
-    private int styleId;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name="legality")
+    @ManyToOne
+    @JoinColumn(name="legality_id")
+    @NotNull(message = "GroupListing entity field 'legality' cannot be null")
     private Legality legality;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="group_status")
+    @ManyToOne
+    @JoinColumn(name="group_status_id")
+    @NotNull(message = "GroupListing entity field 'groupStatus' cannot be null")
     private GroupStatus groupStatus;
 
     @Column(name="event_schedule")
-    private LocalDateTime eventSchedule;
+    @Nullable
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant eventSchedule;
 
-    @Column(name="category_id")
-    private int categoryId;
+    @ManyToOne
+    @JoinColumn(name="category_id")
+    @NotNull(message = "GroupListing category cannot be null")
+    private GameplayCategory category;
 
-    @Column(name="subcategory_id")
-    private int subcategoryId;
+    @ManyToOne
+    @JoinColumn(name="subcategory_id")
+    @Nullable
+    private GameplaySubcategory subcategory;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="pvp_status")
+    @ManyToOne
+    @JoinColumn(name="pvp_status_id")
+    @NotNull(message = "GroupListing entity field 'pvpStatus' cannot be null")
     private PvpStatus pvpStatus;
 
-    @Column(name="system_id")
-    private int systemId;
+    @ManyToOne
+    @JoinColumn(name="system_id")
+    @NotNull(message = "GroupListing entity field 'system' cannot be null")
+    private PlanetarySystem system;
 
-    @Column(name="planet_id")
-    private int planetId;
+    @ManyToOne
+    @JoinColumn(name="planet_id")
+    @Nullable
+    private PlanetMoonSystem planetMoonSystem;
 
-    @Column(name="activity_description")
-    private String activityDescription;
+    @Column(name="listing_description")
+    @NotBlank(message = "GroupListing entity field 'listingDescription' cannot be blank")
+    @Size(max = 500, message = "Listing description cannot be longer than 500 characters")
+    private String listingDescription;
 
     @Column(name="desired_party_size")
-    private int desiredPartySize;
+    @Min(value = 2, message = "GroupListing entity field 'desiredPartySize' must be at least 2.")
+    @Max(value = 1000, message = "GroupListing entity field 'desiredPartySize' cannot exceed 1,000.")
+    private Integer desiredPartySize;
+
+    @Column(name="current_party_size")
+    @Min(value = 1, message = "GroupListing entity field 'currentPartySize' must be at least 1.")
+    @Max(value = 1000, message = "GroupListing entity field 'currentPartySize' cannot exceed 1,000.")
+    private Integer currentPartySize;
 
     @Column(name="available_roles")
     private String availableRoles;
 
-    @Enumerated(EnumType.STRING)
     @Column(name="comms_options")
-    private CommsOption commsOption;
+    @NotNull(message = "GroupListing entity field 'commsOptions' cannot be null")
+    private String commsOption;
 
     @Column(name="comms_service")
     private String commsService;
 
     @CreationTimestamp
     @Column(name="creation_timestamp")
-    private LocalDateTime creationTimestamp;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant creationTimestamp;
 
     @UpdateTimestamp
     @Column(name="last_updated")
-    private LocalDateTime lastUpdated;
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant lastUpdated;
 }
