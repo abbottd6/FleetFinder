@@ -68,7 +68,7 @@ export class CreateListingComponent  implements OnInit {
       return;
     }
 
-    const newListingData = new CreateListingRequest(3, this.listingFormGroup.value);
+    const newListingData = new CreateListingRequest(1, this.listingFormGroup.value);
 
     console.log(newListingData);
 

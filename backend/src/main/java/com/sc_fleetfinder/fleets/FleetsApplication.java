@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets;
 
+import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -11,7 +12,9 @@ import org.springframework.context.annotation.Bean;
 public class FleetsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(FleetsApplication.class, args);
+		SpringApplication app = new SpringApplication(FleetsApplication.class);
+		app.addInitializers(new TestEnvironmentLoader());
+		app.run(args);
 	}
 
 }
