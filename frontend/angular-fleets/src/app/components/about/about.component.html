@@ -1,0 +1,134 @@
+<div class="about-container">
+  <h1>About FleetFinder: Development Details</h1>
+  <div class="about-main-body text-body-container">
+    <h2>What is FleetFinder?</h2>
+    <div class="text-body">
+      <p>
+        FleetFinder is a companion app for the MMO video game <span style="font-style: italic">Star Citizen</span>, a
+        space simulation game being developed by Cloud Imperium Games (CIG). Although
+        <span style="font-style: italic">Star Citizen</span> is in an "alpha" phase, it has live and playable servers
+        (many would dispute the validity of this description) where players can experiment and test the available
+        features.
+      </p>
+      <p>
+        Given the game's current status as an alpha version, it lacks features that are considered standard for modern
+        MMOs. One major gap is a group finder, a tool that helps players connect with others who share similar
+        interests. The goal of FleetFinder is to fill this gap by helping players team up for shared gameplay
+        experiences, whether collaborative, combative, or both.
+      </p>
+    </div>
+    <h2>Why FleetFinder?</h2>
+    <div class="text-body">
+      <p>
+        I am building FleetFinder to apply the programming skills that I've developed in the WGU Computer Science
+        program and push myself to branch off to learn new technologies not covered in my coursework. The app solves
+        a real problem for the <span style="font-style: italic">Star Citizen</span> community while also giving me a
+        platform to grow as a fullstack developer.
+      </p>
+      <p>
+        This project has given me hands-on experience designing a scalable web app while working with languages like Java
+        and TypeScript, frameworks like Spring Boot and Angular, troubleshooting, testing, and much more. FleetFinder
+        development is still in progress, with several features that I plan to implement in the v2/MVP for the
+        app. Each of the features that I plan to implement moving forward will provide further opportunity for me to
+        expand my skills and deepen my understanding of modern software development.
+      </p>
+    </div>
+    <h2>Tech Stack and Tools</h2>
+    <div class="text-body">
+      <p>I am developing FleetFinder using a modern full-stack architecture.</p>
+      <p>Key tools and technologies include:</p>
+
+      <h3>Backend</h3>
+      <ul>
+        <li>Java 22</li>
+        <li>Spring Boot - REST APIs, dependency injection, caching</li>
+        <li>Spring Data JPA - Database persistence</li>
+        <li>Maven - Build and dependency management</li>
+      </ul>
+
+      <h3>Testing</h3>
+      <ul>
+        <li>JUnit 5 and Spring Boot Test</li>
+        <li>Mockito and MockMVC</li>
+        <li>Postman - API testing</li>
+      </ul>
+
+      <h3>Database</h3>
+      <ul>
+        <li>MySQL 8.2</li>
+        <li>MySQL Workbench - Design and management</li>
+        <li>Flyway - DB migration</li>
+      </ul>
+
+      <h3>Frontend</h3>
+      <ul>
+        <li>Angular 19</li>
+        <li>npm - for Angular packages</li>
+        <li>TypeScript</li>
+        <li>Bootstrap, HTML/CSS</li>
+      </ul>
+
+      <h3>Deployment And DevOps</h3>
+      <ul>
+        <li>Docker - Docker Compose for backend and MySQL instance</li>
+        <li>AWS - Hosting</li>
+      </ul>
+
+      <h3>Supporting Tools And Libraries</h3>
+      <ul>
+        <li>Dotenv - Environment variable management in Spring Boot</li>
+        <li>ModelMapper - Simplify object mapping between entities and DTOs</li>
+        <li>EhCache - Lightweight caching for static lookup data</li>
+        <li>Lombok - Minimize boilerplate code</li>
+        <li>Spring Boot Validation - Data validation</li>
+        <li>Logback and SLF4J - Error and info logging</li>
+      </ul>
+
+      <h3>Version Control</h3>
+      <ul>
+        <li>Git/GitHub</li>
+      </ul>
+
+      <h3>Planned/Upcoming Integrations</h3>
+      <ul>
+        <li>Jenkins - CI/CD pipeline for automated builds and deployment</li>
+        <li>Keycloak - user login and authentication</li>
+        <li>RabbitMQ - message broker for asynchronous task handling</li>
+        <li>WebSockets - real-time chat and notifications</li>
+      </ul>
+
+    </div>
+
+    <h2>FleetFinder v1 <span style="color: darkgreen">(Current)</span></h2>
+    <div class="text-body">
+      <p style="text-indent: 0;">v1 of FleetFinder represents the core CRUD functionality of the app, including:</p>
+      <ul>
+        <li>MySQL database containing group listings and cacheable static lookup data for listing attributes</li>
+        <li>RESTful APIs built with Spring Boot</li>
+        <li>Basic Angular frontend with reactive forms for listing creation and a table for viewing current listings</li>
+        <li>Responsive web design for different viewport sizes</li>
+        <li>Thorough unit and integration testing of services, mapper configurations, REST controllers, etc.</li>
+      </ul>
+      <p>
+        I will be adding user accounts in v2, so the group listing creation for v1 just uses a hard coded testUser. The UI is only partially functional in v1, it contains
+        placeholders for features planned in future versions. This version lays the foundation for the more advanced
+        functionality and serves as a snapshot of my progress thus far.
+      </p>
+    </div>
+
+    <h2>Roadmap</h2>
+    <div class="text-body dev-text">
+      <p>
+        Features that I am in the process of learning for v2 of the app include setting up Jenkins for CI/CD, user
+        accounts and authentication, securing API endpoints, real-time messaging, refactoring the group listings table using Angular material
+        tables, and searching and filtering functionality for the group listings. These additions will round out the
+        app for an MVP.
+      </p>
+      <p>
+        Beyond v2, assuming that I can get to this point before CIG add a group finder in game, I plan to implement
+        admin moderation tools for group listings, reporting for listings, functionality for
+        users to save templates for listings, and data analytics for listing attributes.
+      </p>
+    </div>
+  </div>
+</div>

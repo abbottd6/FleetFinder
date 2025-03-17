@@ -10,6 +10,8 @@
   min-width: 90vw;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-color: #2c2c2c rgb(108, 117, 125);
+  scrollbar-arrow-color: transparent;
   border-top: 5px solid var(--stark-blue);
   border-left: 5px solid var(--stark-blue);
   color: var(--bs-gray-900);
@@ -201,7 +203,8 @@ app-comms-service-input {
   border: 2px solid rgba(255, 131, 7, 0.5);
   border-radius: 1rem !important;
   max-height: 40vh;
-  overflow: scroll;
+  overflow: auto;
+  scrollbar-width: none;
 }
 
 /* datepicker calendar days */

@@ -17,6 +17,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 import {NgSelectComponent} from "@ng-select/ng-select";
 import { GroupListingModalComponent } from './components/group-listing-modal/group-listing-modal.component';
+import { AboutComponent } from './components/about/about.component';
 
 
 @NgModule({
@@ -28,6 +29,7 @@ import { GroupListingModalComponent } from './components/group-listing-modal/gro
     FooterComponent,
     WelcomeScreenComponent,
     GroupListingModalComponent,
+    AboutComponent,
   ],
   imports: [
     BrowserModule,
