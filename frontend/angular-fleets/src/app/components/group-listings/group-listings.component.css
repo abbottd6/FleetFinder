@@ -47,7 +47,8 @@ table th {
   }
 
   .table-container {
-    overflow-x: scroll;
+    overflow-x: auto;
+    scrollbar-width: none;
     max-height: 58vh;
   }
 }

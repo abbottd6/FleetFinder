@@ -3,7 +3,8 @@
   color: #d8d8d8;
   font-size: clamp(0.8rem, 1vw, 1.2rem);
   margin-inline: auto;
-  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-width: none;
 }
 
 .modal-header {
