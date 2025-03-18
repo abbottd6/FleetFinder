@@ -19,7 +19,7 @@ services:
       - backend-network
 
   backend:
-    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-backend:v1.0.3
+    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-backend:cache_1742307917
     container_name: fleetfinder-backend
     restart: always
     environment:
@@ -37,7 +37,7 @@ services:
       - backend-network
 
   frontend:
-    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-frontend:v1.0.3
+    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-frontend:cache_1742309020
     container_name: fleetfinder-frontend
     restart: always
     ports:

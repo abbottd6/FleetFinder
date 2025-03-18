@@ -9,6 +9,7 @@
   min-width: 80vw;
   max-width: 90%;
   overflow: auto;
+  scrollbar-width: none;
   border-top: 5px solid var(--stark-blue);
   border-left: 5px solid var(--stark-blue);
   clip-path: polygon(0% 0%, 93% 0%, 100% 12%, 100% 100%, 100% 100%, 07% 100%, 0% 88%, 0% 0%);
