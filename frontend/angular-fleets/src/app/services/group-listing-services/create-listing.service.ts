@@ -9,7 +9,7 @@ import {environment} from "../../../environments/environment";
 })
 export class CreateListingService {
 
-  private createListingUrl = `${environment.apiBaseUrl}/api/group-listings/create_listing`;
+  private createListingUrl = `${environment.apiBaseUrl}/group-listings/create_listing`;
 
   constructor(private httpClient: HttpClient) {
   }
