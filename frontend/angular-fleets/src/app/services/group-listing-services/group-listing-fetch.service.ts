@@ -9,7 +9,7 @@ import {environment} from '../../../environments/environment';
 })
 export class GroupListingFetchService {
 
-  private baseUrl = `${environment.apiBaseUrl}/api/group-listings`;
+  private baseUrl = `${environment.apiBaseUrl}/group-listings`;
 
   constructor(private httpClient: HttpClient) { }
 

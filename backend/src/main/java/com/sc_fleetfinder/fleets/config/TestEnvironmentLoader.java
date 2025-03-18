@@ -31,7 +31,10 @@ public class TestEnvironmentLoader implements ApplicationContextInitializer<Conf
         PropertySource<Map<String, Object>> propertySource = new MapPropertySource("dotenv", envMap);
         context.getEnvironment().getPropertySources().addFirst(propertySource);
 
-        System.out.println("Loaded DB_USERNAME: " + dotenv.get("DB_USERNAME"));
-        System.out.println("Working Directory: " + System.getProperty("user.dir"));
+//        System.out.println("Loaded DB_USERNAME: " + dotenv.get("DB_USERNAME"));
+//        System.out.println("Loaded DB_PASSWORD: " + dotenv.get("DB_PASSWORD"));
+//        System.out.println("Loaded DB_HOST: " + dotenv.get("DB_HOST"));
+//        System.out.println("Loaded DB_PORT: " + dotenv.get("DB_PORT"));
+//        System.out.println("Working Directory: " + System.getProperty("user.dir"));
     }
 }
