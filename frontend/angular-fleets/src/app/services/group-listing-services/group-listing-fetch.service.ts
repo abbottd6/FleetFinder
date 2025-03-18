@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map, Observable, tap} from "rxjs";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
+import {environment} from '../../../environment/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupListingFetchService {
 
-  private baseUrl = '/api/group-listings';
+  private baseUrl = `${environment.apiBaseUrl}/api/group-listings`;
 
   constructor(private httpClient: HttpClient) { }
 
