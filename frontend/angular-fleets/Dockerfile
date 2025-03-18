@@ -4,7 +4,7 @@ COPY . .
 RUN npm install
 RUN npm run build --prod
 
-FROM nginx:alpine
+FROM nginx:latest
 COPY --from=builder /app/dist/angular-fleets/browser /usr/share/nginx/html
-COPY ./nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80

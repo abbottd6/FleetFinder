@@ -3,22 +3,26 @@
   flex-direction: column;
   background-color: rgba(108, 117, 125, 100);
   max-width: 90vw;
-  border-top: 4px solid rgba(255, 131, 7, .75);
-  border-left: 4px solid rgba(255, 131, 7, .75);
+  border-top: 4px solid rgba(52, 84, 120, 1);
+  border-left: 4px solid rgba(52, 84, 120, 1);
   font-size: 1.1rem;
   color: var(--bs-gray-900);
   flex-grow: 1;
   min-height: 150px;
   height: 74vh;
+  padding-bottom: 20vh;
+  overflow: auto;
+  scrollbar-width: none;
 }
 
 
 table th {
   position: sticky;
   top: 0;
-  background-color: #60646a;
+  background-color: var(--bs-gray-600);
   z-index: 1;
   font-size: clamp(0.8rem, 1vw, 1.1rem);
+  border-bottom: 2px solid rgba(255, 131, 7, .75);
 }
 
 .groups-table tbody tr:nth-child(even) {
@@ -30,7 +34,10 @@ table th {
 }
 
 .groups-table {
-  color: #d8d8d8;
+  color: rgba(25, 26, 30, .9);
+  margin-bottom: 20vh;
+  overflow: auto;
+  scrollbar-width: none;
 }
 
 .groups-table tr td {
