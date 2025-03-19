@@ -40,12 +40,27 @@ services:
     image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-frontend:cache_1742309020
     container_name: fleetfinder-frontend
     restart: always
-    ports:
-      - "80:80"
     depends_on:
       - backend
     networks:
-      - backend-network        
+      - backend-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: fleetfinder-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot/www:/var/www/certbot
+      - /etc/letsencrypt:/etc/letsencrypt
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - backend-network                  
 
 volumes:
   mysql_data:
