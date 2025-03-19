@@ -1,6 +1,8 @@
 <div class="about-container">
-  <h1>About FleetFinder: Development Details</h1>
+  <h1 id="top">About FleetFinder: Development Details</h1>
   <div class="about-main-body text-body-container">
+
+
     <h2 class="ext-link-h">External Links:</h2>
     <div id="ext-link-buttons-container">
       <a class="ext-link"
@@ -13,7 +15,44 @@
         My LinkedIn
       </a>
     </div>
-    <h2>What is FleetFinder?</h2>
+
+    <div class="section-links">
+      <h2>Jump to:</h2>
+      <ul class="bullet-text-body">
+        <li><a class="int-link"
+               onclick="document.getElementById('what-is-fleetfinder')?.scrollIntoView({ behavior: 'smooth' })">
+          What is FleetFinder?</a></li>
+        <li><a class="int-link"
+               onclick="document.getElementById('why-fleetfinder')?.scrollIntoView({ behavior: 'smooth' })">
+          Why FleetFinder?</a></li>
+        <li><a class="int-link"
+               onclick="document.getElementById('tech-stack')?.scrollIntoView({ behavior: 'smooth' })">
+          Tech Stack and Tools</a></li>
+        <li><a class="int-link"
+               onclick="document.getElementById('v1')?.scrollIntoView({ behavior: 'smooth' })">
+          FleetFinder v1</a></li>
+        <li><a class="int-link"
+               onclick="document.getElementById('roadmap')?.scrollIntoView({ behavior: 'smooth' })">
+          Roadmap</a></li>
+        <li><a class="int-link"
+               onclick="document.getElementById('architecture')?.scrollIntoView({ behavior: 'smooth' })">
+          Architecture Overview</a></li>
+        <ul class="tier-two-bullets">
+          <li><a class="int-link"
+                                      onclick="document.getElementById('backend-arch')?.scrollIntoView({ behavior: 'smooth' })">
+          Backend Architecture</a></li>
+          <li><a class="int-link"
+                 onclick="document.getElementById('frontend-arch')?.scrollIntoView({ behavior: 'smooth' })">
+            Frontend Architecture</a></li>
+          <li><a class="int-link"
+                 onclick="document.getElementById('deployment')?.scrollIntoView({ behavior: 'smooth' })">
+            Deployment and Containerization</a></li>
+        </ul>
+      </ul>
+    </div>
+
+
+    <h2 id="what-is-fleetfinder">What is FleetFinder?</h2>
     <div class="text-body">
       <p>
         FleetFinder is a companion app for the MMO video game <span style="font-style: italic">Star Citizen</span>, a
@@ -29,7 +68,10 @@
         experiences, whether collaborative, combative, or both.
       </p>
     </div>
-    <h2>Why FleetFinder?</h2>
+
+
+
+    <h2 id="why-fleetfinder">Why FleetFinder?</h2>
     <div class="text-body">
       <p>
         I am building FleetFinder to apply the programming skills that I've developed in the WGU Computer Science
@@ -45,10 +87,17 @@
         expand my skills and deepen my understanding of modern software development.
       </p>
     </div>
-    <h2>Tech Stack and Tools</h2>
+
+
+    <span class="ext-link-h"><a class="int-link"
+                                onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
+          Back To Top</a></span>
+
+
+
+    <h2 id="tech-stack">Tech Stack and Tools</h2>
     <div class="text-body">
-      <p>I am developing FleetFinder using a modern full-stack architecture.</p>
-      <p>Key tools and technologies include:</p>
+      <p>Key tools and technologies used in development include:</p>
 
       <h3>Backend</h3>
       <ul>
@@ -83,6 +132,7 @@
       <h3>Deployment And DevOps</h3>
       <ul>
         <li>Docker and Docker Compose - separate containers for frontend, backend, mysql, and reverse proxy</li>
+        <li>NGINX - static file serving and reverse proxy for request routing/SSL</li>
         <li>AWS - ECR, EC2, Route 53</li>
       </ul>
 
@@ -94,7 +144,6 @@
         <li>Lombok - Minimize boilerplate code</li>
         <li>Spring Boot Validation - Data validation</li>
         <li>Logback and SLF4J - Error and info logging</li>
-        <li>NGINX - static file serving and reverse proxy for request routing/SSL</li>
       </ul>
 
       <h3>Version Control</h3>
@@ -109,10 +158,15 @@
         <li>RabbitMQ - message broker for asynchronous task handling</li>
         <li>WebSockets - real-time chat and notifications</li>
       </ul>
-
     </div>
 
-    <h2>FleetFinder v1 <span style="color: darkgreen">(Current)</span></h2>
+
+    <span class="ext-link-h"><a class="int-link"
+                                    onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
+          Back To Top</a></span>
+
+
+    <h2 id="v1">FleetFinder v1 <span style="color: darkgreen">(Current)</span></h2>
     <div class="text-body">
       <p style="text-indent: 0;">v1 of FleetFinder represents the core CRUD functionality of the app, including:</p>
       <ul>
@@ -123,19 +177,23 @@
         <li>Thorough unit and integration testing of services, mapper configurations, REST controllers, etc.</li>
       </ul>
       <p>
-        I will be adding user accounts in v2, so the group listing creation for v1 just uses a hard coded testUser. The UI is only partially functional in v1, it contains
+        I will be adding user accounts in v2, so the group listing creation for v1 just uses a hard coded testUser. The
+        UI is only partially functional in v1, it contains
         placeholders for features planned in future versions. This version lays the foundation for the more advanced
         functionality and serves as a snapshot of my progress thus far.
       </p>
     </div>
 
-    <h2>Roadmap</h2>
-    <div class="text-body dev-text">
+
+
+    <h2 id="roadmap">Roadmap</h2>
+    <div class="text-body">
       <p>
         Features that I am in the process of learning for v2 of the app include setting up Jenkins for CI/CD, user
-        accounts and authentication, securing API endpoints, real-time messaging, refactoring the group listings table using Angular material
+        accounts and authentication, securing API endpoints,
+        real-time messaging, refactoring the group listings table using Angular material
         tables, and searching and filtering functionality for the group listings. These additions will round out the
-        app for an MVP.
+        app for what I am considering the minimum viable product.
       </p>
       <p>
         Beyond v2, assuming that I can get to this point before CIG add a group finder in game, I plan to implement
@@ -143,5 +201,182 @@
         users to save templates for listings, and data analytics for listing attributes.
       </p>
     </div>
+
+
+
+    <span class="ext-link-h"><a class="int-link"
+                                onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
+          Back To Top</a></span>
+
+
+
+    <h2 id="architecture">Architecture Overview</h2>
+    <div class="text-body">
+      <p>
+        FleetFinder is designed with a modular full-stack architecture that separates concerns between the frontend,
+        backend, and database layers. This structure enables better maintainability, scalability, and testability as
+        the application grows.
+      </p>
+
+      <h3 id="backend-arch">Backend Architecture</h3>
+      <ul>
+        <li class="bullet-item">Relational Data Model</li>
+          <p class="bullet-text-body">
+            The foundation of the backend is a MySQL 8.2 database structured around a normalized schema. Reusable
+            values such as PvP statuses, gameplay categories, and planetary systems are separated into dedicated lookup
+            tables, alongside tables for user-generated data like user accounts and group listings.
+            I chose this approach primarily in order to simplify searching and filtering by requiring normalized
+            attributes for listings, but also to minimize redundancy and simplify future
+            expansion or modification of these fields.
+          </p>
+        <li class="bullet-item">Entity-DTO Separation</li>
+          <p class="bullet-text-body">
+            Spring Data JPA maps the relational database tables to the Java entity classes, while Data Transfer Objects
+            (DTOs) are organized into two submodules: Response DTOs expose the necessary data to the frontend and
+            Request DTOs carry minimal identifiers from the client to the backend. This separation decouples the
+            internal model from the API interface, enables strong input validation, and simplifies future refactoring.
+          </p>
+        <li class="bullet-item">Lookup Table Structure</li>
+        <p class="bullet-text-body">
+          Each lookup table is mapped to its own entity and DTO class, with corresponding repository, service
+          interface, and service implementation. While I considered abstracting these services behind a
+          shared generic interface, I chose to define individual service pairs to keep the logic clear,
+          maintain separation of concerns, and allow the tables to evolve independently if necessary.
+        </p>
+        <li class="bullet-item">Object Mapping and Validation</li>
+          <p class="bullet-text-body">
+            ModelMapper is used to streamline conversions between entities and DTOs, with the majority of the simple
+            lookup table conversions using implicit mappings while the more complex mappings, like group listings, use
+            explicit ModelMapper configurations. Spring Boot's built in validation annotations help enforce data
+            integrity at each stage before persisting new listings or returning data to the client.
+          </p>
+        <li class="bullet-item">Caching</li>
+          <p class="bullet-text-body">
+            Lookup data is cached on both the frontend and in the backend using EhCache to reduce redundant database
+            queries for static reference data. This lightweight caching layer ensures that frequently requested
+            reference data can be served quickly without repeated access to the database.
+          </p>
+        <li class="bullet-item">RESTful API Design</li>
+          <p class="bullet-text-body">
+            The backend exposes well-structured REST APIs using Spring Boot, providing endpoints for group listings and
+            lookup data. The API is organized using RESTful conventions and designed to be easily extendable as new
+            features are added.
+          </p>
+        <li class="bullet-item">Backend Testing</li>
+          <p class="bullet-text-body">
+            The backend also includes extensive unit and integration testing to ensure reliability, maintainability,
+            and safe future deployments.  These tests include edge cases for invalid objects as well as success and
+            failure paths.  The tests were created with the goal of integrating a Jenkins CI/CD pipeline in
+            v2 of the app, enabling automated test runs before deploying updates and new versions to
+            the EC2 instance.
+          </p>
+      </ul>
+    </div>
+
+
+
+    <span class="ext-link-h"><a class="int-link"
+                                onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
+        Back To Top</a></span>
+
+
+    <div class="text-body">
+      <h3 id="frontend-arch">Frontend Architecture</h3>
+        <ul>
+          <li class="bullet-item">Angular SPA</li>
+            <p class="bullet-text-body">
+              The frontend is built with Angular 22 as a single-page application, utilizing Angular routing for page
+              navigation and maintaining application state across views.
+            </p>
+          <li class="bullet-item">Component-Based Design</li>
+            <p class="bullet-text-body">
+              The UI is broken into modular, reusable components, including a shared dropdowns module that integrates
+              directly with Angular forms. This structure improves code clarity by keeping logic encapsulated and
+              simplifies future development (e.g. filtering search results) and testing.
+            </p>
+          <li class="bullet-item">Distinct and Typed Request/View Models</li>
+            <p class="bullet-text-body">
+              The frontend defines separate, strongly typed models for request and response data for group listings to
+              mirror the backend entity and DTO structure. This distinction maintains a clear boundary between form
+              submission logic and UI rendering.
+            </p>
+          <li class="bullet-item">Reactive Forms</li>
+            <p class="bullet-text-body">
+              Angular Reactive Forms are used to manage group listing creation, providing real-time validation
+              and fine-grained control over form data and structure.
+            </p>
+          <li class="bullet-item">Dropdowns with Lookup Data</li>
+            <p class="bullet-text-body">
+              Form dropdowns are dynamically populated by calling backend endpoints that serve the cached lookup data.
+              The form stores the ID values while displaying the corresponding human-readable names.  Some of the fields
+              are also context-sensitive.  For example, the available gameplay subcategories are filtered based on the
+              selected gameplay category.  Another example is the event schedule fields for the date picker, time zone,
+              and time, which become enabled or disabled based on the user's "group status" selection.
+            </p>
+          <li class="bullet-item">Time Zone Normalization</li>
+            <p class="bullet-text-body">
+              The Create Listing form accepts separate user inputs for the date, time, and time zone of the "event
+              schedule" field. These inputs are combined and converted into a UTC-normalized ISO string for consistent
+              storage in the database, regardless of the user's local time zone.  The event timestamps, as well as
+              the creation and update timestamps generated by the database, are converted back to the user's browser
+              time for display to provide a seamless and intuitive experience across different regions.
+            </p>
+          <li class="bullet-item">Frontend Caching</li>
+            <p class="bullet-text-body">
+              The frontend also caches static lookup data on the client side using a generic helper method in the lookup
+              service. This prevents repeated HTTP requests from the same user during a session and complements the
+              backend caching strategy by reducing unnecessary network traffic and improving performance.
+            </p>
+          <li class="bullet-item">Responsive Design</li>
+            <p class="bullet-text-body">
+              The interface is styled with modified Bootstrap and custom CSS for a clean, responsive experience across
+              desktop and mobile devices.
+            </p>
+        </ul>
+    </div>
+
+
+    <span class="ext-link-h"><a class="int-link"
+                                onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
+        Back To Top</a></span>
+
+
+
+    <div class="text-body">
+      <h3 id="deployment">Deployment and Containerization</h3>
+        <ul>
+          <li class="bullet-item">Dockerized Environment</li>
+            <p class="bullet-text-body">
+              The entire application is containerized using Docker, with each major service running in its own
+              container for separation of concerns and ease of deployment:
+            </p>
+                  <ul class="tier-two-bullets">
+                    <li>MySQL - relational database</li>
+                    <li>Spring Boot Backend - REST API server</li>
+                    <li>Angular Frontend - compiled and served with NGINX</li>
+                    <li>NGINX Reverse Proxy - handles HTTPS and routes traffic to backend and frontend containers</li>
+                  </ul>
+          <li class="bullet-item">Docker Compose</li>
+            <p class="bullet-text-body">
+              Docker Compose orchestrates all services for local and production environments, enabling consistent
+              builds and simplified development workflows.
+            </p>
+          <li class="bullet-item">SSL and HTTPS</li>
+            <p class="bullet-text-body">
+              The app is served over HTTPS for secure communication between client and server, using NGINX configuration
+              for SSL termination.
+            </p>
+        </ul>
+    </div>
+
+    <div class="conclusion">
+      <p>
+        Thank you for your interest in SC FleetFinder and reading about my work on the project! I hope that you'll
+        check back in the future to see how the app is progressing.
+      </p>
+    </div>
+    <span class="dev-text"><a class="int-link"
+                                onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
+          Back To Top</a></span>
   </div>
 </div>

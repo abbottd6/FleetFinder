@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 .about-container {
   display: flex;
   flex-direction: column;
@@ -60,9 +64,22 @@ ul {
   }
   h3 {
     font-size: 1.3rem;
+    font-weight: 600;
   }
   h4 {
-    font-size: 1.3rem;
+    font-size: 1.1rem;
+  }
+  .bullet-item {
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 1rem 0 0.75rem 0;
+  }
+  .bullet-text-body {
+    text-indent: 0;
+    padding-inline: 5.5rem;
+  }
+  .tier-two-bullets {
+    padding-inline: 5.5rem;
   }
 }
 
@@ -239,7 +256,26 @@ ul {
   text-shadow: .3rem .3rem .5rem var(--stark-blue);
   cursor: pointer;
 }
-.dev-text {
-  margin-bottom: 20vh;
+
+.int-link {
+  color: rgba(46,90,136,.9);
 }
 
+.int-link:hover {
+  cursor: pointer;
+  color: var(--stark-blue);
+}
+
+.conclusion {
+  margin: 5rem 1.5rem 3rem 1.5rem;
+  padding-inline: 2rem;
+  font-family: "Andale Mono", monospace;
+  font-size: 1.1rem;
+}
+
+.dev-text {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0 0 0;
+  margin-bottom: 15vh;
+}
