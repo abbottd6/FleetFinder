@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-legality-dropdown',
@@ -18,7 +19,6 @@ export class LegalityDropdownComponent implements AfterViewInit{
 
   ngAfterViewInit() {
       this.fetchLegalities();
-      console.log('Legality dropdown options fetched:' + this.legalities);
   }
 
   fetchLegalities() {
@@ -29,6 +29,9 @@ export class LegalityDropdownComponent implements AfterViewInit{
           return of([])
         })
       )
-      .subscribe((data) => {this.legalities = data;});
+      .subscribe((data) => {this.legalities = data;
+        if(!environment.production) {
+          console.log('Legality dropdown options fetched:' + this.legalities);
+        }});
   }
 }

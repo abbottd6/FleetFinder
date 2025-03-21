@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-experience-dropdown',
@@ -18,7 +19,6 @@ export class ExperienceDropdownComponent implements AfterViewInit{
 
   ngAfterViewInit() {
     this.fetchGameExperiences();
-    console.log('Experience dropdown options fetched: ' + this.experiences);
   }
 
   fetchGameExperiences(): void {
@@ -29,6 +29,10 @@ export class ExperienceDropdownComponent implements AfterViewInit{
           return of([]);
         })
       )
-      .subscribe((data) => {this.experiences = data;});
+      .subscribe((data) => {this.experiences = data;
+        if(!environment.production) {
+          console.log('Experiences dropdown options fetched:', this.experiences);
+        }
+      });
   }
 }

@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-planet-dropdown',
@@ -47,7 +48,9 @@ export class PlanetDropdownComponent implements AfterViewInit{
         this.planetMoonControl?.reset();
         this.planetMoonControl?.disable();
       }
-      console.log('Filtered Planet Moons: ', this.filteredPlanetMoons);
+      if(!environment.production) {
+        console.log('Filtered Planet Moons: ', this.filteredPlanetMoons);
+      }
     })
   }
 
@@ -61,6 +64,9 @@ export class PlanetDropdownComponent implements AfterViewInit{
         })
       )
       .subscribe((data) => {this.planetMoonSystems = data;
-      console.log('Planet moon systems dropdown options fetched:', this.planetMoonSystems);})
+        if(!environment.production) {
+          console.log('Planet moon systems dropdown options fetched:', this.planetMoonSystems);
+        }
+      })
   }
 }

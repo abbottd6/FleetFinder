@@ -1,3 +1,5 @@
+import {environment} from "../../../environments/environment";
+
 export class CreateListingRequest {
   constructor(public userId: number, formData: any) {
     Object.assign(this, {
@@ -41,7 +43,9 @@ export class CreateListingRequest {
 
     //extract date from datepicker javascript date
     const dateString = date.toISOString().split('T')[0];
-    console.log("Javascript date string extracted: ", dateString)
+    if(!environment.production) {
+      console.log("Javascript date string extracted: ", dateString)
+    }
 
     //combining date and time into ISO acceptable string
     const dateTimeString = `${dateString}T${time}:00`;

@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-system-dropdown',
@@ -25,7 +26,9 @@ export class SystemDropdownComponent implements AfterViewInit{
         })
       )
       .subscribe((data) => {this.systems = data;
-      console.log('Planetary systems dropdown options fetched:', this.systems);
+        if(!environment.production) {
+          console.log('Planetary systems dropdown options fetched:', this.systems);
+        }
       });
   }
 }

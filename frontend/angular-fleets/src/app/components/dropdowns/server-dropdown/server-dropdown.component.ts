@@ -2,6 +2,7 @@ import {Component, Input, OnInit, ChangeDetectorRef, AfterViewInit} from '@angul
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
+import {environment} from "../../../../environments/environment";
 
 @Component({
     selector: 'app-server-dropdown',
@@ -28,9 +29,10 @@ export class ServerDropdownComponent implements AfterViewInit {
           return of([]);
         })
       )
-      .subscribe((data) => {
-        this.servers = data;
-        console.log('Server dropdown options fetched:', this.servers);
+      .subscribe((data) => {this.servers = data;
+        if(!environment.production) {
+          console.log('Server dropdown options fetched:', this.servers);
+        }
       })
   }
 }

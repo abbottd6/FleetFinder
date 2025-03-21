@@ -117,6 +117,6 @@ FOREIGN KEY(group_status_id) REFERENCES group_status(group_status_id),
 FOREIGN KEY(category_id) REFERENCES gameplay_category(category_id),
 FOREIGN KEY(subcategory_id) REFERENCES gameplay_subcategory(subcategory_id),
 FOREIGN KEY(pvp_status_id) REFERENCES pvp_status(pvp_status_id),
-FOREIGN KEY(system_id) REFERENCES sc_fleetfinder.planetary_system(system_id),
-FOREIGN KEY(planet_id) REFERENCES sc_fleetfinder.planet_moon_system(planet_id)
+FOREIGN KEY(system_id) REFERENCES planetary_system(system_id),
+FOREIGN KEY(planet_id) REFERENCES planet_moon_system(planet_id)
 );

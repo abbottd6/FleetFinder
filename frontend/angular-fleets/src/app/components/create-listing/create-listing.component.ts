@@ -5,6 +5,7 @@ import {CreateListingRequest} from "../../models/group-listing/create-listing-re
 import {CreateListingService} from "../../services/group-listing-services/create-listing.service";
 import {Router} from "@angular/router";
 import {group} from "@angular/animations";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-create-listing',
@@ -70,11 +71,15 @@ export class CreateListingComponent  implements OnInit {
 
     const newListingData = new CreateListingRequest(1, this.listingFormGroup.value);
 
-    console.log(newListingData);
+    if(!environment.production) {
+      console.log(newListingData);
+    }
 
     this.createListingService.createListing(newListingData).subscribe({
         next: response => {
-          console.log(response.listingTitle)
+          if(!environment.production) {
+            console.log(response.listingTitle)
+          }
           alert(`Your creation of group listing, ${response.listingTitle} was successful!`);
 
           this.resetAndRedirect();
