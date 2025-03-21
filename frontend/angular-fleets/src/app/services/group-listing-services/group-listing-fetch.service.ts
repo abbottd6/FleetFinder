@@ -15,9 +15,17 @@ export class GroupListingFetchService {
 
   getGroupListings(): Observable<GroupListingViewModel[]> {
     return this.httpClient.get<GetResponse>(this.baseUrl).pipe(
-      tap(response => console.log('Raw API Response: ', response)),
+      tap(response => {
+        if (!environment.production) {
+          console.log('Raw API Response: ', response);
+        }
+      }),
       map(response => response._embedded.groupListingResponseDtoes),
-      tap(groupListings => console.log('Transformed data: ', groupListings)),
+      tap(groupListings => {
+        if (!environment.production) {
+          console.log('Transformed data: ', groupListings);
+        }
+      }),
     )
   }
 }

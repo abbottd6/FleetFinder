@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-subcategory-dropdown',
@@ -59,7 +60,9 @@ export class SubcategoryDropdownComponent implements AfterViewInit{
         })
       )
       .subscribe(data => {this.subcategories = data;
-        console.log('Gameplay subcategories dropdown options fetched', this.subcategories);
+        if(!environment.production) {
+          console.log('Gameplay subcategories dropdown options fetched', this.subcategories);
+        }
       });
   }
 }

@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of, pipe} from "rxjs";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-playstyle-dropdown',
@@ -18,7 +19,6 @@ export class PlaystyleDropdownComponent implements AfterViewInit{
 
   ngAfterViewInit(): void {
     this.fetchPlayStyles();
-    console.log('Play styles dropdown options fetched: ' + this.playStyles);
   }
 
   fetchPlayStyles(): void {
@@ -29,6 +29,9 @@ export class PlaystyleDropdownComponent implements AfterViewInit{
           return of([]);
         })
       )
-      .subscribe((data) => {this.playStyles = data;});
+      .subscribe((data) => {this.playStyles = data;
+        if(!environment.production) {
+          console.log('Playstyles dropdown options fetched: ' + this.playStyles);
+        }});
   }
 }

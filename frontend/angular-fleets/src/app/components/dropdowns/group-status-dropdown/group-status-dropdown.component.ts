@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-group-status-dropdown',
@@ -29,7 +30,9 @@ export class GroupStatusDropdownComponent implements AfterViewInit{
         })
       )
       .subscribe((data) => {this.groupStatuses = data;
-      console.log('Group status dropdown options fetched:', this.groupStatuses);
+        if(!environment.production) {
+          console.log('Group status dropdown options fetched:', this.groupStatuses);
+        }
       });
   }
 }

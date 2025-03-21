@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-lookup-services/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-pvp-status-dropdown',
@@ -30,6 +31,8 @@ export class PvpStatusDropdownComponent implements AfterViewInit{
         })
       )
       .subscribe((data) => {this.pvpStatuses = data;})
-        console.log('Pvp status dropdown options fetched:', this.pvpStatuses);
+        if(!environment.production) {
+          console.log('Pvp status dropdown options fetched:', this.pvpStatuses);
+        }
   }
 }
