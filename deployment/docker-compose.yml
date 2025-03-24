@@ -37,7 +37,7 @@ services:
       - backend-network
 
   frontend:
-    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-frontend:cache_1742507831
+    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-frontend:cache_1742765854
     container_name: fleetfinder-frontend
     restart: always
     depends_on:
