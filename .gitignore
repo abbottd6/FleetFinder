@@ -1,5 +1,7 @@
 /frontend/node_modules/
 deployment_cmds.txt
+*.env.prod
+*.env.dev
 *.env
 
 # backend specific ignore rules
@@ -36,9 +38,6 @@ backend/build/
 
 ### VS Code ###
 backend/.vscode/
-
-# Secrets / Environment Config
-backend/.env
 
 # frontend specific ignore rules
 frontend/angular-fleets/dist/
