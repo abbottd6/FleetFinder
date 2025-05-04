@@ -28,6 +28,7 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: sc_fleetfinder
+      SPRING_PROFILE: prod
     ports:
       - "8080:8080"
     depends_on:

@@ -15,11 +15,28 @@ public class TestEnvironmentLoader implements ApplicationContextInitializer<Conf
 
     @Override
     public void initialize(ConfigurableApplicationContext context) {
-        System.out.println("Working Directory: " + System.getProperty("user.dir"));
-        String envDir = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize().toString();
+
+        //Getting the active Spring profile (either 'dev' or 'prod'
+        //prod is set (for prod) in docker-compose.dev.yml/backend section
+        String activeProfile = System.getProperty("spring.profiles.active", "dev");
+        System.out.println("Active Profile: " + activeProfile);
+
+        //concat .env filename
+        String envFileName = ".env." + activeProfile;
+        System.out.println(envFileName);
+
+        //setting environment directory based on activeProfile
+        String envDir = null;
+        if (activeProfile.equals("prod")) {
+            envDir = Paths.get(System.getProperty("user.dir")).toAbsolutePath().normalize().toString();
+        }
+        else {
+            envDir = System.getProperty("user.dir");
+        }
+
         Dotenv dotenv = Dotenv.configure()
                 .directory(envDir)
-                .filename(".env")
+                .filename(envFileName)
                 .ignoreIfMissing()
                 .load();
 
