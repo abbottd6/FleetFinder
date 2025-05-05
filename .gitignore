@@ -1,2 +1,80 @@
 /frontend/node_modules/
 deployment_cmds.txt
+*.env.prod
+*.env
+
+# backend specific ignore rules
+backend/HELP.md
+backend/target/
+!backend/.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+backend/.apt_generated
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings
+backend/.springBeans
+backend/.sts4-cache
+
+### IntelliJ IDEA ###
+backend/.idea
+backend/*.iws
+backend/*.iml
+backend/*.ipr
+
+### NetBeans ###
+backend/nbproject/private/
+backend/nbbuild/
+backend/dist/
+backend/nbdist/
+backend/.nb-gradle/
+backend/build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+backend/.vscode/
+
+# frontend specific ignore rules
+frontend/angular-fleets/dist/
+frontend/angular-fleets/tmp/
+frontend/angular-fleets/out-tsc/
+frontend/angular-fleets/bazel-out/
+
+# Node
+frontend/angular-fleets/node_modules/
+frontend/angular-fleets/npm-debug.log
+frontend/angular-fleets/yarn-error.log
+
+# IDEs and editors
+frontend/angular-fleets/.idea/
+frontend/angular-fleets/.project
+frontend/angular-fleets/.classpath
+frontend/angular-fleets/.c9/
+frontend/angular-fleets/*.launch
+frontend/angular-fleets/.settings/
+frontend/angular-fleets/*.sublime-workspace
+
+# Visual Studio Code
+frontend/angular-fleets/.vscode/*
+frontend/angular-fleets/.vscode/settings.json
+frontend/angular-fleets/.vscode/tasks.json
+frontend/angular-fleets/.vscode/launch.json
+frontend/angular-fleets/.vscode/extensions.json
+frontend/angular-fleets/.history/
+
+# Miscellaneous
+frontend/angular-fleets/.angular/cache/
+frontend/angular-fleets/.sass-cache/
+frontend/angular-fleets/.connect.lock
+frontend/angular-fleets/.coverage/
+frontend/angular-fleets/.libpeerconnection.log
+frontend/angular-fleets/.testem.log
+frontend/angular-fleets/.typings/
+
+# System files
+frontend/angular-fleets/.DS_Store
+frontend/angular-fleets.Thumbs.db

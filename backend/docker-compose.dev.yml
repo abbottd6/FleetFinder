@@ -1,0 +1,31 @@
+## development environment mysql container
+
+## navigate to backend folder
+## docker-compose -f docker-compose.dev.yml down -v
+## docker-compose -f docker-compose.dev.yml up -d
+
+## wait like 5 seconds
+
+## run backend
+## run frontend
+
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.2
+    container_name: fleetfinder-mysql-dev
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: sc_fleetfinder
+      MYSQL_USER: devuser
+      MYSQL_PASSWORD: devpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command: --default-time-zone='+00:00'
+    restart: always
+
+volumes:
+  mysql-data:
