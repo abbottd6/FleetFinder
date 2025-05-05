@@ -1,4 +1,4 @@
-## development environment mysql container
+## development environment MySQL container
 
 ## navigate to backend folder
 ## docker-compose -f docker-compose.dev.yml down -v
@@ -26,6 +26,30 @@ services:
       - mysql-data:/var/lib/mysql
     command: --default-time-zone='+00:00'
     restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak-dev
+    command: start-dev
+    environment:
+      - KC_DB=mysql
+      - KC_DB_URL=jdbc:mysql://mysql:3306/sc_fleetfinder?serverTimezone=UTC
+      - KC_DB_USERNAME=devuser
+      - KC_DB_PASSWORD=devpassword
+      - KC_HOSTNAME=localhost
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=kcpassword
+    ports:
+      - "8180:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
 
 volumes:
   mysql-data:
