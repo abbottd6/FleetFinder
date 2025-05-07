@@ -24,6 +24,7 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./init.keycloak.dev.sql:/docker-entrypoint-initdb.d/init.keycloak.dev.sql
     command: --default-time-zone='+00:00'
     restart: always
     healthcheck:
@@ -39,7 +40,7 @@ services:
     command: start-dev
     environment:
       - KC_DB=mysql
-      - KC_DB_URL=jdbc:mysql://mysql:3306/sc_fleetfinder?serverTimezone=UTC
+      - KC_DB_URL=jdbc:mysql://mysql:3306/sc_keycloak?serverTimezone=UTC
       - KC_DB_USERNAME=devuser
       - KC_DB_PASSWORD=devpassword
       - KC_HOSTNAME=localhost
