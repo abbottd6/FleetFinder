@@ -59,6 +59,7 @@
 /* custom dropdown for full display navbar */
 .dropdown-item:hover {
   background-color: rgba(52, 135, 168, 0.25);
+  color: rgb(0, 0, 0)
 }
 
 /* Custom dropdown for full-display navbar dropdown */
@@ -68,6 +69,15 @@
   border-bottom: 1px solid var(--stark-blue);
   border-right: 1px solid var(--stark-blue);
   font-size: 85%;
+}
+
+.navbar-icons .dropdown-menu {
+  background-color: var(--bs-gray-dark);
+  clip-path: var(--clip-t-right-b-left);
+  border-bottom: 1px solid var(--stark-blue);
+  border-right: 1px solid var(--stark-blue);
+  font-size: 85%;
+
 }
 
 .navbar-nav {

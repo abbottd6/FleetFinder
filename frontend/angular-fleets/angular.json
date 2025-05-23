@@ -35,7 +35,8 @@
                 "glob": "**/*",
                 "input": "public",
                 "output": "/"
-              }
+              },
+              "src/assets"
             ],
             "styles": [
               "node_modules/@ng-select/ng-select/themes/material.theme.css",

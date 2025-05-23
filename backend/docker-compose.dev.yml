@@ -1,10 +1,11 @@
 ## development environment MySQL container
 
 ## navigate to backend folder
+## MAKE SURE NOTHING IS RUNNING ON Ports 3306 and 8180
 ## docker-compose -f docker-compose.dev.yml down -v
 ## docker-compose -f docker-compose.dev.yml up -d
 
-## wait like 5 seconds
+## wait like 30 seconds for keycloak to start
 
 ## run backend
 ## run frontend
@@ -37,7 +38,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:latest
     container_name: keycloak-dev
-    command: start-dev
+    command: start-dev --import-realm
     environment:
       - KC_DB=mysql
       - KC_DB_URL=jdbc:mysql://mysql:3306/sc_keycloak?serverTimezone=UTC
@@ -46,6 +47,8 @@ services:
       - KC_HOSTNAME=localhost
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=kcpassword
+    volumes:
+      - ./src/main/resources/keycloak/dev-realm-export.json:/opt/keycloak/data/import/realm-export.json
     ports:
       - "8180:8080"
     depends_on:

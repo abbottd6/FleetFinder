@@ -69,8 +69,18 @@
           <a href="#">
             <i class="bi bi-bell-fill"></i>
           </a>
-          <a [routerLink]="['user-account']">
+          <div class="nav-item dropdown">
+          <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-person-fill"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" (click)="login()">Login</a></li>
+            <li><a class="dropdown-item" (click)="register()">Register</a></li>
+            <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+          </ul>
+        </div>
+          <a [routerLink]="['user-account']">
+
           </a>
         </span>
       </div>
