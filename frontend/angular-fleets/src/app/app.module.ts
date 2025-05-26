@@ -22,6 +22,7 @@ import { GroupListingModalComponent } from './components/group-listing-modal/gro
 import { AboutComponent } from './components/about/about.component';
 import {AuthModule} from "angular-auth-oidc-client";
 import {environment} from "../environments/environment";
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 
 @NgModule({
@@ -47,7 +48,8 @@ import {environment} from "../environments/environment";
       config: {
         ...environment.oidc
       }
-    })
+    }),
+    NgbModule
   ],
   providers: [
     provideClientHydration(),

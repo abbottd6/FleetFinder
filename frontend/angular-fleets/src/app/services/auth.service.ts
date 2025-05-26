@@ -1,5 +1,5 @@
 import {inject, Injectable} from '@angular/core';
-import {AuthenticatedResult, OidcSecurityService} from "angular-auth-oidc-client";
+import {AuthenticatedResult, OidcSecurityService, PopupOptions} from "angular-auth-oidc-client";
 import {map, Observable} from "rxjs";
 
 @Injectable({
@@ -43,8 +43,21 @@ export class AuthService {
   }
 
   loginWithPopup() {
+    // calculate a centered position (optional)
+    const popupWidth = 500;
+    const popupHeight = 600;
+    const left = Math.round((window.screen.width  - popupWidth)  / 2);
+    const top  = Math.round((window.screen.height - popupHeight) / 3);
+
+    const popupOptions: PopupOptions = {
+      width:  popupWidth,
+      height: popupHeight,
+      left,
+      top
+    };
+
     return this.oidcSecurityService
-      .authorizeWithPopUp()
+      .authorizeWithPopUp({}, popupOptions)
       .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
         console.log(isAuthenticated);
         console.log(userData);
