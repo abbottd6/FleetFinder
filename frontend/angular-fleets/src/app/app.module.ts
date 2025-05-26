@@ -6,7 +6,7 @@ import { OAuthModule, OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GroupListingsComponent } from './components/group-listings/group-listings.component';
-import {provideHttpClient, withFetch, withInterceptors} from "@angular/common/http";
+import {provideHttpClient, withFetch, withInterceptorsFromDi} from "@angular/common/http";
 import { GroupListingFetchService } from "./services/group-listing-services/group-listing-fetch.service";
 import { UserComponent } from './components/user/user.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
@@ -20,17 +20,9 @@ import {MAT_FORM_FIELD_DEFAULT_OPTIONS} from "@angular/material/form-field";
 import {NgSelectComponent} from "@ng-select/ng-select";
 import { GroupListingModalComponent } from './components/group-listing-modal/group-listing-modal.component';
 import { AboutComponent } from './components/about/about.component';
-import {includeBearerTokenInterceptor, provideKeycloak} from "keycloak-angular";
+import {AuthModule} from "angular-auth-oidc-client";
+import {environment} from "../environments/environment";
 
-export const authConfig: AuthConfig = {
-  issuer: 'http://localhost:8180/realms/oauthrealm',
-  redirectUri: window.location.origin + '/login/callback',
-  clientId: 'fleetfinder-frontend',
-  responseType: 'code',
-  scope: 'openid profile email',
-  showDebugInformation: true,
-  strictDiscoveryDocumentValidation: false
-}
 
 @NgModule({
   declarations: [
@@ -51,25 +43,19 @@ export const authConfig: AuthConfig = {
     FormsModule,
     ReactiveFormsModule,
     NgSelectComponent,
+    AuthModule.forRoot({
+      config: {
+        ...environment.oidc
+      }
+    })
   ],
   providers: [
     provideClientHydration(),
-    provideHttpClient(withFetch(), withInterceptors([ includeBearerTokenInterceptor ])),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     GroupListingFetchService,
     provideAnimationsAsync(),
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
-    provideKeycloak({
-      config: {
-        url: 'http://localhost:8180',
-        realm: 'oauthrealm',
-        clientId: 'fleetfinder-frontend',
-      },
-      initOptions: {
-        onLoad: 'check-sso',
-        silentCheckSsoRedirectUri:
-          window.location.origin + '/assets/silent-check-sso.html'
-      }
-    })
+
   ],
   exports: [],
   bootstrap: [AppComponent]

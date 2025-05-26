@@ -1,5 +1,6 @@
-import { Component, inject } from '@angular/core';
-import Keycloak from "keycloak-js";
+import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import {AuthService} from "../../services/auth.service";
 
 @Component({
     selector: 'app-nav-bar',
@@ -9,21 +10,7 @@ import Keycloak from "keycloak-js";
 })
 export class NavBarComponent {
 
-  private kc = inject(Keycloak)
-
-  login() {
-    return this.kc.login();
-  }
-
-  logout() {
-    return this.kc.logout({
-      redirectUri: window.location.origin + ''
-    });
-  }
-
-  register() {
-    return this.kc.register();
-  }
+  constructor(public auth: AuthService) {}
 
   closeDropdown() {
     const dropdown = document.getElementById('navbarNavDropdown');

@@ -9,6 +9,8 @@
       <ul class="navbar-nav me-auto mb-lg-0">
         <li class="nav-item">
           <a class="nav-link"
+             aria-current="page"
+             data-bs-toggle="collapse"
              [routerLink]="['user-account']"
              (click)="closeDropdown()"
           >Account</a>
@@ -63,6 +65,9 @@
       </ul>
       <div class="navbar-icons">
         <span class="navbar-text">
+          <div *ngIf="auth.isLoggedIn$ | async">
+            <span>Welcome, {{ auth.username$ | async }}</span>
+          </div>
           <a href="#">
             <i class="bi bi-chat-fill"></i>
           </a>
@@ -73,15 +78,17 @@
           <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="bi bi-person-fill"></i>
           </a>
-          <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" (click)="login()">Login</a></li>
-            <li><a class="dropdown-item" (click)="register()">Register</a></li>
-            <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+          <ul *ngIf="auth.isLoggedIn$ | async; else loggedOut" class="dropdown-menu dropdown-menu-end">
+            <li><button class="dropdown-item" [routerLink]="['user-account']">Account</button></li>
+            <li><button class="dropdown-item" (click)="auth.logout()">Logout</button></li>
           </ul>
-        </div>
-          <a [routerLink]="['user-account']">
-
-          </a>
+          <ng-template #loggedOut>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><button class="dropdown-item" (click)="auth.loginWithPopup(); closeDropdown()">Login</button></li>
+              <li><button class="dropdown-item" (click)="auth.registerWithPopup(); closeDropdown()">Sign Up</button></li>
+            </ul>
+          </ng-template>
+          </div>
         </span>
       </div>
     </div>

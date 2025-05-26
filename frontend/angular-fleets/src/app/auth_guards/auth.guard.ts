@@ -1,23 +1,34 @@
-import { inject } from "@angular/core";
-import {Router, CanActivateFn} from '@angular/router';
-import { createAuthGuard, AuthGuardData} from "keycloak-angular";
-import Keycloak from 'keycloak-js';
+import {Injectable, Input} from "@angular/core";
+import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from "@angular/router";
+import { Observable } from "rxjs";
+import { map, tap } from "rxjs/operators";
+import { OidcSecurityService } from "angular-auth-oidc-client";
+import {AuthService} from "../services/auth.service";
 
-  const isAccessAllowed = async (
-    _route: any,
-    _state: any,
-    authData: AuthGuardData
-  ): Promise<boolean> => {
-    if (!authData.authenticated) {
-      const kc = inject(Keycloak);
-      await kc.login({ redirectUri: window.location.origin + '/user' });
-      return false;
-    }
+@Injectable({providedIn: 'root'})
+export class AuthGuard implements CanActivate {
 
-    // const requiredRoles = route.data['roles'] as string[];
-    // return requiredRoles.every(r => this.roles.includes(r));
-    return true;
-  };
+  constructor(private auth: AuthService,
+              private router: Router
+  ) {}
 
-  export const keycloakAppGuard: CanActivateFn =
-    createAuthGuard<CanActivateFn>(isAccessAllowed);
+  canActivate(
+    route: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot
+  ): Observable<boolean | UrlTree> {
+    return this.auth.isLoggedIn$.pipe(
+      tap(isAuth => {
+        if (!isAuth) {
+          this.auth.loginWithPopup();
+        }
+      }),
+      map(isAuth =>
+        isAuth
+          ? true
+          : this.router.parseUrl('/login-failed')
+      )
+    );
+  }
+}
+
+
