@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.entities.User;
+import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.GroupListingServiceImpl;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
@@ -210,17 +210,17 @@ class GroupListingServiceImplTest {
             validDto.setCommsService("This is a valid comms service");
 
         //creating test user
-        User testUser = new User();
-            testUser.setUserId(1L);
-            testUser.setUsername("TestUser");
+        Users testUsers = new Users();
+            testUsers.setUserId(1L);
+            testUsers.setUsername("TestUser");
 
         //returning new entities from lookup service for test only
-        when(mapperLookupService.findUserById(validDto.getUserId())).thenReturn(testUser);
+        when(mapperLookupService.findUserById(validDto.getUserId())).thenReturn(testUsers);
 
         GroupListing mappedEntity = new GroupListing();
         //setting groupId to imitate autogenerate from the database
             mappedEntity.setGroupId(1L);
-            mappedEntity.setUser(mapperLookupService.findUserById(validDto.getUserId()));
+            mappedEntity.setUsers(mapperLookupService.findUserById(validDto.getUserId()));
             mappedEntity.setListingTitle(validDto.getListingTitle());
 
         when(groupListingConversionService.convertToEntity(validDto)).thenReturn(mappedEntity);

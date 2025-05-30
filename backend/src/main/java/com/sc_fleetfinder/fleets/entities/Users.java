@@ -19,36 +19,43 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name="user")
+@Table(name="users")
 @Getter
 @Setter
-public class User {
+public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_user")
-    @NotNull(message = "UserId cannot be null")
     private Long userId;
+
+    @Column(name="keycloak_id", columnDefinition = "CHAR(36)", length = 36)
+    @JdbcTypeCode(Types.VARCHAR)
+    @NotNull(message = "keycloak_id cannot be null")
+    private String keycloakId;
 
     @Column(name="user_name")
     @Size(min = 1, max = 32, message = "Username must be between 1 and 32 characters in length")
     @NotBlank(message = "Username cannot be blank")
     private String username;
 
-    @Column(name="user_password")
-    @Size(min = 8, max = 32, message = "User password must be between 8 and 32 characters in length")
-    @NotBlank(message = "User password cannot be blank")
-    private String password;
+//    @Column(name="user_password")
+//    @Size(min = 8, max = 32, message = "Users password must be between 8 and 32 characters in length")
+//    @NotBlank(message = "Users password cannot be blank")
+//    private String password;
 
     @Column(name="email")
-    @NotBlank(message = "User email cannot be blank")
+    @NotBlank(message = "Users email cannot be blank")
     @Email
     private String email;
 
@@ -67,7 +74,12 @@ public class User {
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private LocalDateTime acctCreated;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="user", fetch = FetchType.EAGER)
+    @Column(name="last_login")
+    @UpdateTimestamp
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
+    private LocalDateTime lastLogin;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="users", fetch = FetchType.EAGER)
     @JsonManagedReference
     private Set<GroupListing> groupListings = new HashSet<>();
 }

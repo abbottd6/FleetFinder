@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Disabled
-public class CreateUserDtoTest {
+public class CreateUsersDtoTest {
 
     private Validator validator;
 
@@ -90,7 +90,7 @@ public class CreateUserDtoTest {
 
         //Assert
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Create user DTO password cannot be blank") | violation.getMessage().equals("User password must be between 8 and 32 characters")));
+        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Create user DTO password cannot be blank") | violation.getMessage().equals("Users password must be between 8 and 32 characters")));
     }
 
     @Test

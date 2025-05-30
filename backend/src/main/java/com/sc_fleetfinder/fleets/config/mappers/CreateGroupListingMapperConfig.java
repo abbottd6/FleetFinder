@@ -14,7 +14,7 @@ import com.sc_fleetfinder.fleets.entities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.GameEnvironment;
-import com.sc_fleetfinder.fleets.entities.User;
+import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -61,8 +61,8 @@ public class CreateGroupListingMapperConfig {
                     mapper.skip(GroupListing::setLastUpdated);
 
                     //userId to user entity
-                    mapper.using((MappingContext<Long, User> ctx) -> mapperLookupService.findUserById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getUserId, GroupListing::setUser);
+                    mapper.using((MappingContext<Long, Users> ctx) -> mapperLookupService.findUserById(ctx.getSource()))
+                            .map(CreateGroupListingDto::getUserId, GroupListing::setUsers);
 
                     //serverId to server entity
                     mapper.using((MappingContext<Integer, ServerRegion> ctx) -> mapperLookupService.findServerRegionById(ctx.getSource()))

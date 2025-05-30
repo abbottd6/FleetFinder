@@ -1,15 +1,18 @@
 -- flyway configuration
 
-CREATE TABLE IF NOT EXISTS `user` (
+CREATE TABLE IF NOT EXISTS users (
 id_user BIGINT NOT NULL AUTO_INCREMENT,
+keycloak_id CHAR(36) NOT NULL,
 user_name VARCHAR(32) NOT NULL,
-user_password VARCHAR(32) NOT NULL,
 email VARCHAR(45) NOT NULL,
-server_id INT,
 org VARCHAR(25),
 about_user VARCHAR(255),
+server_id INT,
 acct_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-PRIMARY KEY (id_user)
+last_login TIMESTAMP,
+PRIMARY KEY (id_user),
+UNIQUE KEY uq_kc_id (keycloak_id),
+UNIQUE KEY uq_email (email)
 );
 
 CREATE TABLE IF NOT EXISTS gameplay_category (
@@ -107,7 +110,7 @@ comms_service VARCHAR(50),
 last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
 PRIMARY KEY(id_group),
-FOREIGN KEY(id_user) REFERENCES `user`(id_user) ON DELETE CASCADE,
+FOREIGN KEY(id_user) REFERENCES `users`(id_user) ON DELETE CASCADE,
 FOREIGN KEY(server_id) REFERENCES server_region(server_id),
 FOREIGN KEY(environment_id) REFERENCES game_environment(environment_id),
 FOREIGN KEY(experience_id) REFERENCES game_experience(experience_id),
