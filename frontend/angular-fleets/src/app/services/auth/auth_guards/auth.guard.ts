@@ -3,7 +3,7 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Rout
 import { Observable } from "rxjs";
 import { map, tap } from "rxjs/operators";
 import { OidcSecurityService } from "angular-auth-oidc-client";
-import {AuthService} from "../services/auth.service";
+import {AuthService} from "../auth-services/auth.service";
 
 @Injectable({providedIn: 'root'})
 export class AuthGuard implements CanActivate {

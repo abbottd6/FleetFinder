@@ -1,6 +1,6 @@
 import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
 import { OidcSecurityService } from 'angular-auth-oidc-client';
-import {AuthService} from "../../services/auth.service";
+import {AuthService} from "../../services/auth/auth-services/auth.service";
 
 @Component({
     selector: 'app-nav-bar',

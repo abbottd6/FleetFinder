@@ -13,6 +13,8 @@ export const environment = {
     useRefreshToken: true,
     silentRenew: true,
     logLevel: LogLevel.Debug,
+    loadUserInfo: false,
+    autoUserInfo: false,
   },
   // keycloak: {
   //   url: 'http://localhost:8180',

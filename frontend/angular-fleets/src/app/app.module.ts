@@ -6,7 +6,7 @@ import { OAuthModule, OAuthService, AuthConfig } from 'angular-oauth2-oidc';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GroupListingsComponent } from './components/group-listings/group-listings.component';
-import {provideHttpClient, withFetch, withInterceptorsFromDi} from "@angular/common/http";
+import {HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi} from "@angular/common/http";
 import { GroupListingFetchService } from "./services/group-listing-services/group-listing-fetch.service";
 import { UserComponent } from './components/user/user.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
@@ -23,6 +23,7 @@ import { AboutComponent } from './components/about/about.component';
 import {AuthModule} from "angular-auth-oidc-client";
 import {environment} from "../environments/environment";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import {AuthInterceptor} from "./services/auth/interceptors/auth.interceptor";
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
     GroupListingFetchService,
     provideAnimationsAsync(),
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
 
   ],

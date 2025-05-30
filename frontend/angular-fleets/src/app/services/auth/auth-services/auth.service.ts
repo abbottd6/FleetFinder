@@ -1,6 +1,7 @@
 import {inject, Injectable} from '@angular/core';
 import {AuthenticatedResult, OidcSecurityService, PopupOptions} from "angular-auth-oidc-client";
-import {map, Observable} from "rxjs";
+import {filter, map, Observable, tap} from "rxjs";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,7 @@ import {map, Observable} from "rxjs";
 export class AuthService {
 
   private readonly oidcSecurityService = inject(OidcSecurityService);
+  private readonly http = inject(HttpClient);
 
   userData$ = this.oidcSecurityService.userData$;
   username$ = this.oidcSecurityService.userData$.pipe(
@@ -27,15 +29,18 @@ export class AuthService {
   constructor() {
     this.oidcSecurityService
       .checkAuth()
-      .subscribe(({
-                    isAuthenticated, userData, accessToken,
-                    errorMessage
-                  }) => {
-        console.log(isAuthenticated);
-        console.log(userData);
-        console.log(accessToken);
-        console.log(errorMessage);
-      });
+      .pipe(
+        filter(({ isAuthenticated }) => isAuthenticated),
+        tap(() => this.provisionLocalUser())
+      )
+      .subscribe();
+  }
+
+  private provisionLocalUser() {
+    this.http.post('/api/users/me', null).subscribe({
+      next: () => console.log("New user created"),
+      error: err => console.error("User provisioning failed", err),
+    });
   }
 
   login() {
@@ -58,12 +63,14 @@ export class AuthService {
 
     return this.oidcSecurityService
       .authorizeWithPopUp({}, popupOptions)
-      .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
-        console.log(isAuthenticated);
-        console.log(userData);
-        console.log(accessToken);
-        console.log(errorMessage);
+      .pipe(
+        tap(({ isAuthenticated}) => {
+          if (isAuthenticated) {
+            this.provisionLocalUser();
+          }
       })
+      )
+      .subscribe();
   }
 
   openWindow() {
@@ -85,11 +92,13 @@ export class AuthService {
   registerWithPopup() {
     return this.oidcSecurityService
       .authorizeWithPopUp({customParams: {screen_hint: 'signup'}})
-      .subscribe(({ isAuthenticated, userData, accessToken, errorMessage }) => {
-        console.log(isAuthenticated);
-        console.log(userData);
-        console.log(accessToken);
-        console.log(errorMessage);
-      })
+      .pipe(
+        tap(({ isAuthenticated }) => {
+          if (isAuthenticated) {
+            this.provisionLocalUser();
+          }
+        })
+      )
+      .subscribe();
   }
 }
