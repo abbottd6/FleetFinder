@@ -12,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class UserResponseDto {
+public class PrivateUserResponseDto {
 
     @NotNull(message = "UserId cannot be null")
     private Long userId;
@@ -31,7 +31,7 @@ public class UserResponseDto {
     private LocalDateTime acctCreated;
     private Set<GroupListingResponseDto> groupListingsDto = new HashSet<>();
 
-    public UserResponseDto(Long userId, String kcId, String username, String email) {
+    public PrivateUserResponseDto(Long userId, String kcId, String username, String email) {
         this.userId = userId;
         this.keycloakId = kcId;
         this.username = username;

@@ -48,8 +48,8 @@ export class AuthService {
   }
 
   loginWithPopup() {
-    // calculate a centered position (optional)
-    const popupWidth = 500;
+    // calculate a centered position
+    const popupWidth = 550;
     const popupHeight = 600;
     const left = Math.round((window.screen.width  - popupWidth)  / 2);
     const top  = Math.round((window.screen.height - popupHeight) / 3);
@@ -90,8 +90,21 @@ export class AuthService {
   }
 
   registerWithPopup() {
+    // calculate a centered position
+    const popupWidth = 550;
+    const popupHeight = 600;
+    const left = Math.round((window.screen.width  - popupWidth)  / 2);
+    const top  = Math.round((window.screen.height - popupHeight) / 3);
+
+    const popupOptions: PopupOptions = {
+      width:  popupWidth,
+      height: popupHeight,
+      left,
+      top
+    };
+
     return this.oidcSecurityService
-      .authorizeWithPopUp({customParams: {screen_hint: 'signup'}})
+      .authorizeWithPopUp({customParams: {screen_hint: 'signup'}}, popupOptions)
       .pipe(
         tap(({ isAuthenticated }) => {
           if (isAuthenticated) {

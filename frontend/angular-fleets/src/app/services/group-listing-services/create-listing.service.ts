@@ -11,10 +11,9 @@ export class CreateListingService {
 
   private createListingUrl = `${environment.apiBaseUrl}/group-listings/create_listing`;
 
-  constructor(private httpClient: HttpClient) {
-  }
+  constructor(private httpClient: HttpClient) {}
 
-  createListing(createListingRequest: CreateListingRequest): Observable<{ listingTitle: string}> {
-    return this.httpClient.post<{ listingTitle: string }>(this.createListingUrl, createListingRequest)
+  createListing(createListingRequest: CreateListingRequest): Observable<any> {
+    return this.httpClient.post<any>(this.createListingUrl, createListingRequest)
   }
 }

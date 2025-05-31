@@ -56,7 +56,9 @@
   transition: background-color 0.15s ease;
 }
 
-.close:hover {
+.close:hover,
+.modal.fade .close:hover,
+.modal.fade.show .close:hover {
   color: var(--bs-gray-900);
   border-color: rgba(255, 131, 7, .75);
   background-color: rgba(255, 131, 7, .25);
