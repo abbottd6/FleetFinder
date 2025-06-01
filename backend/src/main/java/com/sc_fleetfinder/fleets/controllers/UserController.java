@@ -1,13 +1,11 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.UserResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.UserService;
 import jakarta.validation.Valid;
-import org.keycloak.representations.AccessToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.security.Principal;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -42,17 +38,17 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponseDto> getUsers() {
+    public List<PrivateUserResponseDto> getUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public UserResponseDto getUserById(@PathVariable Long id) {
+    public PrivateUserResponseDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @PostMapping("/me")
-    public UserResponseDto createUser(@Valid @AuthenticationPrincipal Jwt jwt) {
+    public PrivateUserResponseDto createUser(@Valid @AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
         String username = jwt.getClaimAsString("preferred_username");
         String email = jwt.getClaimAsString("email");
@@ -66,11 +62,11 @@ public class UserController {
                     return userRepository.save(newUser);
                 });
 
-        return new UserResponseDto(thisUser.getUserId(), thisUser.getKeycloakId(), thisUser.getUsername(), thisUser.getEmail());
+        return new PrivateUserResponseDto(thisUser.getUserId(), thisUser.getKeycloakId(), thisUser.getUsername(), thisUser.getEmail());
     }
 
     @PutMapping("/{id}")
-    public UserResponseDto updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserDto updateUserDto) {
+    public PrivateUserResponseDto updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserDto updateUserDto) {
         return userService.updateUser(id, updateUserDto);
     }
 

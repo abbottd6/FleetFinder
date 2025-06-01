@@ -4,7 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.UserResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponseDto> getAllUsers() {
+    public List<PrivateUserResponseDto> getAllUsers() {
         List<Users> users = userRepository.findAll();
 
         if(users.isEmpty()) {
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Validated
-    public UserResponseDto createUser(@Valid CreateUserDto createUserDto) {
+    public PrivateUserResponseDto createUser(@Valid CreateUserDto createUserDto) {
         Objects.requireNonNull(createUserDto, "userDto cannot be null");
             Users users = convertToEntity(createUserDto);
         userRepository.save(users);
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Validated
-    public UserResponseDto updateUser(Long id, @Valid UpdateUserDto updateUserDto) {
+    public PrivateUserResponseDto updateUser(Long id, @Valid UpdateUserDto updateUserDto) {
         Users users = userRepository.findById(updateUserDto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Users with id " + updateUserDto.getUserId() + " not found"));
 
@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto getUserById(Long id) {
+    public PrivateUserResponseDto getUserById(Long id) {
         Optional<Users> user = userRepository.findById(id);
         if (user.isPresent()) {
             return convertToDto(user.get());
@@ -85,19 +85,19 @@ public class UserServiceImpl implements UserService {
 
     //this needs to be moved to a conversion service in v2 and configured to not pass sensitive info to the front end or
     //api endpoints
-    public UserResponseDto convertToDto(Users users) {
+    public PrivateUserResponseDto convertToDto(Users users) {
 
         //Entity 'Users' contains a set of groupListing entities that also need to be converted to the response dto
         Set<GroupListingResponseDto> groupListingResponseDtos = users.getGroupListings().stream()
                         .map(groupListing -> modelMapper.map(groupListing, GroupListingResponseDto.class))
                         .collect(Collectors.toSet());
 
-        UserResponseDto userResponseDto = modelMapper.map(users, UserResponseDto.class);
+        PrivateUserResponseDto privateUserResponseDto = modelMapper.map(users, PrivateUserResponseDto.class);
 
-        //Setting the converted groupListingDtos from above as the userResponseDto's set of group listings
-        userResponseDto.setGroupListingsDto(groupListingResponseDtos);
+        //Setting the converted groupListingDtos from above as the privateUserResponseDto's set of group listings
+        privateUserResponseDto.setGroupListingsDto(groupListingResponseDtos);
 
-        return userResponseDto;
+        return privateUserResponseDto;
     }
 
     public Users convertToEntity(CreateUserDto createUserDto) {
