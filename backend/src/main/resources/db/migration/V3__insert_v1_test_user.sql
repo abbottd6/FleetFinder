@@ -1,4 +1,0 @@
--- INSERT INTO `users` (user_name, email, server_id, org, about_user)
--- VALUES
---     ('TestUser', 'test@gmail.com', (SELECT server_id FROM server_region WHERE server_name = 'USA'),
---      'ADP', 'Testing post request.');

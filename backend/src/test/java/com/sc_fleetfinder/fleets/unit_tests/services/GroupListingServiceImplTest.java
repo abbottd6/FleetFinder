@@ -120,9 +120,6 @@ class GroupListingServiceImplTest {
                 () ->  assertFalse(dtoConstraintViolations.isEmpty()),
                 //the following are true or false depending on whether null input should fail validation
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("userId")),
-                        "blank userId should fail validation create listing"),
-                () -> assertTrue(dtoConstraintViolations.stream()
                         .anyMatch(violation -> violation.getPropertyPath().toString().equals("serverId")),
                         "blank serverId should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()

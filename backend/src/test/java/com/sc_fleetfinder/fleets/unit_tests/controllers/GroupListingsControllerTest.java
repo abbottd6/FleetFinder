@@ -1,8 +1,11 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
+import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.GroupListingsController;
+import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.GroupListingService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -12,9 +15,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -25,21 +33,25 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.MediaType;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.authentication;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @WebMvcTest(controllers = GroupListingsController.class)
+@AutoConfigureMockMvc
+@Import(SecurityConfig.class)
 class GroupListingsControllerTest {
 
     @Autowired
@@ -47,6 +59,12 @@ class GroupListingsControllerTest {
 
     @MockitoBean
     private GroupListingService groupListingService;
+
+    @MockitoBean
+    private UserRepository userRepository;
+
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -330,6 +348,13 @@ class GroupListingsControllerTest {
         Map<String, String> response = new HashMap<>();
         response.put("listingTitle", mockDto.getListingTitle());
 
+        Users mockUser = new Users();
+        mockUser.setUserId(12L);
+        mockUser.setUsername("mock user");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("mockuser@gmail.com");
+        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
         doAnswer(invocation -> {
             invocation.getArgument(0);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -337,6 +362,7 @@ class GroupListingsControllerTest {
 
 
         mockMvc.perform(post("/api/group-listings/create_listing")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(mockDto)))
                 .andExpect(status().isCreated())
@@ -371,6 +397,13 @@ class GroupListingsControllerTest {
         Map<String, String> response = new HashMap<>();
         response.put("listingTitle", mockDto.getListingTitle());
 
+        Users mockUser = new Users();
+        mockUser.setUserId(12L);
+        mockUser.setUsername("mock user");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("mockuser@gmail.com");
+        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
         doAnswer(invocation -> {
             invocation.getArgument(0);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
@@ -378,6 +411,7 @@ class GroupListingsControllerTest {
 
 
         mockMvc.perform(post("/api/group-listings/create_listing")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockDto)))
                 .andExpect(status().isCreated())
@@ -388,7 +422,7 @@ class GroupListingsControllerTest {
     @Test
     void testCreateGroupListing_Fail() throws Exception {
         CreateGroupListingDto mockDto = new CreateGroupListingDto();
-        mockDto.setUserId(1L);
+//        mockDto.setUserId(1L);
         mockDto.setServerId(1);
         mockDto.setEnvironmentId(2);
         mockDto.setExperienceId(1);
@@ -409,6 +443,13 @@ class GroupListingsControllerTest {
         mockDto.setCommsOption("Optional");
         mockDto.setCommsService("Discord");
 
+        Users mockUser = new Users();
+        mockUser.setUserId(12L);
+        mockUser.setUsername("mock user");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("mockuser@gmail.com");
+        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
         doAnswer(invocation -> {
             invocation.getArgument(0);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -416,6 +457,7 @@ class GroupListingsControllerTest {
         }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class));
 
         mockMvc.perform(post("/api/group-listings/create_listing")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(mockDto)))
                 .andDo(print())
@@ -431,12 +473,11 @@ class GroupListingsControllerTest {
         //empty dto: fails all validations
 
         mockMvc.perform(post("/api/group-listings/create_listing")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidDto)))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.userId")
-                        .value("Create group listing DTO field 'userId' cannot be null"))
                 .andExpect(jsonPath("$.serverId")
                         .value("Create group listing DTO field 'serverId' cannot be null"))
                 .andExpect(jsonPath("$.environmentId")
