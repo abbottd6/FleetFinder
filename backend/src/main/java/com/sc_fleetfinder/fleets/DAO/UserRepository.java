@@ -9,4 +9,6 @@ import java.util.Optional;
 @RepositoryRestResource(exported = false)
 public interface UserRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByKeycloakId(String kcId);
+    Optional<Users> findByEmail(String email);
+    Optional<Users> findByUsernameIgnoreCase(String username);
 }

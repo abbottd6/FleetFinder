@@ -2,21 +2,24 @@ package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.hibernate.annotations.JdbcTypeCode;
+
+import java.sql.Types;
 
 @Data
-public class CreateUserDto {
+public class CreateOrUpdateUserDto {
+
+    @NotNull(message= "Create User DTO keycloak_id cannot be null")
+    @JdbcTypeCode(Types.VARCHAR)
+    private String keycloakId;
 
     @NotBlank(message = "Create user DTO field 'username' cannot be blank")
     @Size(min = 1, max = 32, message = "Create user DTO field 'username' must be " +
             "between 1 and 32 characters")
     private String username;
-
-    @NotBlank(message = "Create user DTO password cannot be blank")
-    @Size(min = 8, max = 32, message = "Create user DTO field 'password' " +
-            "must be between 8 and 32 characters in length")
-    private String password;
 
     @NotBlank(message = "Create user DTO field 'email' cannot be blank")
     @Email(message = "Create user field 'email' must be a valid email address")

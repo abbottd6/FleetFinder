@@ -10,9 +10,11 @@ about_user VARCHAR(255),
 server_id INT,
 acct_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 last_login TIMESTAMP,
+is_deleted TINYINT(1) NOT NULL DEFAULT 0,
 PRIMARY KEY (id_user),
 UNIQUE KEY uq_kc_id (keycloak_id),
-UNIQUE KEY uq_email (email)
+UNIQUE KEY uq_email (email),
+UNIQUE KEY uq_user_name (user_name)
 );
 
 CREATE TABLE IF NOT EXISTS gameplay_category (

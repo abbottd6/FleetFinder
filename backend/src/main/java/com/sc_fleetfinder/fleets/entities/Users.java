@@ -49,11 +49,6 @@ public class Users {
     @NotBlank(message = "Username cannot be blank")
     private String username;
 
-//    @Column(name="user_password")
-//    @Size(min = 8, max = 32, message = "Users password must be between 8 and 32 characters in length")
-//    @NotBlank(message = "Users password cannot be blank")
-//    private String password;
-
     @Column(name="email")
     @NotBlank(message = "Users email cannot be blank")
     @Email
@@ -78,6 +73,9 @@ public class Users {
     @UpdateTimestamp
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private LocalDateTime lastLogin;
+
+    @Column(name="is_deleted")
+    private Boolean isDeleted;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy="users", fetch = FetchType.EAGER)
     @JsonManagedReference

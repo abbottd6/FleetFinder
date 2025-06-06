@@ -31,6 +31,8 @@ public class PrivateUserResponseDto {
     private LocalDateTime acctCreated;
     private Set<GroupListingResponseDto> groupListingsDto = new HashSet<>();
 
+    public PrivateUserResponseDto() {}
+
     public PrivateUserResponseDto(Long userId, String kcId, String username, String email) {
         this.userId = userId;
         this.keycloakId = kcId;

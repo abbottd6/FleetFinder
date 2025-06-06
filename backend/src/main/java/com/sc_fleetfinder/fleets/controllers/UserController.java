@@ -31,11 +31,8 @@ public class UserController {
     // endpoints
     @Autowired
     private UserService userService;
-    private final UserRepository userRepository;
 
-    public UserController(UserRepository userRepo) {
-        this.userRepository = userRepo;
-    }
+    public UserController() {};
 
     @GetMapping
     public List<PrivateUserResponseDto> getUsers() {
@@ -53,16 +50,7 @@ public class UserController {
         String username = jwt.getClaimAsString("preferred_username");
         String email = jwt.getClaimAsString("email");
 
-        Users thisUser = userRepository.findByKeycloakId(kcId)
-                .orElseGet(() -> {
-                    Users newUser = new Users();
-                    newUser.setKeycloakId(kcId);
-                    newUser.setUsername(username);
-                    newUser.setEmail(email);
-                    return userRepository.save(newUser);
-                });
-
-        return new PrivateUserResponseDto(thisUser.getUserId(), thisUser.getKeycloakId(), thisUser.getUsername(), thisUser.getEmail());
+        return userService.createUser(kcId, username, email);
     }
 
     @PutMapping("/{id}")

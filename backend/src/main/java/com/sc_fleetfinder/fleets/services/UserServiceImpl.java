@@ -3,18 +3,23 @@ package com.sc_fleetfinder.fleets.services;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrUpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
+import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,11 +30,12 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final Validator beanValidator;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper) {
-        super();
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, Validator beanValidator) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.beanValidator = beanValidator;
     }
 
     @Override
@@ -45,13 +51,67 @@ public class UserServiceImpl implements UserService {
                .collect(Collectors.toList());
     }
 
+
+    /**
+     * 1) Perform repository-level uniqueness checks on keycloakId, email, and username.
+     * 2) If no conflicts exist, build a CreateOrUpdateUserDto and run BeanValidation on it.
+     * 3) If DTO is valid, create and save new Users, otherwise throw UserConflictException.
+     */
     @Override
     @Validated
-    public PrivateUserResponseDto createUser(@Valid CreateUserDto createUserDto) {
-        Objects.requireNonNull(createUserDto, "userDto cannot be null");
-            Users users = convertToEntity(createUserDto);
-        userRepository.save(users);
-        return convertToDto(users);
+    @Transactional
+    public PrivateUserResponseDto createUser(String keycloakId, String rawUsername, String rawEmail ) {
+        // check for keycloakId uniqueness
+        userRepository.findByKeycloakId(keycloakId).ifPresent(existing -> {
+            throw new UserConflictException(
+                    "A user with Keycloak ID '" + keycloakId + "' already exists."
+            );
+        });
+
+        // normalize email to lowercase and trim
+        String normalizedEmail = rawEmail.trim().toLowerCase(Locale.ROOT);
+
+        // check for email uniqueness
+        userRepository.findByEmail(normalizedEmail).ifPresent(existing -> {
+            throw new UserConflictException(
+                    "A user with Email '" + normalizedEmail + "' already exists."
+            );
+        });
+
+        // check username uniqueness
+        userRepository.findByUsernameIgnoreCase(rawUsername).ifPresent(existing -> {
+            throw new UserConflictException(
+                    "A user with Username '" + rawUsername + "' already exists."
+            );
+        });
+
+        // if uniqueness validators pass, create a dto to do bean validation on attributes
+        CreateOrUpdateUserDto newUserDto = new CreateOrUpdateUserDto();
+        newUserDto.setKeycloakId(keycloakId);
+        newUserDto.setUsername(rawUsername);
+        newUserDto.setEmail(rawEmail);
+
+        // call bean validator on the dto
+        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = beanValidator.validate(newUserDto);
+
+        // prepare response if bean validation fails
+        if (!violations.isEmpty()) {
+            String combinedViolations = violations.stream()
+                    .map(ConstraintViolation::getMessage)
+                    .collect(Collectors.joining("\n"));
+            throw new InvalidUserDataException(combinedViolations);
+        }
+
+        // map the validated new user to an entity
+        Users newUser = new Users();
+        newUser.setKeycloakId(keycloakId);
+        newUser.setUsername(rawUsername);
+        newUser.setEmail(rawEmail);
+        newUser.setIsDeleted(false);
+
+        userRepository.save(newUser);
+
+        return convertToDto(newUser);
     }
 
     @Override
@@ -98,9 +158,5 @@ public class UserServiceImpl implements UserService {
         privateUserResponseDto.setGroupListingsDto(groupListingResponseDtos);
 
         return privateUserResponseDto;
-    }
-
-    public Users convertToEntity(CreateUserDto createUserDto) {
-        return modelMapper.map(createUserDto, Users.class);
     }
 }
