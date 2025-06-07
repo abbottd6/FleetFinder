@@ -2,16 +2,15 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrUpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
+import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -33,13 +32,12 @@ public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+    private final UserConversionServiceImpl userConversionService;
     private final Validator beanValidator;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper,
-                           Validator beanValidator) {
+    public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService, Validator beanValidator) {
         this.userRepository = userRepository;
-        this.modelMapper = modelMapper;
+        this.userConversionService = userConversionService;
         this.beanValidator = beanValidator;
     }
 
@@ -52,12 +50,12 @@ public class UserServiceImpl implements UserService {
         }
 
         return users.stream()
-               .map(this::convertToDto)
+               .map(userConversionService::convertToDto)
                .collect(Collectors.toList());
     }
 
     //helper method for normalizing emails. isolated for testing.
-    private String normalizeEmail(String email) {
+    String normalizeEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
     }
 
@@ -71,13 +69,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public PrivateUserResponseDto createUser(String keycloakId, String rawUsername, String rawEmail ) {
         // check for keycloakId uniqueness
+        // new keycloakIds should always be unique, regardless of reused usernames/emails for deleted accounts,
+        // so it doesnt matter if this isDeleted() or not
         userRepository.findByKeycloakId(keycloakId).ifPresent(existing -> {
-            if(!existing.getIsDeleted()) {
-                log.error("User Creation failed due to pre-existing Keycloak ID: {}", existing.getKeycloakId());
-                throw new UserConflictException(
-                        "A user with this ID already exists."
-                );
-            }
+            log.error("User Creation failed due to pre-existing Keycloak ID: {}", existing.getKeycloakId());
+            throw new UserConflictException(
+                    "A user with this ID already exists."
+            );
         });
 
         // normalize email to lowercase and trim
@@ -107,7 +105,7 @@ public class UserServiceImpl implements UserService {
         CreateOrUpdateUserDto newUserDto = new CreateOrUpdateUserDto();
         newUserDto.setKeycloakId(keycloakId);
         newUserDto.setUsername(rawUsername);
-        newUserDto.setEmail(rawEmail);
+        newUserDto.setEmail(normalizedEmail);
 
         // call bean validator on the dto
         Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = beanValidator.validate(newUserDto);
@@ -129,7 +127,7 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(newUser);
 
-        return convertToDto(newUser);
+        return userConversionService.convertToDto(newUser);
     }
 
     @Override
@@ -141,7 +139,7 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(updateUserDto, users, "id");
         userRepository.save(users);
 
-        return convertToDto(users);
+        return userConversionService.convertToDto(users);
     }
 
     @Override
@@ -154,27 +152,10 @@ public class UserServiceImpl implements UserService {
     public PrivateUserResponseDto getUserById(Long id) {
         Optional<Users> user = userRepository.findById(id);
         if (user.isPresent()) {
-            return convertToDto(user.get());
+            return userConversionService.convertToDto(user.get());
         }
         else {
             throw new ResourceNotFoundException("Users with id " + id + " not found");
         }
-    }
-
-    //this needs to be moved to a conversion service in v2 and configured to not pass sensitive info to the front end or
-    //api endpoints
-    public PrivateUserResponseDto convertToDto(Users users) {
-
-        //Entity 'Users' contains a set of groupListing entities that also need to be converted to the response dto
-        Set<GroupListingResponseDto> groupListingResponseDtos = users.getGroupListings().stream()
-                        .map(groupListing -> modelMapper.map(groupListing, GroupListingResponseDto.class))
-                        .collect(Collectors.toSet());
-
-        PrivateUserResponseDto privateUserResponseDto = modelMapper.map(users, PrivateUserResponseDto.class);
-
-        //Setting the converted groupListingDtos from above as the privateUserResponseDto's set of group listings
-        privateUserResponseDto.setGroupListingsDto(groupListingResponseDtos);
-
-        return privateUserResponseDto;
     }
 }

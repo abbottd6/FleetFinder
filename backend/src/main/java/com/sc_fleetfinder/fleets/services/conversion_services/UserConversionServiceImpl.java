@@ -23,8 +23,6 @@ public class UserConversionServiceImpl implements UserConversionService{
         this.modelMapper = modelMapper;
     }
 
-    //this needs to be moved to a conversion service in v2 and configured to not pass sensitive info to the front end or
-    //api endpoints
     @Override
     public PrivateUserResponseDto convertToDto(Users users) {
 
