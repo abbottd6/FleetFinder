@@ -1,4 +1,4 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
@@ -52,6 +52,11 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     @Override
     @Validated
+    //
+    //
+    // REFACTOR THIS TO RETURN AN ENTITY AND HAVE THE RESPONSE BE GENERATED IN THE CONTROLLER
+    //
+    //
     public ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
         Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
             try {

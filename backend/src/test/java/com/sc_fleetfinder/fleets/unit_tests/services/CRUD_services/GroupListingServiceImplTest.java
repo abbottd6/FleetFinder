@@ -1,4 +1,4 @@
-package com.sc_fleetfinder.fleets.unit_tests.services;
+package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
@@ -6,7 +6,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GroupListingServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;

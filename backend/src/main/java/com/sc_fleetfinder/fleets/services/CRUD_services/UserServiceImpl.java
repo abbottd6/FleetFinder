@@ -1,4 +1,4 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
@@ -12,6 +12,8 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -28,11 +30,14 @@ import java.util.stream.Collectors;
 @Validated
 public class UserServiceImpl implements UserService {
 
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final Validator beanValidator;
 
-    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper, Validator beanValidator) {
+    public UserServiceImpl(UserRepository userRepository, ModelMapper modelMapper,
+                           Validator beanValidator) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.beanValidator = beanValidator;
@@ -51,6 +56,10 @@ public class UserServiceImpl implements UserService {
                .collect(Collectors.toList());
     }
 
+    //helper method for normalizing emails. isolated for testing.
+    private String normalizeEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
 
     /**
      * 1) Perform repository-level uniqueness checks on keycloakId, email, and username.
@@ -63,26 +72,35 @@ public class UserServiceImpl implements UserService {
     public PrivateUserResponseDto createUser(String keycloakId, String rawUsername, String rawEmail ) {
         // check for keycloakId uniqueness
         userRepository.findByKeycloakId(keycloakId).ifPresent(existing -> {
-            throw new UserConflictException(
-                    "A user with Keycloak ID '" + keycloakId + "' already exists."
-            );
+            if(!existing.getIsDeleted()) {
+                log.error("User Creation failed due to pre-existing Keycloak ID: {}", existing.getKeycloakId());
+                throw new UserConflictException(
+                        "A user with this ID already exists."
+                );
+            }
         });
 
         // normalize email to lowercase and trim
-        String normalizedEmail = rawEmail.trim().toLowerCase(Locale.ROOT);
+        String normalizedEmail = normalizeEmail(rawEmail);
 
         // check for email uniqueness
         userRepository.findByEmail(normalizedEmail).ifPresent(existing -> {
-            throw new UserConflictException(
-                    "A user with Email '" + normalizedEmail + "' already exists."
-            );
+            if(!existing.getIsDeleted()) {
+                log.error("User creation requested for existing email: {}", existing.getEmail());
+                throw new UserConflictException(
+                        "A user with this email already exists."
+                );
+            }
         });
 
         // check username uniqueness
         userRepository.findByUsernameIgnoreCase(rawUsername).ifPresent(existing -> {
-            throw new UserConflictException(
-                    "A user with Username '" + rawUsername + "' already exists."
-            );
+            if(!existing.getIsDeleted()) {
+                log.error("User creation requested for existing username: {}", existing.getUsername());
+                throw new UserConflictException(
+                        "A user with Username '" + rawUsername + "' already exists."
+                );
+            }
         });
 
         // if uniqueness validators pass, create a dto to do bean validation on attributes

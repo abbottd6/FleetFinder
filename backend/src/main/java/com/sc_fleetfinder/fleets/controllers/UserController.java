@@ -1,10 +1,8 @@
 package com.sc_fleetfinder.fleets.controllers;
 
-import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
-import com.sc_fleetfinder.fleets.entities.Users;
-import com.sc_fleetfinder.fleets.services.UserService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

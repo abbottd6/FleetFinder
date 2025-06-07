@@ -1,9 +1,7 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.CRUD_services;
 
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrUpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
-import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
