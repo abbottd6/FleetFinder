@@ -16,19 +16,28 @@ public class PrivateUserResponseDto {
 
     @NotNull(message = "UserId cannot be null")
     private Long userId;
+
     @NotNull(message = "user keycloak_id cannot be null")
+    @NotBlank(message = "user keycloak_id cannot be blank")
     private String keycloakId;
+
     @NotBlank(message = "Username cannot be blank")
     @Size(min = 1, max = 32, message = "Username must be between 1 and 32 characters")
     private String username;
+
     @NotBlank(message = "Users email cannot be blank")
-    @Email
+    @Email(message = "Users email must be a valid email format")
     private String email;
+
     private String server;
+
     private String org;
+
     private String about;
+
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private LocalDateTime acctCreated;
+
     private Set<GroupListingResponseDto> groupListingsDto = new HashSet<>();
 
     public PrivateUserResponseDto() {}
