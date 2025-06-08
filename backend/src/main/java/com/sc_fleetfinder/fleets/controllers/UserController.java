@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -42,8 +44,16 @@ public class UserController {
         return userService.getUserById(id);
     }
 
-    @PostMapping("/me")
-    public PrivateUserResponseDto createUser(@Valid @AuthenticationPrincipal Jwt jwt) {
+    @GetMapping("/me")
+    public PrivateUserResponseDto getMe(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+
+        return userService.getUserByKeycloakId(kcId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @PostMapping("/create-user")
+    public PrivateUserResponseDto createUser(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
         String username = jwt.getClaimAsString("preferred_username");
         String email = jwt.getClaimAsString("email");

@@ -158,4 +158,12 @@ public class UserServiceImpl implements UserService {
             throw new ResourceNotFoundException("Users with id " + id + " not found");
         }
     }
+
+    @Override
+    public Optional<PrivateUserResponseDto> getUserByKeycloakId(String kcId) {
+        return userRepository
+                .findByKeycloakId(kcId)
+                .filter(u -> !u.getIsDeleted())
+                .map(userConversionService::convertToDto);
+    }
 }

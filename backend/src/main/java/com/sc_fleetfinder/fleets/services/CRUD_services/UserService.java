@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -32,5 +33,8 @@ public interface UserService {
 
 
     void deleteUser(Long id);
+
     PrivateUserResponseDto getUserById(Long id);
+
+    Optional<PrivateUserResponseDto> getUserByKeycloakId(String kcId);
 }
