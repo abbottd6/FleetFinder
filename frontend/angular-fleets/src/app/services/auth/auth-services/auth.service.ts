@@ -1,50 +1,98 @@
 import {inject, Injectable} from '@angular/core';
 import {AuthenticatedResult, OidcSecurityService, PopupOptions} from "angular-auth-oidc-client";
-import {filter, map, Observable, tap} from "rxjs";
+import {
+  BehaviorSubject,
+  catchError,
+  filter,
+  firstValueFrom,
+  map,
+  merge,
+  Observable, shareReplay, startWith,
+  switchMap,
+  take,
+  tap,
+  throwError, withLatestFrom
+} from "rxjs";
 import {HttpClient} from "@angular/common/http";
+import {User} from "../../../models/user/user";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private readonly oidcSecurityService = inject(OidcSecurityService);
+  private readonly oidc = inject(OidcSecurityService);
   private readonly http = inject(HttpClient);
 
-  userData$ = this.oidcSecurityService.userData$;
-  username$ = this.oidcSecurityService.userData$.pipe(
-    map(res =>
-      res.userData?.preferred_username
-      || res.userData?.given_name
-      || 'User'
-    )
+  userData$ = this.oidc.userData$;
+  isLoggedIn$ = this.oidc.isAuthenticated$.pipe(map(r => r.isAuthenticated))
+  configuration$ = this.oidc.getConfiguration();
+  authResult$: Observable<AuthenticatedResult> = this.oidc.isAuthenticated$;
+
+
+  // Reactive provisioning
+  private refreshTrigger$ = new BehaviorSubject<void>(undefined);
+  private profile$ = this.userData$.pipe(
+    filter(d => !!d && !!d.userData)
   );
 
-  configuration$ = this.oidcSecurityService.getConfiguration();
-  authResult$: Observable<AuthenticatedResult> = this.oidcSecurityService.isAuthenticated$;
+  public localUser$: Observable<User> = this.refreshTrigger$.pipe(
+    // fire once immediately, then whenever refreshTrigger$ .next()s
+    startWith(undefined),
+    // pair with latest profile
+    withLatestFrom(this.profile$),
+    // extract the profile
+    switchMap(([, packageData]) =>
+      this.http.get<Partial<User>>('/api/users/me').pipe(
+        catchError(err => {
+          if (err.status === 404) {
+            return this.http.post<Partial<User>>('/api/users/create-user', {
+              keycloakId: packageData.userData.sub,
+              username: packageData.userData.preferred_username,
+              email: packageData.userData.email,
+            });
+          }
+          return throwError(() => err);
+        }),
+        map(raw => new User(
+          raw.userId!,
+          raw.username!,
+          raw.email!,
+          raw.server!,
+          raw.org!,
+          raw.about!,
+          raw.acctCreated!,
+          raw.groupListingsDto!
+        ))
+      )
+    ),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
 
-  isLoggedIn$: Observable<boolean> =
-    this.authResult$.pipe(map(r => r.isAuthenticated))
+  public localUsername$ = this.localUser$.pipe(map(u => u.username));
 
   constructor() {
-    this.oidcSecurityService
+    this.oidc
       .checkAuth()
       .pipe(
         filter(({ isAuthenticated }) => isAuthenticated),
-        tap(() => this.provisionLocalUser())
+        tap(() => this.refreshUser())
       )
       .subscribe();
   }
 
-  private provisionLocalUser() {
-    this.http.post('/api/users/me', null).subscribe({
-      next: () => console.log("New user created"),
-      error: err => console.error("User provisioning failed", err),
-    });
+  public refreshUser() {
+    this.refreshTrigger$.next(undefined);
   }
 
   login() {
-    return this.oidcSecurityService.authorize();
+    return this.oidc.authorize();
+  }
+
+  logout() {
+    return this.oidc
+      .logoff()
+      .subscribe((result) => console.log(result));
   }
 
   loginWithPopup() {
@@ -61,32 +109,16 @@ export class AuthService {
       top
     };
 
-    return this.oidcSecurityService
+    return this.oidc
       .authorizeWithPopUp({}, popupOptions)
       .pipe(
         tap(({ isAuthenticated}) => {
           if (isAuthenticated) {
-            this.provisionLocalUser();
+            this.refreshUser();
           }
       })
       )
       .subscribe();
-  }
-
-  openWindow() {
-    window.open('/', '_blank');
-  }
-
-  forceRefreshSession() {
-    return this.oidcSecurityService
-      .forceRefreshSession()
-      .subscribe((result) => console.warn(result));
-  }
-
-  logout() {
-    return this.oidcSecurityService
-      .logoff()
-      .subscribe((result) => console.log(result));
   }
 
   registerWithPopup() {
@@ -103,15 +135,25 @@ export class AuthService {
       top
     };
 
-    return this.oidcSecurityService
+    return this.oidc
       .authorizeWithPopUp({customParams: {screen_hint: 'signup'}}, popupOptions)
       .pipe(
         tap(({ isAuthenticated }) => {
           if (isAuthenticated) {
-            this.provisionLocalUser();
+            this.refreshUser();
           }
         })
       )
       .subscribe();
+  }
+
+  openWindow() {
+    window.open('/', '_blank');
+  }
+
+  forceRefreshSession() {
+    return this.oidc
+      .forceRefreshSession()
+      .subscribe((result) => console.warn(result));
   }
 }
