@@ -53,7 +53,7 @@ public class UserConversionServiceImplTest {
 
         PrivateUserResponseDto mockDto = new PrivateUserResponseDto();
         mockDto.setUserId(1L);
-        mockDto.setKeycloakId("mockKeycloakId");
+//        mockDto.setKeycloakId("mockKeycloakId");
         mockDto.setUsername("mockUsername");
         mockDto.setEmail("thisrawemail@gmail.com");
 
@@ -69,7 +69,7 @@ public class UserConversionServiceImplTest {
 
         assertAll("users convertToDto assertion set: Success",
                 () -> assertEquals(dto.getUsername(), mockUser.getUsername()),
-                () -> assertEquals(dto.getKeycloakId(), mockUser.getKeycloakId()),
+//                () -> assertEquals(dto.getKeycloakId(), mockUser.getKeycloakId()),
                 () -> assertEquals(dto.getEmail(), mockUser.getEmail()),
                 () -> assertTrue(dtoConstraintViolations.isEmpty(),
                         () -> "Expected no validation errors, but got: " + dtoConstraintViolations));
@@ -82,7 +82,7 @@ public class UserConversionServiceImplTest {
 
         PrivateUserResponseDto mockDto = new PrivateUserResponseDto();
         mockDto.setUserId(null);
-        mockDto.setKeycloakId("");
+//        mockDto.setKeycloakId("");
         mockDto.setUsername("");
         mockDto.setEmail("not a real email");
 
@@ -99,7 +99,7 @@ public class UserConversionServiceImplTest {
         assertAll("users convertToDto assertion set: Failure",
                 () -> assertFalse(dtoConstraintViolations.isEmpty(), "expected constraint violations"),
                 () -> assertTrue(violationsList.contains("userId"), "null userId should be a violation"),
-                () -> assertTrue(violationsList.contains("keycloakId"), "empty keycloakId should be a violation"),
+//                () -> assertTrue(violationsList.contains("keycloakId"), "empty keycloakId should be a violation"),
                 () -> assertTrue(violationsList.contains("username"), "empty userName should be a violation"),
                 () -> assertTrue(violationsList.contains("email"), "invalid email format should be a violation"));
     }

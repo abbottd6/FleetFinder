@@ -146,7 +146,7 @@ public class UserServiceImplTest {
         when(userRepository.findByEmail("thisrawemail@gmail.com")).thenReturn(Optional.of(mockUser));
 
         PrivateUserResponseDto mockPrivateDto = new PrivateUserResponseDto();
-        mockPrivateDto.setKeycloakId("newUuidMockKeycloakId");
+//        mockPrivateDto.setKeycloakId("newUuidMockKeycloakId");
         mockPrivateDto.setUsername("mockUsername");
         mockPrivateDto.setEmail("thisrawemail@gmail.com");
 
@@ -162,7 +162,7 @@ public class UserServiceImplTest {
         assertAll("create Users fail assertion set: ExistingKeycloakId",
                 () -> assertTrue(logCaptor.getErrorLogs().isEmpty()),
                 () -> assertEquals(newMockUser.getUsername(), "mockUsername"),
-                () -> assertEquals(newMockUser.getKeycloakId(), "newUuidMockKeycloakId"),
+//                () -> assertEquals(newMockUser.getKeycloakId(), "newUuidMockKeycloakId"),
                 () -> assertEquals(newMockUser.getEmail(), "thisrawemail@gmail.com"),
                 () -> verify(userRepository, times(1)).findByKeycloakId("newUuidMockKeycloakId"));
     }
