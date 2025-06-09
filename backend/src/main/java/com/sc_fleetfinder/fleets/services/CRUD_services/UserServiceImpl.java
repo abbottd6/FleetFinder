@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrUpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
@@ -21,7 +22,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<PrivateUserResponseDto> getAllUsers() {
+    public List<PublicUserResponseDto> getAllUsers() {
         List<Users> users = userRepository.findAll();
 
         if(users.isEmpty()) {
@@ -50,13 +51,20 @@ public class UserServiceImpl implements UserService {
         }
 
         return users.stream()
-               .map(userConversionService::convertToDto)
+               .map(userConversionService::convertToPublicDto)
                .collect(Collectors.toList());
     }
 
-    //helper method for normalizing emails. isolated for testing.
-    String normalizeEmail(String email) {
-        return email.trim().toLowerCase(Locale.ROOT);
+    @Override
+    public PublicUserResponseDto getUserById(Long id) {
+        return userRepository.findById(id)
+                .filter(u -> !u.getIsDeleted())
+                .map(userConversionService::convertToPublicDto)
+                .orElseThrow(() -> {
+                    log.error("Attempt to access public user data by userId failed due to nonexistent userId: " +
+                            "{}", id);
+                    return new ResourceNotFoundException("Users with id " + id + " not found");
+                });
     }
 
     /**
@@ -127,43 +135,47 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(newUser);
 
-        return userConversionService.convertToDto(newUser);
+        return userConversionService.convertToPrivateDto(newUser);
     }
 
     @Override
     @Validated
-    public PrivateUserResponseDto updateUser(Long id, @Valid UpdateUserDto updateUserDto) {
-        Users users = userRepository.findById(updateUserDto.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("Users with id " + updateUserDto.getUserId() + " not found"));
+    public PrivateUserResponseDto updateUser(String kcId, @Valid UpdateUserDto updateUserDto) {
+        Users users = userRepository.findByKeycloakId(kcId)
+                .orElseThrow(() -> new ResourceNotFoundException("Users with id " + kcId + " not found"));
 
-        BeanUtils.copyProperties(updateUserDto, users, "id");
+        if(!Objects.equals(updateUserDto.getUserId(), users.getUserId())) {
+            throw new InvalidUserDataException("Users with keycloakId " + kcId + " does not match local userId.");
+        }
+
+        BeanUtils.copyProperties(updateUserDto, users);
         userRepository.save(users);
 
-        return userConversionService.convertToDto(users);
+        return userConversionService.convertToPrivateDto(users);
     }
 
     @Override
-    public void deleteUser(Long id) {
-        userRepository.delete(userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Users with id " + id + " not found")));
+    // This needs to change to use the @AuthenticationPrincipal and keycloakId from JWT
+    public void deleteUser(String kcId) {
+        userRepository.delete(userRepository.findByKeycloakId(kcId)
+                .orElseThrow(() -> new ResourceNotFoundException("Users with id " + kcId + " not found")));
     }
 
     @Override
-    public PrivateUserResponseDto getUserById(Long id) {
-        Optional<Users> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            return userConversionService.convertToDto(user.get());
-        }
-        else {
-            throw new ResourceNotFoundException("Users with id " + id + " not found");
-        }
-    }
-
-    @Override
-    public Optional<PrivateUserResponseDto> getUserByKeycloakId(String kcId) {
+    public PrivateUserResponseDto getUserByKeycloakId(String kcId) {
         return userRepository
                 .findByKeycloakId(kcId)
                 .filter(u -> !u.getIsDeleted())
-                .map(userConversionService::convertToDto);
+                .map(userConversionService::convertToPrivateDto)
+                .orElseThrow(() -> {
+                    log.error("Attempt to access user data by keycloakId failed due to nonexistent keycloakId: " +
+                            "{}", kcId);
+                    return new ResourceNotFoundException("Users with keycloakId " + kcId + " not found");
+                });
+    }
+
+    //helper method for normalizing emails. isolated for testing.
+    String normalizeEmail(String email) {
+        return email.trim().toLowerCase(Locale.ROOT);
     }
 }

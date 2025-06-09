@@ -2,16 +2,18 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import jakarta.validation.Valid;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface UserService {
 
-    List<PrivateUserResponseDto> getAllUsers();
+    List<PublicUserResponseDto> getAllUsers();
+
+    PublicUserResponseDto getUserById(Long id);
 
     /**
      * Perform repository-level uniqueness checks on keycloakId, email, and username.
@@ -27,14 +29,10 @@ public interface UserService {
     @Validated
     PrivateUserResponseDto createUser(String kcId, String rawUsername, String rawEmail);
 
-
     @Validated
-    PrivateUserResponseDto updateUser(Long id, @Valid UpdateUserDto updateUserDto);
+    PrivateUserResponseDto updateUser(String kcId, @Valid UpdateUserDto updateUserDto);
 
+    void deleteUser(String kcId);
 
-    void deleteUser(Long id);
-
-    PrivateUserResponseDto getUserById(Long id);
-
-    Optional<PrivateUserResponseDto> getUserByKeycloakId(String kcId);
+    PrivateUserResponseDto getUserByKeycloakId(String kcId);
 }

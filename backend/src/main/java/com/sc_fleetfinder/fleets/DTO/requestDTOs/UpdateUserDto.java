@@ -13,8 +13,8 @@ public class UpdateUserDto {
     private Long userId;
 
     @NotBlank(message = "Update user DTO field 'username' cannot be null")
-    @Size(min = 1, max = 32, message = "Update user DTO field 'username' must be " +
-            "between 1 and 32 characters")
+    @Size(min = 3, max = 32, message = "Update user DTO field 'username' must be " +
+            "between 3 and 32 characters")
     private String username;
 
     @NotBlank(message = "Update user DTO field 'email' cannot be null")
@@ -26,6 +26,6 @@ public class UpdateUserDto {
     @Size(max = 25, message = "Update user DTO field 'org' cannot exceed 25 characters")
     private String org;
 
-    @Size(max = 255, message = "Create user DTO field 'about' cannot exceed 255 characters")
+    @Size(max = 255, message = "Update user DTO field 'about' cannot exceed 255 characters")
     private String about;
 }

@@ -17,10 +17,6 @@ public class PrivateUserResponseDto {
     @NotNull(message = "UserId cannot be null")
     private Long userId;
 
-//    @NotNull(message = "user keycloak_id cannot be null")
-//    @NotBlank(message = "user keycloak_id cannot be blank")
-//    private String keycloakId;
-
     @NotBlank(message = "Username cannot be blank")
     @Size(min = 1, max = 32, message = "Username must be between 1 and 32 characters")
     private String username;
@@ -41,11 +37,4 @@ public class PrivateUserResponseDto {
     private Set<GroupListingResponseDto> groupListingsDto = new HashSet<>();
 
     public PrivateUserResponseDto() {}
-
-    public PrivateUserResponseDto(Long userId, String kcId, String username, String email) {
-        this.userId = userId;
-//        this.keycloakId = kcId;
-        this.username = username;
-        this.email = email;
-    }
 }

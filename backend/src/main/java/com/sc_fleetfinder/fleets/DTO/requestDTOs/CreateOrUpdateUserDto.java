@@ -17,8 +17,8 @@ public class CreateOrUpdateUserDto {
     private String keycloakId;
 
     @NotBlank(message = "Create user DTO field 'username' cannot be blank")
-    @Size(min = 1, max = 32, message = "Create user DTO field 'username' must be " +
-            "between 1 and 32 characters")
+    @Size(min = 3, max = 32, message = "Create user DTO field 'username' must be " +
+            "between 3 and 32 characters")
     private String username;
 
     @NotBlank(message = "Create user DTO field 'email' cannot be blank")

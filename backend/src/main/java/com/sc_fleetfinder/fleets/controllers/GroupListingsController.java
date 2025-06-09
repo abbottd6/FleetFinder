@@ -14,6 +14,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -54,6 +55,7 @@ public class GroupListingsController {
     }
 
     @PostMapping("/create_listing")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> createGroupListing(@Valid @RequestBody CreateGroupListingDto createGroupListingDto,
                                                 @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
@@ -67,11 +69,15 @@ public class GroupListingsController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    // needs to use authenticationPrincipal and keycloakId instead of userId
     public GroupListing updateGroupListing(@PathVariable Long id, @Valid @RequestBody UpdateGroupListingDto updateGroupListingDto) {
         return groupListingService.updateGroupListing(id, updateGroupListingDto);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    // needs to use authenticationprincipal and keycloakId instead of userid
     public ResponseEntity<Void> deleteGroupListing(@PathVariable Long id) {
         groupListingService.deleteGroupListing(id);
         return ResponseEntity.noContent().build();

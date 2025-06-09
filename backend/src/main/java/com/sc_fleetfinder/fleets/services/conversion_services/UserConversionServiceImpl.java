@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ public class UserConversionServiceImpl implements UserConversionService{
     }
 
     @Override
-    public PrivateUserResponseDto convertToDto(Users users) {
+    public PrivateUserResponseDto convertToPrivateDto(Users users) {
 
         //Entity 'Users' contains a set of groupListing entities that also need to be converted to the response dto
         Set<GroupListingResponseDto> groupListingResponseDtos = users.getGroupListings().stream()
@@ -37,5 +38,11 @@ public class UserConversionServiceImpl implements UserConversionService{
         privateUserResponseDto.setGroupListingsDto(groupListingResponseDtos);
 
         return privateUserResponseDto;
+    }
+
+    @Override
+    public PublicUserResponseDto convertToPublicDto(Users users) {
+
+        return modelMapper.map(users, PublicUserResponseDto.class);
     }
 }
