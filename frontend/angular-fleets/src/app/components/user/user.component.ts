@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from "../../services/user-services/user.service";
-import {User} from "../../models/user/user";
+import {PublicUser} from "../../models/public-user/public-user";
 
 @Component({
     selector: 'app-user',
@@ -9,7 +9,7 @@ import {User} from "../../models/user/user";
     standalone: false
 })
 export class UserComponent implements OnInit{
-  user: User | undefined;
+  user: PublicUser | undefined;
 
   constructor(private userService: UserService) {}
 

@@ -14,7 +14,8 @@ import {
   throwError, withLatestFrom
 } from "rxjs";
 import {HttpClient} from "@angular/common/http";
-import {User} from "../../../models/user/user";
+import {PublicUser} from "../../../models/public-user/public-user";
+import {PrivateUser} from "../../../models/private-user/private-user";
 
 @Injectable({
   providedIn: 'root'
@@ -24,10 +25,18 @@ export class AuthService {
   private readonly oidc = inject(OidcSecurityService);
   private readonly http = inject(HttpClient);
 
+  // Raw profile/claims OIDC Observable
+  // read only
+  // use for username, email, roles straight from kc
   userData$ = this.oidc.userData$;
-  isLoggedIn$ = this.oidc.isAuthenticated$.pipe(map(r => r.isAuthenticated))
+
+  // isAuthenticated is an object with a boolean for authState and userData<any>
+  // extract just the authState for isLoggedIn$ boolean
+  isLoggedIn$ = this.oidc.isAuthenticated$
+    .pipe(map(oidcAuthObj => oidcAuthObj.isAuthenticated))
+
+  // OIDC client metadata/settings (auth URL, clientID, redirect URIs, scopes, etc.)
   configuration$ = this.oidc.getConfiguration();
-  authResult$: Observable<AuthenticatedResult> = this.oidc.isAuthenticated$;
 
 
   // Reactive provisioning
@@ -36,40 +45,45 @@ export class AuthService {
     filter(d => !!d && !!d.userData)
   );
 
-  public localUser$: Observable<User> = this.refreshTrigger$.pipe(
-    // fire once immediately, then whenever refreshTrigger$ .next()s
-    startWith(undefined),
+  // local version of keycloak's user
+  public localUser$: Observable<PrivateUser> = this.refreshTrigger$.pipe(
     // pair with latest profile
     withLatestFrom(this.profile$),
     // extract the profile
-    switchMap(([, packageData]) =>
-      this.http.get<Partial<User>>('/api/users/me').pipe(
+    switchMap(([, profile]) =>
+      this.http.get<Partial<PrivateUser>>('/api/users/me').pipe(
         catchError(err => {
           if (err.status === 404) {
-            return this.http.post<Partial<User>>('/api/users/create-user', {
-              keycloakId: packageData.userData.sub,
-              username: packageData.userData.preferred_username,
-              email: packageData.userData.email,
+            return this.http.post<Partial<PrivateUser>>('/api/users/create-user', {
+              keycloakId: profile.userData.sub,
+              username: profile.userData.preferred_username,
+              email: profile.userData.email,
             });
           }
           return throwError(() => err);
         }),
-        map(raw => new User(
-          raw.userId!,
-          raw.username!,
-          raw.email!,
-          raw.server!,
-          raw.org!,
-          raw.about!,
-          raw.acctCreated!,
-          raw.groupListingsDto!
-        ))
+        map(raw => {
+          const roles: string[] =
+            profile.userData.realm_access?.roles || [];
+
+          return new PrivateUser(
+            raw.userId!,
+            raw.username!,
+            raw.email!,
+            raw.server!,
+            raw.org!,
+            raw.about!,
+            raw.acctCreated!,
+            raw.groupListingsDto!,
+            roles
+          )
+        })
       )
     ),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  public localUsername$ = this.localUser$.pipe(map(u => u.username));
+  public localUsername$ = this.localUser$.pipe(map(userObj => userObj.username));
 
   constructor() {
     this.oidc
