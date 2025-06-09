@@ -4,12 +4,10 @@ import {
   BehaviorSubject,
   catchError,
   filter,
-  firstValueFrom,
   map,
   merge,
-  Observable, shareReplay, startWith,
+  Observable, shareReplay,
   switchMap,
-  take,
   tap,
   throwError, withLatestFrom
 } from "rxjs";

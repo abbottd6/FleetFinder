@@ -24,34 +24,38 @@ import {AuthModule} from "angular-auth-oidc-client";
 import {environment} from "../environments/environment";
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {AuthInterceptor} from "./services/auth/interceptors/auth.interceptor";
+import {MatSidenav, MatSidenavContainer} from "@angular/material/sidenav";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 
 @NgModule({
   declarations: [
     AppComponent,
     GroupListingsComponent,
-    UserComponent,
     NavBarComponent,
     FooterComponent,
     WelcomeScreenComponent,
     GroupListingModalComponent,
     AboutComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    NgOptimizedImage,
-    CreateListingModule,
-    FormsModule,
-    ReactiveFormsModule,
-    NgSelectComponent,
-    AuthModule.forRoot({
-      config: {
-        ...environment.oidc
-      }
-    }),
-    NgbModule
-  ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        NgOptimizedImage,
+        CreateListingModule,
+        FormsModule,
+        ReactiveFormsModule,
+        NgSelectComponent,
+        AuthModule.forRoot({
+            config: {
+                ...environment.oidc
+            }
+        }),
+        NgbModule,
+        MatSidenavContainer,
+        MatSidenav
+    ],
   providers: [
     provideClientHydration(),
     provideHttpClient(withFetch(), withInterceptorsFromDi()),

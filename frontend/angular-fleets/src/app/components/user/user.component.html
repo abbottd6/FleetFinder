@@ -1,7 +1,36 @@
-<h1 style="color: white">TEST USER PAGE</h1>
-<br>
-<br>
-<h1 style="color: white">TEST USER PAGE</h1>
-<br>
-<br>
-<h1 style="color: white">TEST USER PAGE</h1>
+<div class="main-body">
+  <ng-container *ngIf="localUser$ | async as user; else notLoggedIn">
+    <span class="page-title"><h2>User Account: {{ user.username }}</h2></span>
+    <div class="header-line"></div>
+    <mat-sidenav-container class="account-sidenav-container">
+      <mat-sidenav class="side-nav-the-side-nav" mode="side" opened>
+        <ul class="side-nav-list">
+          <li class="side-nav-item">Profile</li>
+          <li class="side-nav-item">My Listings</li>
+          <li class="side-nav-item">Saved Listings</li>
+          <li class="side-nav-item">Edit Profile</li>
+        </ul>
+      </mat-sidenav>
+      <mat-sidenav-content class="side-nav-main-body">
+        <div class="account-window-body">
+          <ul>
+            <li>Username: {{ user.username }}</li>
+            <li>Email: {{ user.email }}</li>
+            <li>Preferred Server: {{ user.server }}</li>
+            <li>Org: {{ user.org }}</li>
+            <li>About: {{ user.about }}</li>
+            <li>Account Created: {{user.acctCreated }}</li>
+          </ul>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </ng-container>
+</div>
+
+<ng-template #notLoggedIn>
+    <span class="page-title"><h2>Not Authorized</h2></span>
+    <div class="header-line"></div>
+    <div>
+      <span>Please log in to view user account details.</span>
+    </div>
+</ng-template>

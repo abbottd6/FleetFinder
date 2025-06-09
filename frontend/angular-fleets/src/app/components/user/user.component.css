@@ -1,0 +1,45 @@
+@media(min-width: 725px) {
+  .account-sidenav-container {
+    color: #2c2c2c;
+    background-color: #585c60;
+    height: 100%;
+    width: 95vw;
+  }
+
+  .mat-drawer {
+    width: 10%;
+  }
+
+  .side-nav-the-side-nav {
+    border-right: 1px solid rgba(44, 44, 44, 0.5);
+  }
+
+  .side-nav-list {
+    list-style: none;
+    justify-content: start;
+    padding: 1rem 0 0 1rem;
+  }
+
+  .side-nav-main-body {
+    height: 100vh;
+    width: 85vw;
+  }
+
+  .account-window-body {
+    margin: 3rem;
+  }
+
+  .side-nav-item {
+    clear: both;
+    padding: 0.2rem;
+    border-bottom: 3px solid rgba(65, 103, 142, 0.8);
+    clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
+    width: 85%;
+    margin: 0.7rem auto 0 0;
+  }
+
+  .side-nav-item:hover {
+    background-color: rgba(65, 103, 142, 0.6);
+    cursor: pointer;
+  }
+}
