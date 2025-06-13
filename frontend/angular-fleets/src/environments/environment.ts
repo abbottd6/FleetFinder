@@ -15,10 +15,5 @@ export const environment = {
     logLevel: LogLevel.Debug,
     loadUserInfo: false,
     autoUserInfo: false,
-  },
-  // keycloak: {
-  //   url: 'http://localhost:8180',
-  //   realm: 'oauthrealm',
-  //   clientId: 'fleetfinder-frontend',
-  // }
+  }
 }
