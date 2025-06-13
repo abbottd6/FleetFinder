@@ -1,27 +1,51 @@
-import {Component, OnInit} from '@angular/core';
-import {UserService} from "../../services/user-services/user.service";
+import {Component, ViewChild, inject, OnInit, AfterViewInit} from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
-import {Observable} from "rxjs";
+import {map, Observable, shareReplay} from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {Router, RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
-import {NgSelectComponent} from "@ng-select/ng-select";
-import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatListItem, MatNavList} from "@angular/material/list";
+import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
+import { BreakpointObserver } from "@angular/cdk/layout";
+import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
+import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/button";
 
 @Component({
     selector: 'app-user',
     templateUrl: './user.component.html',
     styleUrls: [
       './user.component.css',
-      '../create-listing/create-listing.component.css'
+      '../create-listing/create-listing.component.css',
     ],
-    imports: [ CommonModule , RouterModule, MatSidenavModule],
+  imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
+    UserAcctListingsTableComponent, MatButtonModule],
     standalone: true
 })
 export class UserComponent {
+  private breakpointObserver = inject(BreakpointObserver);
+
+  groupListings: GroupListingViewModel[] = []
+
   localUser$: Observable<PrivateUser>;
 
-  constructor(private userService: UserService, private authService: AuthService, private router: Router) {
-    this.localUser$ = this.authService.localUser$;
+  selectedTab: 'profile'|'listings'|'saved'|'edit' = 'profile';
+
+  selectTab(tab: typeof this.selectedTab){
+    this.selectedTab = tab;
   }
+
+  constructor(private authService: AuthService) {
+    this.localUser$ = this.authService.localUser$;
+
+    this.localUser$.pipe(
+      map(user => user.groupListingsDto ?? [])
+    )
+      .subscribe(listings => this.groupListings = listings);
+  }
+
+  isMobile$ = this.breakpointObserver
+    .observe('(max-width: 1200px)')
+    .pipe(map(result => result.matches),
+      shareReplay());
 }

@@ -26,11 +26,11 @@ table th {
 }
 
 .groups-table tbody tr:nth-child(even) {
-  background-color: #495057;
+  background-color: rgba(136, 138, 143, 0.3);
 }
 
 .groups-table tbody tr:nth-child(odd) {
-  background-color: #3b4249;
+  background-color: rgba(88, 91, 94, 0.5);
 }
 
 .groups-table {
@@ -75,7 +75,7 @@ table th {
   cursor:  pointer;
 }
 .groups-table tbody tr:hover {
-  background-color: #4b3822bf;
+  background-color: rgba(186, 97, 8, 0.2);
 }
 
 .pvp-color {
@@ -83,10 +83,10 @@ table th {
 }
 
 .pvx-color {
-  color: rgba(186, 97, 8, 0.9);
+  color: rgba(186, 97, 8, 1);
 }
 
 .pve-color {
-  color: rgba(24, 128, 24, 0.86);
+  color: rgba(37, 106, 37, 0.86);
 }
 
