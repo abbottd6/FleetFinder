@@ -22,6 +22,24 @@ pipeline {
         echo 'Backend tests completed.'
       }
     }
+
+    stage('Tag Commit') {
+      when {
+        branch 'dev_main'
+      }
+
+      steps {
+        script {
+          def tagName = "build-${env.BUILD_NUMBER}"
+          sh """
+            git config user.name "Jenkins CI"
+            git config user.email "jenkins@scfleetfinder.com"
+            git tag ${tagname}
+            git push https://abbottd6:${env.GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git ${tagName}
+          """
+        }
+      }
+    }
   }
 
   post {
@@ -32,7 +50,8 @@ pipeline {
       echo 'Tests passed. Ready for next stage.'
     }
     always {
-      junit 'backend/target/surefire-reports/*.xml'
+      dir('backend')
+        junit 'target/surefire-reports/*.xml'
     }
   }
 }
