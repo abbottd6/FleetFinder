@@ -50,8 +50,9 @@ pipeline {
       echo 'Tests passed. Ready for next stage.'
     }
     always {
-      dir('backend')
+      dir('backend') {
         junit 'target/surefire-reports/*.xml'
+      }
     }
   }
 }
