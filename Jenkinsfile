@@ -34,7 +34,7 @@ pipeline {
           sh """
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
-            git tag ${tagname}
+            git tag ${tagName}
             git push https://abbottd6:${env.GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git ${tagName}
           """
         }
