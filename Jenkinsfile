@@ -68,7 +68,7 @@ pipeline {
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
             git tag \${newTag}
-            git push https://abbottd6:\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git \$newTag
+            git push https://\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git \${newTag}
           """
         }
       }
@@ -92,8 +92,8 @@ pipeline {
             git config user.email "jenkins@scfleetfinder.com"
             git fetch origin
             git checkout prod_main
-            git merge origin/dev_main --no-ff -m "CI: merge dev_main into prod_main for"
-            git push https://abbottd6:\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git prod_main
+            git merge origin/dev_main --no-ff -m "CI: merge dev_main into prod_main"
+            git push https://\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git prod_main
           """
         }
       }
@@ -126,8 +126,8 @@ pipeline {
             git config user.email "jenkins@scfleetfinder.com"
             git fetch origin
             git checkout prod_main
-            git tag -f \$dev_mainTag
-            git push https://abbottd6:\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git refs/tags/\$dev_mainTag --force
+            git tag -f \${dev_mainTag}
+            git push https://\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git refs/tags/\${dev_mainTag} --force
           """
         }
       }
