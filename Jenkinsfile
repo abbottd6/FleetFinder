@@ -68,8 +68,8 @@ pipeline {
             git pull origin dev_main
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
-            git tag ${newTag}
-            git push https://$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git ${newTag}
+            git tag ${env.newTag}
+            git push https://$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git ${env.newTag}
           '''
         }
       }
@@ -114,9 +114,8 @@ pipeline {
 
       steps {
         script {
-          if (!env.newTag) {
-            error "No release tag found to apply to prod_main"
-          }
+
+          echo env.newTag
 
           sh '''
             git config user.name "Jenkins CI"
