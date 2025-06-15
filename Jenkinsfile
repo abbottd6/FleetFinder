@@ -115,16 +115,15 @@ pipeline {
       steps {
         script {
 
-          echo env.newTag
-
-          sh '''
+          sh """
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
             git fetch origin
             git checkout prod_main
+            echo env.newTag
             git tag -f ${env.newTag}
             git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${env.newTag} --force
-          '''
+          """
         }
       }
     }
