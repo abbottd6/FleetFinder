@@ -6,6 +6,14 @@ pipeline {
   }
 
   stages {
+    stage('Debug Env') {
+      steps {
+        script {
+          sh 'printenv | sort'
+        }
+      }
+    }
+
     stage('Checkout') {
       steps {
         checkout scm
