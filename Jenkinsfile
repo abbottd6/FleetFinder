@@ -124,12 +124,12 @@ pipeline {
           sh 'git checkout dev_main'
 
 
-          def lastTag = sh(
+          lastTag = sh(
             script: "git tag | grep '^release-v' | sort -V | tail -n 1",
             returnStdout: true
           ).trim()
 
-          def newTag = 'release-v1.4'
+          newTag = 'release-v1.4'
 
           if(lastTag) {
             newTag = lastTag
