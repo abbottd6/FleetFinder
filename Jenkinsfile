@@ -46,13 +46,18 @@ pipeline {
 
       steps {
         script {
-          def dev_mainTag = sh(
+          def lastTag = sh(
             script: "git tag | grep '^release-v' | sort -V | tail -n 1",
             returnStdout: true
           ).trim()
 
-          if (!dev_mainTag) {
-            error "No release tag found to apply to prod_main"
+          def newTag = "release-v1.1"
+
+          if (lastTag) {
+            def versionParts = lastTag.replace('release-v', '').tokenize('.')
+            def major = versionParts[0].toInteger()
+            def minor = versionParts[1].toInteger() + 1
+            newTag = "release-v${major}.${minor}"
           }
           
           sh """
@@ -103,18 +108,13 @@ pipeline {
 
       steps {
         script {
-          def lastTag = sh(
+          def dev_mainTag = sh(
             script: "git tag | grep '^release-v' | sort -V | tail -n 1",
             returnStdout: true
           ).trim()
 
-          def newTag = ''
-
-          if (lastTag) {
-            def versionParts = lastTag.replace('release-v', '').tokenize('.')
-            def major = versionParts[0].toInteger()
-            def minor = versionParts[1].toInteger()
-            newTag = "release-v${major}.${minor}"
+          if (!dev_mainTag) {
+            error "No release tag found to apply to prod_main"
           }
 
           sh """
