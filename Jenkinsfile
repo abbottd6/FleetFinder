@@ -25,7 +25,6 @@ pipeline {
         expression {
           return env.BRANCH_NAME != 'dev_main' && env.BRANCH_NAME != 'prod_main'
         }
-        exp
       }
       steps {
         dir('backend') {
@@ -120,27 +119,26 @@ pipeline {
         GITHUB_TOKEN = credentials('github-tag-version-token')
       }
 
-      script {
-        sh 'git checkout dev_main'
-      }
-
-      def lastTag = sh(
-        script: "git tag | grep '^release-v' | sort -V | tail -n 1",
-        returnStdout: true
-      ).trim()
-
-      def newTag = 'release-v1.4'
-
-      if(lastTag) {
-        newTag = lastTag
-      }
-
-      if(!lastTag) {
-        error "Unable to access previous tag from dev_main"
-      }
-
       steps {
         script {
+          sh 'git checkout dev_main'
+
+
+          lastTag = sh(
+            script: "git tag | grep '^release-v' | sort -V | tail -n 1",
+            returnStdout: true
+          ).trim()
+
+          newTag = 'release-v1.4'
+
+          if(lastTag) {
+            newTag = lastTag
+          }
+
+          if(!lastTag) {
+            error "Unable to access previous tag from dev_main"
+          }
+
 
           sh """
             git checkout prod_main
