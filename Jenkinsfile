@@ -6,6 +6,32 @@ pipeline {
   }
 
   stages {
+    stage('Debug Env') {
+      steps {
+        script {
+          sh 'printenv | sort'
+        }
+      }
+    }
+
+    stage('Skip Redundant Build') {
+      when {
+        expression {
+            return env.GIT_COMMIT != null && env.GIT_PREVIOUS_SUCCESSFUL_COMMIT != null
+        }
+      }
+      steps {
+        script {
+          def current_commit = env.GIT_COMMIT
+          def previous_commit = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
+
+          if (current_commit == previous_commit) {
+            currentBuild.result = 'NOT_BUILT'
+            error("This commit (${current_commit}) has already been successfully built. Skipping.")
+          }
+        }
+      }
+    }
 
     stage('Checkout') {
       steps {
@@ -16,7 +42,7 @@ pipeline {
     stage('Test Backend') {
       when {
         expression {
-          return env.BRANCH_NAME != 'dev_main' && env.BRANCH_NAME != 'prod_main'
+          return env.BRANCH_NAME != 'dev_main' && env.BRANCH_NAME != 'prod_main' && env.CHANGE_TARGET == 'dev_main'
         }
       }
       steps {
@@ -36,49 +62,10 @@ pipeline {
       }
     }
 
-    stage('Tag dev_main Merge') {
-      when {
-        expression {
-          return env.BRANCH_NAME == 'dev_main'
-        }
-      }
-
-      environment {
-          GITHUB_TOKEN = credentials('github-tag-version-token')
-      }
-
-      steps {
-        script {
-          def lastTag = sh(
-            script: "git tag | grep '^release-v' | sort -V | tail -n 1",
-            returnStdout: true
-          ).trim()
-
-          env.newTag = "release-v1.1"
-
-          if (lastTag) {
-            def versionParts = lastTag.replace('release-v', '').tokenize('.')
-            def major = versionParts[0].toInteger()
-            def minor = versionParts[1].toInteger() + 1
-            env.newTag = "release-v${major}.${minor}"
-          }
-          
-          sh '''
-            git checkout dev_main
-            git pull origin dev_main
-            git config user.name "Jenkins CI"
-            git config user.email "jenkins@scfleetfinder.com"
-            git tag ${newTag}
-            git push https://$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git ${newTag}
-          '''
-        }
-      }
-    }
-
     stage('PR dev_main into prod_main') {
       when {
         expression {
-          return env.BRANCH_NAME == 'dev_main'
+          return !env.CHANGE_ID && env.CHANGE_TARGET != 'prod_main' && env.BRANCH_NAME == 'dev_main'
         }
       }
 
@@ -101,7 +88,7 @@ pipeline {
       }
     }
 
-    stage('Tag prod_main Release Version') {
+    stage('Tag PR merge into prod_main') {
       when {
         expression {
           return env.BRANCH_NAME == 'prod_main'
@@ -114,18 +101,28 @@ pipeline {
 
       steps {
         script {
-          if (!env.newTag) {
-            error "No release tag found to apply to prod_main"
+          def lastTag = sh(
+            script: "git tag | grep '^release-v' | sort -V | tail -n 1",
+            returnStdout: true
+          ).trim()
+
+          def newTag = "release-v1.1"
+
+          if (lastTag) {
+            def versionParts = lastTag.replace('release-v', '').tokenize('.')
+            def major = versionParts[0].toInteger()
+            def minor = versionParts[1].toInteger() + 1
+            newTag = "release-v${major}.${minor}"
           }
 
-          sh '''
+          sh """
+            git checkout prod_main
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
             git fetch origin
-            git checkout prod_main
-            git tag -f ${dev_mainTag}
-            git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${env.newTag} --force
-          '''
+            git tag -f ${newTag}
+            git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${newTag} --force
+          """
         }
       }
     }
