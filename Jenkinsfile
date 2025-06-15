@@ -150,7 +150,7 @@ pipeline {
           env.FRONTEND_IMAGE_TAG = frontendTag
           env.BACKEND_IMAGE_TAG = backendTag
 
-          dir('frontend') {
+          dir('frontend/angular-fleets') {
             sh 'docker build --no-cache -t $FRONTEND_IMAGE_TAG .'
           }
 
