@@ -146,18 +146,18 @@ pipeline {
           def backendRepo = env.BACKEND_REPO
           def frontendTag = "${frontendRepo}:cache_${timestamp}"
           def backendTag = "${backendRepo}:cache_${timestamp}"
-        
+
+          env.FRONTEND_IMAGE_TAG = frontendTag
+          env.BACKEND_IMAGE_TAG = backendTag
+
           dir('frontend') {
-            sh 'docker build --no-cache -t ${frontendTag} .'
+            sh 'docker build --no-cache -t $FRONTEND_IMAGE_TAG .'
           }
 
           dir('backend') {
             sh './mvnw clean package -DskipTests'
-            sh 'docker build --no-cache -t ${backendTag} .'
+            sh 'docker build --no-cache -t $BACKEND_IMAGE_TAG .'
           }
-
-          env.FRONTEND_IMAGE_TAG = frontendTag
-          env.BACKEND_IMAGE_TAG = backendTag
         }
       }
 
