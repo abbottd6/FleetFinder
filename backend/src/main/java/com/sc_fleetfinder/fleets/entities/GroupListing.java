@@ -36,9 +36,9 @@ public class GroupListing {
 
     @ManyToOne
     @JoinColumn(name="id_user", nullable = false)
-    @NotNull(message = "GroupListing entity field 'user' cannot be null")
+    @NotNull(message = "GroupListing entity field 'users' cannot be null")
     @JsonBackReference
-    private User user;
+    private Users users;
 
     @ManyToOne
     @JoinColumn(name="server_id")

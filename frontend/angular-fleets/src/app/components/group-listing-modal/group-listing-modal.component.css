@@ -1,6 +1,6 @@
 .modal-content {
   background-color: var(--bs-gray-900);
-  color: #d8d8d8;
+  color: rgba(216, 216, 216, 0.7);
   font-size: clamp(0.8rem, 1vw, 1.2rem);
   margin-inline: auto;
   overflow-y: auto;
@@ -14,20 +14,26 @@
 
 @media(min-width: 1368px) {
   .modal-title {
-    font-size: 1.4rem;
+    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
   }
 }
 
 @media(min-width: 992px) and (max-width: 1367px) {
   .modal-title {
-    font-size: clamp(1.2rem, 1.2vw, 1.4rem);
+    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
   }
 }
 
 @media(max-width: 991px) {
   .modal-title {
-    font-size: clamp(1rem, 1.2vw, 1.4rem);
+    font-size: clamp(1.2rem, 1.2vw, 2rem);
     padding: clamp(0.25rem, 1vw, 1rem);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
   }
 }
 
@@ -56,7 +62,9 @@
   transition: background-color 0.15s ease;
 }
 
-.close:hover {
+.close:hover,
+.modal.fade .close:hover,
+.modal.fade.show .close:hover {
   color: var(--bs-gray-900);
   border-color: rgba(255, 131, 7, .75);
   background-color: rgba(255, 131, 7, .25);
@@ -176,10 +184,14 @@
 .modal-listing-field {
   padding: 0 0.25rem 0 0.25rem;
   color: rgba(255, 131, 7, .75);
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 500;
 }
 
 /* Field values */
 .modal-listing-val {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 300;
   margin-inline: 0.25rem;
 }
 

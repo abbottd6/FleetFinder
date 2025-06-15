@@ -1,10 +1,11 @@
-## development environment mysql container
+## development environment MySQL container
 
 ## navigate to backend folder
+## MAKE SURE NOTHING IS RUNNING ON Ports 3306 and 8180
 ## docker-compose -f docker-compose.dev.yml down -v
 ## docker-compose -f docker-compose.dev.yml up -d
 
-## wait like 5 seconds
+## wait like 30 seconds for keycloak to start
 
 ## run backend
 ## run frontend
@@ -24,8 +25,35 @@ services:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./init.keycloak.dev.sql:/docker-entrypoint-initdb.d/init.keycloak.dev.sql
     command: --default-time-zone='+00:00'
     restart: always
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak-dev
+    command: start-dev --import-realm
+    environment:
+      - KC_DB=mysql
+      - KC_DB_URL=jdbc:mysql://mysql:3306/sc_keycloak?serverTimezone=UTC
+      - KC_DB_USERNAME=devuser
+      - KC_DB_PASSWORD=devpassword
+      - KC_HOSTNAME=localhost
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=kcpassword
+    volumes:
+      - ./src/main/resources/keycloak/dev-realm-export.json:/opt/keycloak/data/import/realm-export.json
+    ports:
+      - "8180:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
 
 volumes:
   mysql-data:

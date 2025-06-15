@@ -1,21 +1,51 @@
-import {Component, OnInit} from '@angular/core';
-import {UserService} from "../../services/user-services/user.service";
-import {User} from "../../models/user/user";
+import {Component, ViewChild, inject, OnInit, AfterViewInit} from '@angular/core';
+import {AuthService} from "../../services/auth/auth-services/auth.service";
+import {map, Observable, shareReplay} from "rxjs";
+import {PrivateUser} from "../../models/private-user/private-user";
+import {Router, RouterModule} from "@angular/router";
+import {CommonModule} from "@angular/common";
+import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatListItem, MatNavList} from "@angular/material/list";
+import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
+import { BreakpointObserver } from "@angular/cdk/layout";
+import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
+import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/button";
 
 @Component({
     selector: 'app-user',
     templateUrl: './user.component.html',
-    styleUrl: './user.component.css',
-    standalone: false
+    styleUrls: [
+      './user.component.css',
+      '../create-listing/create-listing.component.css',
+    ],
+  imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
+    UserAcctListingsTableComponent, MatButtonModule],
+    standalone: true
 })
-export class UserComponent implements OnInit{
-  user: User | undefined;
+export class UserComponent {
+  private breakpointObserver = inject(BreakpointObserver);
 
-  constructor(private userService: UserService) {}
+  groupListings: GroupListingViewModel[] = []
 
-  ngOnInit(): void {
-    this.userService.getUserById(1).subscribe(data => {
-      this.user = data;
-    })
+  localUser$: Observable<PrivateUser>;
+
+  selectedTab: 'profile'|'listings'|'saved'|'edit' = 'profile';
+
+  selectTab(tab: typeof this.selectedTab){
+    this.selectedTab = tab;
   }
+
+  constructor(private authService: AuthService) {
+    this.localUser$ = this.authService.localUser$;
+
+    this.localUser$.pipe(
+      map(user => user.groupListingsDto ?? [])
+    )
+      .subscribe(listings => this.groupListings = listings);
+  }
+
+  isMobile$ = this.breakpointObserver
+    .observe('(max-width: 1200px)')
+    .pipe(map(result => result.matches),
+      shareReplay());
 }

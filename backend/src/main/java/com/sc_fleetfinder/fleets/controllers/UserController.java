@@ -1,12 +1,16 @@
 package com.sc_fleetfinder.fleets.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.UserResponseDto;
-import com.sc_fleetfinder.fleets.services.UserService;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
+import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -22,36 +27,55 @@ import java.util.List;
 @RequestMapping("/api/users")
 public class UserController {
 
-    //need tests after v2 refactor
-    //and refactoring for security to make user info minimally (or not at all) accessible through api endpoints
-    //getter methods for users should not return passwords and should require admin status in order to view the
-    // endpoints
     @Autowired
     private UserService userService;
 
+    public UserController() {};
+
     @GetMapping
-    public List<UserResponseDto> getUsers() {
+    public List<PublicUserResponseDto> getUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public UserResponseDto getUserById(@PathVariable Long id) {
+    public PublicUserResponseDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
-    @PostMapping
-    public UserResponseDto createUser(@Valid @RequestBody CreateUserDto createUserDto) {
-        return userService.createUser(createUserDto);
+    @GetMapping("/me")
+    @PreAuthorize("isAuthenticated()")
+    public PrivateUserResponseDto getMe(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+
+        return userService.getUserByKeycloakId(kcId);
+    }
+
+    @PostMapping("/create-user")
+    @PreAuthorize("isAuthenticated()")
+    public PrivateUserResponseDto createUser(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+        String username = jwt.getClaimAsString("preferred_username");
+        String email = jwt.getClaimAsString("email");
+
+        return userService.createUser(kcId, username, email);
     }
 
     @PutMapping("/{id}")
-    public UserResponseDto updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserDto updateUserDto) {
-        return userService.updateUser(id, updateUserDto);
+    @PreAuthorize("isAuthenticated()")
+    // needs to use authentication principal and keycloakId instead of userId
+    public PrivateUserResponseDto updateUser(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateUserDto updateUserDto) {
+        String kcId = jwt.getSubject();
+
+        return userService.updateUser(kcId, updateUserDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+    @PreAuthorize("isAuthenticated()")
+    // needs to use authentication principal and keycloakId instead of userId
+    public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+
+        userService.deleteUser(kcId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -4,7 +4,6 @@ import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/fo
 import {CreateListingRequest} from "../../models/group-listing/create-listing-request";
 import {CreateListingService} from "../../services/group-listing-services/create-listing.service";
 import {Router} from "@angular/router";
-import {group} from "@angular/animations";
 import {environment} from "../../../environments/environment";
 
 @Component({
@@ -69,7 +68,7 @@ export class CreateListingComponent  implements OnInit {
       return;
     }
 
-    const newListingData = new CreateListingRequest(1, this.listingFormGroup.value);
+    const newListingData = new CreateListingRequest(this.listingFormGroup.value);
 
     if(!environment.production) {
       console.log(newListingData);

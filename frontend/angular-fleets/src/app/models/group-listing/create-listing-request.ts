@@ -1,9 +1,8 @@
 import {environment} from "../../../environments/environment";
 
 export class CreateListingRequest {
-  constructor(public userId: number, formData: any) {
+  constructor(formData: any) {
     Object.assign(this, {
-      userId: userId,
       listingTitle: formData.titleGroup.listingTitle,
       serverId: formData.sessionEnvInfoGroup.serverRegion,
       environmentId: formData.sessionEnvInfoGroup.gameEnvironment,
