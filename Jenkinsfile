@@ -25,6 +25,9 @@ pipeline {
           sh "grep 'Tests run' test-output.log || true"
         }
         echo 'Backend tests completed.'
+        script {
+         env.TEST_STAGE_EXECUTED = 'true'
+        }
       }
       post {
         unsuccessful {
@@ -61,6 +64,7 @@ pipeline {
           }
           
           sh """
+            git checkout dev_main
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
             git tag \${newTag}
@@ -241,8 +245,14 @@ pipeline {
       echo 'Pipeline run successfully.'
     }
     always {
-      dir('backend') {
-        junit 'target/surefire-reports/*.xml'
+      script {
+        if (env.TEST_STAGE_EXECUTED == 'true') {
+          dir('backend') {
+            junit 'target/surefire-reports/*.xml'
+          }
+        } else {
+          echo "Skip JUnit parsing: Test stage was not run in this execution of the pipeline."
+        }
       }
     }
   }
