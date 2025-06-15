@@ -3,8 +3,6 @@ pipeline {
 
   environment {
     MAVEN_OPTS = "-Dmaven.test.failure.ignore=false"
-    JAVA_HOME = '/usr/lib/jvm/java-22-amazon-corretto'
-    PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
   }
 
   stages {
