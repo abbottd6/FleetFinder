@@ -14,7 +14,9 @@ pipeline {
 
     stage('Test Backend') {
       when {
-        branch 'user_auth'
+        expression {
+          return env.BRANCH_TARGET == 'dev_main' && env.CHANGE_ID
+        }
       }
       steps {
         dir('backend') {
@@ -32,9 +34,8 @@ pipeline {
 
     stage('Tag dev_main Merge') {
       when {
-        allOf {
-          branch 'dev_main'
-          expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'dev_main' && !env.CHANGE_ID
         }
       }
 
@@ -65,9 +66,8 @@ pipeline {
 
     stage('Merge to prod_main') {
       when {
-        allOf {
-          branch 'dev_main'
-          expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'dev_main' && !env.CHANGE_ID
         }
       }
 
@@ -91,8 +91,9 @@ pipeline {
 
     stage('Tag prod_main Release Version') {
       when {
-        branch 'dev_main'
-        expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'prod_main' && !env.CHANGE_ID
+        }
       }
 
       environment {
@@ -129,8 +130,9 @@ pipeline {
 
     stage('Build Docker Images') {
       when {
-        branch 'prod_main'
-        expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'prod_main' && !env.CHANGE_ID
+        }
       }
 
       environment {
@@ -164,8 +166,9 @@ pipeline {
 
     stage('Push Images to ECR') {
       when {
-        branch 'prod_main'
-        expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'prod_main' && !env.CHANGE_ID
+        }
       }
 
       environment {
@@ -190,8 +193,9 @@ pipeline {
 
     stage('Deploy to EC2') {
       when {
-        branch 'prod_main'
-        expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'prod_main' && !env.CHANGE_ID
+        }
       }
 
       environment {
