@@ -5,15 +5,6 @@ pipeline {
     MAVEN_OPTS = "-Dmaven.test.failure.ignore=false"
   }
 
-  stages {
-    stage('Debug Env') {
-      steps {
-        script {
-          sh 'printenv | sort'
-        }
-      }
-    }
-
     stage('Checkout') {
       steps {
         checkout scm
