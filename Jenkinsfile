@@ -75,7 +75,7 @@ pipeline {
       }
     }
 
-    stage('Merge to prod_main') {
+    stage('PR dev_main into prod_main') {
       when {
         expression {
           return env.BRANCH_NAME == 'dev_main'
@@ -89,12 +89,15 @@ pipeline {
       steps {
         script {
           sh """
-            git config user.name "Jenkins CI"
-            git config user.email "jenkins@scfleetfinder.com"
-            git fetch origin
-            git checkout prod_main
-            git merge origin/dev_main --no-ff -m "CI: merge dev_main into prod_main"
-            git push https://\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git prod_main
+            curl -X POST -H "Authorization: token \$GITHUB_TOKEN" \
+                   -H "Accept: application/vnd.github.v3+json" \
+                   https://api.github.com/repos/abbottd6/FleetFinder/pulls \
+                   -d '{
+                     "title": "CI: Merge dev_main into prod_main",
+                     "head": "dev_main",
+                     "base": "prod_main",
+                     "body": "Automated PR created by Jenkins pipeline."
+                   }'
           """
         }
       }
