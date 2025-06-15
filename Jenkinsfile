@@ -63,14 +63,14 @@ pipeline {
             env.newTag = "release-v${major}.${minor}"
           }
           
-          sh '''
+          sh """
             git checkout dev_main
             git pull origin dev_main
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
             git tag ${env.newTag}
             git push https://$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git ${env.newTag}
-          '''
+          """
         }
       }
     }
