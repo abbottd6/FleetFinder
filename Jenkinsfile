@@ -46,7 +46,7 @@ pipeline {
     stage('PR dev_main into prod_main') {
       when {
         expression {
-          return env.BRANCH_NAME == 'dev_main'
+          return env.BRANCH_NAME == 'dev_main' && env.CHANGE_TARGET != 'prod_main'
         }
       }
 
