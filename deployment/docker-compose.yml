@@ -19,7 +19,7 @@ services:
       - backend-network
 
   backend:
-    image: ${BACKEND_IMAGE_TAG}
+    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-backend:cache_1742500995
     container_name: fleetfinder-backend
     restart: always
     environment:
@@ -38,7 +38,7 @@ services:
       - backend-network
 
   frontend:
-    image: ${FRONTEND_IMAGE_TAG}
+    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-frontend:cache_1742765854
     container_name: fleetfinder-frontend
     restart: always
     depends_on:

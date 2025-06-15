@@ -7,8 +7,6 @@ pipeline {
     PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
   }
 
-  def newTag = ''
-
   stages {
     stage('Checkout') {
       steps {
@@ -51,24 +49,19 @@ pipeline {
 
       steps {
         script {
-          def lastTag = sh(
+          def dev_mainTag = sh(
             script: "git tag | grep '^release-v' | sort -V | tail -n 1",
             returnStdout: true
           ).trim()
 
-          newTag = 'release-v1.1'
-
-          if (lastTag) {
-            def versionParts = lastTag.replace('release-v', '').tokenize('.')
-            def major = versionParts[0].toInteger()
-            def minor = versionParts[1].toInteger() + 1
-            newTag = "release-v${major}.${minor}"
+          if (!dev_mainTag) {
+            error "No release tag found to apply to prod_main"
           }
           
           sh """
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
-            git tag ${newTag}
+            git tag ${dev_mainTag}
             git push https://abbottd6:\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git \$newTag
           """
         }
@@ -113,6 +106,20 @@ pipeline {
 
       steps {
         script {
+          def lastTag = sh(
+            script: "git tag | grep '^release-v' | sort -V | tail -n 1",
+            returnStdout: true
+          ).trim()
+
+          def newTag = ''
+
+          if (lastTag) {
+            def versionParts = lastTag.replace('release-v', '').tokenize('.')
+            def major = versionParts[0].toInteger()
+            def minor = versionParts[1].toInteger()
+            newTag = "release-v${major}.${minor}"
+          }
+
           sh """
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
@@ -167,19 +174,21 @@ pipeline {
       }
 
       environment {
-        AWS_ACCESS_KEY_ID = credentials('aws-ecr-credentials').username
-        AWS_SECRET_ACCESS_KEY = credentials('aws-ecr-credentials').password
         ECR_REGISTRY = credentials('ecr-registry-url')
         AWS_REGION = 'us-west-2'
       }
       steps {
-        script {
-          sh """
-            aws ecr get-login-password --region \$AWS_REGION | docker login --username AWS --password-stdin \$ECR_REGISTRY
+        withCredentials([usernamePassword(credentialsId: 'aws-ecr-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+          script {
+            sh """
+              aws configure set aws_access_key_id \$AWS_CREDS_USR
+              aws configure set aws_secret_access_key \$AWS_CREDS_PSW
+              aws ecr get-login-password --region \$AWS_REGION | docker login --username AWS --password-stdin \$ECR_REGISTRY
 
-            docker push \$FRONTEND_IMAGE_TAG
-            docker push \$BACKEND_IMAGE_TAG
-          """
+              docker push \$FRONTEND_IMAGE_TAG
+              docker push \$BACKEND_IMAGE_TAG
+            """
+          }
         }
       }
     }
