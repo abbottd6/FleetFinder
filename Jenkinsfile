@@ -14,7 +14,9 @@ pipeline {
 
     stage('Test Backend') {
       when {
-        branch 'user_auth'
+        expression {
+          return env.BRANCH_TARGET == 'dev_main' && env.CHANGE_ID
+        }
       }
       steps {
         dir('backend') {
@@ -32,9 +34,8 @@ pipeline {
 
     stage('Tag dev_main Merge') {
       when {
-        allOf {
-          branch 'dev_main'
-          expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'dev_main' && !env.CHANGE_ID
         }
       }
 
@@ -52,7 +53,7 @@ pipeline {
           if (!dev_mainTag) {
             error "No release tag found to apply to prod_main"
           }
-          
+
           sh """
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
@@ -65,13 +66,12 @@ pipeline {
 
     stage('Merge to prod_main') {
       when {
-        allOf {
-          branch 'dev_main'
-          expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'dev_main' && !env.CHANGE_ID
         }
       }
 
-      environment { 
+      environment {
         GITHUB_TOKEN = credentials('github-tag-version-token')
       }
 
@@ -91,8 +91,9 @@ pipeline {
 
     stage('Tag prod_main Release Version') {
       when {
-        branch 'dev_main'
-        expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'prod_main' && !env.CHANGE_ID
+        }
       }
 
       environment {
@@ -129,8 +130,9 @@ pipeline {
 
     stage('Build Docker Images') {
       when {
-        branch 'prod_main'
-        expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'prod_main' && !env.CHANGE_ID
+        }
       }
 
       environment {
@@ -145,7 +147,7 @@ pipeline {
           def backendRepo = env.BACKEND_REPO
           def frontendTag = "${frontendRepo}:cache_${timestamp}"
           def backendTag = "${backendRepo}:cache_${timestamp}"
-        
+
           dir('frontend') {
             sh "docker build --no-cache -t ${frontendTag} ."
           }
@@ -164,8 +166,9 @@ pipeline {
 
     stage('Push Images to ECR') {
       when {
-        branch 'prod_main'
-        expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'prod_main' && !env.CHANGE_ID
+        }
       }
 
       environment {
@@ -190,8 +193,9 @@ pipeline {
 
     stage('Deploy to EC2') {
       when {
-        branch 'prod_main'
-        expression { return !env.CHANGE_ID }
+        expression {
+          return env.BRANCH_NAME == 'prod_main' && !env.CHANGE_ID
+        }
       }
 
       environment {
