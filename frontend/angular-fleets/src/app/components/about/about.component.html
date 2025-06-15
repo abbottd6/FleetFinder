@@ -166,7 +166,7 @@
           Back To Top</a></span>
 
 
-    <h2 id="v1">FleetFinder v1 <span style="color: darkgreen">(Current)</span></h2>
+    <h2 id="v1">FleetFinder v1 <span style="color: #aa7902">(Previous Release)</span></h2>
     <div class="text-body">
       <p style="text-indent: 0;">v1 of FleetFinder represents the core CRUD functionality of the app, including:</p>
       <ul>
@@ -182,6 +182,20 @@
         placeholders for features planned in future versions. This version lays the foundation for the more advanced
         functionality and serves as a snapshot of my progress thus far.
       </p>
+    </div>
+
+    <h2 id="v1.1">FleetFinder v1.1 <span style="color: darkgreen">(Current)</span></h2>
+    <div class="text-body">
+      <p style="text-indent: 0;">v1.1 expands FleetFinder features to include user authentication and role based access features</p>
+      <ul>
+        <li>Keycloak integration with the existing MySQL data base</li>
+        <li>Separate Docker container to run Keycloak</li>
+        <li>Role-based access for listing creation and user account pages</li>
+        <li>User account page with separate tabs for viewing profile info and the authorized users current listings</li>
+        <li>Association of users to the group listings that they create via JWTs</li>
+        <li>Separate public and private response DTOs for user objects with different method parameters for access</li>
+        <li>Additional backend tests for User API endpoints for create user and user auth check</li>
+      </ul>
     </div>
 
 
