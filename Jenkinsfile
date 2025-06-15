@@ -23,9 +23,7 @@ pipeline {
     stage('Test Backend') {
       when {
         expression {
-          return env.BRANCH_NAME != 'dev_main'
-          && env.BRANCH_NAME != 'prod_main'
-          && env.CHANGE_TARGET == 'dev_main'
+          return env.BRANCH_NAME != 'dev_main' && env.BRANCH_NAME != 'prod_main' && env.CHANGE_TARGET == 'dev_main'
         }
       }
       steps {
