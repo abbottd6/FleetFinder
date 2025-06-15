@@ -14,6 +14,20 @@ pipeline {
       }
     }
 
+    stage('Skip Redundant Build') {
+        steps {
+          script {
+            def current_commit = env.GIT_COMMIT
+            def previous_commit = env>GIT_PREVIOUS_SUCCESSFUL_COMMIT
+
+            if (current == previous)
+              echo "This commit (${current_commit}) has already been successfully built. Skipping."
+              currentBuild.result = 'NOT_BUILT'
+              error("Redundant build skipped")
+          }
+        }
+    }
+
     stage('Checkout') {
       steps {
         checkout scm
