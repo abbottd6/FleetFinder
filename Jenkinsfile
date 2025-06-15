@@ -63,14 +63,14 @@ pipeline {
             newTag = "release-v${major}.${minor}"
           }
           
-          sh """
+          sh '''
             git checkout dev_main
             git pull origin dev_main
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
             git tag ${newTag}
             git push https://$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git ${newTag}
-          """
+          '''
         }
       }
     }
@@ -88,17 +88,19 @@ pipeline {
 
       steps {
         script {
-          sh """
-            curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
-                   -H "Accept: application/vnd.github.v3+json" \
-                   https://api.github.com/repos/abbottd6/FleetFinder/pulls \
-                   -d '{
-                     "title": "CI: Merge dev_main into prod_main",
-                     "head": "dev_main",
-                     "base": "prod_main",
-                     "body": "Automated PR created by Jenkins pipeline."
-                   }'
-          """
+            withCredentials([string(credentialsId: 'github-tag-version-token', variable: 'GITHUB_TOKEN')]) {
+              sh '''
+                curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
+                       -H "Accept: application/vnd.github.v3+json" \
+                       https://api.github.com/repos/abbottd6/FleetFinder/pulls \
+                       -d '{
+                         "title": "CI: Merge dev_main into prod_main",
+                         "head": "dev_main",
+                         "base": "prod_main",
+                         "body": "Automated PR created by Jenkins pipeline."
+                       }'
+              '''
+            }
         }
       }
     }
@@ -125,14 +127,14 @@ pipeline {
             error "No release tag found to apply to prod_main"
           }
 
-          sh """
+          sh '''
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
             git fetch origin
             git checkout prod_main
             git tag -f ${dev_mainTag}
             git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${dev_mainTag} --force
-          """
+          '''
         }
       }
     }
@@ -158,12 +160,12 @@ pipeline {
           def backendTag = "${backendRepo}:cache_${timestamp}"
         
           dir('frontend') {
-            sh "docker build --no-cache -t ${frontendTag} ."
+            sh 'docker build --no-cache -t ${frontendTag} .'
           }
 
           dir('backend') {
-            sh "./mvnw clean package -DskipTests"
-            sh "docker build --no-cache -t ${backendTag} ."
+            sh './mvnw clean package -DskipTests'
+            sh 'docker build --no-cache -t ${backendTag} .'
           }
 
           env.FRONTEND_IMAGE_TAG = frontendTag
@@ -187,14 +189,14 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'aws-ecr-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
           script {
-            sh """
+            sh '''
               aws configure set aws_access_key_id ${AWS_CREDS_USR}
               aws configure set aws_secret_access_key ${AWS_CREDS_PSW}
               aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
               docker push ${FRONTEND_IMAGE_TAG}
               docker push ${BACKEND_IMAGE_TAG}
-            """
+            '''
           }
         }
       }
@@ -216,7 +218,7 @@ pipeline {
       steps {
         sshagent(credentials: ['ec2-ssh-key']) {
           script {
-            sh """
+            sh '''
               ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
                 cd ${REMOTE_DIR} &&
                 sed -i "s|image:.*fleetfinder-backend:.*|image: ${BACKEND_IMAGE_TAG}|" docker-compose.yml &&
@@ -225,7 +227,7 @@ pipeline {
                 docker-compose --env-file .env.prod down &&
                 docker-compose --env-file .env.prod up -d
               '
-            """
+            '''
           }
         }
       }
