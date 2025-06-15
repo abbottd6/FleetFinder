@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
+import { OidcSecurityService } from 'angular-auth-oidc-client';
+import {AuthService} from "../../services/auth/auth-services/auth.service";
 
 @Component({
     selector: 'app-nav-bar',
@@ -8,10 +10,12 @@ import { Component } from '@angular/core';
 })
 export class NavBarComponent {
 
+  constructor(public auth: AuthService) {}
+
   closeDropdown() {
     const dropdown = document.getElementById('navbarNavDropdown');
     if (dropdown) {
-      dropdown.setAttribute('aria-expanded', 'flase');
+      dropdown.setAttribute('aria-expanded', 'false');
       dropdown.classList.remove('show');
       const menu =document.querySelector('.dropdown-menu');
       if (menu) {

@@ -23,7 +23,7 @@ import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.entities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ServerRegion;
-import com.sc_fleetfinder.fleets.entities.User;
+import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -68,9 +68,9 @@ public class MapperLookupService {
 
     //Make these cacheable??
 
-    public User findUserById(Long id) {
+    public Users findUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User", id));
+                .orElseThrow(() -> new ResourceNotFoundException("Users", id));
     }
 
     public ServerRegion findServerRegionById(Integer id) {

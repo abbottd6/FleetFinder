@@ -12,20 +12,29 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class UserResponseDto {
+public class PrivateUserResponseDto {
 
     @NotNull(message = "UserId cannot be null")
     private Long userId;
+
     @NotBlank(message = "Username cannot be blank")
     @Size(min = 1, max = 32, message = "Username must be between 1 and 32 characters")
     private String username;
-    @NotBlank(message = "User email cannot be blank")
-    @Email
+
+    @NotBlank(message = "Users email cannot be blank")
+    @Email(message = "Users email must be a valid email format")
     private String email;
+
     private String server;
+
     private String org;
+
     private String about;
+
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private LocalDateTime acctCreated;
+
     private Set<GroupListingResponseDto> groupListingsDto = new HashSet<>();
+
+    public PrivateUserResponseDto() {}
 }

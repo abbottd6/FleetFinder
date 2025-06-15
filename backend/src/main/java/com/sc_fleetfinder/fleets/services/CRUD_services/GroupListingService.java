@@ -1,4 +1,4 @@
-package com.sc_fleetfinder.fleets.services;
+package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
@@ -7,7 +7,6 @@ import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 

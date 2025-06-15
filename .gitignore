@@ -2,6 +2,8 @@
 deployment_cmds.txt
 *.env.prod
 *.env
+*init.keycloak.prod.tpl.sql
+*prod-realm-export.json
 
 # backend specific ignore rules
 backend/HELP.md

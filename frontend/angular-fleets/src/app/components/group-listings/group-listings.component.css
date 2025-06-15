@@ -26,11 +26,11 @@ table th {
 }
 
 .groups-table tbody tr:nth-child(even) {
-  background-color: #495057;
+  background-color: rgba(136, 138, 143, 0.3);
 }
 
 .groups-table tbody tr:nth-child(odd) {
-  background-color: #3b4249;
+  background-color: rgba(88, 91, 94, 0.5);
 }
 
 .groups-table {
@@ -42,7 +42,9 @@ table th {
 
 .groups-table tr td {
   padding: clamp(0.5rem, 1vw, 0.8rem);
-  font-size: clamp(0.7rem, 1vw, 1.1rem);
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 500;
+  font-size: clamp(0.8rem, 1vw, 1.2rem);
 }
 
 @media(max-width: 1100px) {
@@ -62,6 +64,10 @@ table th {
 
 .groups-table th {
   padding: 1rem;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 700;
+  font-size: clamp(0.8rem, 1vw, 1.8rem);
+  color: rgba(35, 34, 34, 0.9);
 }
 
 .groups-table tbody tr {
@@ -69,18 +75,18 @@ table th {
   cursor:  pointer;
 }
 .groups-table tbody tr:hover {
-  background-color: #4b3822bf;
+  background-color: rgba(186, 97, 8, 0.2);
 }
 
 .pvp-color {
-  color: rgba(255, 0, 0, .75);
+  color: rgba(103, 10, 10, 0.88);
 }
 
 .pvx-color {
-  color: rgba(255, 131, 7, .75);
+  color: rgba(186, 97, 8, 1);
 }
 
 .pve-color {
-  color: green;
+  color: rgba(37, 106, 37, 0.86);
 }
 

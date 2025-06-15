@@ -32,7 +32,7 @@ public class DataRestConfig implements RepositoryRestConfigurer {
         HttpMethod[] unsupportedMethods = { HttpMethod.POST, HttpMethod.PUT, HttpMethod.DELETE, HttpMethod.PATCH };
 
         cors.addMapping(config.getBasePath() + "/**").allowedOrigins(theAllowedOrigins);
-        //User and Group Listing support GET, POST, PUT, DELETE
+        //Users and Group Listing support GET, POST, PUT, DELETE
         //Other entities should be immutable
 
         //disable HTTP methods for GameEnvironment: POST, PUT, DELETE

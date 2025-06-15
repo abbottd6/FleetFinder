@@ -33,7 +33,7 @@ services:
       - "8080:8080"
     depends_on:
       - mysql
-    command: /bin/sh -c "until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done; ./mvnw test"
+    command: /bin/sh -c "until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done; ./mvnw test || exit 1"
     networks:
       - backend-network
 

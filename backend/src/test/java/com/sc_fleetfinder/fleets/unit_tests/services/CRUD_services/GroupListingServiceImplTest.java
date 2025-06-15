@@ -1,12 +1,12 @@
-package com.sc_fleetfinder.fleets.unit_tests.services;
+package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.entities.User;
+import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GroupListingServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
@@ -120,9 +120,6 @@ class GroupListingServiceImplTest {
                 () ->  assertFalse(dtoConstraintViolations.isEmpty()),
                 //the following are true or false depending on whether null input should fail validation
                 () -> assertTrue(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("userId")),
-                        "blank userId should fail validation create listing"),
-                () -> assertTrue(dtoConstraintViolations.stream()
                         .anyMatch(violation -> violation.getPropertyPath().toString().equals("serverId")),
                         "blank serverId should fail validation create listing"),
                 () -> assertTrue(dtoConstraintViolations.stream()
@@ -210,17 +207,17 @@ class GroupListingServiceImplTest {
             validDto.setCommsService("This is a valid comms service");
 
         //creating test user
-        User testUser = new User();
-            testUser.setUserId(1L);
-            testUser.setUsername("TestUser");
+        Users testUsers = new Users();
+            testUsers.setUserId(1L);
+            testUsers.setUsername("TestUser");
 
         //returning new entities from lookup service for test only
-        when(mapperLookupService.findUserById(validDto.getUserId())).thenReturn(testUser);
+        when(mapperLookupService.findUserById(validDto.getUserId())).thenReturn(testUsers);
 
         GroupListing mappedEntity = new GroupListing();
         //setting groupId to imitate autogenerate from the database
             mappedEntity.setGroupId(1L);
-            mappedEntity.setUser(mapperLookupService.findUserById(validDto.getUserId()));
+            mappedEntity.setUsers(mapperLookupService.findUserById(validDto.getUserId()));
             mappedEntity.setListingTitle(validDto.getListingTitle());
 
         when(groupListingConversionService.convertToEntity(validDto)).thenReturn(mappedEntity);

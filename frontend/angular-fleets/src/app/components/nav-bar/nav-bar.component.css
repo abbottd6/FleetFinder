@@ -59,6 +59,7 @@
 /* custom dropdown for full display navbar */
 .dropdown-item:hover {
   background-color: rgba(52, 135, 168, 0.25);
+  color: rgb(0, 0, 0)
 }
 
 /* Custom dropdown for full-display navbar dropdown */
@@ -68,6 +69,15 @@
   border-bottom: 1px solid var(--stark-blue);
   border-right: 1px solid var(--stark-blue);
   font-size: 85%;
+}
+
+.navbar-icons .dropdown-menu {
+  background-color: var(--bs-gray-dark);
+  clip-path: var(--clip-t-right-b-left);
+  border-bottom: 1px solid var(--stark-blue);
+  border-right: 1px solid var(--stark-blue);
+  font-size: 85%;
+
 }
 
 .navbar-nav {
@@ -130,11 +140,17 @@
     border-bottom: 1px ridge rgba(52, 135, 168, 0.75);
     padding: 0.5rem 0.0rem 0.25rem 0.5rem;
     clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
+    cursor: pointer;
   }
 
   .navbar-nav .nav-link:hover {
     background-color: rgba(52, 135, 168, 0.25);
     font-size: 105%;
+    cursor: pointer;
+  }
+
+  a.nav-link:hover {
+    cursor: pointer !important;
   }
 
   .navbar-nav .nav-item {
