@@ -14,9 +14,7 @@ pipeline {
 
     stage('Test Backend') {
       when {
-        allOf {
-          expression { return env.CHANGE_TARGET == 'dev_main' }
-        }
+        branch 'user_auth'
       }
       steps {
         dir('backend') {
