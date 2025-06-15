@@ -82,13 +82,9 @@ pipeline {
         }
       }
 
-      environment { 
-        GITHUB_TOKEN = credentials('github-version-tag-text')
-      }
-
       steps {
         script {
-            withCredentials([string(credentialsId: 'github-tag-version-token', variable: 'GITHUB_TOKEN')]) {
+            withCredentials([string(credentialsId: 'github-pr-token', variable: 'GITHUB_TOKEN')]) {
               sh '''
                 curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
                        -H "Accept: application/vnd.github.v3+json" \
