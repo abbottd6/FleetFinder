@@ -5,6 +5,8 @@ pipeline {
     MAVEN_OPTS = "-Dmaven.test.failure.ignore=false"
   }
 
+  stages {
+
     stage('Checkout') {
       steps {
         checkout scm
@@ -219,7 +221,6 @@ pipeline {
           }
         }
       }
-
     }
   }
 
