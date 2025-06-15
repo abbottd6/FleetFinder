@@ -54,13 +54,13 @@ pipeline {
             returnStdout: true
           ).trim()
 
-          def newTag = "release-v1.1"
+          env.newTag = "release-v1.1"
 
           if (lastTag) {
             def versionParts = lastTag.replace('release-v', '').tokenize('.')
             def major = versionParts[0].toInteger()
             def minor = versionParts[1].toInteger() + 1
-            newTag = "release-v${major}.${minor}"
+            env.newTag = "release-v${major}.${minor}"
           }
           
           sh '''
@@ -114,12 +114,7 @@ pipeline {
 
       steps {
         script {
-          def dev_mainTag = sh(
-            script: "git tag | grep '^release-v' | sort -V | tail -n 1",
-            returnStdout: true
-          ).trim()
-
-          if (!dev_mainTag) {
+          if (!env.newTag) {
             error "No release tag found to apply to prod_main"
           }
 
@@ -129,7 +124,7 @@ pipeline {
             git fetch origin
             git checkout prod_main
             git tag -f ${dev_mainTag}
-            git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${dev_mainTag} --force
+            git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${env.newTag} --force
           '''
         }
       }
