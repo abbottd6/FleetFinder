@@ -20,7 +20,7 @@ pipeline {
             def current_commit = env.GIT_COMMIT
             def previous_commit = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
 
-            if (current == previous)
+            if (current_commit == previous_commit)
               echo "This commit (${current_commit}) has already been successfully built. Skipping."
               currentBuild.result = 'NOT_BUILT'
               error("Redundant build skipped")
