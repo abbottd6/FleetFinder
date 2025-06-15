@@ -54,7 +54,7 @@ pipeline {
           if (!dev_mainTag) {
             error "No release tag found to apply to prod_main"
           }
-
+          
           sh """
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
@@ -72,7 +72,7 @@ pipeline {
         }
       }
 
-      environment {
+      environment { 
         GITHUB_TOKEN = credentials('github-tag-version-token')
       }
 
@@ -148,7 +148,7 @@ pipeline {
           def backendRepo = env.BACKEND_REPO
           def frontendTag = "${frontendRepo}:cache_${timestamp}"
           def backendTag = "${backendRepo}:cache_${timestamp}"
-
+        
           dir('frontend') {
             sh "docker build --no-cache -t ${frontendTag} ."
           }
@@ -221,7 +221,6 @@ pipeline {
           }
         }
       }
-
     }
   }
 
