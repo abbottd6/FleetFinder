@@ -178,8 +178,6 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'aws-ecr-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
           script {
             sh '''
-              aws configure set aws_access_key_id ${AWS_CREDS_USR}
-              aws configure set aws_secret_access_key ${AWS_CREDS_PSW}
               aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
               docker push ${FRONTEND_IMAGE_TAG}
