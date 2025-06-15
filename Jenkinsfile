@@ -43,45 +43,6 @@ pipeline {
       }
     }
 
-    stage('Tag dev_main Merge') {
-      when {
-        expression {
-          return env.BRANCH_NAME == 'dev_main'
-        }
-      }
-
-      environment {
-          GITHUB_TOKEN = credentials('github-tag-version-token')
-      }
-
-      steps {
-        script {
-          def lastTag = sh(
-            script: "git tag | grep '^release-v' | sort -V | tail -n 1",
-            returnStdout: true
-          ).trim()
-
-          def newTag = "release-v1.1"
-
-          if (lastTag) {
-            def versionParts = lastTag.replace('release-v', '').tokenize('.')
-            def major = versionParts[0].toInteger()
-            def minor = versionParts[1].toInteger() + 1
-            newTag = "release-v${major}.${minor}"
-          }
-          
-          sh """
-            git checkout dev_main
-            git pull origin dev_main
-            git config user.name "Jenkins CI"
-            git config user.email "jenkins@scfleetfinder.com"
-            git tag ${newTag}
-            git push https://$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git ${newTag}
-          """
-        }
-      }
-    }
-
     stage('PR dev_main into prod_main') {
       when {
         expression {
@@ -108,7 +69,7 @@ pipeline {
       }
     }
 
-    stage('Tag prod_main Release Version') {
+    stage('Tag PR merge into prod_main') {
       when {
         expression {
           return env.BRANCH_NAME == 'prod_main'
@@ -121,24 +82,19 @@ pipeline {
 
       steps {
         script {
-          sh 'git checkout dev_main'
-
-
-          lastTag = sh(
+          def lastTag = sh(
             script: "git tag | grep '^release-v' | sort -V | tail -n 1",
             returnStdout: true
           ).trim()
 
-          newTag = 'release-v1.4'
+          def newTag = "release-v1.1"
 
-          if(lastTag) {
-            newTag = lastTag
+          if (lastTag) {
+            def versionParts = lastTag.replace('release-v', '').tokenize('.')
+            def major = versionParts[0].toInteger()
+            def minor = versionParts[1].toInteger() + 1
+            newTag = "release-v${major}.${minor}"
           }
-
-          if(!lastTag) {
-            error "Unable to access previous tag from dev_main"
-          }
-
 
           sh """
             git checkout prod_main
