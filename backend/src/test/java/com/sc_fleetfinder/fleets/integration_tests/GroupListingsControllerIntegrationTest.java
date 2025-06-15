@@ -1,20 +1,26 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
+import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,9 +30,10 @@ import static org.hamcrest.Matchers.nullValue;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @Transactional
 @ContextConfiguration(initializers = TestEnvironmentLoader.class)
-public class GroupListingsControllerIntegrationTest {
+public class GroupListingsControllerIntegrationTest extends AbstractIntegrationTestDB{
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,9 +44,19 @@ public class GroupListingsControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @MockitoBean
+    private JwtDecoder jwtDecoder;
+
+    @Autowired
+    private MapperLookupService mapperLookupService;
+
     @Test
     void testGetAllGroupListings_Success() throws Exception {
-        mockMvc.perform(get("/api/group-listings"))
+        mockMvc.perform(get("/api/group-listings")
+                .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("_embedded.groupListingResponseDtoes[0].groupId").value("1"));
@@ -47,7 +64,8 @@ public class GroupListingsControllerIntegrationTest {
 
     @Test
     void testGetGroupListingByIdSuccess() throws Exception {
-        mockMvc.perform(get("/api/group-listings/1"))
+        mockMvc.perform(get("/api/group-listings/1")
+                .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.groupId").value("1"))
                 .andExpect(jsonPath(
@@ -104,16 +122,15 @@ public class GroupListingsControllerIntegrationTest {
 
     @Test
     void testGetGroupListingByIdFailure() throws Exception {
-        mockMvc.perform(get("/api/group-listings/500"))
+        mockMvc.perform(get("/api/group-listings/500")
+                .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId"))))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void testCreateGroupListingSuccess_AllFields() throws Exception {
-
         //creating a 'createGroupListingDto' to mock a user creating a listing
         CreateGroupListingDto testDto = new CreateGroupListingDto();
-            testDto.setUserId(1L);
             testDto.setServerId(1);
             testDto.setEnvironmentId(1);
             testDto.setExperienceId(1);
@@ -134,8 +151,16 @@ public class GroupListingsControllerIntegrationTest {
             testDto.setCommsOption("Optional");
             testDto.setCommsService("Discord");
 
+//        Users mockUser = new Users();
+//        mockUser.setUsername("mock user");
+//        mockUser.setKeycloakId("someKeycloakId");
+//        mockUser.setEmail("mockuser@gmail.com");
+//        userRepository.save(mockUser);
+//        userRepository.flush();
+
         //posting the listing to call createGroupListing
         mockMvc.perform(post("/api/group-listings/create_listing")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isCreated())
@@ -147,7 +172,8 @@ public class GroupListingsControllerIntegrationTest {
         Long testId = jdbcTemplate.queryForObject("SELECT MAX(id_group) FROM group_listing", Long.class);
 
         //performing a get request for this id to check the response dto matches what was input in the createListingDto
-        mockMvc.perform(get("/api/group-listings/" + testId))
+        mockMvc.perform(get("/api/group-listings/" + testId)
+                .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName").value("TestUser"))
                 .andExpect(jsonPath("$.server").value("USA"))
@@ -172,9 +198,14 @@ public class GroupListingsControllerIntegrationTest {
 
     @Test
     void testCreateGroupListingSuccess_minimumRequiredFields() throws Exception {
+//        Users mockUser = new Users();
+//        mockUser.setUsername("mock user");
+//        mockUser.setKeycloakId("someKeycloakId");
+//        mockUser.setEmail("mockuser@gmail.com");
+//        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
         //creating test listing that does NOT include optional fields
         CreateGroupListingDto testDto = new CreateGroupListingDto();
-        testDto.setUserId(1L);
         testDto.setServerId(1);
         testDto.setEnvironmentId(1);
         testDto.setExperienceId(1);
@@ -191,6 +222,7 @@ public class GroupListingsControllerIntegrationTest {
 
         //posting the listing to call createGroupListing
         mockMvc.perform(post("/api/group-listings/create_listing")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isCreated())
@@ -202,7 +234,8 @@ public class GroupListingsControllerIntegrationTest {
         Long testId = jdbcTemplate.queryForObject("SELECT MAX(id_group) FROM group_listing", Long.class);
 
         //performing a get request for this id to check the response dto matches what was input in the createListingDto
-        mockMvc.perform(get("/api/group-listings/" + testId))
+        mockMvc.perform(get("/api/group-listings/" + testId)
+                .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId"))))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userName").value("TestUser"))
                 .andExpect(jsonPath("$.server").value("USA"))
@@ -245,7 +278,15 @@ public class GroupListingsControllerIntegrationTest {
         testDto.setCurrentPartySize(2);
         testDto.setCommsOption("Optional");
 
+//        Users mockUser = new Users();
+//        mockUser.setUserId(12L);
+//        mockUser.setUsername("mock user");
+//        mockUser.setKeycloakId("someKeycloakId");
+//        mockUser.setEmail("mockuser@gmail.com");
+//        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
         mockMvc.perform(post("/api/group-listings/create_listing")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isInternalServerError())
@@ -257,6 +298,7 @@ public class GroupListingsControllerIntegrationTest {
         CreateGroupListingDto testDto = new CreateGroupListingDto();
 
         mockMvc.perform(post("/api/group-listings/create_listing")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
             .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isBadRequest());

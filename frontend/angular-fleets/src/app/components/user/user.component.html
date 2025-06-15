@@ -1,7 +1,109 @@
-<h1 style="color: white">TEST USER PAGE</h1>
-<br>
-<br>
-<h1 style="color: white">TEST USER PAGE</h1>
-<br>
-<br>
-<h1 style="color: white">TEST USER PAGE</h1>
+<div class="main-body">
+  <ng-container *ngIf="localUser$ | async as user; else notLoggedIn">
+    <span class="page-title"><h2>User Profile:</h2></span>
+    <div class="header-line"></div>
+    <mat-sidenav-container class="account-sidenav-container">
+      <mat-sidenav #drawer
+                   [mode]="(isMobile$ | async) ? 'over' : 'side'"
+                   [opened]="!(isMobile$ | async)"
+                   class="side-nav-the-side-nav"
+                   >
+        <mat-nav-list class="side-nav-list">
+          <a mat-list-item class="mat-nav-list-item"
+             [class.active]="selectedTab==='profile'"
+             (click)="selectTab('profile')">
+            Profile
+          </a>
+          <a mat-list-item class="mat-nav-list-item"
+            [class.active]="selectedTab==='listings'"
+            (click)="selectTab('listings')">
+            My Listings
+          </a>
+          <a mat-list-item class="mat-nav-list-item"
+            [class.active]="selectedTab==='saved'"
+            (click)="selectTab('saved')">
+            Saved Listings
+          </a>
+          <a mat-list-item class="mat-nav-list-item"
+          [class.active]="selectedTab==='saved'"
+          (click)="selectTab('edit')">
+            Edit Profile
+          </a>
+        </mat-nav-list>
+      </mat-sidenav>
+      <mat-sidenav-content class="side-nav-main-body">
+        <div class="account-tabs-button-container">
+          <button mat-button class="account-tabs-button" (click)="drawer.toggle()">
+            <ng-container *ngIf="drawer.opened; else drawerClosed">
+              <span class="account-tabs-button-arrow">
+                <<
+              </span>
+            </ng-container>
+            <ng-template #drawerClosed>
+              <span class="account-tabs-button-arrow">
+                >>
+              </span>
+            </ng-template>
+            Account Tabs
+          </button>
+        </div>
+        <div class="account-window-body">
+
+          <!-- PROFILE TAB -->
+          <ng-container *ngIf="selectedTab === 'profile'">
+            <ul class="user-profile-list">
+              <li class="user-profile-row">
+                <span class="user-profile-field-name">Username: </span>
+                <span class="user-profile-field-val">{{ user.username }}</span>
+              </li>
+              <li class="user-profile-row">
+                <span class="user-profile-field-name">Email: </span>
+                <span class="user-profile-field-val"> {{ user.email }}</span>
+              </li>
+              <li class="user-profile-row">
+                <span class="user-profile-field-name">Preferred Server: </span>
+                <span class="user-profile-field-val"> {{ user.server }} </span>
+              </li>
+              <li class="user-profile-row">
+                <span class="user-profile-field-name">Org: </span>
+                <span class="user-profile-field-val"> {{ user.org }} </span>
+              </li>
+              <li class="user-profile-row">
+                <span class="user-profile-field-name">About: </span>
+                <span class="user-profile-field-val"> {{ user.about }} </span>
+              </li>
+              <li class="user-profile-row">
+                <span class="user-profile-field-name">Account Created: </span>
+                <span class="user-profile-field-val"> {{ user.acctCreated | date: 'MMM d, yyyy h:mm a' }} </span>
+              </li>
+            </ul>
+          </ng-container>
+
+          <!-- MY LISTINGS TAB -->
+          <ng-container *ngIf="selectedTab === 'listings'">
+            <app-user-acct-listings-table [userListings]="(user.groupListingsDto)" class="user-table">
+            </app-user-acct-listings-table>
+          </ng-container>
+
+          <!-- SAVED LISTINGS TAB -->
+          <ng-container *ngIf="selectedTab === 'saved'">
+            <div style="color:white">TMP SAVED LISTINGS</div>
+          </ng-container>
+
+          <!-- EDIT PROFILE TAB -->
+          <ng-container *ngIf="selectedTab === 'edit'">
+            <div style="color:white">TMP EDIT PROFILE</div>
+          </ng-container>
+        </div>
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  </ng-container>
+</div>
+
+<ng-template #notLoggedIn>
+    <span class="page-title"><h2>Not Authorized</h2></span>
+    <div class="header-line"></div>
+    <div>
+      <span>Please log in to view user account details.</span>
+    </div>
+</ng-template>

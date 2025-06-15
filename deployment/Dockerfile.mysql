@@ -1,0 +1,6 @@
+# Setting up wrapper for .env var injection in sql files for production
+# init.keycloak.prod.tpl.sql DEPENDS on this for injecting environment variables
+
+FROM mysql:8.2
+
+RUN microdnf install -y gettext && microdnf clean all

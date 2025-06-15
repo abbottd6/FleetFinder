@@ -13,7 +13,7 @@ import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.entities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ServerRegion;
-import com.sc_fleetfinder.fleets.entities.User;
+import com.sc_fleetfinder.fleets.entities.Users;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -51,9 +51,9 @@ public class GroupListingResponseDtoMapperConfig {
                     mapper.map(GroupListing::getGroupId, GroupListingResponseDto::setGroupId);
 
                     mapper.using(ctx -> {
-                        User user = (User) ctx.getSource();
-                        return user != null ? user.getUsername() : null;
-                    }).map(GroupListing::getUser, GroupListingResponseDto::setUserName);
+                        Users users = (Users) ctx.getSource();
+                        return users != null ? users.getUsername() : null;
+                    }).map(GroupListing::getUsers, GroupListingResponseDto::setUserName);
 
                     mapper.using(ctx -> {
                         ServerRegion server = (ServerRegion) ctx.getSource();
