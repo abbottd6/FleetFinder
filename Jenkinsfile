@@ -122,7 +122,7 @@ pipeline {
             git config user.email "jenkins@scfleetfinder.com"
             git fetch origin
             git checkout prod_main
-            git tag -f ${dev_mainTag}
+            git tag -f ${env.newTag}
             git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${env.newTag} --force
           '''
         }
