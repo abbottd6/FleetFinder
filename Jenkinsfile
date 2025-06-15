@@ -65,6 +65,7 @@ pipeline {
           
           sh """
             git checkout dev_main
+            git pull origin dev_main
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
             git tag \${newTag}
