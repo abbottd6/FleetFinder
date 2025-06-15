@@ -23,7 +23,7 @@ pipeline {
     stage('Test Backend') {
       when {
         expression {
-          return env.CHANGE_TARGET == 'dev_main' && env.CHANGE_ID
+          return env.BRANCH_NAME != 'dev_main' && env.BRANCH_NAME != 'prod_main'
         }
       }
       steps {
@@ -43,7 +43,7 @@ pipeline {
     stage('Tag dev_main Merge') {
       when {
         expression {
-          return env.BRANCH_NAME == 'dev_main' && !env.CHANGE_ID
+          return env.BRANCH_NAME == 'dev_main'
         }
       }
 
