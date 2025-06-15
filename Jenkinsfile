@@ -68,8 +68,8 @@ pipeline {
             git pull origin dev_main
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
-            git tag \${newTag}
-            git push https://\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git \${newTag}
+            git tag ${newTag}
+            git push https://$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git ${newTag}
           """
         }
       }
@@ -89,7 +89,7 @@ pipeline {
       steps {
         script {
           sh """
-            curl -X POST -H "Authorization: token $GITHUB_TOKEN" \
+            curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
                    -H "Accept: application/vnd.github.v3+json" \
                    https://api.github.com/repos/abbottd6/FleetFinder/pulls \
                    -d '{
@@ -130,8 +130,8 @@ pipeline {
             git config user.email "jenkins@scfleetfinder.com"
             git fetch origin
             git checkout prod_main
-            git tag -f \${dev_mainTag}
-            git push https://\$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git refs/tags/\${dev_mainTag} --force
+            git tag -f ${dev_mainTag}
+            git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${dev_mainTag} --force
           """
         }
       }
@@ -188,12 +188,12 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'aws-ecr-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
           script {
             sh """
-              aws configure set aws_access_key_id \$AWS_CREDS_USR
-              aws configure set aws_secret_access_key \$AWS_CREDS_PSW
-              aws ecr get-login-password --region \$AWS_REGION | docker login --username AWS --password-stdin \$ECR_REGISTRY
+              aws configure set aws_access_key_id ${AWS_CREDS_USR}
+              aws configure set aws_secret_access_key ${AWS_CREDS_PSW}
+              aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
 
-              docker push \$FRONTEND_IMAGE_TAG
-              docker push \$BACKEND_IMAGE_TAG
+              docker push ${FRONTEND_IMAGE_TAG}
+              docker push ${BACKEND_IMAGE_TAG}
             """
           }
         }
@@ -217,8 +217,8 @@ pipeline {
         sshagent(credentials: ['ec2-ssh-key']) {
           script {
             sh """
-              ssh -o StrictHostKeyChecking=no \$REMOTE_USER@\$REMOTE_HOST '
-                cd \$REMOTE_DIR &&
+              ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
+                cd ${REMOTE_DIR} &&
                 sed -i "s|image:.*fleetfinder-backend:.*|image: ${BACKEND_IMAGE_TAG}|" docker-compose.yml &&
                 sed -i "s|image:.*fleetfinder-frontend:.*|image: ${FRONTEND_IMAGE_TAG}|" docker-compose.yml &&
                 docker-compose --env-file .env.prod pull &&
