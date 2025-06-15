@@ -6,6 +6,13 @@ pipeline {
   }
 
   stages {
+    stage('Debug Env') {
+      steps {
+        script {
+          sh 'printenv | sort'
+        }
+      }
+    }
 
     stage('Checkout') {
       steps {
@@ -18,6 +25,7 @@ pipeline {
         expression {
           return env.BRANCH_NAME != 'dev_main' && env.BRANCH_NAME != 'prod_main'
         }
+        exp
       }
       steps {
         dir('backend') {
@@ -54,13 +62,13 @@ pipeline {
             returnStdout: true
           ).trim()
 
-          env.newTag = "release-v1.1"
+          def newTag = "release-v1.1"
 
           if (lastTag) {
             def versionParts = lastTag.replace('release-v', '').tokenize('.')
             def major = versionParts[0].toInteger()
             def minor = versionParts[1].toInteger() + 1
-            env.newTag = "release-v${major}.${minor}"
+            newTag = "release-v${major}.${minor}"
           }
           
           sh """
@@ -68,8 +76,8 @@ pipeline {
             git pull origin dev_main
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
-            git tag ${env.newTag}
-            git push https://$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git ${env.newTag}
+            git tag ${newTag}
+            git push https://$GITHUB_TOKEN@github.com/abbottd6/FleetFinder.git ${newTag}
           """
         }
       }
@@ -112,17 +120,35 @@ pipeline {
         GITHUB_TOKEN = credentials('github-tag-version-token')
       }
 
+      script {
+        sh 'git checkout dev_main'
+      }
+
+      def lastTag = sh(
+        script: "git tag | grep '^release-v' | sort -V | tail -n 1",
+        returnStdout: true
+      ).trim()
+
+      def newTag = 'release-v1.4'
+
+      if(lastTag) {
+        newTag = lastTag
+      }
+
+      if(!lastTag) {
+        error "Unable to access previous tag from dev_main"
+      }
+
       steps {
         script {
 
           sh """
+            git checkout prod_main
             git config user.name "Jenkins CI"
             git config user.email "jenkins@scfleetfinder.com"
             git fetch origin
-            git checkout prod_main
-            echo env.newTag
-            git tag -f ${env.newTag}
-            git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${env.newTag} --force
+            git tag -f ${newTag}
+            git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${newTag} --force
           """
         }
       }
