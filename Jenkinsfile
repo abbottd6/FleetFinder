@@ -15,7 +15,7 @@ pipeline {
     stage('Test Backend') {
       when {
         expression {
-          return env.BRANCH_TARGET == 'dev_main' && env.CHANGE_ID
+          return env.CHANGE_TARGET == 'dev_main' && env.CHANGE_ID
         }
       }
       steps {
