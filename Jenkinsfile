@@ -17,8 +17,8 @@ pipeline {
     stage('Test Backend') {
       when {
         allOf {
-          branch 'dev_main'
-          expression { return env.CHANGE_ID }
+          expression { return env.CHANGE_ID != null }
+          expression { return env.CHANGE_TARGET == 'dev_main'}
         }
       }
       steps {
