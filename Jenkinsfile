@@ -3,8 +3,6 @@ pipeline {
 
   environment {
     MAVEN_OPTS = "-Dmaven.test.failure.ignore=false"
-    JAVA_HOME = '/usr/lib/jvm/java-22-amazon-corretto'
-    PATH = "${env.JAVA_HOME}/bin:${env.PATH}"
   }
 
   stages {
@@ -17,8 +15,8 @@ pipeline {
     stage('Test Backend') {
       when {
         allOf {
-          branch 'dev_main'
-          expression { return env.CHANGE_ID }
+          expression { return env.CHANGE_ID != null }
+          expression { return env.CHANGE_TARGET == 'dev_main' }
         }
       }
       steps {
