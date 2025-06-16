@@ -240,7 +240,7 @@ pipeline {
       script {
         if (env.TEST_STAGE_EXECUTED == 'true') {
           dir('backend') {
-            junit 'target/surefire-reports/*.xml'
+            def testResults = junit 'target/surefire-reports/*.xml'
             publishChecks name: 'JUnit Test Results', conclusion: testResults.failCount == 0 ? 'success' : 'failure', output: [
               title: 'JUnit Summary',
               summary: "${testResults.totalCount} test(s) run, ${testResults.failCount} failed, ${testResults.skipCount} skipped."
