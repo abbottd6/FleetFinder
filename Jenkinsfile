@@ -204,7 +204,7 @@ pipeline {
       steps {
         sshagent(credentials: ['ec2-ssh-key']) {
           script {
-            sh '''
+            sh """
               ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} '
                 cd ${REMOTE_DIR} &&
                 sed -i "s|image:.*fleetfinder-backend:.*|image: ${BACKEND_IMAGE_TAG}|" docker-compose.yml &&
@@ -213,7 +213,7 @@ pipeline {
                 docker-compose --env-file .env.prod down &&
                 docker-compose --env-file .env.prod up -d
               '
-            '''
+            """
           }
         }
       }
