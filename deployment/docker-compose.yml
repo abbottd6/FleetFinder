@@ -2,24 +2,75 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8.2
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql
     container_name: sc-fleetfinder-db
     restart: always
+
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: sc_fleetfinder
       MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
+      KC_PROD_DB_USERNAME: ${KC_PROD_DB_USERNAME}
+      KC_PROD_DB_PASSWORD: ${KC_PROD_DB_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./init.keycloak.prod.tpl.sql:/docker-entrypoint-initdb.d/init.tpl.sql
+    entrypoint: >
+      bash -c "
+        envsubst < /docker-entrypoint-initdb.d/init.tpl.sql > /docker-entrypoint-initdb.d/init.sql && exec docker-entrypoint.sh mysqld
+      "
     command: --default-time-zone='+00:00'
     networks:
       - backend-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p${DB_ROOT_PASSWORD} --silent || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak-prod
+    command: >
+      start --import-realm --http-enabled=true --health-enabled=true
+            --proxy-headers=xforwarded
+
+    environment:
+      KC_PROXY: edge
+      KC_DB: ${KC_PROD_DB}
+      KC_DB_URL: ${KC_PROD_DB_URL}
+      KC_DB_USERNAME: ${KC_PROD_DB_USERNAME}
+      KC_DB_PASSWORD: ${KC_PROD_DB_PASSWORD}
+      KC_HOSTNAME: ${KC_PROD_HOSTNAME}
+      KC_HTTP_RELATIVE_PATH: ${KC_PROD_REL_PATH}
+      KEYCLOAK_FRONTEND_URL: ${KC_FRONTEND_URL}
+      KEYCLOAK_ADMIN: ${KC_PROD_ADMIN_USERNAME}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_PROD_ADMIN_PASSWORD}
+    volumes:
+      - ./prod-realm-export.json:/opt/keycloak/data/import/realm-export.json
+    ports:
+      - "8180:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - backend-network
+
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 90s
 
   backend:
-    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-backend:cache_1742500995
+    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-backend:cache_1750058484
     container_name: fleetfinder-backend
     restart: always
     environment:
@@ -32,13 +83,15 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - mysql
-    command: /bin/sh -c "until nc -z mysql 3306; do echo waiting for mysql; sleep 2; done; ./mvnw test || exit 1"
+      mysql:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
     networks:
       - backend-network
 
   frontend:
-    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-frontend:cache_1742765854
+    image: 753149409316.dkr.ecr.us-west-2.amazonaws.com/fleetfinder-frontend:cache_1750058484
     container_name: fleetfinder-frontend
     restart: always
     depends_on:
@@ -61,7 +114,7 @@ services:
       - frontend
       - backend
     networks:
-      - backend-network                  
+      - backend-network
 
 volumes:
   mysql_data:
