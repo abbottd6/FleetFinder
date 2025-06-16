@@ -96,7 +96,7 @@ pipeline {
       }
 
       environment {
-        GITHUB_TOKEN = credentials('github-tag-version-token')
+        GITHUB_TOKEN = credentials('github-pr-token')
       }
 
       steps {
