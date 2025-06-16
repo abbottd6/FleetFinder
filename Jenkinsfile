@@ -96,7 +96,7 @@ pipeline {
       }
 
       environment {
-        GITHUB_TOKEN = credentials('github-tag-version-token')
+        GITHUB_TOKEN = credentials('github-pr-token')
       }
 
       steps {
@@ -240,7 +240,13 @@ pipeline {
       script {
         if (env.TEST_STAGE_EXECUTED == 'true') {
           dir('backend') {
-            junit 'target/surefire-reports/*.xml'
+            def testResults = junit 'target/surefire-reports/*.xml'
+            publishChecks (
+              name: 'JUnit Test Results',
+              title: 'JUnit Summary',
+              summary: "${testResults.totalCount} test(s) run, ${testResults.failCount} failed, ${testResults.skipCount} skipped.",
+              conclusion: (testResults.failCount == 0 ? 'SUCCESS' : 'FAILURE')
+            )
           }
         } else {
           echo "Skip JUnit parsing: Test stage was not run in this execution of the pipeline."
