@@ -238,8 +238,7 @@ pipeline {
     }
     always {
       script {
-        def logDir = 'backend/target/surefire-reports'
-        if (env.TEST_STAGE_EXECUTED == 'true' && (fileExists(logFile))) {
+        if (env.TEST_STAGE_EXECUTED == 'true') {
           dir('backend') {
             junit 'target/surefire-reports/*.xml'
             publishChecks name: 'JUnit Test Results', conclusion: testResults.failCount == 0 ? 'success' : 'failure', output: [
