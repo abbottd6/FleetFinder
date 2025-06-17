@@ -18,7 +18,7 @@ public class TestEnvironmentLoader implements ApplicationContextInitializer<Conf
 
         //Getting the active Spring profile (either 'dev' or 'prod'
         //prod is set (for prod) in docker-compose.dev.yml/backend section
-        String activeProfile = System.getProperty("spring.profiles.active", "dev");
+        String activeProfile = System.getProperty("spring.profiles.active", "prod");
         System.out.println("Active Profile: " + activeProfile);
 
         //concat .env filename
