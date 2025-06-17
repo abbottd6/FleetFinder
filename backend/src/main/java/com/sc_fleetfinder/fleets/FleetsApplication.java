@@ -15,13 +15,10 @@ public class FleetsApplication {
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(FleetsApplication.class);
 
-		//determining spring profile with environment variable
-		String profile = System.getenv("SPRING_PROFILE");
-		if (profile == null || profile.isBlank()) {
-			profile = "dev";
+		String profile = System.getenv("SPRING_PROFILES_ACTIVE");
+		if (profile != null) {
+			System.setProperty("spring.profiles.active", profile);
 		}
-
-		System.setProperty("spring.profiles.active", profile);
 
 		app.addInitializers(new TestEnvironmentLoader());
 		app.run(args);
