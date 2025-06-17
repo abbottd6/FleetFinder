@@ -201,23 +201,20 @@ pipeline {
       steps {
         sshagent(credentials: ['ec2-ssh-key']) {
           script {
-            def remoteScript = """
-              set -ec
-              aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
-              cd ${REMOTE_DIR}
+            sh """
+              ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
+                set -e
+                aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
+                cd ${REMOTE_DIR}
 
-              CURRENT_BACKEND_IMAGE_LINE=\$(grep fleetfinder-backend docker-compose.yml | grep image:)
-              CURRENT_FRONTEND_IMAGE_LINE=\$(grep fleetfinder-frontend docker-compose.yml | grep image:)
+                sed -i "s|\$(grep fleetfinder-backend docker-compose.yml | grep image:)|  image: ${BACKEND_IMAGE_TAG}|" docker-compose.yml
+                sed -i "s|\$(grep fleetfinder-frontend docker-compose.yml | grep image:)|  image: ${FRONTEND_IMAGE_TAG}|" docker-compose.yml
 
-              sed -i "s|\$CURRENT_BACKEND_IMAGE_LINE|  image: ${BACKEND_IMAGE_TAG}|" docker-compose.yml
-              sed -i "s|\$CURRENT_FRONTEND_IMAGE_LINE|  image: ${FRONTEND_IMAGE_TAG}|" docker-compose.yml
-
-              docker-compose --env-file .env.prod pull
-              docker-compose --env-file .env.prod down
-              docker-compose --env-file .env.prod up -d
+                docker-compose --env-file .env.prod pull
+                docker-compose --env-file .env.prod down
+                docker-compose --env-file .env.prod up -d
+              "
             """
-
-            sh " ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} bash -c ${("'${remoteScript}'").inspect()}"
           }
         }
       }
