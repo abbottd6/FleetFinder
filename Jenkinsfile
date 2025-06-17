@@ -213,6 +213,8 @@ pipeline {
                 docker-compose --env-file .env.prod pull
                 docker-compose --env-file .env.prod down
                 docker-compose --env-file .env.prod up -d
+
+                echo "DEBUG: \\\$(grep fleetfinder-backend docker-compose.yml | grep image:)|  image: ${BACKEND_IMAGE_TAG}|\\\" docker-compose.yml"
               "
             """
           }
