@@ -202,7 +202,7 @@ pipeline {
         sshagent(credentials: ['ec2-ssh-key']) {
           script {
             sh """
-              ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} <<'EOF'
+              ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} <<EOF
                 set -e
                 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
                 cd ${REMOTE_DIR}
