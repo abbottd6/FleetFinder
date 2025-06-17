@@ -158,6 +158,7 @@ pipeline {
 
           dir('backend') {
             sh 'rm -rf target'
+            sh 'docker-compose pull'
             sh './mvnw clean package -DskipTests'
             sh 'docker build --no-cache -t $BACKEND_IMAGE_TAG .'
           }
