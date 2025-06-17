@@ -207,8 +207,8 @@ pipeline {
                 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
                 cd ${REMOTE_DIR}
 
-                sed -i "s|\$(grep fleetfinder-backend docker-compose.yml | grep image:)|  image: ${BACKEND_IMAGE_TAG}|" docker-compose.yml
-                sed -i "s|\$(grep fleetfinder-frontend docker-compose.yml | grep image:)|  image: ${FRONTEND_IMAGE_TAG}|" docker-compose.yml
+                sed -i "s|\\\$(grep fleetfinder-backend docker-compose.yml | grep image:)|  image: ${BACKEND_IMAGE_TAG}|" docker-compose.yml
+                sed -i "s|\\\$(grep fleetfinder-frontend docker-compose.yml | grep image:)|  image: ${FRONTEND_IMAGE_TAG}|" docker-compose.yml
 
                 docker-compose --env-file .env.prod pull
                 docker-compose --env-file .env.prod down
