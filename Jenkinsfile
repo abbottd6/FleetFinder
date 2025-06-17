@@ -213,8 +213,7 @@ pipeline {
                 docker-compose --env-file .env.prod pull
                 docker-compose --env-file .env.prod down
                 docker-compose --env-file .env.prod up -d
-
-              'EOF'
+            'EOF'
             """
           }
         }
