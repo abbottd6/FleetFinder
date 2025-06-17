@@ -202,19 +202,19 @@ pipeline {
         sshagent(credentials: ['ec2-ssh-key']) {
           script {
             sh """
-              ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << EOF
+              ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
                 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REGISTRY}
                 cd ${REMOTE_DIR} &&
 
-                CURRENT_BACKEND_IMAGE_LINE=\$(grep 'fleetfinder-backend' docker-compose.yml | grep 'image:')
-                CURRENT_FRONTEND_IMAGE_LINE=\$(grep 'fleetfinder-frontend' docker-compose.yml | grep 'image:')
+                CURRENT_BACKEND_IMAGE_LINE=\\\$(grep 'fleetfinder-backend' docker-compose.yml | grep 'image:')
+                CURRENT_FRONTEND_IMAGE_LINE=\\\$(grep 'fleetfinder-frontend' docker-compose.yml | grep 'image:')
 
-                sed -i "s|\$CURRENT_BACKEND_IMAGE_LINE|  image: ${BACKEND_IMAGE_TAG}|" docker-compose.yml &&
-                sed -i "s|\$CURRENT_FRONTEND_IMAGE_LINE|  image: ${FRONTEND_IMAGE_TAG}|" docker-compose.yml &&
+                sed -i "s|\\\$CURRENT_BACKEND_IMAGE_LINE|  image: ${BACKEND_IMAGE_TAG}|" docker-compose.yml &&
+                sed -i "s|\\\$CURRENT_FRONTEND_IMAGE_LINE|  image: ${FRONTEND_IMAGE_TAG}|" docker-compose.yml &&
                 docker-compose --env-file .env.prod pull &&
                 docker-compose --env-file .env.prod down &&
                 docker-compose --env-file .env.prod up -d
-              EOF
+              "
             """
           }
         }
