@@ -157,6 +157,7 @@ pipeline {
           }
 
           dir('backend') {
+            sh 'sudo rm -rf target'
             sh './mvnw clean package -DskipTests'
             sh 'docker build --no-cache -t $BACKEND_IMAGE_TAG .'
           }
