@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.sc-fleetfinder</groupId>
 	<artifactId>fleets</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>fleets</name>
 	<description>Group finder web app for star citizen MMO</description>
 	<url/>
