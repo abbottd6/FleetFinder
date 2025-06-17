@@ -11,4 +11,4 @@ COPY target/fleets-0.0.1-SNAPSHOT.jar app.jar
 #Exposing the backend port
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=prod"]
