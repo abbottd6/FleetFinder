@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {AuthService} from "../../services/auth/auth-services/auth.service";
 
 @Component({
     selector: 'app-welcome-screen',
@@ -7,5 +8,5 @@ import { Component } from '@angular/core';
     standalone: false
 })
 export class WelcomeScreenComponent {
-
+  constructor(public auth: AuthService) {}
 }

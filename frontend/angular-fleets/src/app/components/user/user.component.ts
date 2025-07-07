@@ -35,7 +35,7 @@ export class UserComponent {
     this.selectedTab = tab;
   }
 
-  constructor(private authService: AuthService) {
+  constructor(public authService: AuthService) {
     this.localUser$ = this.authService.localUser$;
 
     this.localUser$.pipe(
