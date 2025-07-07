@@ -21,6 +21,7 @@ services:
       MYSQL_DATABASE: sc_fleetfinder
       MYSQL_USER: devuser
       MYSQL_PASSWORD: devpassword
+
     ports:
       - "3306:3306"
     volumes:
