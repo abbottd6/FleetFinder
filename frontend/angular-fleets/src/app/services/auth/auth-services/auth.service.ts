@@ -21,12 +21,12 @@ import {PrivateUser} from "../../../models/private-user/private-user";
 export class AuthService {
 
   private readonly oidc = inject(OidcSecurityService);
-  private readonly http = inject(HttpClient);
+
 
   // Raw profile/claims OIDC Observable
   // read only
   // use for username, email, roles straight from kc
-  userData$ = this.oidc.userData$;
+  authClaims$ = this.oidc.userData$;
 
   // isAuthenticated is an object with a boolean for authState and userData<any>
   // extract just the authState for isLoggedIn$ boolean
@@ -36,53 +36,6 @@ export class AuthService {
   // OIDC client metadata/settings (auth URL, clientID, redirect URIs, scopes, etc.)
   configuration$ = this.oidc.getConfiguration();
 
-
-  // Reactive provisioning
-  private refreshTrigger$ = new BehaviorSubject<void>(undefined);
-  private profile$ = this.userData$.pipe(
-    filter(d => !!d && !!d.userData)
-  );
-
-  // local version of keycloak's user
-  public localUser$: Observable<PrivateUser> = this.refreshTrigger$.pipe(
-    // pair with latest profile
-    withLatestFrom(this.profile$),
-    // extract the profile
-    switchMap(([, profile]) =>
-      this.http.get<Partial<PrivateUser>>('/api/users/me').pipe(
-        catchError(err => {
-          if (err.status === 404) {
-            return this.http.post<Partial<PrivateUser>>('/api/users/create-user', {
-              keycloakId: profile.userData.sub,
-              username: profile.userData.preferred_username,
-              email: profile.userData.email,
-            });
-          }
-          return throwError(() => err);
-        }),
-        map(raw => {
-          const roles: string[] =
-            profile.userData.realm_access?.roles || [];
-
-          return new PrivateUser(
-            raw.userId!,
-            raw.username!,
-            raw.email!,
-            raw.server!,
-            raw.org!,
-            raw.about!,
-            raw.acctCreated!,
-            raw.groupListingsDto!,
-            roles
-          )
-        })
-      )
-    ),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
-
-  public localUsername$ = this.localUser$.pipe(map(userObj => userObj.username));
-
   constructor() {
     this.oidc
       .checkAuth()
@@ -91,14 +44,6 @@ export class AuthService {
         tap(() => this.refreshUser())
       )
       .subscribe();
-  }
-
-  public refreshUser() {
-    this.refreshTrigger$.next(undefined);
-  }
-
-  login() {
-    return this.oidc.authorize();
   }
 
   logout() {
@@ -157,15 +102,5 @@ export class AuthService {
         })
       )
       .subscribe();
-  }
-
-  openWindow() {
-    window.open('/', '_blank');
-  }
-
-  forceRefreshSession() {
-    return this.oidc
-      .forceRefreshSession()
-      .subscribe((result) => console.warn(result));
   }
 }

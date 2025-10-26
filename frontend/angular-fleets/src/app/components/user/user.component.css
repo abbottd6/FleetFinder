@@ -113,9 +113,39 @@
   line-height: 1.8rem;
 }
 
+#entry-buttons-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  /*width: 90%;*/
+  margin-inline: auto;
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+}
+
+.action-buttons {
+  border: 2px solid rgba(255, 131, 7, .75);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .75);
+  font-size: 1.1rem;
+  border-radius: .25rem;
+  transition: background-color 0.15s ease;
+}
+
+.action-buttons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+}
+
 @media(max-width: 1200px) and (min-width: 725px) {
   .mat-drawer {
     max-width: 25%;
+  }
+
+  .action-buttons {
+    font-size: .9rem;
   }
 }
 
@@ -202,5 +232,9 @@
 
   .user-profile-field-val {
     font-size: clamp(0.5rem, 0.7rem, 1.5rem);
+  }
+
+  .action-buttons {
+    font-size: .6rem;
   }
 }
