@@ -23,9 +23,7 @@ export class UserAcctListingsTableComponent implements OnChanges {
   constructor(private auth: AuthService) {}
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes['userListings']) {
-      this.dataSource.data = this.userListings
-    }
+    this.dataSource.data = this.userListings;
   }
 
   // check whether the number of selected rows matches total rows

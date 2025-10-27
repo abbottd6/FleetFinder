@@ -1,4 +1,4 @@
-import {inject, Injectable} from '@angular/core';
+import {inject, Injectable, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {AuthenticatedResult, OidcSecurityService, PopupOptions} from "angular-auth-oidc-client";
 import {
   BehaviorSubject,
@@ -22,15 +22,15 @@ export class AuthService {
 
   private readonly oidc = inject(OidcSecurityService);
 
-
   // Raw profile/claims OIDC Observable
   // read only
   // use for username, email, roles straight from kc
-  authClaims$ = this.oidc.userData$;
+
+  public authClaims$ = this.oidc.userData$;
 
   // isAuthenticated is an object with a boolean for authState and userData<any>
   // extract just the authState for isLoggedIn$ boolean
-  isLoggedIn$ = this.oidc.isAuthenticated$
+  public isLoggedIn$ = this.oidc.isAuthenticated$
     .pipe(map(oidcAuthObj => oidcAuthObj.isAuthenticated))
 
   // OIDC client metadata/settings (auth URL, clientID, redirect URIs, scopes, etc.)
@@ -38,12 +38,7 @@ export class AuthService {
 
   constructor() {
     this.oidc
-      .checkAuth()
-      .pipe(
-        filter(({ isAuthenticated }) => isAuthenticated),
-        tap(() => this.refreshUser())
-      )
-      .subscribe();
+      .checkAuth().subscribe();
   }
 
   logout() {
@@ -67,15 +62,7 @@ export class AuthService {
     };
 
     return this.oidc
-      .authorizeWithPopUp({}, popupOptions)
-      .pipe(
-        tap(({ isAuthenticated}) => {
-          if (isAuthenticated) {
-            this.refreshUser();
-          }
-      })
-      )
-      .subscribe();
+      .authorizeWithPopUp({}, popupOptions).subscribe();
   }
 
   registerWithPopup() {
@@ -93,14 +80,6 @@ export class AuthService {
     };
 
     return this.oidc
-      .authorizeWithPopUp({customParams: {screen_hint: 'signup'}}, popupOptions)
-      .pipe(
-        tap(({ isAuthenticated }) => {
-          if (isAuthenticated) {
-            this.refreshUser();
-          }
-        })
-      )
-      .subscribe();
+      .authorizeWithPopUp({customParams: {screen_hint: 'signup'}}, popupOptions).subscribe();
   }
 }

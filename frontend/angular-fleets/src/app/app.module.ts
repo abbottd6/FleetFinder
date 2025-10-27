@@ -27,6 +27,7 @@ import {AuthInterceptor} from "./services/auth/interceptors/auth.interceptor";
 import {MatSidenav, MatSidenavContainer} from "@angular/material/sidenav";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import { UserAcctListingsTableComponent } from './components/user-acct-listings-table/user-acct-listings-table.component';
+import { LoginModalComponent } from './components/login-modal/login-modal.component';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { UserAcctListingsTableComponent } from './components/user-acct-listings-
     WelcomeScreenComponent,
     GroupListingModalComponent,
     AboutComponent,
+    LoginModalComponent,
   ],
     imports: [
         BrowserModule,

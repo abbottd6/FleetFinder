@@ -1,4 +1,4 @@
-import {Component, ViewChild, inject, OnInit, AfterViewInit} from '@angular/core';
+import {Component, ViewChild, inject, OnInit, AfterViewInit, Inject, OnChanges, SimpleChanges} from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {map, Observable, shareReplay} from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
@@ -10,6 +10,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/button";
+import {UserService} from "../../services/user-services/user.service";
 
 @Component({
     selector: 'app-user',
@@ -22,8 +23,10 @@ import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/butto
     UserAcctListingsTableComponent, MatButtonModule],
     standalone: true
 })
-export class UserComponent {
+export class UserComponent implements OnInit {
   private breakpointObserver = inject(BreakpointObserver);
+
+  protected auth = Inject(AuthService);
 
   groupListings: GroupListingViewModel[] = []
 
@@ -35,8 +38,12 @@ export class UserComponent {
     this.selectedTab = tab;
   }
 
-  constructor(public authService: AuthService) {
-    this.localUser$ = this.authService.localUser$;
+  ngOnInit() {
+    this.userService.refreshUser()
+  }
+
+  constructor(public userService: UserService) {
+    this.localUser$ = this.userService.localUser$;
 
     this.localUser$.pipe(
       map(user => user.groupListingsDto ?? [])
