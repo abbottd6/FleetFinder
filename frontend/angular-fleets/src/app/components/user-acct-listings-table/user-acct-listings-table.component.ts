@@ -5,6 +5,8 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import {SelectionModel} from "@angular/cdk/collections";
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {DatePipe} from "@angular/common";
+import {MatButton} from "@angular/material/button";
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-user-acct-listings-table',
@@ -31,6 +33,10 @@ export class UserAcctListingsTableComponent implements OnChanges {
     const numSelected = this.selection.selected.length;
     const numRows = this.dataSource.data.length;
     return numSelected === numRows;
+  }
+
+  singleSelected() {
+    return this.selection.selected.length < 2;
   }
 
   toggleAllRows() {

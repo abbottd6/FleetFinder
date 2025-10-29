@@ -48,12 +48,6 @@
             </ng-template>
             Account Tabs
           </button>
-
-          <!-- DELETE LISTING BUTTON -->
-          <!-- <button mat-button class="action-buttons" [disabled]=".selection?.hasValue()">
-
-
-          </button>-->
         </div>
 
 
@@ -94,6 +88,7 @@
 
           <!-- MY LISTINGS TAB -->
           <ng-container *ngIf="selectedTab === 'listings'">
+            <!-- DELETE LISTING BUTTON -->
             <app-user-acct-listings-table [userListings]="(user.groupListingsDto)" class="user-table">
             </app-user-acct-listings-table>
           </ng-container>

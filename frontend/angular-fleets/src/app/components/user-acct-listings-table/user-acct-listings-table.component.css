@@ -1,4 +1,50 @@
-@media(min-width: 725px) {
+.action-buttons-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  width: 60%;
+  margin: 1rem auto 1rem 1rem;
+}
+
+.action-buttons {
+  border: 2px solid rgba(255, 131, 7, .75);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .75);
+  font-size: 1rem;
+  border-radius: .25rem;
+  transition: 0.15s ease;
+}
+
+.action-buttons:disabled {
+  border: 2px solid rgba(33, 37, 41, .4);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(92, 96, 101, .4);
+  margin-inline: .75rem;
+  color: rgba(33, 37, 41, .4);
+  border-radius: .25rem;
+  transition: background-color 0.15s ease;
+}
+
+.action-buttons:hover:disabled {
+  border: 2px solid rgba(255, 131, 7, .4);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(92, 96, 101, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .4);
+  border-radius: .25rem;
+  transition: background-color 0.15s ease;
+}
+
+.action-buttons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+  cursor: pointer;
+}
+
+@media(min-width: 725px) and (max-width: 1500px) {
   .mat-mdc-header-row {
     color: rgba(36, 36, 39, .8) !important;
     font-family: Orbitron, sans-serif !important;
@@ -12,8 +58,26 @@
     font-weight: 400 !important;
     font-size: 1rem !important;
   }
-}
 
+  .action-buttons-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 30%;
+    margin: 1rem auto 1rem 1rem;
+  }
+
+  .action-buttons {
+    border: 2px solid rgba(255, 131, 7, .75);
+    padding: .42rem 1.12rem .42rem 1.12rem !important;
+    background-color: rgba(33, 37, 41, .4);
+    margin-inline: .75rem;
+    color: rgba(255, 131, 7, .75);
+    font-size: .9rem;
+    border-radius: .25rem;
+    transition: background-color 0.15s ease;
+  }
+
+}
 @media(max-width: 724px) {
   .mat-mdc {
     overflow: scroll;
@@ -31,5 +95,9 @@
     font-family: "Exo 2", sans-serif !important;
     font-weight: 400 !important;
     font-size: clamp(0.5rem, 0.7rem, 1.5rem) !important;
+  }
+
+  .action-buttons {
+    font-size: .7rem;
   }
 }
