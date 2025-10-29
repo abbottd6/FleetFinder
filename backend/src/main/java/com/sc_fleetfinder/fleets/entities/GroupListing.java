@@ -1,6 +1,9 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
 import org.springframework.lang.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,6 +28,8 @@ import java.time.Instant;
 
 @Entity
 @Table(name="group_listing")
+@SQLDelete(sql = "UPDATE group_listings SET is_deleted = 1, deleted_at = NOW(6) WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 @Getter
 @Setter
 public class GroupListing {
@@ -139,4 +144,10 @@ public class GroupListing {
     @Column(name="last_updated")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant lastUpdated;
+
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
+    @Column(name = "deleted_at")
+    private Instant deletedAt;
 }

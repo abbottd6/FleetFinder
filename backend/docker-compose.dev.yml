@@ -27,7 +27,9 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
       - ./init.keycloak.dev.sql:/docker-entrypoint-initdb.d/init.keycloak.dev.sql
-    command: --default-time-zone='+00:00'
+    command:
+       --default-time-zone='+00:00'
+       --event-scheduler=ON
     restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword" ]
