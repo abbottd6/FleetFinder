@@ -30,8 +30,4 @@ public class GroupListingConversionServiceImpl implements GroupListingConversion
     public GroupListing convertToEntity(CreateGroupListingDto createGroupListingDto) {
         return createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
     }
-
-    public GroupListing convertListingToDelete(DeleteGroupListingDto deleteGroupListingDto) {
-        return groupListingResponseDtoMapper.map(deleteGroupListingDto, GroupListing.class);
-    }
 }

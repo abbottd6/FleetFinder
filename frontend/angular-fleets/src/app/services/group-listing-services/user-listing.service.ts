@@ -3,7 +3,6 @@ import {HttpClient} from "@angular/common/http";
 import {CreateListingRequest} from "../../models/group-listing/create-listing-request";
 import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
-import {DeleteListingRequest} from "../../models/group-listing/delete-listing-request";
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +18,7 @@ export class UserListingService {
     return this.httpClient.post<any>(this.createListingUrl, createListingRequest)
   }
 
-  deleteListing(deleteListingRequest: DeleteListingRequest): Observable<any> {
-    return this.httpClient.delete<any>(this.deleteListingUrl, deleteListingRequest);
+  deleteListing(listingId: number) {
+    return this.httpClient.delete<any>(`${this.deleteListingUrl}/${listingId}`);
   }
 }

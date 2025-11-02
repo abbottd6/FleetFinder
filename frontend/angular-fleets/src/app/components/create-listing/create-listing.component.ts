@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import { requiredIfGroupStatusFuture } from "../../common/validators/custom-validators";
 import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {CreateListingRequest} from "../../models/group-listing/create-listing-request";
-import {CreateListingService} from "../../services/group-listing-services/create-listing.service";
+import {UserListingService} from "../../services/group-listing-services/user-listing.service";
 import {Router} from "@angular/router";
 import {environment} from "../../../environments/environment";
 
@@ -16,7 +16,7 @@ export class CreateListingComponent  implements OnInit {
   listingFormGroup: FormGroup = new FormGroup({});
   formSubmitted: boolean = false;
 
-  constructor(private formBuilder: FormBuilder, private createListingService: CreateListingService,
+  constructor(private formBuilder: FormBuilder, private userListingService: UserListingService,
               private router: Router) {}
 
   ngOnInit() {
@@ -74,7 +74,7 @@ export class CreateListingComponent  implements OnInit {
       console.log(newListingData);
     }
 
-    this.createListingService.createListing(newListingData).subscribe({
+    this.userListingService.createListing(newListingData).subscribe({
         next: response => {
           if(!environment.production) {
             console.log(response.listingTitle)

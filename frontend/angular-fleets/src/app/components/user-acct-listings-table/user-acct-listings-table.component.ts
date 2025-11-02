@@ -5,8 +5,10 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import {SelectionModel} from "@angular/cdk/collections";
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {DatePipe} from "@angular/common";
-import {MatButton} from "@angular/material/button";
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
+import {UserListingService} from "../../services/group-listing-services/user-listing.service";
+import {UserService} from "../../services/user-services/user.service";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-user-acct-listings-table',
@@ -22,7 +24,8 @@ export class UserAcctListingsTableComponent implements OnChanges {
   dataSource = new MatTableDataSource(this.userListings);
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 
-  constructor(private auth: AuthService) {}
+  constructor(private auth: AuthService, private userListingService: UserListingService,
+              private router: Router, private userService: UserService) {}
 
   ngOnChanges(changes: SimpleChanges) {
     this.dataSource.data = this.userListings;
@@ -53,5 +56,28 @@ export class UserAcctListingsTableComponent implements OnChanges {
       return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.groupId + 1}`
+  }
+
+  tableActionReset() {
+    this.userService.refreshUser()
+
+    this.router.navigateByUrl("/app-user")
+  }
+  userDeleteListing() {
+    for (let i = 0; i < this.selection.selected.length; i++) {
+      this.userListingService.deleteListing(this.selection.selected[i].groupId).subscribe({
+        next: response => {
+          if(!environment.production) {
+            console.log(response.listingTitle)
+          }
+          alert(`Your listing, ${response.listingTitle}' was successfully deleted.`);
+
+          this.tableActionReset()
+        },
+        error: err => {
+          alert(`There was an error deleting this listing: ${err.message}`);
+        }
+      });
+    }
   }
 }

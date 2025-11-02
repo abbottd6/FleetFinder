@@ -106,14 +106,10 @@ public class GroupListingServiceImpl implements GroupListingService {
                     .orElseThrow(() -> new ResourceNotFoundException(deleteDto.getGroupId()));
 
                 if (Objects.equals(deleteDto.getUserId(), groupEntity.getUsers().getUserId())) {
-                    log.info("request id: {}", deleteDto.getUserId());
-                    log.info("entity id: {}", groupEntity.getUsers().getUserId());
                     groupEntity.setDeleted(true);
                     groupEntity.setDeletedAt(Instant.now());
                     groupListingRepository.flush();
                     groupListingRepository.save(groupEntity);
-
-                    log.info("DELETED");
                 }
                 else {
                     log.error("Delete DTO and listing repository userIds do not match. \n Request userId: {} \n " +

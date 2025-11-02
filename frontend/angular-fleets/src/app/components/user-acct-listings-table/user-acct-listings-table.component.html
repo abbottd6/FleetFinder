@@ -1,6 +1,6 @@
 <div class="action-buttons-container">
   <a>
-    <button class="action-buttons" [disabled]="!(selection.hasValue())">
+    <button type="submit" class="action-buttons" (click)="userDeleteListing()" [disabled]="!(selection.hasValue())">
       Remove Listing
     </button>
   </a>
