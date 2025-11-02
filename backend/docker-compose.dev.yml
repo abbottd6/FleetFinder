@@ -10,7 +10,6 @@
 ## run backend
 ## run frontend
 
-version: '3.8'
 
 services:
   mysql:

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.hibernate.annotations.Where;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.lang.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,13 +24,14 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.time.Instant;
 
 @Entity
 @Table(name="group_listing")
-@SQLDelete(sql = "UPDATE group_listings SET is_deleted = 1, deleted_at = NOW(6) WHERE id = ?")
-@SQLRestriction("is_deleted = false")
+//@SQLDelete(sql = "UPDATE group_listing SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP(6) WHERE id_group = ?")
+@SQLRestriction("is_deleted = 0")
 @Getter
 @Setter
 public class GroupListing {

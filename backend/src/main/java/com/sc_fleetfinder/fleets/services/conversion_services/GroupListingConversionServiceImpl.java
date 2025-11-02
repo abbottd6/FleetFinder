@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import org.modelmapper.ModelMapper;
@@ -28,5 +29,9 @@ public class GroupListingConversionServiceImpl implements GroupListingConversion
     @Override
     public GroupListing convertToEntity(CreateGroupListingDto createGroupListingDto) {
         return createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
+    }
+
+    public GroupListing convertListingToDelete(DeleteGroupListingDto deleteGroupListingDto) {
+        return groupListingResponseDtoMapper.map(deleteGroupListingDto, GroupListing.class);
     }
 }
