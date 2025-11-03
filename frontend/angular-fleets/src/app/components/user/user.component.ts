@@ -37,8 +37,6 @@ import {SelectionModel} from "@angular/cdk/collections";
 export class UserComponent implements OnInit {
   private breakpointObserver = inject(BreakpointObserver);
 
-  protected auth = Inject(AuthService);
-
   groupListings: GroupListingViewModel[] = []
 
   localUser$: Observable<PrivateUser>;
@@ -53,7 +51,7 @@ export class UserComponent implements OnInit {
     this.userService.refreshUser()
   }
 
-  constructor(public userService: UserService) {
+  constructor(public userService: UserService, protected auth: AuthService) {
     this.localUser$ = this.userService.localUser$;
 
     this.localUser$.pipe(

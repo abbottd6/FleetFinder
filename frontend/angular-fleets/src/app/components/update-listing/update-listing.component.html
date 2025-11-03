@@ -1,0 +1,128 @@
+<div class="main-body">
+  <span class="page-title"><h2>Update your group listing</h2></span>
+  <div class="header-line"></div>
+  <div>
+    <form class="form-body" [formGroup]="listingForm">
+
+      <!-- titleGroup -->
+      <div formGroupName="titleGroup">
+        <h4 class="form-group-heading1">Listing Title</h4>
+        <div class="form-title-row">
+          <app-listing-title-input
+            [titleControl]="formService.listingTitle">
+          </app-listing-title-input>
+        </div>
+      </div>
+
+      <!-- sessionEnvInfoGroup -->
+      <div formGroupName="sessionEnvInfoGroup">
+        <h4 class="form-group-heading2">Game Environment</h4>
+        <div class="form-row">
+          <app-server-dropdown
+            [serverControl]="formService.serverRegion">
+          </app-server-dropdown>
+          <app-environment-dropdown
+            [environmentControl]="formService.gameEnvironment">
+          </app-environment-dropdown>
+          <app-experience-dropdown
+            [experienceControl]="formService.gameExperience">
+          </app-experience-dropdown>
+        </div>
+      </div>
+
+      <!-- gameplayInfoGroup -->
+      <div formGroupName="gameplayInfoGroup">
+        <h4 class="form-group-heading2">Gameplay Details</h4>
+        <div class="form-row">
+          <app-playstyle-dropdown
+            [playStyleControl]="formService.playStyle">
+          </app-playstyle-dropdown>
+          <app-category-dropdown
+            [categoryControl]="formService.category">
+          </app-category-dropdown>
+          <app-subcategory-dropdown
+            [subcategoryControl]="formService.subcategory"
+            [categoryControl]="formService.category">
+          </app-subcategory-dropdown>
+        </div>
+        <div class="form-row">
+          <app-legality-dropdown
+            [legalityControl]="formService.legality">
+          </app-legality-dropdown>
+          <app-pvp-status-dropdown
+            [pvpStatusControl]="formService.pvpStatus">
+          </app-pvp-status-dropdown>
+        </div>
+        <div class="form-row">
+          <app-system-dropdown
+            [planetarySystemControl]="formService.planetarySystem">
+          </app-system-dropdown>
+          <app-planet-dropdown
+            [planetMoonControl]="formService.planetMoon"
+            [planetarySystemControl]="formService.planetarySystem">
+          </app-planet-dropdown>
+        </div>
+        <div class="form-row-text-input">
+          <app-listing-description-input
+            [descriptionControl]="formService.listingDescription">
+          </app-listing-description-input>
+        </div>
+      </div>
+
+      <!-- groupSpecInfoGroup -->
+      <div formGroupName="groupSpecInfoGroup">
+        <h4 class="form-group-heading2">Group Specs</h4>
+        <div class="form-row">
+          <app-group-status-dropdown
+            [groupStatusControl]="formService.groupStatus">
+          </app-group-status-dropdown>
+          <app-event-schedule-datepicker-input
+            [eventScheduleDateControl]="formService.eventScheduleDate"
+            [groupStatusControl]="formService.groupStatus">
+          </app-event-schedule-datepicker-input>
+          <app-schedule-time-dropdown
+            [eventScheduleTimeControl]="formService.eventScheduleTime"
+            [groupStatusControl]="formService.groupStatus">
+          </app-schedule-time-dropdown>
+          <app-schedule-time-zone-dropdown
+            [eventScheduleZoneControl]="formService.eventScheduleZone"
+            [groupStatusControl]="formService.groupStatus">
+          </app-schedule-time-zone-dropdown>
+        </div>
+        <div *ngIf="formService.isEventScheduleInvalid" class="error-row">
+          <mat-error>
+            Event schedule fields: date, time, and time zone are required when group status is "Future/Scheduled"
+          </mat-error>
+        </div>
+        <div class="form-row">
+          <app-current-party-size-dropdown
+            [currentPartySizeControl]="formService.currentPartySize">
+          </app-current-party-size-dropdown>
+          <app-desired-party-size-dropdown
+            [desiredPartySizeControl]="formService.desiredPartySize">
+          </app-desired-party-size-dropdown>
+        </div>
+        <div class="form-row-text-input">
+          <app-available-roles-input
+            [availableRolesControl]="formService.availableRoles">
+          </app-available-roles-input>
+        </div>
+        <div class="form-row">
+          <app-comms-option-dropdown
+            [commsOptionControl]="formService.commsOption">
+          </app-comms-option-dropdown>
+          <div class="form-row-text-input">
+            <app-comms-service-input
+              [commsServiceControl]="formService.commsService"
+              [commsOptionControl]="formService.commsOption">
+            </app-comms-service-input>
+          </div>
+        </div>
+      </div>
+      <div *ngIf="formSubmitted && listingForm.invalid" class="submit-error">Check required fields</div>
+      <div class="submit-button-container">
+        <button type="submit" class="submit-button">Update Listing</button>
+      </div>
+    </form>
+  </div>
+</div>

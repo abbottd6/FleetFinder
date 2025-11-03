@@ -4,7 +4,6 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 @Component({
   selector: 'app-group-listing-modal',
   standalone: false,
-
   templateUrl: './group-listing-modal.component.html',
   styleUrl: './group-listing-modal.component.css'
 })

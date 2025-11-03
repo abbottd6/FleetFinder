@@ -6,6 +6,7 @@ import { CreateListingComponent} from "./components/create-listing/create-listin
 import { UserComponent} from "./components/user/user.component";
 import { AboutComponent } from "./components/about/about.component";
 import {AuthGuard} from "./services/auth/auth_guards/auth.guard";
+import {UpdateListingComponent} from "./components/update-listing/update-listing.component";
 
 
 const routes: Routes = [
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'group-listings', component: GroupListingsComponent },
   { path: 'create-listing', component: CreateListingComponent, canActivate: [ AuthGuard ] },
   { path: 'user-account', component: UserComponent, canActivate: [ AuthGuard ] },
+  { path: 'update-listing', component: UpdateListingComponent, canActivate: [ AuthGuard ] },
   { path: 'about', component: AboutComponent },
 ];
 

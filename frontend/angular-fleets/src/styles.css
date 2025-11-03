@@ -25,4 +25,22 @@ app-create-listing {
   max-width: 90vw;
 }
 
+app-update-listing {
+  max-width: 90vw;
+}
 
+.cdk-overlay-container {
+  z-index: 20000 !important;
+  color: var(--button-hover-color);
+}
+
+.mat-mdc-snack-bar-container,
+.mat-mdc-snack-bar-actions,
+.mat-mdc-snack-bar-actions button.mat-mdc-button-base {
+  pointer-events: auto !important;
+}
+
+.cdk-overlay-container .my-snackbar {
+  margin-top: 75vh;
+  background-color: rgba(33, 37, 41, .75);
+}
