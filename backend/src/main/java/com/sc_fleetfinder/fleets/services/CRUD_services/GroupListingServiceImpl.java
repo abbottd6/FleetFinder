@@ -85,15 +85,16 @@ public class GroupListingServiceImpl implements GroupListingService {
     @Override
     @Validated
     @Transactional(transactionManager = "transactionManager")
-    public GroupListing updateGroupListing(Long id, @Valid UpdateGroupListingDto updateGroupListingDto) {
-        GroupListing groupListing = groupListingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+    public GroupListing updateGroupListing(@Valid UpdateGroupListingDto dto) {
+
+        GroupListing groupListing = groupListingRepository.findById(dto.getGroupId())
+                .orElseThrow(() -> new ResourceNotFoundException(dto.getGroupId()));
 
 
         //ADD LOGIC TO CHECK THE NUMBER OF GROUPLISTINGS ASSOCIATED WITH A USER.
         //LIMIT THE NUMBER OF GROUP LISTINGS PER USER TO 3
 
-        BeanUtils.copyProperties(updateGroupListingDto, groupListing, "groupId", "user", "listingUser");
+        BeanUtils.copyProperties(dto, groupListing, "groupId", "user", "listingUser");
 
         return groupListingRepository.save(groupListing);
     }

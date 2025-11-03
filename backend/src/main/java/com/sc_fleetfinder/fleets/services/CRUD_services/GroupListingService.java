@@ -20,7 +20,7 @@ public interface GroupListingService {
     ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto);
 
     @Validated
-    GroupListing updateGroupListing(Long id, @Valid UpdateGroupListingDto updateGroupListingDto);
+    GroupListing updateGroupListing(@Valid UpdateGroupListingDto updateGroupListingDto);
 
     @Validated
     ResponseEntity<?> deleteGroupListing(@Valid DeleteGroupListingDto deleteGroupListingDto);

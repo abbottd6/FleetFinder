@@ -76,11 +76,19 @@ public class GroupListingsController {
         return groupListingService.createGroupListing(createGroupListingDto);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update_listing")
     @PreAuthorize("isAuthenticated()")
     // needs to use authenticationPrincipal and keycloakId instead of userId
-    public GroupListing updateGroupListing(@PathVariable Long id, @Valid @RequestBody UpdateGroupListingDto updateGroupListingDto) {
-        return groupListingService.updateGroupListing(id, updateGroupListingDto);
+    public GroupListing updateGroupListing(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateGroupListingDto updateGroupListingDto) {
+        String keycloakId = jwt.getSubject();
+
+        Users requestingUser = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new RuntimeException("User with Keycloak ID: " + keycloakId + " not found"));
+
+        updateGroupListingDto.setUserId(requestingUser.getUserId());
+        updateGroupListingDto.setGroupId(updateGroupListingDto.getGroupId());
+
+        return groupListingService.updateGroupListing(updateGroupListingDto);
     }
 
     @DeleteMapping("/delete_listing/{id}")

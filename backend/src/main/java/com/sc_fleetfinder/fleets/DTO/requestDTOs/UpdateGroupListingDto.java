@@ -19,7 +19,6 @@ public class UpdateGroupListingDto {
     @NotNull(message = "Update group listing request DTO field 'groupId' cannot be null.")
     private Long groupId;
 
-    @NotNull(message = "Update group listing request DTO field 'userId' cannot be null.")
     private Long userId;
 
     @NotNull(message = "Update group listing request DTO field 'serverId' cannot be null")
