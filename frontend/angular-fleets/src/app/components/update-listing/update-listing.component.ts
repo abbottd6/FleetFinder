@@ -1,17 +1,15 @@
-import {AfterViewInit, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {Router} from "@angular/router";
 import {ListingFormService, ListingFormShape} from "../../services/listing-form-service/listing-form.service";
 import {FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {InputFieldModule} from "../input-fields/input-field/input-field.module";
 import {DropdownModule} from "../dropdowns/dropdown-module/dropdown.module";
 import {MatError} from "@angular/material/form-field";
-import {CreateListingRequest} from "../../models/group-listing/create-listing-request";
 import {environment} from "../../../environments/environment";
 import {UserListingService} from "../../services/group-listing-services/user-listing.service";
 import {NgIf} from "@angular/common";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
-import {LookupService} from "../../services/api-lookup-services/lookup.service";
-import {forkJoin} from "rxjs";
+import {UpdateListingRequest} from "../../models/group-listing/update-listing-request";
 
 @Component({
   selector: 'app-update-listing',
@@ -29,6 +27,7 @@ import {forkJoin} from "rxjs";
 export class UpdateListingComponent implements OnInit {
   public formSubmitted: boolean = false;
   listingForm!: FormGroup<ListingFormShape>;
+  listingData!: GroupListingViewModel;
 
   constructor(private userListingService: UserListingService, private router: Router,
               public formService: ListingFormService) {
@@ -38,8 +37,10 @@ export class UpdateListingComponent implements OnInit {
     this.listingForm = this.formService.listingFormGroup;
 
     const draft = history.state?.draft as GroupListingViewModel | undefined;
+    this.listingData = draft as GroupListingViewModel;
 
     if (draft){
+      this.formService.planetMoon.enable({ emitEvent: false });
       this.formService.patchFromDraft(draft);
     }
   }
@@ -51,13 +52,15 @@ export class UpdateListingComponent implements OnInit {
       return;
     }
 
-    const newListingData = new CreateListingRequest(this.listingForm.value);
+
+
+    const newListingData = new UpdateListingRequest(this.listingForm.value, this.listingData.groupId);
 
     if(!environment.production) {
       console.log(newListingData);
     }
 
-    this.userListingService.createListing(newListingData).subscribe({
+    this.userListingService.updateListing(newListingData).subscribe({
         next: response => {
           if(!environment.production) {
             console.log(response.listingTitle)

@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {CreateListingRequest} from "../../models/group-listing/create-listing-request";
 import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
+import {UpdateListingRequest} from "../../models/group-listing/update-listing-request";
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class UserListingService {
 
   private createListingUrl = `${environment.apiBaseUrl}/group-listings/create_listing`;
   private deleteListingUrl = `${environment.apiBaseUrl}/group-listings/delete_listing`;
+  private updateListingUrl = `${environment.apiBaseUrl}/group-listings/update_listing`;
 
   constructor(private httpClient: HttpClient) {}
 
@@ -20,5 +22,9 @@ export class UserListingService {
 
   deleteListing(listingId: number) {
     return this.httpClient.delete<any>(`${this.deleteListingUrl}/${listingId}`);
+  }
+
+  updateListing(updateListingRequest: UpdateListingRequest): Observable<any> {
+    return this.httpClient.put<any>(this.updateListingUrl, updateListingRequest);
   }
 }

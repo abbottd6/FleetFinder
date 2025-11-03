@@ -118,39 +118,43 @@ export class ListingFormService implements OnDestroy{
     });
   }
 
+  private toNum = (v: unknown): number | null =>
+    v == null || v === '' ? null : (typeof v === 'string' ? Number(v) : (v as number));
+
   patchFromDraft(draft: GroupListingViewModel) {
     forkJoin({
-      servers: this.lookup.getServerRegions(),
-      envs: this.lookup.getGameEnvironments(),
-      exps: this.lookup.getGameExperiences(),
-      playStyles: this.lookup.getPlayStyles(),
+      serverRegion: this.lookup.getServerRegions(),
+      gameEnvironment: this.lookup.getGameEnvironments(),
+      gameExperience: this.lookup.getGameExperiences(),
+      playStyle: this.lookup.getPlayStyles(),
       legalities: this.lookup.getLegalities(),
       groupStatuses: this.lookup.getGroupStatuses(),
-      categories: this.lookup.getGameplayCategories(),
-      subcategories: this.lookup.getGameplaySubcategories(),
-      pvp: this.lookup.getPvpStatuses(),
-      systems: this.lookup.getPlanetarySystems(),
-      moons: this.lookup.getPlanetMoonSystems(),
+      category: this.lookup.getGameplayCategories(),
+      subcategory: this.lookup.getGameplaySubcategories(),
+      pvpStatus: this.lookup.getPvpStatuses(),
+      planetarySystem: this.lookup.getPlanetarySystems(),
+      planetMoon: this.lookup.getPlanetMoonSystems(),
+      groupStatus: this.lookup.getGroupStatuses(),
     }).subscribe(data => {
       this.listingFormGroup.patchValue({
         titleGroup: {listingTitle: draft.listingTitle},
         sessionEnvInfoGroup: {
-          serverRegion: draft.server,
-          gameEnvironment: draft.environment,
-          gameExperience: draft.experience,
+          serverRegion: draft.serverId,
+          gameEnvironment: draft.environmentId,
+          gameExperience: draft.experienceId,
         },
         gameplayInfoGroup: {
-          playStyle: draft.playStyle,
+          playStyle: draft.styleId,
           category: draft.category,
-          subcategory: draft.subcategory,
-          legality: draft.legality,
-          pvpStatus: draft.pvpStatus,
+          subcategory: draft.subcategoryId,
+          legality: draft.legalityId,
+          pvpStatus: draft.pvpStatusId,
           planetarySystem: draft.system,
-          planetMoon: draft.planetMoonSystem,
+          planetMoon: draft.planetId,
           listingDescription: draft.listingDescription,
         },
         groupSpecInfoGroup: {
-          groupStatus: draft.groupStatus,
+          groupStatus: draft.groupStatusId,
           currentPartySize: draft.currentPartySize,
           desiredPartySize: draft.desiredPartySize,
           availableRoles: draft.availableRoles,

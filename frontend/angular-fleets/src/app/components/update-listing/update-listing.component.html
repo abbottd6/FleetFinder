@@ -2,7 +2,7 @@
   <span class="page-title"><h2>Update your group listing</h2></span>
   <div class="header-line"></div>
   <div>
-    <form class="form-body" [formGroup]="listingForm">
+    <form class="form-body" [formGroup]="listingForm" (ngSubmit)="onSubmit()">
 
       <!-- titleGroup -->
       <div formGroupName="titleGroup">
