@@ -11,6 +11,7 @@ import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConver
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -90,11 +91,13 @@ public class GroupListingServiceImpl implements GroupListingService {
         GroupListing groupListing = groupListingRepository.findById(dto.getGroupId())
                 .orElseThrow(() -> new ResourceNotFoundException(dto.getGroupId()));
 
-
         //ADD LOGIC TO CHECK THE NUMBER OF GROUPLISTINGS ASSOCIATED WITH A USER.
         //LIMIT THE NUMBER OF GROUP LISTINGS PER USER TO 3
 
-        BeanUtils.copyProperties(dto, groupListing, "groupId", "user", "listingUser");
+        GroupListing temp = groupListingConversionService.convertToEntity(dto);
+
+        BeanUtils.copyProperties(temp, groupListing,
+                "groupId", "users", "creationTimestamp", "isDeleted", "deletedAt");
 
         return groupListingRepository.save(groupListing);
     }
