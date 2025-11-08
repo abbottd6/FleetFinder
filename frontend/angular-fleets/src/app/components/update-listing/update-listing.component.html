@@ -38,10 +38,11 @@
             [playStyleControl]="formService.playStyle">
           </app-playstyle-dropdown>
           <app-category-dropdown
+
             [categoryControl]="formService.category">
           </app-category-dropdown>
           <app-subcategory-dropdown
-            [subcategoryControl]="formService.subcategory"
+            [subcategoryControl]="formService.subcategoryControl"
             [categoryControl]="formService.category">
           </app-subcategory-dropdown>
         </div>
@@ -121,6 +122,9 @@
       </div>
       <div *ngIf="formSubmitted && listingForm.invalid" class="submit-error">Check required fields</div>
       <div class="submit-button-container">
+      </div>
+      <div class="submit-button-container">
+        <button type="button" [routerLink]="['/user-account']" class="submit-button">Cancel</button>
         <button type="submit" class="submit-button">Update Listing</button>
       </div>
     </form>

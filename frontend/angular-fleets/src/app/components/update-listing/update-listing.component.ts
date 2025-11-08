@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Router} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {ListingFormService, ListingFormShape} from "../../services/listing-form-service/listing-form.service";
 import {FormGroup, ReactiveFormsModule} from "@angular/forms";
 import {InputFieldModule} from "../input-fields/input-field/input-field.module";
@@ -21,7 +21,8 @@ import {UpdateListingRequest} from "../../models/group-listing/update-listing-re
     InputFieldModule,
     DropdownModule,
     MatError,
-    NgIf
+    NgIf,
+    RouterLink
   ]
 })
 export class UpdateListingComponent implements OnInit {
@@ -30,8 +31,7 @@ export class UpdateListingComponent implements OnInit {
   listingData!: GroupListingViewModel;
 
   constructor(private userListingService: UserListingService, private router: Router,
-              public formService: ListingFormService) {
-  }
+              public formService: ListingFormService) {}
 
   ngOnInit() {
     this.listingForm = this.formService.listingFormGroup;
@@ -40,7 +40,6 @@ export class UpdateListingComponent implements OnInit {
     this.listingData = draft as GroupListingViewModel;
 
     if (draft){
-      this.formService.planetMoon.enable({ emitEvent: false });
       this.formService.patchFromDraft(draft);
     }
   }
@@ -52,12 +51,10 @@ export class UpdateListingComponent implements OnInit {
       return;
     }
 
-
-
     const newListingData = new UpdateListingRequest(this.listingForm.value, this.listingData.groupId);
 
     if(!environment.production) {
-      console.log(newListingData);
+      console.log("HERE IS THE SUBMITTED LISTING DATA: ", newListingData);
     }
 
     this.userListingService.updateListing(newListingData).subscribe({

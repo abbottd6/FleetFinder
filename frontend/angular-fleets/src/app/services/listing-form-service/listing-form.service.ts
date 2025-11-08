@@ -1,9 +1,10 @@
-import {Injectable, OnDestroy, OnInit} from '@angular/core';
+import {Injectable, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from "@angular/forms";
 import {requiredIfGroupStatusFuture} from "../../common/validators/custom-validators";
-import {forkJoin, Subscription} from "rxjs";
+import {catchError, forkJoin, of, Subscription} from "rxjs";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {LookupService} from "../api-lookup-services/lookup.service";
+import {environment} from "../../../environments/environment";
 
 type TitleGroup = {
   listingTitle: FormControl<string>;
@@ -50,8 +51,8 @@ export class ListingFormService implements OnDestroy{
   listingFormGroup!: FormGroup<ListingFormShape>;
 
   constructor(private formBuilder: NonNullableFormBuilder, private lookup: LookupService) {
-    this.listingFormGroup = this.buildForm()
-    this.initSubscriptions()
+    this.listingFormGroup = this.buildForm();
+    this.initSubscriptions();
   }
 
   ngOnDestroy() {
@@ -118,10 +119,7 @@ export class ListingFormService implements OnDestroy{
     });
   }
 
-  private toNum = (v: unknown): number | null =>
-    v == null || v === '' ? null : (typeof v === 'string' ? Number(v) : (v as number));
-
-  patchFromDraft(draft: GroupListingViewModel) {
+  public patchFromDraft(draft: GroupListingViewModel) {
     forkJoin({
       serverRegion: this.lookup.getServerRegions(),
       gameEnvironment: this.lookup.getGameEnvironments(),
@@ -145,12 +143,10 @@ export class ListingFormService implements OnDestroy{
         },
         gameplayInfoGroup: {
           playStyle: draft.styleId,
-          category: draft.category,
-          subcategory: draft.subcategoryId,
           legality: draft.legalityId,
           pvpStatus: draft.pvpStatusId,
-          planetarySystem: draft.system,
-          planetMoon: draft.planetId,
+          // planetarySystem: draft.systemId,
+          // patch later: planetMoon: draft.planetId,
           listingDescription: draft.listingDescription,
         },
         groupSpecInfoGroup: {
@@ -162,6 +158,10 @@ export class ListingFormService implements OnDestroy{
           commsService: draft.commsService
         }
       });
+      this.category?.setValue(draft.categoryId);
+      this.subcategoryControl.setValue(draft.subcategoryId);
+      this.planetarySystem?.setValue(draft.systemId);
+      this.planetMoon?.setValue(draft.planetId);
     });
   }
 
@@ -177,7 +177,7 @@ export class ListingFormService implements OnDestroy{
   //gameplayInfoGroup
   get playStyle(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.playStyle') as FormControl }
   get category(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.category') as FormControl }
-  get subcategory(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.subcategory') as FormControl }
+  get subcategoryControl(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.subcategory') as FormControl }
   get legality(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.legality') as FormControl }
   get pvpStatus(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.pvpStatus') as FormControl }
   get planetarySystem(): FormControl { return this.listingFormGroup.get('gameplayInfoGroup.planetarySystem') as FormControl }

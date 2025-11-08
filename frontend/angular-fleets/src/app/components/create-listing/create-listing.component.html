@@ -71,6 +71,7 @@
       </div>
       <div *ngIf="formSubmitted && listingFormGroup.invalid" class="submit-error">Check required fields</div>
       <div class="submit-button-container">
+        <button type="button" [routerLink]="['/user-account']" class="submit-button">Cancel</button>
         <button type="submit" class="submit-button">Create Listing</button>
       </div>
     </form>

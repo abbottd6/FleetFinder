@@ -20,16 +20,16 @@ export class UpdateListingRequest {
         formData.groupSpecInfoGroup.eventScheduleTime,
         formData.groupSpecInfoGroup.eventScheduleZone
       ),
-      categoryId: 1,
-      subcategoryId: null,
+      categoryId: formData.gameplayInfoGroup.category,
+      subcategoryId: formData.gameplayInfoGroup.subcategory,
       pvpStatusId: formData.gameplayInfoGroup.pvpStatus,
-      systemId: 1,
+      systemId: formData.gameplayInfoGroup.planetarySystem,
       planetId: formData.gameplayInfoGroup.planetMoon,
       listingDescription: formData.gameplayInfoGroup.listingDescription,
       desiredPartySize: formData.groupSpecInfoGroup.desiredPartySize,
       currentPartySize: formData.groupSpecInfoGroup.currentPartySize,
       availableRoles: formData.groupSpecInfoGroup.availableRoles,
-      commsOption: 1,
+      commsOption: formData.groupSpecInfoGroup.commsOption,
       commsService: formData.groupSpecInfoGroup.commsService,
     })
   }

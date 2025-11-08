@@ -5,6 +5,7 @@ import {CreateListingRequest} from "../../models/group-listing/create-listing-re
 import {UserListingService} from "../../services/group-listing-services/user-listing.service";
 import {Router} from "@angular/router";
 import {environment} from "../../../environments/environment";
+import {ListingFormService, ListingFormShape} from "../../services/listing-form-service/listing-form.service";
 
 @Component({
   selector: 'app-create-listing',
@@ -14,13 +15,14 @@ import {environment} from "../../../environments/environment";
 })
 export class CreateListingComponent  implements OnInit {
   listingFormGroup: FormGroup = new FormGroup({});
+  listingForm!: FormGroup<ListingFormShape>;
   formSubmitted: boolean = false;
 
   constructor(private formBuilder: FormBuilder, private userListingService: UserListingService,
-              private router: Router) {}
+              private router: Router) {
+  }
 
   ngOnInit() {
-
     this.listingFormGroup = this.formBuilder.group({
       titleGroup: this.formBuilder.group({
         listingTitle: new FormControl(null, [Validators.required, Validators.minLength(5)]),

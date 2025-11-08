@@ -10,8 +10,6 @@ import {Router, RouterLink} from "@angular/router";
 import {UserListingService} from "../../services/group-listing-services/user-listing.service";
 import {UserService} from "../../services/user-services/user.service";
 import {environment} from "../../../environments/environment";
-import {MatButtonModule} from "@angular/material/button";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @Component({
   selector: 'app-user-acct-listings-table',
@@ -42,6 +40,9 @@ export class UserAcctListingsTableComponent implements OnChanges {
   }
 
   singleSelected() {
+    if(!environment.production) {
+      console.log("HERE IS THE USER ACCT TABLE SELECTED LISTING DATA: ", this.selection.selected);
+    }
     return this.selection.selected.length < 2;
   }
 
@@ -80,6 +81,9 @@ export class UserAcctListingsTableComponent implements OnChanges {
     this.router.navigate(['/update-listing'], {
       state: { draft: updateListing }
     });
+    if(!environment.production) {
+      console.log("HERE IS THE LISTING DATA TO BE UPDATED: ", updateListing);
+    };
   }
 
   userDeleteListing() {
