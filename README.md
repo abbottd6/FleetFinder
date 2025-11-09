@@ -17,7 +17,7 @@ Imperium Games. As the game is still in alpha and lacks a built-in group finder,
 with other players seeking similar gameplay. For development details and an architecture overview, checkout 
 https://scfleetfinder.com/about
 
-<img src="docs/SC_FleetFinder_Architecture_Overview.pdf" alt="Architecture Overview" height="500">
+<img src="docs/Architecture_Overview.png" alt="Architecture Overview" height="500">
 
 ---
 
