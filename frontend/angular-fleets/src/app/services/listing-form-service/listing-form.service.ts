@@ -32,8 +32,8 @@ type GroupSpecInfoGroup = {
   currentPartySize: FormControl<number | null>;
   desiredPartySize: FormControl<number | null>;
   availableRoles: FormControl<string | null>;
-  commsOption: FormControl<any>;
-  commsService: FormControl<any>;
+  commsOption: FormControl<string | null>;
+  commsService: FormControl<string | null>;
 };
 
 export type ListingFormShape = {

@@ -24,6 +24,7 @@ export class SubcategoryDropdownComponent implements AfterViewInit{
 
   ngAfterViewInit() {
     this.categoryControl?.valueChanges.subscribe(value => {
+      this.subcategoryControl.reset();
       this.applySubcatFilter(value);
     });
     this.fetchSubcategories();
@@ -53,34 +54,31 @@ export class SubcategoryDropdownComponent implements AfterViewInit{
   }
 
   applySubcatFilter(cat: number) {
-
-      // console.warn("CATEGORY CHANGED")
-      // console.log("CATEGORY: ", value)
-      //clearing filtered subcategory array after value change and resetting dropdown
-      if( cat == null || cat === 12) {
-        this.subcategoryControl?.reset();
-        this.subcategoryControl?.disable();
-        this.filteredSubcategories.splice(0, this.filteredSubcategories.length);
-      }
-      //filtering subcategory options by selected category
-      if (cat != null && cat != 12) {
-        this.filteredSubcategories = this.subcategories.filter(
-          subcategory =>
-            subcategory.gameplayCategoryId === cat
-        );
-        if (this.filteredSubcategories.length > 0) {
-          // console.log("Filtered subcategories: ", this.filteredSubcategories);
-          // console.warn("UPDATE HAPPENS HERE")
-          this.subcategoryControl?.enable();
-        }
-        else {
-          this.subcategoryControl?.reset();
-          this.subcategoryControl?.disable();
-        }
-      }
-      else {
+    // console.warn("CATEGORY CHANGED")
+    // console.log("CATEGORY: ", value)
+    //clearing filtered subcategory array after value change and resetting dropdown
+    if (cat == null || cat === 12) {
+      this.subcategoryControl?.reset();
+      this.subcategoryControl?.disable();
+      this.filteredSubcategories.splice(0, this.filteredSubcategories.length);
+    }
+    //filtering subcategory options by selected category
+    if (cat != null && cat != 12) {
+      this.filteredSubcategories = this.subcategories.filter(
+        subcategory =>
+          subcategory.gameplayCategoryId === cat
+      );
+      if (this.filteredSubcategories.length > 0) {
+        // console.log("Filtered subcategories: ", this.filteredSubcategories);
+        // console.warn("UPDATE HAPPENS HERE")
+        this.subcategoryControl?.enable();
+      } else {
         this.subcategoryControl?.reset();
         this.subcategoryControl?.disable();
       }
+    } else {
+      this.subcategoryControl?.reset();
+      this.subcategoryControl?.disable();
+    }
   }
 }

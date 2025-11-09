@@ -24,6 +24,7 @@ export class PlanetDropdownComponent implements AfterViewInit{
 
     // Subscribing to planetary system changes to filter planet moons by system
     this.planetarySystemControl?.valueChanges.subscribe(value => {
+      this.planetMoonControl?.reset();
       this.applyPlanetFilter(value);
     });
   }
