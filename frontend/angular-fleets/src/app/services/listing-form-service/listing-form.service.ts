@@ -72,7 +72,7 @@ export class ListingFormService implements OnDestroy{
   //method for checking whether event schedule fields are valid
   //event date, time, and time zone are only required if group status is "future/scheduled"
   //method is for displaying a single error if any of the three fields are invalid
-  isEventScheduleInvalid(): boolean {
+  get isEventScheduleInvalid(): boolean {
     const dateError = this.eventScheduleDate?.hasError('required')
       && (this.eventScheduleDate.dirty || this.eventScheduleDate.touched);
 
@@ -145,8 +145,8 @@ export class ListingFormService implements OnDestroy{
           playStyle: draft.styleId,
           legality: draft.legalityId,
           pvpStatus: draft.pvpStatusId,
-          // planetarySystem: draft.systemId,
-          // patch later: planetMoon: draft.planetId,
+          // category, subcategory, system, and planet are patched with setValue (below) so that child dropdowns filter
+          // and update based on the patched value.
           listingDescription: draft.listingDescription,
         },
         groupSpecInfoGroup: {
@@ -162,7 +162,40 @@ export class ListingFormService implements OnDestroy{
       this.subcategoryControl.setValue(draft.subcategoryId);
       this.planetarySystem?.setValue(draft.systemId);
       this.planetMoon?.setValue(draft.planetId);
+      this.reverseParseAndPatchDateString(draft.eventSchedule);
     });
+  }
+
+  reverseParseAndPatchDateString(eventSchedule: Date) {
+    if (eventSchedule != null) {
+      const utc = new Date(eventSchedule);
+
+      const year = utc.getFullYear();
+      const month = utc.getMonth() + 1;
+      const day = utc.getDate();
+      const hours = utc.getHours();
+      const minutes = utc.getMinutes();
+
+      const parsedDate = new Date(`${this.padDateString(month)}/${this.padDateString(day)}/${year}`);
+      console.log("Parsed date: ", parsedDate)
+
+      const parsedTime = `${this.padDateString(hours)}:${this.padDateString(minutes)}`;
+      console.log("Parsed time: ", parsedTime);
+
+      this.eventScheduleDate?.setValue(parsedDate);
+      this.eventScheduleTime?.setValue(parsedTime);
+
+      [this.eventScheduleDate, this.eventScheduleTime, this.eventScheduleZone].forEach(ctrl => {
+        ctrl?.updateValueAndValidity({onlySelf: true, emitEvent: false});
+        console.log('value:', ctrl?.value, 'errors:', ctrl?.errors);
+        ctrl?.markAsPristine();
+        ctrl?.markAsUntouched();
+      });
+    }
+  }
+
+  private padDateString(value: number): string {
+    return value.toString().padStart(2, '0');
   }
 
   //Getters for passing FormControl entities to child components

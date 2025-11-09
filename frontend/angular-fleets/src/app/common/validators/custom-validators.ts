@@ -11,7 +11,7 @@ export const requiredIfGroupStatusFuture: ValidatorFn = (
       console.log('Validator triggered:', {control, parent});
     }
 
-    if(!parent) {
+    if(!parent || control.disabled) {
       return null;
     }
 

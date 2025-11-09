@@ -2,6 +2,11 @@ import {environment} from "../../../environments/environment";
 
 export class UpdateListingRequest {
   constructor(formData: any, gId: number) {
+    if (formData.groupStatus != 2) {
+      formData.eventScheduleDate = null;
+      formData.eventScheduleTime = null;
+      formData.eventScheduleZone = null;
+    }
     Object.assign(this, {
       groupId: gId,
       userId: null,
