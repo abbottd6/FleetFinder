@@ -41,7 +41,7 @@ export class UserComponent implements OnInit {
 
   localUser$: Observable<PrivateUser>;
 
-  selectedTab: 'profile'|'listings'|'saved'|'edit' = 'profile';
+  selectedTab: 'listings'|'bookmarks'|'templates'|'profile' = 'listings';
 
   selectTab(tab: typeof this.selectedTab){
     this.selectedTab = tab;

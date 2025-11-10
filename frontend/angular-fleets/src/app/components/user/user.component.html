@@ -10,24 +10,24 @@
                    >
         <mat-nav-list class="side-nav-list">
           <a mat-list-item class="mat-nav-list-item"
-             [class.active]="selectedTab==='profile'"
-             (click)="selectTab('profile')">
-            Profile
-          </a>
-          <a mat-list-item class="mat-nav-list-item"
-            [class.active]="selectedTab==='listings'"
-            (click)="selectTab('listings')">
+             [class.active]="selectedTab==='listings'"
+             (click)="selectTab('listings')">
             My Listings
           </a>
           <a mat-list-item class="mat-nav-list-item"
-            [class.active]="selectedTab==='saved'"
-            (click)="selectTab('saved')">
-            Saved Listings
+            [class.active]="selectedTab==='bookmarks'"
+            (click)="selectTab('bookmarks')">
+            Bookmarks
           </a>
           <a mat-list-item class="mat-nav-list-item"
-          [class.active]="selectedTab==='saved'"
-          (click)="selectTab('edit')">
-            Edit Profile
+          [class.active]="selectedTab==='templates'"
+          (click)="selectTab('templates')">
+            Templates
+          </a>
+          <a mat-list-item class="mat-nav-list-item"
+             [class.active]="selectedTab==='profile'"
+             (click)="selectTab('profile')">
+            Profile
           </a>
           <a mat-list-item class="mat-nav-list-item"
              (click)="auth.logout()">Logout</a>
@@ -50,11 +50,25 @@
           </button>
         </div>
 
-
-
-
-
         <div class="account-window-body">
+
+          <!-- MY LISTINGS TAB -->
+          <ng-container *ngIf="selectedTab === 'listings'">
+            <app-user-acct-listings-table
+              [userListings]="(user.groupListingsDto)" class="user-table">
+            </app-user-acct-listings-table>
+          </ng-container>
+
+          <!-- SAVED LISTINGS TAB -->
+          <ng-container *ngIf="selectedTab === 'bookmarks'">
+            <div>Coming Soon: Feature that will allow users to bookmark listings of interest from the search view
+              for easy access.</div>
+          </ng-container>
+
+          <!-- EDIT PROFILE TAB -->
+          <ng-container *ngIf="selectedTab === 'templates'">
+            <div>Coming Soon: Feature that will allow users to save group listing templates for reuse</div>
+          </ng-container>
 
           <!-- PROFILE TAB -->
           <ng-container *ngIf="selectedTab === 'profile'">
@@ -84,23 +98,6 @@
                 <span class="user-profile-field-val"> {{ user.acctCreated | date: 'MMM d, yyyy h:mm a' }} </span>
               </li>
             </ul>
-          </ng-container>
-
-          <!-- MY LISTINGS TAB -->
-          <ng-container *ngIf="selectedTab === 'listings'">
-            <!-- DELETE LISTING BUTTON -->
-            <app-user-acct-listings-table [userListings]="(user.groupListingsDto)" class="user-table">
-            </app-user-acct-listings-table>
-          </ng-container>
-
-          <!-- SAVED LISTINGS TAB -->
-          <ng-container *ngIf="selectedTab === 'saved'">
-            <div style="color:white">TMP SAVED LISTINGS</div>
-          </ng-container>
-
-          <!-- EDIT PROFILE TAB -->
-          <ng-container *ngIf="selectedTab === 'edit'">
-            <div style="color:white">TMP EDIT PROFILE</div>
           </ng-container>
         </div>
       </mat-sidenav-content>
