@@ -55,11 +55,12 @@
           <!-- MY LISTINGS TAB -->
           <ng-container *ngIf="selectedTab === 'listings'">
             <app-user-acct-listings-table
-              [userListings]="(user.groupListingsDto)" class="user-table">
+              [userListings]="(user.groupListingsDto)" class="user-table"
+              (listingForModal)="onListingSelected($event)">
             </app-user-acct-listings-table>
           </ng-container>
 
-          <!-- SAVED LISTINGS TAB -->
+          <!-- USER BOOKMARKED LISTINGS TAB -->
           <ng-container *ngIf="selectedTab === 'bookmarks'">
             <div style="margin-left: 3rem">
               <h4>Coming Soon:</h4>
@@ -70,7 +71,7 @@
             </div>
           </ng-container>
 
-          <!-- EDIT PROFILE TAB -->
+          <!-- LISTING TEMPLATES TAB -->
           <ng-container *ngIf="selectedTab === 'templates'">
             <div style="margin-left: 3rem;">
               <h4>Coming Soon:</h4>
@@ -122,3 +123,11 @@
       <span>Please log in to view user account details.</span>
     </div>
 </ng-template>
+
+
+<app-group-listing-modal
+  *ngIf="isModalVisible"
+  [isVisible]="isModalVisible"
+  [selectedListing]="selectedListing"
+  (close)="onModalClose()"
+></app-group-listing-modal>

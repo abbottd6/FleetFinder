@@ -1,25 +1,27 @@
-import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatTableDataSource, MatTableModule} from "@angular/material/table";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {SelectionModel} from "@angular/cdk/collections";
 import {AuthService} from "../../services/auth/auth-services/auth.service";
-import {DatePipe} from "@angular/common";
+import {DatePipe, NgIf} from "@angular/common";
 import {Router, RouterLink} from "@angular/router";
 import {UserListingService} from "../../services/group-listing-services/user-listing.service";
 import {UserService} from "../../services/user-services/user.service";
 import {environment} from "../../../environments/environment";
+import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 
 @Component({
   selector: 'app-user-acct-listings-table',
   standalone: true,
   templateUrl: './user-acct-listings-table.component.html',
   styleUrl: './user-acct-listings-table.component.css',
-  imports: [MatTableModule, MatCheckboxModule, DatePipe],
+  imports: [MatTableModule, MatCheckboxModule, DatePipe, RouterLink],
 })
 export class UserAcctListingsTableComponent implements OnChanges {
   @Input() userListings: GroupListingViewModel[] = [];
+  @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
 
   displayedColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
   dataSource = new MatTableDataSource(this.userListings);
@@ -103,5 +105,13 @@ export class UserAcctListingsTableComponent implements OnChanges {
     }
     this.snackBar.open(`You successfully deleted [${selectedCount}] listing(s).`, 'OK',
       {duration: 6000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['my-snackbar']});
+  }
+
+  //on-row-click instructions for groupListing modal popup
+  onRowClick(tempListing: GroupListingViewModel) {
+    this.listingForModal.emit(tempListing);
+    if(!environment.production) {
+      console.log("HERE IS THE LISTING DATA: ", tempListing);
+    }
   }
 }

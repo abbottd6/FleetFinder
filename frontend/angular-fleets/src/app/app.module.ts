@@ -38,7 +38,6 @@ import {MatButtonModule} from "@angular/material/button";
     NavBarComponent,
     FooterComponent,
     WelcomeScreenComponent,
-    GroupListingModalComponent,
     AboutComponent,
     LoginModalComponent,
   ],
@@ -63,7 +62,8 @@ import {MatButtonModule} from "@angular/material/button";
     MatSnackBarModule,
     DropdownModule,
     InputFieldModule,
-    MatError
+    MatError,
+    GroupListingModalComponent
   ],
   providers: [
     provideClientHydration(),
@@ -74,7 +74,6 @@ import {MatButtonModule} from "@angular/material/button";
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
 
   ],
-  exports: [],
   bootstrap: [AppComponent]
 })
 

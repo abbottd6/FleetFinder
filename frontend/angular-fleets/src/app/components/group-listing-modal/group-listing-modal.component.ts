@@ -1,10 +1,16 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
+import {DatePipe, NgClass, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-group-listing-modal',
-  standalone: false,
+  standalone: true,
   templateUrl: './group-listing-modal.component.html',
+  imports: [
+    NgClass,
+    DatePipe,
+    NgIf
+  ],
   styleUrl: './group-listing-modal.component.css'
 })
 export class GroupListingModalComponent {

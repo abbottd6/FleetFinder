@@ -15,6 +15,8 @@ import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/button";
 import {UserService} from "../../services/user-services/user.service";
+import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
+import {environment} from "../../../environments/environment";
 
 @Component({
     selector: 'app-user',
@@ -24,16 +26,17 @@ import {UserService} from "../../services/user-services/user.service";
       '../create-listing/create-listing.component.css',
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
-    UserAcctListingsTableComponent, MatButtonModule],
+    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent],
     standalone: true
 })
 export class UserComponent implements OnInit {
   private breakpointObserver = inject(BreakpointObserver);
+  //modal popup vars
+  selectedListing: GroupListingViewModel | null = null;
+  isModalVisible: boolean = false;
 
   groupListings: GroupListingViewModel[] = []
-
   localUser$: Observable<PrivateUser>;
-
   selectedTab: 'listings'|'bookmarks'|'templates'|'profile' = 'listings';
 
   selectTab(tab: typeof this.selectedTab){
@@ -51,6 +54,22 @@ export class UserComponent implements OnInit {
       map(user => user.groupListingsDto ?? [])
     )
       .subscribe(listings => this.groupListings = listings);
+  }
+
+  onListingSelected(listing: GroupListingViewModel) {
+    this.selectedListing = listing;
+    this.isModalVisible = true;
+    if(!environment.production) {
+      console.log("Parent modal visibility: ", this.isModalVisible);
+    }
+  }
+
+  //on close instructions for groupListing modal popup
+  onModalClose() {
+    if(!environment.production) {
+      console.log("Modal closed");
+    }
+    this.isModalVisible = false;
   }
 
   isMobile$ = this.breakpointObserver
