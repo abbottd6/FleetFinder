@@ -1,13 +1,7 @@
 import {
   Component,
-  ViewChild,
   inject,
   OnInit,
-  AfterViewInit,
-  Inject,
-  OnChanges,
-  SimpleChanges,
-  Input
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {map, Observable, shareReplay} from "rxjs";
@@ -21,7 +15,6 @@ import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/button";
 import {UserService} from "../../services/user-services/user.service";
-import {SelectionModel} from "@angular/cdk/collections";
 
 @Component({
     selector: 'app-user',
