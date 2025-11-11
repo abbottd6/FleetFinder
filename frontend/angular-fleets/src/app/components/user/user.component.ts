@@ -37,15 +37,8 @@ export class UserComponent implements OnInit {
 
   groupListings: GroupListingViewModel[] = []
   localUser$: Observable<PrivateUser>;
-  selectedTab: 'listings'|'bookmarks'|'templates'|'profile' = 'listings';
-
-  selectTab(tab: typeof this.selectedTab){
-    this.selectedTab = tab;
-  }
-
-  ngOnInit() {
-    this.userService.refreshUser()
-  }
+  selectedTab: 'listings'|'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
+  shouldDisplayMod$: boolean = false;
 
   constructor(public userService: UserService, protected auth: AuthService) {
     this.localUser$ = this.userService.localUser$;
@@ -56,9 +49,24 @@ export class UserComponent implements OnInit {
       .subscribe(listings => this.groupListings = listings);
   }
 
+  ngOnInit() {
+    this.userService.refreshUser();
+    this.shouldDisplayMod$ = this.askShouldDisplayMod();
+  }
+
+  askShouldDisplayMod(): boolean {
+    console.log("Role: ", this.userService.getRole())
+    return this.userService.getRole() == 'mod';
+  }
+
+  selectTab(tab: typeof this.selectedTab){
+    this.selectedTab = tab;
+  }
+
   onListingSelected(listing: GroupListingViewModel) {
     this.selectedListing = listing;
     this.isModalVisible = true;
+    console.log("Role:", this.userService.getRole());
     if(!environment.production) {
       console.log("Parent modal visibility: ", this.isModalVisible);
     }

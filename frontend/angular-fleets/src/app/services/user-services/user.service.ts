@@ -20,9 +20,10 @@ import {UserApiService} from "./userApi.service";
 @Injectable({
   providedIn: 'root'
 })
+
 export class UserService implements OnDestroy {
   private destroy$ = new Subject<void>();
-
+  public role!: string;
   private readonly http = inject(HttpClient);
   private auth = inject(AuthService);
   private api = inject(UserApiService);
@@ -49,6 +50,26 @@ export class UserService implements OnDestroy {
     filter(data => !!data && !!data.userData)
   );
 
+  getRole(): string {
+    this.profile$.pipe(
+      map(data => data.userData.roles as string[]))
+      .subscribe((roles: string[]) => {
+
+        for (const role of roles) {
+          if (role == 'admin') {
+            this.role = 'admin';
+            break;
+          } else if (role == 'mod') {
+            this.role = 'mod'
+            break
+          } else {
+            this.role = 'user'
+          }
+        }
+      });
+    return this.role;
+  }
+
   // local version of keycloak's user
   public localUser$: Observable<PrivateUser> = this.refreshTrigger$.pipe(
     // pair with latest profile
@@ -67,6 +88,7 @@ export class UserService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next(); this.destroy$.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
