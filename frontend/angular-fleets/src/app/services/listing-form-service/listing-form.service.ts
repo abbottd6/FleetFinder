@@ -159,7 +159,7 @@ export class ListingFormService implements OnDestroy{
         }
       });
       this.category?.setValue(draft.categoryId);
-      this.subcategoryControl.setValue(draft.subcategoryId);
+      this.subcategoryControl?.setValue(draft.subcategoryId);
       this.planetarySystem?.setValue(draft.systemId);
       this.planetMoon?.setValue(draft.planetId);
       this.reverseParseAndPatchDateString(draft.eventSchedule);

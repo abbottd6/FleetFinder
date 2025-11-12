@@ -29,7 +29,7 @@ export class CreateListingRequest {
       currentPartySize: formData.groupSpecInfoGroup.currentPartySize,
       desiredPartySize: formData.groupSpecInfoGroup.desiredPartySize,
       availableRoles: formData.groupSpecInfoGroup.availableRoles,
-      commsOption: formData.groupSpecInfoGroup.commsOption.option,
+      commsOption: formData.groupSpecInfoGroup.commsOption,
       commsService: formData.groupSpecInfoGroup.commsService,
     })
   }

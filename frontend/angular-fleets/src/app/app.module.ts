@@ -29,6 +29,17 @@ import { UpdateListingComponent } from './components/update-listing/update-listi
 import {DropdownModule} from "./components/dropdowns/dropdown-module/dropdown.module";
 import {InputFieldModule} from "./components/input-fields/input-field/input-field.module";
 import {MatButtonModule} from "@angular/material/button";
+import { ModListingsTableComponent } from './components/mod-listings-table/mod-listings-table.component';
+import {
+  MatCell,
+  MatCellDef,
+  MatColumnDef,
+  MatHeaderCell, MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow, MatRowDef, MatTable
+} from "@angular/material/table";
+import {MatCheckbox} from "@angular/material/checkbox";
 
 
 @NgModule({
@@ -63,7 +74,19 @@ import {MatButtonModule} from "@angular/material/button";
     DropdownModule,
     InputFieldModule,
     MatError,
-    GroupListingModalComponent
+    GroupListingModalComponent,
+    ModListingsTableComponent,
+    MatCell,
+    MatCellDef,
+    MatCheckbox,
+    MatColumnDef,
+    MatHeaderCell,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatRow,
+    MatRowDef,
+    MatTable,
+    MatHeaderCellDef
   ],
   providers: [
     provideClientHydration(),
@@ -73,6 +96,9 @@ import {MatButtonModule} from "@angular/material/button";
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
 
+  ],
+  exports: [
+    ModListingsTableComponent
   ],
   bootstrap: [AppComponent]
 })

@@ -34,7 +34,7 @@ export class UpdateListingRequest {
       desiredPartySize: formData.groupSpecInfoGroup.desiredPartySize,
       currentPartySize: formData.groupSpecInfoGroup.currentPartySize,
       availableRoles: formData.groupSpecInfoGroup.availableRoles,
-      commsOption: formData.groupSpecInfoGroup.commsOption.option,
+      commsOption: formData.groupSpecInfoGroup.commsOption,
       commsService: formData.groupSpecInfoGroup.commsService,
     })
   }

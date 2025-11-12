@@ -54,7 +54,6 @@ export class UserService implements OnDestroy {
     this.profile$.pipe(
       map(data => data.userData.roles as string[]))
       .subscribe((roles: string[]) => {
-
         for (const role of roles) {
           if (role == 'admin') {
             this.role = 'admin';

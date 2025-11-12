@@ -38,6 +38,7 @@ app-update-listing {
 .mat-mdc-snack-bar-actions,
 .mat-mdc-snack-bar-actions button.mat-mdc-button-base {
   pointer-events: auto !important;
+  border-radius: 0.5rem;
 }
 
 .cdk-overlay-container .my-snackbar {

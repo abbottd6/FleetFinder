@@ -118,6 +118,13 @@
               </li>
             </ul>
           </ng-container>
+
+          <!-- MODERATOR TAB -->
+          <ng-container *ngIf="selectedTab === 'content_mod'">
+            <app-mod-listings-table
+              (listingForModal)="onListingSelected($event)">
+            </app-mod-listings-table>
+          </ng-container>
         </div>
       </mat-sidenav-content>
     </mat-sidenav-container>

@@ -17,6 +17,7 @@ import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/butto
 import {UserService} from "../../services/user-services/user.service";
 import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
+import {ModListingsTableComponent} from "../mod-listings-table/mod-listings-table.component";
 
 @Component({
     selector: 'app-user',
@@ -26,7 +27,7 @@ import {environment} from "../../../environments/environment";
       '../create-listing/create-listing.component.css',
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
-    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent],
+    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent, ModListingsTableComponent],
     standalone: true
 })
 export class UserComponent implements OnInit {
