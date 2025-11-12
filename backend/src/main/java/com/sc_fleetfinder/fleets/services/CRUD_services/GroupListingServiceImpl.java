@@ -111,6 +111,7 @@ public class GroupListingServiceImpl implements GroupListingService {
 
                 if (Objects.equals(deleteDto.getUserId(), groupEntity.getUsers().getUserId())) {
                     groupEntity.setDeleted(true);
+                    groupEntity.setDeletedBy(deleteDto.getUserId());
                     groupEntity.setDeletedAt(Instant.now());
                     groupListingRepository.flush();
                     groupListingRepository.save(groupEntity);
