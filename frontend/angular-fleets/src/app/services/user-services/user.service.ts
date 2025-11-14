@@ -36,7 +36,7 @@ export class UserService implements OnDestroy {
         takeUntil(this.destroy$),
         filter(([loggedIn, claims]) => loggedIn && !!claims && !! claims.userData),
       )
-      .subscribe()
+      .subscribe();
   }
 
   getUserById(userId: number): Observable<PublicUser> {
