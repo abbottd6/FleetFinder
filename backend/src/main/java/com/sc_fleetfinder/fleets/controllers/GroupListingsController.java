@@ -63,7 +63,7 @@ public class GroupListingsController {
     }
 
     @PostMapping("/create_listing")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> createGroupListing(@Valid @RequestBody CreateGroupListingDto createGroupListingDto,
                                                 @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
@@ -77,7 +77,7 @@ public class GroupListingsController {
     }
 
     @PutMapping("/update_listing")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
     // needs to use authenticationPrincipal and keycloakId instead of userId
     public GroupListing updateGroupListing(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateGroupListingDto updateGroupListingDto) {
         String keycloakId = jwt.getSubject();
@@ -92,7 +92,7 @@ public class GroupListingsController {
     }
 
     @DeleteMapping("/delete_listing/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
     // id is the listingId
     public ResponseEntity<?> deleteGroupListing(@Valid @PathVariable Long id,
                                                    @AuthenticationPrincipal Jwt jwt) {

@@ -35,6 +35,7 @@ public class ModerationController {
     private UserRepository userRepository;
 
     @GetMapping
+    @PreAuthorize("isAuthenticated() and hasRole('mod')")
     public CollectionModel<EntityModel<GroupListingResponseDto>> modGetAllGroupListings() {
         List<GroupListingResponseDto> groupListingResponseDto = mods.modGetAllGroupListings();
 
@@ -47,6 +48,7 @@ public class ModerationController {
     }
 
     @DeleteMapping("/mod_delete_listing/{groupId}")
+    @PreAuthorize("isAuthenticated() and hasRole('mod')")
     public ResponseEntity<?> modDeleteListing(@Valid @PathVariable Long groupId,
                                               @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
