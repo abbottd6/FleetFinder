@@ -71,6 +71,8 @@ public class GroupListingsController {
         Users requestingUser = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() -> new RuntimeException("User with Keycloak ID: " + keycloakId + " not found"));
 
+        // Add logic to check the number of listings a user has and limit them
+
         createGroupListingDto.setUserId(requestingUser.getUserId());
 
         return groupListingService.createGroupListing(createGroupListingDto);
