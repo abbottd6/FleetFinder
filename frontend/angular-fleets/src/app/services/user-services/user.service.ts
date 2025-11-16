@@ -23,7 +23,7 @@ import {UserApiService} from "./userApi.service";
 
 export class UserService implements OnDestroy {
   private destroy$ = new Subject<void>();
-  public role!: string;
+  public role: 'admin' | 'mod' | 'user' = 'user';
   private readonly http = inject(HttpClient);
   private auth = inject(AuthService);
   private api = inject(UserApiService);
@@ -51,8 +51,9 @@ export class UserService implements OnDestroy {
   );
 
   getRole(): string {
+    console.log("Profile$: ", this.profile$)
     this.profile$.pipe(
-      map(data => data?.userData?.realm_access?.roles ?? []))
+      map(data => data?.userData?.roles ?? []))
       .subscribe((roles: string[]) => {
         if (!Array.isArray(roles)) {
           this.role = 'user';
@@ -64,6 +65,7 @@ export class UserService implements OnDestroy {
         } else if (roles.includes('mod')) {
           this.role = 'mod';
         } else {
+          console.log("Roles type: ", roles)
           this.role = 'user';
         }
       });
