@@ -29,7 +29,7 @@ public class PlanetarySystemControllerIntegrationTest extends AbstractIntegratio
     void testGetAllPlanetarySystems_Success_200() throws Exception {
         mockMvc.perform(get("/api/lookup/planetary-systems"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(3))
+                .andExpect(jsonPath("$.length()").value(4))
                 .andExpect(jsonPath("$[0].systemId").exists())
                 .andExpect(jsonPath("$[0].systemName").exists());
     }

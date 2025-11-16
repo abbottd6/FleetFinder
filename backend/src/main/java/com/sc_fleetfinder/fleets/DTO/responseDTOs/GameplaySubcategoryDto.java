@@ -7,5 +7,6 @@ public class GameplaySubcategoryDto {
 
     private Integer subcategoryId;
     private String subcategoryName;
+    private Integer gameplayCategoryId;
     private String gameplayCategoryName;
 }

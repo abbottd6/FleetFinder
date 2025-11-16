@@ -1,0 +1,3 @@
+ALTER TABLE group_listing
+    ADD COLUMN is_deleted TINYINT(1) NOT NULL DEFAULT 0,
+    ADD COLUMN deleted_at DATETIME(6) NULL;

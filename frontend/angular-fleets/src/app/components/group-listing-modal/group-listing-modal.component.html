@@ -160,7 +160,17 @@
 
           <div class="modal-footer">
             <button type="button" class="modal-buttons" (click)="closeModal()">Close</button>
-            <button type="button" class="modal-buttons">Message</button>
+            <ng-container *ngIf="userIsListingOwner(); else notOwner">
+              <a [routerLink]="['/user-account']">
+                <button type="button" class="modal-buttons">Manage</button>
+              </a>
+            </ng-container>
+            <ng-template #notOwner>
+              <button type="button" class="modal-buttons">
+                <mat-icon class="msg-icon">rss_feed</mat-icon>
+                Message
+              </button>
+            </ng-template>
           </div>
         </div>
       </div>

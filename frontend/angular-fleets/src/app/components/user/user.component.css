@@ -108,9 +108,8 @@
 
 .user-profile-field-val {
   padding: 0 0 0 0.5rem;
-  font-family: 'Exo 2', sans-serif;
-  font-size: clamp(1rem, 1vw, 2rem);
-  line-height: 1.8rem;
+  /*font-size: clamp(1rem, 1vw, 2rem);*/
+  line-height: 1.6rem;
 }
 
 @media(max-width: 1200px) and (min-width: 725px) {
@@ -202,5 +201,9 @@
 
   .user-profile-field-val {
     font-size: clamp(0.5rem, 0.7rem, 1.5rem);
+  }
+
+  .action-buttons {
+    font-size: .6rem;
   }
 }

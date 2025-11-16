@@ -1,4 +1,8 @@
-import {Component, ViewChild, inject, OnInit, AfterViewInit} from '@angular/core';
+import {
+  Component,
+  inject,
+  OnInit,
+} from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {map, Observable, shareReplay} from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
@@ -10,6 +14,10 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/button";
+import {UserService} from "../../services/user-services/user.service";
+import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
+import {environment} from "../../../environments/environment";
+import {ModListingsTableComponent} from "../mod-listings-table/mod-listings-table.component";
 
 @Component({
     selector: 'app-user',
@@ -19,29 +27,58 @@ import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/butto
       '../create-listing/create-listing.component.css',
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
-    UserAcctListingsTableComponent, MatButtonModule],
+    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent, ModListingsTableComponent],
     standalone: true
 })
-export class UserComponent {
+export class UserComponent implements OnInit {
   private breakpointObserver = inject(BreakpointObserver);
+  //modal popup vars
+  selectedListing: GroupListingViewModel | null = null;
+  isModalVisible: boolean = false;
 
   groupListings: GroupListingViewModel[] = []
-
   localUser$: Observable<PrivateUser>;
+  selectedTab: 'listings'|'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
+  shouldDisplayMod$: boolean = false;
 
-  selectedTab: 'profile'|'listings'|'saved'|'edit' = 'profile';
-
-  selectTab(tab: typeof this.selectedTab){
-    this.selectedTab = tab;
-  }
-
-  constructor(private authService: AuthService) {
-    this.localUser$ = this.authService.localUser$;
+  constructor(public userService: UserService, protected auth: AuthService) {
+    this.localUser$ = this.userService.localUser$;
 
     this.localUser$.pipe(
       map(user => user.groupListingsDto ?? [])
     )
       .subscribe(listings => this.groupListings = listings);
+  }
+
+  ngOnInit() {
+    this.userService.refreshUser();
+    this.shouldDisplayMod$ = this.askShouldDisplayMod();
+  }
+
+  askShouldDisplayMod(): boolean {
+    console.log("Role: ", this.userService.getRole())
+    return this.userService.getRole() == 'mod';
+  }
+
+  selectTab(tab: typeof this.selectedTab){
+    this.selectedTab = tab;
+  }
+
+  onListingSelected(listing: GroupListingViewModel) {
+    this.selectedListing = listing;
+    this.isModalVisible = true;
+    console.log("Role:", this.userService.getRole());
+    if(!environment.production) {
+      console.log("Parent modal visibility: ", this.isModalVisible);
+    }
+  }
+
+  //on close instructions for groupListing modal popup
+  onModalClose() {
+    if(!environment.production) {
+      console.log("Modal closed");
+    }
+    this.isModalVisible = false;
   }
 
   isMobile$ = this.breakpointObserver

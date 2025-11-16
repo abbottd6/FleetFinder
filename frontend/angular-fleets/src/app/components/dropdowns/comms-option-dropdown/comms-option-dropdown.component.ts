@@ -11,9 +11,9 @@ import {FormControl, FormGroup} from "@angular/forms";
 export class CommsOptionDropdownComponent {
   @Input() commsOptionControl!: FormControl;
 
-  commsOptions: { id: number; option: string }[] = [
-    {id: 1, option: 'Required'},
-    {id: 2, option: 'Optional'},
-    {id: 3, option: 'No Comms'},
+  commsOptions: string[] = [
+    'Required',
+    'Optional',
+    'No Comms',
   ]
 }

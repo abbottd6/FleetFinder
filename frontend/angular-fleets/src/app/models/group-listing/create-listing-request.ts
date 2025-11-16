@@ -8,11 +8,11 @@ export class CreateListingRequest {
       environmentId: formData.sessionEnvInfoGroup.gameEnvironment,
       experienceId: formData.sessionEnvInfoGroup.gameExperience,
       playStyleId: formData.gameplayInfoGroup.playStyle,
-      categoryId: formData.gameplayInfoGroup.category.gameplayCategoryId,
+      categoryId: formData.gameplayInfoGroup.category,
       subcategoryId: formData.gameplayInfoGroup.subcategory,
       legalityId: formData.gameplayInfoGroup.legality,
       pvpStatusId: formData.gameplayInfoGroup.pvpStatus,
-      systemId: formData.gameplayInfoGroup.planetarySystem.systemId,
+      systemId: formData.gameplayInfoGroup.planetarySystem,
       planetId: formData.gameplayInfoGroup.planetMoon,
       listingDescription: formData.gameplayInfoGroup.listingDescription,
       groupStatusId: formData.groupSpecInfoGroup.groupStatus,
@@ -29,7 +29,7 @@ export class CreateListingRequest {
       currentPartySize: formData.groupSpecInfoGroup.currentPartySize,
       desiredPartySize: formData.groupSpecInfoGroup.desiredPartySize,
       availableRoles: formData.groupSpecInfoGroup.availableRoles,
-      commsOption: formData.groupSpecInfoGroup.commsOption.option,
+      commsOption: formData.groupSpecInfoGroup.commsOption,
       commsService: formData.groupSpecInfoGroup.commsService,
     })
   }

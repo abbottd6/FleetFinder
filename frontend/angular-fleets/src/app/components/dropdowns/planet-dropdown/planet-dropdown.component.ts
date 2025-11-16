@@ -14,8 +14,8 @@ import {environment} from "../../../../environments/environment";
 export class PlanetDropdownComponent implements AfterViewInit{
   @Input() planetMoonControl!: FormControl;
   @Input() planetarySystemControl!: FormControl;
-  planetMoonSystems: {planetId: number, planetName: string, systemName: number}[] = [];
-  filteredPlanetMoons: {planetId: number, planetName: string, systemName: number}[] = [];
+  planetMoonSystems: {planetId: number, planetName: string, systemId: number, systemName: string}[] = [];
+  filteredPlanetMoons: {planetId: number, planetName: string, systemId: number, systemName: string}[] = [];
 
   constructor(private lookupService: LookupService) { }
 
@@ -24,35 +24,43 @@ export class PlanetDropdownComponent implements AfterViewInit{
 
     // Subscribing to planetary system changes to filter planet moons by system
     this.planetarySystemControl?.valueChanges.subscribe(value => {
+      this.planetMoonControl?.reset();
+      this.applyPlanetFilter(value);
+    });
+  }
 
+  applyPlanetFilter(currSystem: number) {
+
+    if (currSystem == null || currSystem === 3) {
       //clearing filtered planet array after value change and resetting dropdown
       this.planetMoonControl?.reset();
       this.planetMoonControl?.disable();
       this.filteredPlanetMoons.splice(0, this.filteredPlanetMoons.length);
+    }
 
-      //filtering planet moons by selected value of planetarySystem dropdown
-      //shows only planets that correspond to the selected system
-      if (value != null && value.systemName != 'Any') {
-        this.filteredPlanetMoons = this.planetMoonSystems.filter(
-          planetMoon => planetMoon.systemName === value.systemName
-        );
-        if (this.filteredPlanetMoons.length > 0) {
-          this.planetMoonControl?.enable();
-        }
-        else {
-          this.planetMoonControl?.reset();
-          this.planetMoonControl?.disable();
-        }
+    //filtering planet moons by selected value of planetarySystem dropdown
+    //shows only planets that correspond to the selected system
+    if (currSystem != null && currSystem != 3) {
+      this.filteredPlanetMoons = this.planetMoonSystems.filter(
+        planetMoon => planetMoon.systemId === currSystem
+      );
+      if (this.filteredPlanetMoons.length > 0) {
+        this.planetMoonControl?.enable();
       }
       else {
         this.planetMoonControl?.reset();
         this.planetMoonControl?.disable();
       }
-      if(!environment.production) {
-        console.log('Filtered Planet Moons: ', this.filteredPlanetMoons);
-      }
-    })
+    }
+    else {
+      this.planetMoonControl?.reset();
+      this.planetMoonControl?.disable();
+    }
+    if(!environment.production) {
+      console.log('Filtered Planet Moons: ', this.filteredPlanetMoons);
+    }
   }
+
 
   //Fetching planet moon systems from API
   fetchPlanetMoonSystems(): void {
@@ -64,6 +72,10 @@ export class PlanetDropdownComponent implements AfterViewInit{
         })
       )
       .subscribe((data) => {this.planetMoonSystems = data;
+        const currentSystem = this.planetarySystemControl?.value;
+        if (currentSystem != null) {
+          this.applyPlanetFilter(currentSystem)
+        }
         if(!environment.production) {
           console.log('Planet moon systems dropdown options fetched:', this.planetMoonSystems);
         }

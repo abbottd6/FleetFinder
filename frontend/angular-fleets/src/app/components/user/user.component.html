@@ -10,26 +10,36 @@
                    >
         <mat-nav-list class="side-nav-list">
           <a mat-list-item class="mat-nav-list-item"
+             [class.active]="selectedTab==='listings'"
+             (click)="selectTab('listings')">
+            My Listings
+          </a>
+          <a mat-list-item class="mat-nav-list-item"
+            [class.active]="selectedTab==='bookmarks'"
+            (click)="selectTab('bookmarks')">
+            Bookmarks
+          </a>
+          <a mat-list-item class="mat-nav-list-item"
+          [class.active]="selectedTab==='templates'"
+          (click)="selectTab('templates')">
+            Templates
+          </a>
+          <a mat-list-item class="mat-nav-list-item"
              [class.active]="selectedTab==='profile'"
              (click)="selectTab('profile')">
             Profile
           </a>
+          <ng-container *ngIf="shouldDisplayMod$">
+            <a mat-list-item class="mat-nav-list-item"
+              [class.active]="selectedTab==='content_mod'"
+              (click)="selectTab('content_mod')">
+              Mod Tools
+            </a>
+          </ng-container>
           <a mat-list-item class="mat-nav-list-item"
-            [class.active]="selectedTab==='listings'"
-            (click)="selectTab('listings')">
-            My Listings
-          </a>
-          <a mat-list-item class="mat-nav-list-item"
-            [class.active]="selectedTab==='saved'"
-            (click)="selectTab('saved')">
-            Saved Listings
-          </a>
-          <a mat-list-item class="mat-nav-list-item"
-          [class.active]="selectedTab==='saved'"
-          (click)="selectTab('edit')">
-            Edit Profile
-          </a>
+             (click)="auth.logout()">Logout</a>
         </mat-nav-list>
+
       </mat-sidenav>
       <mat-sidenav-content class="side-nav-main-body">
         <div class="account-tabs-button-container">
@@ -47,7 +57,37 @@
             Account Tabs
           </button>
         </div>
+
         <div class="account-window-body">
+
+          <!-- MY LISTINGS TAB -->
+          <ng-container *ngIf="selectedTab === 'listings'">
+            <app-user-acct-listings-table
+              [userListings]="(user.groupListingsDto)" class="user-table"
+              (listingForModal)="onListingSelected($event)">
+            </app-user-acct-listings-table>
+          </ng-container>
+
+          <!-- USER BOOKMARKED LISTINGS TAB -->
+          <ng-container *ngIf="selectedTab === 'bookmarks'">
+            <div style="margin-left: 3rem">
+              <h4>Coming Soon:</h4>
+              <span>
+                Feature that will allow users to bookmark listings of interest from the search view
+                for easy access.
+              </span>
+            </div>
+          </ng-container>
+
+          <!-- LISTING TEMPLATES TAB -->
+          <ng-container *ngIf="selectedTab === 'templates'">
+            <div style="margin-left: 3rem;">
+              <h4>Coming Soon:</h4>
+              <span>
+                Feature that will allow users to save group listing form templates for reuse.
+              </span>
+            </div>
+          </ng-container>
 
           <!-- PROFILE TAB -->
           <ng-container *ngIf="selectedTab === 'profile'">
@@ -79,20 +119,11 @@
             </ul>
           </ng-container>
 
-          <!-- MY LISTINGS TAB -->
-          <ng-container *ngIf="selectedTab === 'listings'">
-            <app-user-acct-listings-table [userListings]="(user.groupListingsDto)" class="user-table">
-            </app-user-acct-listings-table>
-          </ng-container>
-
-          <!-- SAVED LISTINGS TAB -->
-          <ng-container *ngIf="selectedTab === 'saved'">
-            <div style="color:white">TMP SAVED LISTINGS</div>
-          </ng-container>
-
-          <!-- EDIT PROFILE TAB -->
-          <ng-container *ngIf="selectedTab === 'edit'">
-            <div style="color:white">TMP EDIT PROFILE</div>
+          <!-- MODERATOR TAB -->
+          <ng-container *ngIf="selectedTab === 'content_mod'">
+            <app-mod-listings-table
+              (listingForModal)="onListingSelected($event)">
+            </app-mod-listings-table>
           </ng-container>
         </div>
       </mat-sidenav-content>
@@ -107,3 +138,11 @@
       <span>Please log in to view user account details.</span>
     </div>
 </ng-template>
+
+
+<app-group-listing-modal
+  *ngIf="isModalVisible"
+  [isVisible]="isModalVisible"
+  [selectedListing]="selectedListing"
+  (close)="onModalClose()"
+></app-group-listing-modal>

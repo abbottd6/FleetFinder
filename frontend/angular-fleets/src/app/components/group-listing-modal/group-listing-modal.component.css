@@ -205,6 +205,11 @@
   transition: background-color 0.15s ease;
 }
 
+.modal-buttons .msg-icon {
+  font-weight: 25 !important;
+  line-height: 2rem !important;
+}
+
 .modal-buttons:hover {
   color: var(--bs-gray-900);
   border-color: rgba(255, 131, 7, .75);

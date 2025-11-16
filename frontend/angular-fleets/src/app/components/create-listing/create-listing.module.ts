@@ -5,6 +5,7 @@ import {DropdownModule} from "../dropdowns/dropdown-module/dropdown.module";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {InputFieldModule} from "../input-fields/input-field/input-field.module";
 import {MatError} from "@angular/material/form-field";
+import {RouterLink} from "@angular/router";
 
 
 
@@ -19,6 +20,7 @@ import {MatError} from "@angular/material/form-field";
         FormsModule,
         ReactiveFormsModule,
         MatError,
+        RouterLink,
     ],
   exports:
    [CreateListingComponent]

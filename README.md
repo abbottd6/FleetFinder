@@ -5,27 +5,30 @@
 FleetFinder is a full-stack web app that helps players of the MMO *Star Citizen* find and join gameplay groups 
 based on shared interests.
 
-> 🚀 **Version:** v1.0.0  
-> 🧪 Current focus: Core CRUD functionality, REST API, and frontend prototype
+> **Version:** v1.0.1  
+> Current focus: User profile UI, role-based access for content moderation, listing view table refactor + search and filter
 
 ---
 
-## 🔍 What is FleetFinder?
+## What is FleetFinder?
 
 FleetFinder is a companion app for the MMO video game *Star Citizen*, a space simulation game developed by Cloud 
-Imperium Games. As the game is still in alpha and lacks a built-in group finder, FleetFinder helps players team up for 
-collaborative or combative gameplay sessions.
+Imperium Games. As the game is still in alpha and lacks a built-in group finder, FleetFinder helps players find and connect
+with other players seeking similar gameplay. For development details and an architecture overview, checkout 
+https://scfleetfinder.com/about
+
+<img src="docs/Architecture_Overview.png" alt="Architecture Overview" height="500">
 
 ---
 
-## 💡 Why I Built This
+## Why I Built This
 
 This project allows me to apply and expand my software development skills beyond my CS coursework at WGU. It solves a 
 real problem for *Star Citizen* players while helping me grow as a fullstack developer.
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 - Java 22
@@ -48,10 +51,17 @@ real problem for *Star Citizen* players while helping me grow as a fullstack dev
 - Mockito, MockMVC
 - Postman
 
+### Identity
+- Centralized login with OIDC
+- Keycloak (IAM)
+- JWT secured APIs
+
 ### Deployment / DevOps
 - Docker & Docker Compose
 - AWS (EC2 or other hosting)
 - Flyway for DB migrations
+- Jenkins (CI/CD)
+- NGINX reverse proxy
 
 ### Supporting Libraries
 - Lombok
@@ -61,14 +71,12 @@ real problem for *Star Citizen* players while helping me grow as a fullstack dev
 - SLF4J + Logback (logging)
 
 ### Planned Integrations
-- Jenkins (CI/CD)
-- Keycloak (authentication)
 - RabbitMQ (async message handling)
 - WebSockets (real-time chat and notifications)
 
 ---
 
-## 🚦 FleetFinder v1 (Current)
+## FleetFinder v1 (Previous Release)
 
 **Version 1** includes the core CRUD functionality:
 
@@ -78,36 +86,36 @@ real problem for *Star Citizen* players while helping me grow as a fullstack dev
 - Responsive layout for different screen sizes
 - Unit + integration tests for services, controllers, and mappers
 
-> Note: Group listings are created using a hardcoded test user in v1. User accounts will be implemented in v2.
+## FleetFinder v1.1 (Current)
+
+**Version 1.1** expands the core features to include user authentication and role-based access.
+- Jenkins CI/CD pipeline to run automated tests, build images, push to ECR, and deploy new containers in AWS EC2
+- Keycloak integration with MySQL database
+- Separate Docker container for Keycloak
+- Role-based access for listing creation and user account pages
+- Account page for viewing profile info and the user's current listings
+- Separate public and private response DTOs for user objects with different method parameters for access
+- Additional backend tests for User API endpoints for create user and user auth check
 
 ---
 
-## 🗺️ Roadmap
+## Roadmap
 
 ### Coming in v2 (MVP)
-- User authentication with Keycloak
-- CI/CD pipeline with Jenkins
-- Secured API endpoints
-- Refactored frontend using Angular Material
-- Listing search/filter functionality
-- Real-time messaging
+- Role-based access for content moderation
+- Listing view table search/filter functionality
+- Real-time messaging between users with RabbitMQ for async communication and WebSockets for alerts
 
 ### Planned Post-MVP Features
-- Admin moderation tools
-- Report and remove listings
 - Save listing templates
-- Basic analytics for listing trends
+- Bookmark listings of interest
+- Google Perspective API integration for automated content moderation
+- User profile updates/customization
+- Analytics for listing trends
 
 ---
 
-## 📦 How to Run (coming soon)
-
-Instructions for running locally with Docker Compose and populating the database will be added after deployment 
-is finalized.
-
----
-
-## 🙌 Contributing / Contact
+## Contributing/Contact
 
 This is a personal portfolio project and not currently open for contributions, but feel free to reach out with 
 feedback or questions!

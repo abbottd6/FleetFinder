@@ -48,7 +48,7 @@ class PlanetarySystemCachingServiceImplTest {
             mockEntity2.setSystemName("System2");
             mockEntity2.setPlanetMoonSystems(Set.of(new PlanetMoonSystem()));
         List<PlanetarySystem> mockEntities = List.of(mockEntity1, mockEntity2);
-        when(planetarySystemRepository.findAll()).thenReturn(mockEntities);
+        when(planetarySystemRepository.findAllSorted()).thenReturn(mockEntities);
 
         //mock dtoes to return from conversion in cacheAll
         PlanetarySystemDto mockDto1 = new PlanetarySystemDto();
@@ -78,7 +78,7 @@ class PlanetarySystemCachingServiceImplTest {
                         "produced a dto with an incorrect id"),
                 () -> assertEquals("System2", result.get(1).getSystemName(), "cacheAllPlanetarySystems " +
                         "produced a dto with an incorrect SystemName"),
-                () -> verify(planetarySystemRepository, times(1)).findAll());
+                () -> verify(planetarySystemRepository, times(1)).findAllSorted());
     }
 
     @Test
@@ -93,6 +93,6 @@ class PlanetarySystemCachingServiceImplTest {
                         () -> planetarySystemCachingService.cacheAllPlanetarySystems()),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
                         .anyMatch(log -> log.contains("Unable to access Planetary System data for caching."))),
-                () -> verify(planetarySystemRepository, times(1)).findAll());
+                () -> verify(planetarySystemRepository, times(1)).findAllSorted());
     }
 }

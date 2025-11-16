@@ -15,7 +15,7 @@ export class ServerDropdownComponent implements AfterViewInit {
   servers: {serverId: number, name: string}[] = [];
 
 
-  constructor(private lookupService: LookupService) {}
+  constructor(private lookupService: LookupService, private cdr: ChangeDetectorRef) {}
 
   ngAfterViewInit(): void {
     this.fetchServerRegions();
@@ -30,6 +30,7 @@ export class ServerDropdownComponent implements AfterViewInit {
         })
       )
       .subscribe((data) => {this.servers = data;
+        this.cdr.markForCheck();
         if(!environment.production) {
           console.log('Server dropdown options fetched:', this.servers);
         }

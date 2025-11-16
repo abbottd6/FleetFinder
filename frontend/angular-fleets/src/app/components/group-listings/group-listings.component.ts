@@ -21,6 +21,9 @@ export class GroupListingsComponent implements OnInit {
   onRowClick(tempListing: GroupListingViewModel) {
     this.selectedListing = tempListing;
     if(!environment.production) {
+      console.log("HERE IS THE LISTING DATA: ", tempListing);
+    }
+    if(!environment.production) {
       console.log("Logging selected listing ID: ", this.selectedListing.groupId);
     }
     this.isModalVisible = true;
