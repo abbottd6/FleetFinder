@@ -52,18 +52,19 @@ export class UserService implements OnDestroy {
 
   getRole(): string {
     this.profile$.pipe(
-      map(data => data.userData.roles as string[]))
+      map(data => data?.userData?.realm_access?.roles ?? []))
       .subscribe((roles: string[]) => {
-        for (const role of roles) {
-          if (role == 'admin') {
-            this.role = 'admin';
-            break;
-          } else if (role == 'mod') {
-            this.role = 'mod'
-            break
-          } else {
-            this.role = 'user'
-          }
+        if (!Array.isArray(roles)) {
+          this.role = 'user';
+          return;
+        }
+
+        if (roles.includes('admin')) {
+          this.role = 'admin';
+        } else if (roles.includes('mod')) {
+          this.role = 'mod';
+        } else {
+          this.role = 'user';
         }
       });
     return this.role;
