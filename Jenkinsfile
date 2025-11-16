@@ -129,7 +129,7 @@ pipeline {
       }
     }
 
-    stage{'Checkout and clean prod'} {
+    stage('Checkout and clean prod') {
       when {
         expression {
           return env.BRANCH_NAME == 'prod_main'
