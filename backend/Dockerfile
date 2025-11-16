@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk
+FROM openjdk:22-jdk
 LABEL authors="Dayton Abbott"
 WORKDIR /app
 

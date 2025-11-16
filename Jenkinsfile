@@ -171,7 +171,7 @@ pipeline {
 
           dir('backend') {
             sh 'echo "----------- Printing application.prod.properties from Jenkins workspace ------------------------"'
-            sh 'sed -n "105,140p" src/main/resources/application-prod.properties'
+            sh 'sed -n "0,50p" src/main/resources/application-prod.properties'
             sh 'rm -rf target'
             sh './mvnw clean package -DskipTests'
             sh 'docker build --no-cache -t $BACKEND_IMAGE_TAG .'
