@@ -23,7 +23,7 @@ import {UserApiService} from "./userApi.service";
 
 export class UserService implements OnDestroy {
   private destroy$ = new Subject<void>();
-  public role!: string;
+  public role: 'admin' | 'mod' | 'user' = 'user';
   private readonly http = inject(HttpClient);
   private auth = inject(AuthService);
   private api = inject(UserApiService);
@@ -51,19 +51,22 @@ export class UserService implements OnDestroy {
   );
 
   getRole(): string {
+    console.log("Profile$: ", this.profile$)
     this.profile$.pipe(
-      map(data => data.userData.roles as string[]))
+      map(data => data?.userData?.roles ?? []))
       .subscribe((roles: string[]) => {
-        for (const role of roles) {
-          if (role == 'admin') {
-            this.role = 'admin';
-            break;
-          } else if (role == 'mod') {
-            this.role = 'mod'
-            break
-          } else {
-            this.role = 'user'
-          }
+        if (!Array.isArray(roles)) {
+          this.role = 'user';
+          return;
+        }
+
+        if (roles.includes('admin')) {
+          this.role = 'admin';
+        } else if (roles.includes('mod')) {
+          this.role = 'mod';
+        } else {
+          console.log("Roles type: ", roles)
+          this.role = 'user';
         }
       });
     return this.role;
