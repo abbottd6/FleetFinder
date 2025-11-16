@@ -65,18 +65,18 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Bean
-//    OncePerRequestFilter logAuthorities() {
-//        return new OncePerRequestFilter() {
-//            @Override
-//            protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
-//                    throws ServletException, IOException {
-//                var auth = SecurityContextHolder.getContext().getAuthentication();
-//                if (auth != null) {
-//                    System.out.println("User=" + auth.getName() + " authorities=" + auth.getAuthorities());
-//                }
-//                chain.doFilter(req, res);
-//            }
-//        };
-//    }
+    @Bean
+    OncePerRequestFilter logAuthorities() {
+        return new OncePerRequestFilter() {
+            @Override
+            protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+                    throws ServletException, IOException {
+                var auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null) {
+                    System.out.println("User=" + auth.getName() + " authorities=" + auth.getAuthorities());
+                }
+                chain.doFilter(req, res);
+            }
+        };
+    }
 }
