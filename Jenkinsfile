@@ -37,7 +37,6 @@ pipeline {
 
     stage('Checkout') {
       steps {
-        deleteDir()
         checkout scm
       }
     }
@@ -127,6 +126,19 @@ pipeline {
             git push https://${GITHUB_TOKEN}@github.com/abbottd6/FleetFinder.git refs/tags/${newTag} --force
           """
         }
+      }
+    }
+
+    stage{'Checkout and clean prod'} {
+      when {
+        expression {
+          return env.BRANCH_NAME == 'prod_main'
+        }
+      }
+
+      steps {
+        deleteDir()
+        checkout scm
       }
     }
 
