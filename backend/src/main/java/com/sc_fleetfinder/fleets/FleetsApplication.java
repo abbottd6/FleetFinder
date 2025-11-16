@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets;
 
-import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
 import jakarta.annotation.PostConstruct;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
