@@ -129,6 +129,19 @@ pipeline {
       }
     }
 
+    stage('Checkout and clean prod') {
+      when {
+        expression {
+          return env.BRANCH_NAME == 'prod_main'
+        }
+      }
+
+      steps {
+        deleteDir()
+        checkout scm
+      }
+    }
+
     stage('Build Docker Images') {
       when {
         expression {
@@ -157,6 +170,8 @@ pipeline {
           }
 
           dir('backend') {
+            sh 'echo "----------- Printing application.prod.properties from Jenkins workspace ------------------------"'
+            sh 'sed -n "105,140p" src/main/resources/application-prod.properties'
             sh 'rm -rf target'
             sh './mvnw clean package -DskipTests'
             sh 'docker build --no-cache -t $BACKEND_IMAGE_TAG .'
