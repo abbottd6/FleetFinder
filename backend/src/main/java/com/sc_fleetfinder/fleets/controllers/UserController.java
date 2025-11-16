@@ -33,17 +33,19 @@ public class UserController {
     public UserController() {};
 
     @GetMapping
+    @PreAuthorize("isAuthenticated() and hasRole('mod')")
     public List<PublicUserResponseDto> getUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
     public PublicUserResponseDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
     @GetMapping("/me")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
     public PrivateUserResponseDto getMe(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
 
@@ -51,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/create-user")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
     public PrivateUserResponseDto createUser(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
         String username = jwt.getClaimAsString("preferred_username");
@@ -61,7 +63,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
     // needs to use authentication principal and keycloakId instead of userId
     public PrivateUserResponseDto updateUser(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateUserDto updateUserDto) {
         String kcId = jwt.getSubject();
@@ -70,7 +72,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
     // needs to use authentication principal and keycloakId instead of userId
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();

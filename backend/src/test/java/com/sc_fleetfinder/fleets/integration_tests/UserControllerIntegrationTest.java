@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -55,7 +56,9 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
     @Test
     void testGetUsers_Success() throws Exception {
         mockMvc.perform(get("/api/users")
-                        .with(jwt().jwt(j -> j.subject(MOCK_KCID)))
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -80,7 +83,9 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
     @Test
     void testGetUserById_Success() throws Exception {
         mockMvc.perform(get("/api/users/1")
-                .with(jwt().jwt(j -> j.subject(MOCK_KCID)))
+                .with(jwt()
+                        .jwt(j -> j.subject(MOCK_KCID))
+                        .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
@@ -98,7 +103,9 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
     @Test
     void testGetUserById_Failure() throws Exception {
         mockMvc.perform(get("/api/users/350")
-                .with(jwt().jwt(j -> j.subject(MOCK_KCID)))
+                .with(jwt()
+                        .jwt(j -> j.subject(MOCK_KCID))
+                        .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isNotFound());
@@ -113,7 +120,9 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
     @Test
     void testGetMe_Found() throws Exception {
         mockMvc.perform(get("/api/users/me")
-                .with(jwt().jwt(j -> j.subject(MOCK_KCID)))
+                .with(jwt()
+                        .jwt(j -> j.subject(MOCK_KCID))
+                        .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
@@ -150,7 +159,8 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                         .subject("newUserKeycloakId")
                         .claim("preferred_username", "newUser")
                         .claim("email", "newuser@gmail.com")
-                ))
+                )
+                        .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .accept(MediaType.APPLICATION_JSON)
         )
                 .andExpect(status().isOk())
@@ -163,8 +173,9 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
     @Test
     void testCreateUser_FailExistingKeycloak() throws Exception {
         mockMvc.perform(post("/api/users/create-user")
-                .with(jwt().jwt(j -> j
-                        .subject(MOCK_KCID)))
+                .with(jwt()
+                        .jwt(j -> j.subject(MOCK_KCID))
+                        .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isConflict());
     }

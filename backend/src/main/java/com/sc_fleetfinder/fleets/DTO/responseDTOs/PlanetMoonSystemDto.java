@@ -7,5 +7,6 @@ public class PlanetMoonSystemDto {
 
     private Integer planetId;
     private String planetName;
+    private Integer systemId;
     private String systemName;
 }

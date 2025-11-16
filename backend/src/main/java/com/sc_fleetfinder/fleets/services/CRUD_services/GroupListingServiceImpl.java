@@ -2,24 +2,34 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.validation.Valid;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,6 +40,8 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final GroupListingRepository groupListingRepository;
     private final GroupListingConversionService groupListingConversionService;
 
+    @PersistenceContext
+    private EntityManager em;
 
     public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
                                    GroupListingConversionService groupListingConversionService) {
@@ -52,11 +64,7 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     @Override
     @Validated
-    //
-    //
-    // REFACTOR THIS TO RETURN AN ENTITY AND HAVE THE RESPONSE BE GENERATED IN THE CONTROLLER
-    //
-    //
+    @Transactional(transactionManager = "transactionManager")
     public ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
         Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
             try {
@@ -77,30 +85,55 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     @Override
     @Validated
-    public GroupListing updateGroupListing(Long id, @Valid UpdateGroupListingDto updateGroupListingDto) {
-        GroupListing groupListing = groupListingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+    @Transactional(transactionManager = "transactionManager")
+    public GroupListing updateGroupListing(@Valid UpdateGroupListingDto dto) {
 
+        GroupListing groupListing = groupListingRepository.findById(dto.getGroupId())
+                .orElseThrow(() -> new ResourceNotFoundException(dto.getGroupId()));
 
         //ADD LOGIC TO CHECK THE NUMBER OF GROUPLISTINGS ASSOCIATED WITH A USER.
         //LIMIT THE NUMBER OF GROUP LISTINGS PER USER TO 3
-        //ADD LOGIC TO ADD this.groupListing TO THE USER's SET OF GROUPLISTINGS AS IT GETS CREATED
 
+        GroupListing temp = groupListingConversionService.convertToEntity(dto);
 
-        BeanUtils.copyProperties(updateGroupListingDto, groupListing, "groupId", "user", "listingUser");
+        BeanUtils.copyProperties(temp, groupListing,
+                "groupId", "users", "creationTimestamp", "isDeleted", "deletedAt");
 
         return groupListingRepository.save(groupListing);
     }
 
     @Override
-    public void deleteGroupListing(Long id) {
+    @Transactional(transactionManager = "transactionManager")
+    public ResponseEntity<?> deleteGroupListing(DeleteGroupListingDto deleteDto) {
+            try {
+                GroupListing groupEntity = groupListingRepository.findById(deleteDto.getGroupId())
+                    .orElseThrow(() -> new ResourceNotFoundException(deleteDto.getGroupId()));
 
-        //ADD LOGIC TO CHECK THE NUMBER OF GROUPLISTINGS ASSOCIATED WITH A USER.
-        //LIMIT THE NUMBER OF GROUP LISTINGS PER USER TO 3
-        //ADD LOGIC TO REMOVE this.groupListing FROM THE USER's SET OF GROUPLISTINGS AS IT GETS DELETED
+                if (Objects.equals(deleteDto.getUserId(), groupEntity.getUsers().getUserId())) {
+                    groupEntity.setDeleted(true);
+                    groupEntity.setDeletedBy(deleteDto.getUserId());
+                    groupEntity.setDeletedAt(Instant.now());
+                    groupListingRepository.flush();
+                    groupListingRepository.save(groupEntity);
+                }
+                else {
+                    log.error("Delete DTO and listing repository userIds do not match. \n Request userId: {} \n " +
+                            "Repository userId: {}", deleteDto.getUserId(), groupEntity.getUsers().getUserId());
+                }
 
-        groupListingRepository.delete(groupListingRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id)));
+                log.info("EM class: {}", em.getClass().getName());
+                log.info("Tx active? {}",
+                        org.springframework.transaction.support.TransactionSynchronizationManager.isActualTransactionActive());
+
+                Map<String, String> response = new HashMap<>();
+                response.put("listingTitle", groupEntity.getListingTitle());
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            catch (Exception e) {
+                log.error("DeleteGroupListing failed. Reason: {}", e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("An error occurred while deleting this listing. The action could not be completed.");
+            }
     }
 
     @Override

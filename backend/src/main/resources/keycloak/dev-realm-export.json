@@ -57,7 +57,7 @@
         "composites": {
           "realm": [
             "offline_access",
-            "uma_authorization"
+            "user"
           ],
           "client": {
             "account": [
@@ -80,6 +80,24 @@
         "attributes": {}
       },
       {
+        "id": "2f44dc9d-47fe-4965-8547-5f0972dd539d",
+        "name": "user",
+        "description": "default user role.",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "df4bc66d-4578-48dd-ae36-12e475901cf2",
+        "attributes": {}
+      },
+      {
+        "id": "3d9ab22a-097b-4904-972d-4453e1bf4e19",
+        "name": "mod",
+        "description": "user with content moderation capabilities.",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "df4bc66d-4578-48dd-ae36-12e475901cf2",
+        "attributes": {}
+      },
+      {
         "id": "1c4d1ca9-a84d-4ee7-8834-38f846a9bbb7",
         "name": "offline_access",
         "description": "${role_offline-access}",
@@ -89,18 +107,9 @@
         "attributes": {}
       },
       {
-        "id": "10e14a28-c58f-4542-98ea-dd5749e4ea65",
-        "name": "Admin",
-        "description": "Role for administrators of FleetFinder with privileged access.",
-        "composite": false,
-        "clientRole": false,
-        "containerId": "df4bc66d-4578-48dd-ae36-12e475901cf2",
-        "attributes": {}
-      },
-      {
-        "id": "9ad0d751-d0c0-406b-ba76-cbe627759071",
-        "name": "User",
-        "description": "Role for fleetfinder users to create listings and message other users.",
+        "id": "b1baf351-31e8-4b6d-b02c-3d4bdac5cf30",
+        "name": "admin",
+        "description": "head honcho",
         "composite": false,
         "clientRole": false,
         "containerId": "df4bc66d-4578-48dd-ae36-12e475901cf2",
@@ -540,8 +549,8 @@
       "optionalClientScopes": [
         "address",
         "phone",
-        "organization",
         "offline_access",
+        "organization",
         "microprofile-jwt"
       ]
     },
@@ -598,8 +607,8 @@
       "optionalClientScopes": [
         "address",
         "phone",
-        "organization",
         "offline_access",
+        "organization",
         "microprofile-jwt"
       ]
     },
@@ -642,8 +651,8 @@
       "optionalClientScopes": [
         "address",
         "phone",
-        "organization",
         "offline_access",
+        "organization",
         "microprofile-jwt"
       ]
     },
@@ -685,8 +694,8 @@
       "optionalClientScopes": [
         "address",
         "phone",
-        "organization",
         "offline_access",
+        "organization",
         "microprofile-jwt"
       ]
     },
@@ -807,8 +816,8 @@
       "optionalClientScopes": [
         "address",
         "phone",
-        "organization",
         "offline_access",
+        "organization",
         "microprofile-jwt"
       ]
     },
@@ -876,8 +885,8 @@
       "optionalClientScopes": [
         "address",
         "phone",
-        "organization",
         "offline_access",
+        "organization",
         "microprofile-jwt"
       ]
     }
@@ -1116,6 +1125,23 @@
             "claim.name": "realm_access.roles",
             "jsonType.label": "String",
             "multivalued": "true"
+          }
+        },
+        {
+          "id": "a0cc3677-53bf-4145-a513-97eecfab1a77",
+          "name": "realm-roles-to-jwt",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "introspection.token.claim": "true",
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "lightweight.claim": "false",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
           }
         },
         {
@@ -1628,13 +1654,13 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "saml-user-attribute-mapper",
             "saml-role-list-mapper",
-            "oidc-usermodel-attribute-mapper",
-            "saml-user-property-mapper",
-            "oidc-sha256-pairwise-sub-mapper",
-            "oidc-full-name-mapper",
             "oidc-usermodel-property-mapper",
+            "oidc-sha256-pairwise-sub-mapper",
+            "saml-user-property-mapper",
+            "saml-user-attribute-mapper",
+            "oidc-usermodel-attribute-mapper",
+            "oidc-full-name-mapper",
             "oidc-address-mapper"
           ]
         }
@@ -1647,14 +1673,14 @@
         "subComponents": {},
         "config": {
           "allowed-protocol-mapper-types": [
-            "oidc-full-name-mapper",
-            "saml-user-attribute-mapper",
-            "oidc-usermodel-attribute-mapper",
-            "oidc-usermodel-property-mapper",
-            "saml-user-property-mapper",
             "oidc-sha256-pairwise-sub-mapper",
+            "oidc-address-mapper",
+            "oidc-usermodel-property-mapper",
+            "oidc-full-name-mapper",
             "saml-role-list-mapper",
-            "oidc-address-mapper"
+            "saml-user-attribute-mapper",
+            "saml-user-property-mapper",
+            "oidc-usermodel-attribute-mapper"
           ]
         }
       },
@@ -2540,7 +2566,7 @@
     "frontendUrl": "",
     "acr.loa.map": "{}"
   },
-  "keycloakVersion": "26.2.3",
+  "keycloakVersion": "26.2.5",
   "userManagedAccessAllowed": false,
   "organizationsEnabled": false,
   "verifiableCredentialsEnabled": false,

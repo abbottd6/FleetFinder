@@ -16,8 +16,8 @@ public class FleetsApplication {
 		SpringApplication app = new SpringApplication(FleetsApplication.class);
 
 		String profile = System.getenv("SPRING_PROFILES_ACTIVE");
-		if (profile != null) {
-			System.setProperty("spring.profiles.active", profile);
+		if (profile == null) {
+			System.setProperty("spring.profiles.active", "dev");
 		}
 
 		app.addInitializers(new TestEnvironmentLoader());
@@ -26,7 +26,7 @@ public class FleetsApplication {
 
 	@PostConstruct
 	public void logActiveProfile() {
-		String activeProfile = System.getProperty("spring.profiles.active", "default");
+		String activeProfile = System.getProperty("spring.profiles.active", "dev");
 		System.out.println("Spring Active Profile: " + activeProfile);
 	}
 }

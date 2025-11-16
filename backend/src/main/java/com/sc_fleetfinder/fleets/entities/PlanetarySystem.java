@@ -30,6 +30,9 @@ public class PlanetarySystem {
     @Column(name="system_name")
     private String systemName;
 
+    @Column(name="sort_order")
+    private Integer sortOrder;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy="planetarySystem", fetch = FetchType.EAGER)
     @JsonManagedReference
     private Set<PlanetMoonSystem> planetMoonSystems = new HashSet<>();

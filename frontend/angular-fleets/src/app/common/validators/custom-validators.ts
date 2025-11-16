@@ -1,4 +1,4 @@
-import {AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn} from "@angular/forms";
+import {AbstractControl, ValidationErrors, ValidatorFn} from "@angular/forms";
 import {environment} from "../../../environments/environment";
 
 //Custom validation for eventScheduleDate, eventScheduleTime, and eventScheduleZone to make these fields required if
@@ -11,7 +11,7 @@ export const requiredIfGroupStatusFuture: ValidatorFn = (
       console.log('Validator triggered:', {control, parent});
     }
 
-    if(!parent) {
+    if(!parent || control.disabled) {
       return null;
     }
 

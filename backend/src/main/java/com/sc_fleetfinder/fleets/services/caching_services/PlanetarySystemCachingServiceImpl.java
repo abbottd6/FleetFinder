@@ -33,7 +33,7 @@ public class PlanetarySystemCachingServiceImpl implements PlanetarySystemCaching
     @Override
     @Cacheable(value = "planetarySystemsCache", key = "'allSystemsCache'")
     public List<PlanetarySystemDto> cacheAllPlanetarySystems() {
-        List<PlanetarySystem> planetarySystems = planetarySystemRepository.findAll();
+        List<PlanetarySystem> planetarySystems = planetarySystemRepository.findAllSorted();
 
         if(planetarySystems.isEmpty()) {
             log.error("Unable to access Planetary System data for caching.");

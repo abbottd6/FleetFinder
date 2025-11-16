@@ -286,6 +286,7 @@ app-comms-service-input {
   font-size: clamp(1rem, 1vw, 1.2rem);
   border-radius: .25rem;
   transition: background-color 0.15s ease;
+  margin-inline: 1rem;
 }
 
 .submit-button:hover {

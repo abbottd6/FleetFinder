@@ -10,7 +10,6 @@
 ## run backend
 ## run frontend
 
-version: '3.8'
 
 services:
   mysql:
@@ -21,12 +20,15 @@ services:
       MYSQL_DATABASE: sc_fleetfinder
       MYSQL_USER: devuser
       MYSQL_PASSWORD: devpassword
+
     ports:
       - "3306:3306"
     volumes:
       - mysql-data:/var/lib/mysql
       - ./init.keycloak.dev.sql:/docker-entrypoint-initdb.d/init.keycloak.dev.sql
-    command: --default-time-zone='+00:00'
+    command:
+       --default-time-zone='+00:00'
+       --event-scheduler=ON
     restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword" ]

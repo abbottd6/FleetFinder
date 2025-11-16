@@ -22,11 +22,20 @@ public class GroupListingResponseDto {
     @NotNull(message = "GroupListingResponseDto field 'server' cannot be null")
     private String server;
 
+    @NotNull(message = "GroupListingResponseDto field 'serverId' cannot be null")
+    private Integer serverId;
+
     @NotNull(message = "GroupListingResponseDto field 'environment' cannot be null")
     private String environment;
 
+    @NotNull(message = "GroupListingResponseDto field 'environmentId' cannot be null")
+    private Integer environmentId;
+
     @NotNull(message = "GroupListingResponseDto field 'experience' cannot be null")
     private String experience;
+
+    @NotNull(message = "GroupListingResponseDto field 'experienceId' cannot be null")
+    private Integer experienceId;
 
     @NotBlank(message = "GroupListingResponseDto field 'listingTitle' cannot be empty")
     @Size(min = 2, max = 65, message = "GroupListingResponseDto field 'listingTitle' must be between 2 and 65 characters")
@@ -34,11 +43,19 @@ public class GroupListingResponseDto {
 
     private String playStyle;
 
+    private Integer styleId;
+
     @NotNull(message = "GroupListingResponseDto field 'legality' cannot be null")
     private String legality;
 
+    @NotNull(message = "GroupListingResponseDto field 'legalityId' cannot be null")
+    private Integer legalityId;
+
     @NotNull(message = "GroupListingResponseDto field 'groupStatus' cannot be null")
     private String groupStatus;
+
+    @NotNull(message = "GroupListingResponseDto field 'groupStatusId' cannot be null")
+    private Integer groupStatusId;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant eventSchedule;
@@ -46,14 +63,26 @@ public class GroupListingResponseDto {
     @NotNull(message = "GroupListingResponseDto field 'category' cannot be null")
     private String category;
 
+    @NotNull(message = "GroupListingResponseDto field 'categoryId' cannot be null")
+    private Integer categoryId;
+
     private String subcategory;
+
+    private Integer subcategoryId;
 
     @NotNull(message = "GroupListingResponseDto field 'pvpStatus' cannot be null")
     private String pvpStatus;
 
+    @NotNull(message = "GroupListingResponseDto field 'pvpStatusId' cannot be null")
+    private Integer pvpStatusId;
+
     private String system;
 
+    private Integer systemId;
+
     private String planetMoonSystem;
+
+    private Integer planetId;
 
     @NotNull(message = "GroupListingResponseDto field 'listingDescription' cannot be null")
     @Size(max = 500, message = "GroupListingResponseDto field 'listingDescription' cannot exceed 400 characters")
