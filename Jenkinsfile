@@ -37,6 +37,7 @@ pipeline {
 
     stage('Checkout') {
       steps {
+        deleteDir()
         checkout scm
       }
     }
@@ -157,6 +158,8 @@ pipeline {
           }
 
           dir('backend') {
+            sh 'echo "----------- Printing application.prod.properties from Jenkins workspace ------------------------"'
+            sh 'sed -n "105,140p" src/main/resources/application-prod.properties'
             sh 'rm -rf target'
             sh './mvnw clean package -DskipTests'
             sh 'docker build --no-cache -t $BACKEND_IMAGE_TAG .'
@@ -215,7 +218,7 @@ pipeline {
       docker-compose --env-file .env.prod down
       docker-compose --env-file .env.prod up -d
       EOF
-      """
+      """.stripIndent()
           }
         }
       }
