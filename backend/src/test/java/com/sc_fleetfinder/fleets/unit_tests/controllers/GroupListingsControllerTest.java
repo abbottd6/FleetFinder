@@ -20,6 +20,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -358,7 +359,9 @@ class GroupListingsControllerTest {
 
 
         mockMvc.perform(post("/api/group-listings/create_listing")
-                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(mockDto)))
                 .andExpect(status().isCreated())
@@ -407,7 +410,9 @@ class GroupListingsControllerTest {
 
 
         mockMvc.perform(post("/api/group-listings/create_listing")
-                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockDto)))
                 .andExpect(status().isCreated())
@@ -453,7 +458,9 @@ class GroupListingsControllerTest {
         }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class));
 
         mockMvc.perform(post("/api/group-listings/create_listing")
-                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(mockDto)))
                 .andDo(print())
@@ -469,7 +476,9 @@ class GroupListingsControllerTest {
         //empty dto: fails all validations
 
         mockMvc.perform(post("/api/group-listings/create_listing")
-                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidDto)))
                 .andDo(print())
