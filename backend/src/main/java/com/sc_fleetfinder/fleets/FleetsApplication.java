@@ -13,20 +13,6 @@ import org.springframework.context.annotation.Bean;
 public class FleetsApplication {
 
 	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(FleetsApplication.class);
-
-		String profile = System.getenv("SPRING_PROFILES_ACTIVE");
-		if (profile == null) {
-			System.setProperty("spring.profiles.active", "dev");
-		}
-
-		app.addInitializers(new TestEnvironmentLoader());
-		app.run(args);
-	}
-
-	@PostConstruct
-	public void logActiveProfile() {
-		String activeProfile = System.getProperty("spring.profiles.active", "dev");
-		System.out.println("Spring Active Profile: " + activeProfile);
+		SpringApplication.run(FleetsApplication.class, args);
 	}
 }
