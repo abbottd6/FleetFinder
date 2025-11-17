@@ -2,7 +2,7 @@
   background-color: var(--stark-blue) !important;
   border: 1px groove rgba(13, 47, 67, 1);
   border-radius: .75rem;
-  color: rgba(13, 47, 67, 1);
+  font-weight: 600;
   position: sticky;
   top: 0;
   left: 0;
@@ -19,11 +19,11 @@
 .navbar-text {
   display: flex;
   align-items: center;
-  color: var(--bs-gray-900)
+  font-weight: 700;
 }
 
-.nav-item {
-  color: var(--bs-gray-900)
+.nav-link {
+  color: rgba(25, 40, 44, .75);;
 }
 @media(min-width: 1200px) {
   .nav-item-toggle-only {
@@ -200,7 +200,7 @@ input::placeholder {
 }
 
 .bi-person-fill {
-  color: var(--bs-gray-900);
+  color: rgba(15, 24, 27, 0.75);
   font-size: 1.5rem;
   padding: .5rem 1vw .5rem .25rem;
 }
@@ -210,7 +210,7 @@ input::placeholder {
 }
 
 .bi-bell-fill {
-  color: var(--bs-gray-900);
+  color: rgba(15, 24, 27, 0.75);
   font-size: 1.25rem;
   margin: .5rem;
 }
@@ -220,7 +220,7 @@ input::placeholder {
 }
 
 .bi-chat-fill {
-  color: var(--bs-gray-900);
+  color: rgba(15, 24, 27, 0.75);
   font-size: 1.25rem;
   margin: .5rem .5rem .5rem 4vw;
 }

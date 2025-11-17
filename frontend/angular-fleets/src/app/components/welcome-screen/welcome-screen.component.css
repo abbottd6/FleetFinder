@@ -2,18 +2,78 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  background-color: rgba(108, 117, 125, 100);
+  background-color: var(--bs-dark);
   max-height: 80vh;
   min-height: 35vh;
   margin-inline: auto;
   min-width: 80vw;
-  max-width: 90%;
+  max-width: 100vw;
   overflow: auto;
   scrollbar-width: none;
-  border-top: 5px solid var(--stark-blue);
-  border-left: 5px solid var(--stark-blue);
-  clip-path: polygon(0% 0%, 93% 0%, 100% 12%, 100% 100%, 100% 100%, 07% 100%, 0% 88%, 0% 0%);
-  color: var(--bs-gray-900);
+  box-shadow: -3px 0 6px 3px rgba(255, 131, 7, .4);
+  /*border-top: 2px solid var(--stark-blue);*/
+  /*border-left: 2px solid var(--stark-blue);*/
+  color: rgba(223, 241, 255, 0.5) !important;
+  clip-path: polygon(
+    4% 0%,     /* top edge, a bit right from TL */
+    100% 0%,   /* full top-right corner */
+    100% 91%,  /* right edge, a bit up from BR */
+    96% 100%,  /* bottom edge, a bit left from BR */
+    0% 100%,   /* full bottom-left corner */
+    0% 9%      /* left edge, a bit down from TL */
+  );
+}
+
+.welcome-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  filter: blur(4px);
+  mix-blend-mode: screen;
+
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 131, 7, .4),
+      rgba(255, 131, 7, .4), 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 131, 7, .4),
+      rgba(255, 131, 7, .4), 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
+.welcome-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  z-index: -1;
+  box-shadow: 1px 0 2px -2px rgba(255, 131, 7, .4);
+
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 131, 7, .4),
+      rgba(255, 131, 7, .4), 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 131, 7, .4),
+      rgba(255, 131, 7, .4), 1px,
+      transparent 1px,
+      transparent 4px
+    );
 }
 
 .image-container {
@@ -28,8 +88,8 @@
 .image-border {
   max-width: clamp(300px, 100%, 700px);
   height: auto;
-  padding: .4rem;
-  background: var(--stark-blue);
+  padding: .2rem;
+  background: rgba(159, 182, 200, 0.6);
   clip-path: polygon(0% 0%, 88% 0%, 100% 12%, 100% 100%, 100% 100%, 12% 100%, 0% 88%, 0% 0%);
 }
 
@@ -45,6 +105,7 @@
 @media(min-width: 700px) {
   h1 {
     padding: 2rem 4rem 2rem 4rem;
+    margin-left: 5rem;
   }
 }
 
@@ -101,6 +162,7 @@
 
 @media(min-width: 720px) {
   .text-body {
+    color: rgba(150, 168, 183, 0.6) !important;
     margin-inline: 1.5rem;
     font-family: "Andale Mono", monospace;
     font-size: clamp(1.1rem, 100%, 1.5rem);
@@ -112,6 +174,7 @@
     margin-inline: 1.5rem;
     font-family: "Andale Mono", monospace;
     font-size: clamp(1rem, 80%, 1.1rem);
+    color: rgba(150, 168, 183, 0.6) !important;
   }
 }
 
@@ -125,15 +188,39 @@
 }
 @media(min-width: 1200px) {
   .entry-buttons {
-    border: 2px solid rgba(255, 131, 7, .75);
-    padding: .42rem 1.12rem .42rem 1.12rem !important;
-    background-color: rgba(33, 37, 41, .4);
-    margin-inline: .75rem;
+    position: relative;
+    padding: 0.35rem 1rem 0.35rem 1rem;
+    background: transparent;
+    border: 1px solid rgba(255, 131, 7, .75);  /* full rectangle frame */
+    border-radius: 0.1rem;
     color: rgba(255, 131, 7, .75);
-    font-size: 1.1rem;
-    border-radius: .25rem;
-    transition: background-color 0.15s ease;
+    font-family: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    overflow: hidden;
+    transform: skewX(-8deg)
   }
+
+  .entry-buttons span {
+    display: inline-block;
+    transform: skewX(8deg);
+  }
+
+  /*.entry-buttons::before {*/
+  /*  content: "";*/
+  /*  position: absolute;*/
+  /*  inset: 3px;                 !* sit just inside the border *!*/
+  /*  border-top: 1px solid rgba(255, 131, 7, .75);*/
+  /*  border-right: 1px solid rgba(255, 131, 7, .75);*/
+  /*  clip-path: polygon(*/
+  /*    8% 0,   !* small cut on the left of the top line *!*/
+  /*    100% 0,*/
+  /*    97% 100%,!* small cut on the right of the bottom line *!*/
+  /*    0 100%*/
+  /*  );*/
+  /*  opacity: 0.7;*/
+  /*  pointer-events: none;*/
+  /*}*/
 }
 
 @media(max-width: 1199px) {
