@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService {
                 .filter(u -> !u.getIsDeleted())
                 .map(userConversionService::convertToPublicDto)
                 .orElseThrow(() -> {
-                    log.error("Attempt to access public user data by userId failed due to nonexistent userId: " +
+                    log.info("Attempt to access public user data by userId failed due to nonexistent userId: " +
                             "{}", id);
                     return new ResourceNotFoundException("Users with id " + id + " not found");
                 });

@@ -51,7 +51,6 @@ export class UserService implements OnDestroy {
   );
 
   getRole(): string {
-    console.log("Profile$: ", this.profile$)
     this.profile$.pipe(
       map(data => data?.userData?.roles ?? []))
       .subscribe((roles: string[]) => {
@@ -65,7 +64,6 @@ export class UserService implements OnDestroy {
         } else if (roles.includes('mod')) {
           this.role = 'mod';
         } else {
-          console.log("Roles type: ", roles)
           this.role = 'user';
         }
       });
