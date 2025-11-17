@@ -29,6 +29,31 @@ app-update-listing {
   max-width: 90vw;
 }
 
+app-group-listings-table {
+  min-width: 95% !important;
+}
+
+.mat-mdc-menu-content {
+  padding-left: 0.5rem;
+  background-color: rgb(52, 53, 58);
+  border-radius: 0.25rem;
+}
+
+.mat-mdc-tooltip {
+  background-color: rgb(52, 53, 58);
+  font-size: 1rem;
+  font-family: "Exo 2", sans-serif;
+}
+
+.tooltip-icon {
+  font-size: 1rem;
+}
+
+/* the arrow and header text for when a table is sorted by a column */
+.mat-sort-header-sorted {
+  color: rgba(255, 131, 7, .4);
+}
+
 .cdk-overlay-container {
   z-index: 20000 !important;
   color: var(--button-hover-color);

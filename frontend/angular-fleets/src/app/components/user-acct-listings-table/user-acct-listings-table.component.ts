@@ -27,8 +27,8 @@ export class UserAcctListingsTableComponent implements OnChanges {
   dataSource = new MatTableDataSource(this.userListings);
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 
-  constructor(private auth: AuthService, private userListingService: UserListingService,
-              private router: Router, private userService: UserService, private snackBar: MatSnackBar) {}
+  constructor(private userListingService: UserListingService, private router: Router, private userService: UserService,
+              private snackBar: MatSnackBar) {}
 
   ngOnChanges(changes: SimpleChanges) {
     this.dataSource.data = this.userListings;
