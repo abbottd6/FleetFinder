@@ -1,5 +1,4 @@
 import {Component, inject, OnInit} from '@angular/core';
-import {AuthenticatedResult, OidcSecurityService} from "angular-auth-oidc-client";
 
 @Component({
     selector: 'app-root',

@@ -40,6 +40,10 @@ import {
   MatRow, MatRowDef, MatTable
 } from "@angular/material/table";
 import {MatCheckbox} from "@angular/material/checkbox";
+import {MatMenu, MatMenuTrigger} from "@angular/material/menu";
+import {MatIcon} from "@angular/material/icon";
+import {TooltipPosition, MatTooltipModule} from "@angular/material/tooltip";
+import {MatSort, MatSortHeader} from "@angular/material/sort";
 
 
 @NgModule({
@@ -86,7 +90,13 @@ import {MatCheckbox} from "@angular/material/checkbox";
     MatRow,
     MatRowDef,
     MatTable,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    MatMenuTrigger,
+    MatIcon,
+    MatMenu,
+    MatTooltipModule,
+    MatSortHeader,
+    MatSort,
   ],
   providers: [
     provideClientHydration(),
