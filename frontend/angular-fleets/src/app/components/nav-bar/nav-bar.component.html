@@ -52,22 +52,22 @@
              (click)="closeDropdown()"
           >Create Listing</a>
         </li>
-
-        <div class="navbar-search">
-          <li>
-            <form class="navbar-nav form" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search">
-              <button class="btn btn-outline-secondary" id="navbar-search-button" type="submit">Search</button>
-            </form>
-          </li>
-        </div>
-
       </ul>
+
+
+      <div class="navbar-search">
+        <form class="navbar-nav form" role="search">
+          <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search">
+          <button class="btn btn-outline-secondary" id="navbar-search-button" type="submit">Search</button>
+        </form>
+      </div>
+
+
+      <div class="navbar-icons navbar-text navbar-welcome-msg" *ngIf="auth.isLoggedIn$ | async">
+        <span>Welcome, {{ userService.localUsername$ | async }}</span>
+      </div>
       <div class="navbar-icons">
         <span class="navbar-text">
-          <div *ngIf="auth.isLoggedIn$ | async">
-            <span>Welcome, {{ userService.localUsername$ | async }}</span>
-          </div>
           <a href="#">
             <i class="bi bi-chat-fill"></i>
           </a>

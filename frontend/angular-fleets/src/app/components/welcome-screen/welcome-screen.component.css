@@ -7,12 +7,13 @@
   min-height: 35vh;
   margin-inline: auto;
   min-width: 80vw;
-  max-width: 100vw;
+  max-width: 95vw;
   overflow: auto;
   scrollbar-width: none;
-  box-shadow: -3px 0 6px 3px rgba(255, 131, 7, .4);
-  /*border-top: 2px solid var(--stark-blue);*/
-  /*border-left: 2px solid var(--stark-blue);*/
+  padding: 0.5rem;
+
+  border-left: 1px solid rgba(255, 131, 7, .25);
+  border-right: 1px solid rgba(255, 131, 7, .25);
   color: rgba(223, 241, 255, 0.5) !important;
   clip-path: polygon(
     4% 0%,     /* top edge, a bit right from TL */
@@ -57,7 +58,8 @@
   pointer-events: none;
   opacity: 0.05;
   z-index: -1;
-  box-shadow: 1px 0 2px -2px rgba(255, 131, 7, .4);
+  box-shadow: -3px 0 3px -3px rgba(255, 131, 7, .4);
+  max-width: 98vw;
 
   background-image:
     repeating-linear-gradient(
@@ -80,9 +82,16 @@
   max-width: clamp(300px, 95%, 700px);
   height: auto;
   padding: 0.1rem;
-  margin-top: 0.5rem;
+  margin-top: 2rem;
   margin-bottom: 2rem;
   margin-inline: auto;
+}
+
+@media(max-width: 699px) {
+  .image-container {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
 }
 
 .image-border {
@@ -106,6 +115,7 @@
   h1 {
     padding: 2rem 4rem 2rem 4rem;
     margin-left: 5rem;
+    border-bottom: 1px solid rgba(255, 131, 7, .4);
   }
 }
 
@@ -113,12 +123,13 @@
   h1 {
     padding: 1rem 4rem 2rem 4rem;
     font-size: 1.6rem;
+    border-bottom: 1px solid rgba(255, 131, 7, .4);
   }
 }
 
 @media(max-width: 375px){
   h1 {
-    padding: 1rem 4rem 0 4rem;
+    padding: 1rem 4rem 1rem 4rem;
     font-size: 1.4rem;
   }
 }
@@ -143,7 +154,7 @@
 @media(min-width: 500px) {
   #body-title h2 {
     display: flex;
-    margin: 1rem 5rem 2rem 3rem;
+    margin: 4rem 5rem 2rem 3rem;
     justify-content: center;
     flex-wrap: wrap;
     font-size: 1.8rem;
@@ -183,63 +194,50 @@
   grid-template-columns: 1fr 1fr;
   /*width: 90%;*/
   margin-inline: auto;
+  gap: 3rem;
   margin-top: 2rem;
   margin-bottom: 4rem;
 }
-@media(min-width: 1200px) {
-  .entry-buttons {
-    position: relative;
-    padding: 0.35rem 1rem 0.35rem 1rem;
-    background: transparent;
-    border: 1px solid rgba(255, 131, 7, .75);  /* full rectangle frame */
-    border-radius: 0.1rem;
-    color: rgba(255, 131, 7, .75);
-    font-family: inherit;
-    font-weight: 500;
-    cursor: pointer;
-    overflow: hidden;
-    transform: skewX(-8deg)
-  }
 
-  .entry-buttons span {
-    display: inline-block;
-    transform: skewX(8deg);
-  }
-
-  /*.entry-buttons::before {*/
-  /*  content: "";*/
-  /*  position: absolute;*/
-  /*  inset: 3px;                 !* sit just inside the border *!*/
-  /*  border-top: 1px solid rgba(255, 131, 7, .75);*/
-  /*  border-right: 1px solid rgba(255, 131, 7, .75);*/
-  /*  clip-path: polygon(*/
-  /*    8% 0,   !* small cut on the left of the top line *!*/
-  /*    100% 0,*/
-  /*    97% 100%,!* small cut on the right of the bottom line *!*/
-  /*    0 100%*/
-  /*  );*/
-  /*  opacity: 0.7;*/
-  /*  pointer-events: none;*/
-  /*}*/
+.entry-buttons {
+  position: relative;
+  padding: 0.35rem 1rem 0.35rem 1rem;
+  background: transparent;
+  border: 1px solid rgba(255, 131, 7, .75); /* full rectangle frame */
+  border-radius: 0.1rem;
+  color: rgba(255, 131, 7, .75);
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  overflow: hidden;
+  /*transform: skewX(-8deg)*/
 }
 
-@media(max-width: 1199px) {
-  .entry-buttons {
-    border: 2px solid rgba(255, 131, 7, .75);
-    padding: .42rem 1.12rem .42rem 1.12rem !important;
-    background-color: rgba(33, 37, 41, .4);
-    margin-inline: .75rem;
-    color: rgba(255, 131, 7, .75);
-    font-size: .9rem;
-    border-radius: .25rem;
-    transition: background-color 0.15s ease;
-  }
+.entry-buttons span {
+  display: inline-block;
+  /*transform: skewX(8deg);*/
 }
 
 .entry-buttons:hover {
   color: var(--bs-gray-900);
   border-color: rgba(255, 131, 7, .75);
   background-color: rgba(255, 131, 7, .25);
+}
+
+@media (max-width: 1199px) {
+  .entry-buttons {
+    border: 1px solid rgba(255, 131, 7, .75);
+    background-color: rgba(33, 37, 41, .4);
+    margin-inline: .75rem;
+    color: rgba(255, 131, 7, .75);
+    font-size: .9rem;
+    border-radius: .1rem;
+    transition: background-color 0.15s ease;
+  }
+
+  #entry-buttons-container {
+    gap: 1rem;
+  }
 }
 
 .dev-text {

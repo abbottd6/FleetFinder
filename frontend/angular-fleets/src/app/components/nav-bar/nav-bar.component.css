@@ -6,9 +6,10 @@
   position: sticky;
   top: 0;
   left: 0;
-  width: 100%;
+  min-width: 100%;
   height: 65px;
   z-index: 1030;
+
 }
 #navbar-title {
   color: rgba(255, 131, 7, .75);
@@ -19,15 +20,15 @@
 .navbar-text {
   display: flex;
   align-items: center;
-  font-weight: 700;
+  font-weight: 600;
+  color: rgba(25, 40, 44, .75);
 }
 
 .nav-link {
-  color: rgba(25, 40, 44, .75);;
+  color: rgba(25, 40, 44, .75);
 }
 @media(min-width: 1200px) {
   .nav-item-toggle-only {
-    color: var(--bs-gray-900);
     display: none;
   }
 
@@ -71,6 +72,11 @@
   font-size: 85%;
 }
 
+.navbar-icons {
+  margin-left: 0;
+  padding-left: 1rem;
+}
+
 .navbar-icons .dropdown-menu {
   background-color: var(--bs-gray-dark);
   clip-path: var(--clip-t-right-b-left);
@@ -85,7 +91,7 @@
   gap: 1vw;
   list-style: none;
   justify-content: flex-start;
-  margin-left: 3vw;
+
 }
 
 /* removing searchbar and icons when navbar dropdown toggle appears */
@@ -103,7 +109,7 @@
   left: auto;
   top: 100%;
   right: 2% !important;
-  width: auto;
+  min-width: 100vw;
   z-index: 1050;
   background-color: var(--bs-gray-dark);
   clip-path: var(--clip-t-right-b-left);
@@ -168,12 +174,20 @@
 .navbar-nav form {
   display: flex;
   justify-content: center;
-  padding-left: 5vw;
+  margin-inline: 0;
   width: 100%;
 }
 
+
 .form-control {
   width: 22vw;
+  /*border: 1px solid rgba(255, 131, 7, .5);*/
+  border: 1px solid rgba(150, 168, 183, 1)
+}
+
+.form-control.form-control.me-2 {
+  /*background-color: rgba(91, 105, 119, 0.3);*/
+  background-color: rgba(150, 168, 183, 0.2)
 }
 
 .form-control:focus {
@@ -182,7 +196,13 @@
 }
 
 input::placeholder {
-  color: rgba(13, 47, 67, 0.35) !important;
+  color: rgba(25, 40, 44, .6) !important;
+}
+
+.navbar-search {
+  margin-left: 0;
+  left: 0;
+  margin-right: auto;
 }
 
 #navbar-search-button {
@@ -197,6 +217,13 @@ input::placeholder {
   color: rgba(13, 47, 67, 0.75);
   border-color: rgba(255, 131, 7, .75);
   background-color: rgba(255, 131, 7, .25);
+}
+
+.navbar-welcome-msg {
+  margin-left: auto;
+  margin-right: 0;
+  right: 0;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
 }
 
 .bi-person-fill {
@@ -222,7 +249,16 @@ input::placeholder {
 .bi-chat-fill {
   color: rgba(15, 24, 27, 0.75);
   font-size: 1.25rem;
-  margin: .5rem .5rem .5rem 4vw;
+  margin: .5rem .5rem .5rem 1rem;
+}
+
+@media(max-width: 1301px) {
+  .navbar-icons {
+    margin-left: 0;
+  }
+  .bi-chat-fill {
+    margin-left: 0;
+  }
 }
 
 .bi-chat-fill:hover {
