@@ -19,7 +19,89 @@ body {
   margin: 0;
 }
 
+.body-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background-color: var(--bs-dark);
+  max-height: 80vh;
+  min-height: 35vh;
+  margin-inline: auto;
+  min-width: 80vw;
+  max-width: 95vw;
+  overflow: auto;
+  scrollbar-width: none;
+  padding: 0.5rem;
+  overflow-y: scroll;
+
+  border-left: 1px solid rgba(255, 131, 7, .25);
+  border-right: 1px solid rgba(255, 131, 7, .25);
+  color: rgba(223, 241, 255, 0.5) !important;
+  clip-path: polygon(
+    4% 0%,     /* top edge, a bit right from TL */
+    100% 0%,   /* full top-right corner */
+    100% 91%,  /* right edge, a bit up from BR */
+    96% 100%,  /* bottom edge, a bit left from BR */
+    0% 100%,   /* full bottom-left corner */
+    0% 9%      /* left edge, a bit down from TL */
+  );
+}
+
+.body-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.2;
+  filter: blur(4px);
+  mix-blend-mode: screen;
+
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 131, 7, .4),
+      rgba(255, 131, 7, .4), 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 131, 7, .4),
+      rgba(255, 131, 7, .4), 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
+.body-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  z-index: -1;
+  box-shadow: -3px 0 3px -3px rgba(255, 131, 7, .4);
+  max-width: 98vw;
+
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 131, 7, .4),
+      rgba(255, 131, 7, .4), 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 131, 7, .4),
+      rgba(255, 131, 7, .4), 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
 html, body { height: 100%; }
+
 
 app-create-listing {
   max-width: 90vw;
@@ -31,6 +113,10 @@ app-update-listing {
 
 app-group-listings-table {
   min-width: 95% !important;
+}
+
+app-user {
+  min-width: 95vw;
 }
 
 .mat-mdc-menu-content {

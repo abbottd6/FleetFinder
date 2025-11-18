@@ -73,7 +73,9 @@
     </ng-container>
 
     <!-- header declarations -->
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClick(row)"></tr>
+    <ng-container *ngIf="(isMobile$ | async) ? largeColumns : mobileColumns as displayedColumns">
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="onRowClick(row)"></tr>
+    </ng-container>
   </table>
 </div>

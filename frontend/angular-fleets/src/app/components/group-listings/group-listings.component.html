@@ -29,11 +29,13 @@
             </li>
           </ul>
         </mat-menu>
-        <button mat-icon-button
-          matTooltip="Bookmark"
-          [matTooltipPosition]='positionOptions[0]'>
-          <mat-icon class="bookmark-icon">bookmark_border</mat-icon>
-        </button>
+        <ng-container *ngIf="!(isMobile$ | async)">
+          <button mat-icon-button
+            matTooltip="Bookmark"
+            [matTooltipPosition]="positionOptions[0]">
+            <mat-icon class="bookmark-icon">bookmark_border</mat-icon>
+          </button>
+        </ng-container>
       </td>
     </ng-container>
 

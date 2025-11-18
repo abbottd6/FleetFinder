@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output} from '@angular/core';
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
 import {ModService} from "../../services/mod-services/mod.service";
@@ -16,8 +16,9 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {Router} from "@angular/router";
 import {UserService} from "../../services/user-services/user.service";
 import {MatCheckbox} from "@angular/material/checkbox";
-import {DatePipe} from "@angular/common";
-import {map} from "rxjs";
+import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
+import {map, shareReplay} from "rxjs";
+import {BreakpointObserver} from "@angular/cdk/layout";
 
 @Component({
   selector: 'app-mod-listings-table',
@@ -35,17 +36,21 @@ import {map} from "rxjs";
     MatHeaderRow,
     MatRow,
     MatRowDef,
-    MatHeaderRowDef
+    MatHeaderRowDef,
+    AsyncPipe,
+    NgIf
   ],
   styleUrl: '../user-acct-listings-table/user-acct-listings-table.component.css'
 })
 export class ModListingsTableComponent implements OnInit {
   @Input() public modGroupListings: GroupListingViewModel[] = [];
   @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
+  private breakpointObserver = inject(BreakpointObserver);
   selectedListing: GroupListingViewModel | null = null;
   isModalVisible: boolean = false;
 
-  displayedColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
+  largeColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
+  mobileColumns = ['select', 'title', 'updated']
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 
   constructor(private modService: ModService, private router: Router, private snackBar: MatSnackBar) {
@@ -139,4 +144,9 @@ export class ModListingsTableComponent implements OnInit {
       }
     });
   }
+
+  isMobile$ = this.breakpointObserver
+    .observe('(min-width: 399px)')
+    .pipe(map(result => result.matches),
+      shareReplay());
 }
