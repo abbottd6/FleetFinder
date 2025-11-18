@@ -1,29 +1,30 @@
-<div class="welcome-container">
-  <h1>Welcome to FleetFinder</h1>
-  <div class="welcome-main-body">
-    <div class="image-container">
-      <div class="image-border">
-        <img src="/images/Pico%20Gunners.jpg" id="welcome-image" alt="Pico is the best">
+<div class="container-clip-path-wrapper">
+  <div class="body-container">
+    <h1>Welcome to FleetFinder</h1>
+    <div class="welcome-main-body">
+      <div class="image-container">
+        <div class="image-border">
+          <img src="/images/Pico%20Gunners.jpg" id="welcome-image" alt="Pico is the best">
+        </div>
       </div>
-    </div>
-    <div class="text-body-container">
-      <span id="body-title"><h2>Need a better crew?</h2></span>
-      <span class="text-body">FleetFinder is a fan-operated companion tool for the Star Citizen MMO,
+      <div class="text-body-container">
+        <span id="body-title"><h2>Need a better crew?</h2></span>
+        <span class="text-body">FleetFinder is a fan-operated companion tool for the Star Citizen MMO,
         helping players connect and form groups based on shared interests.</span>
-      <div id="entry-buttons-container">
-        <a [routerLink]="['/create-listing']">
-          <button class="entry-buttons">Create Group Listing</button>
-        </a>
-        <a [routerLink]="['/group-listings']">
-          <button class="entry-buttons">Search Existing Groups</button>
-        </a>
-      </div>
-      <div class="text-body dev-text">
+        <div id="entry-buttons-container">
+          <a [routerLink]="['/create-listing']">
+            <button class="entry-buttons"><span>Create Listing</span></button>
+          </a>
+          <a [routerLink]="['/group-listings']">
+            <button class="entry-buttons"><span>Search Listings</span></button>
+          </a>
+        </div>
+        <div class="text-body dev-text">
         <span>FleetFinder development is still in progress. Feel free to test out
           the create listing form or view the existing test listings. Or, you can checkout the
           <a [routerLink]="['about']" style="color:rgb(46,90,136)">about page</a> for development details.</span>
+        </div>
       </div>
     </div>
   </div>
 </div>
-

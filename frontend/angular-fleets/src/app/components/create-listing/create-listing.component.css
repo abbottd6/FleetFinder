@@ -11,7 +11,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-color: #2c2c2c rgb(108, 117, 125);
-  scrollbar-arrow-color: transparent;
+  scrollbar-arrow-color: transparent !important;
   border-top: 5px solid var(--stark-blue);
   border-left: 5px solid var(--stark-blue);
   color: var(--bs-gray-900);

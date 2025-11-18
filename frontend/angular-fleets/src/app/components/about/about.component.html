@@ -1,4 +1,4 @@
-<div class="about-container">
+<div class="body-container" id="about-container">
   <h1 id="top">About FleetFinder: Development Details</h1>
   <div class="about-main-body text-body-container">
 
@@ -6,12 +6,12 @@
     <h2 class="ext-link-h">External Links:</h2>
     <div id="ext-link-buttons-container">
       <a class="ext-link"
-              onclick="window.open('https://github.com/abbottd6/FleetFinder', '_blank')">
+         onclick="window.open('https://github.com/abbottd6/FleetFinder', '_blank')">
         Github Repository
       </a>
 
       <a class="ext-link"
-              onclick="window.open('https://www.linkedin.com/in/dayton-abbott', '_blank')">
+         onclick="window.open('https://www.linkedin.com/in/dayton-abbott', '_blank')">
         My LinkedIn
       </a>
     </div>
@@ -79,7 +79,7 @@
           </a></li>
 
           <li><a class="int-link"
-          onclick="document.getElementById('security-arch')?.scrollIntoView({behavior: 'smooth' })">
+                 onclick="document.getElementById('security-arch')?.scrollIntoView({behavior: 'smooth' })">
             Security Architecture
           </a></li>
 
@@ -119,7 +119,8 @@
         platform to grow as a fullstack developer.
       </p>
       <p>
-        This project has given me hands-on experience designing a scalable web app while working with languages like Java
+        This project has given me hands-on experience designing a scalable web app while working with languages like
+        Java
         and TypeScript, frameworks like Spring Boot and Angular, troubleshooting, testing, and much more. FleetFinder
         development is still in progress, with several features that I plan to implement in the v2/MVP for the
         app. Each of the features that I plan to implement moving forward will provide further opportunity for me to
@@ -130,8 +131,7 @@
 
     <span class="ext-link-h"><a class="int-link"
                                 onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
-          Back To Top</a></span>
-
+            Back To Top</a></span>
 
 
     <h2 id="tech-stack">Tech Stack and Tools</h2>
@@ -149,7 +149,7 @@
       <h3>Security</h3>
       <ul>
         <li>Keycloak - User roles and JWT-secured API endpoints</li>
-        <li>Spring Security - Authentication and role-based authorization for REST API endpoints </li>
+        <li>Spring Security - Authentication and role-based authorization for REST API endpoints</li>
         <li>Angular OAuth2-OIDC - Angular support for OpenId Connect and OAuth2</li>
       </ul>
 
@@ -179,7 +179,8 @@
 
       <h3>Deployment And DevOps</h3>
       <ul>
-        <li>Docker and Docker Compose - separate containers for frontend, backend, mysql, Keycloak, and reverse proxy</li>
+        <li>Docker and Docker Compose - separate containers for frontend, backend, mysql, Keycloak, and reverse proxy
+        </li>
         <li>NGINX - static file serving and reverse proxy for request routing/SSL</li>
         <li>AWS - ECR, EC2, Route 53</li>
         <li>Jenkins - CI/CD pipeline for automated builds and deployment</li>
@@ -211,8 +212,8 @@
 
 
     <span class="ext-link-h"><a class="int-link"
-                                    onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
-          Back To Top</a></span>
+                                onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
+            Back To Top</a></span>
 
 
     <h2 id="v1">FleetFinder v1 <span style="color: #aa7902">(Previous Release: March 2025)</span></h2>
@@ -221,7 +222,8 @@
       <ul>
         <li>MySQL database containing group listings and cacheable static lookup data for listing attributes</li>
         <li>REST API built with Spring Boot</li>
-        <li>Basic Angular frontend with reactive forms for listing creation and a table for viewing current listings</li>
+        <li>Basic Angular frontend with reactive forms for listing creation and a table for viewing current listings
+        </li>
         <li>Responsive web design for different viewport sizes</li>
         <li>Thorough unit and integration testing of services, mapper configurations, REST controllers, etc.</li>
       </ul>
@@ -249,18 +251,23 @@
 
     <h2 id="v1.2">FleetFinder v1.2 <span style="color: darkgreen">(Current Release: Nov 15th, 2025)</span></h2>
     <div class="text-body">
-      <p style="text-indent: 0;">The focus of v1.2 was to improve IAM by adding role-based access and other features:</p>
+      <p style="text-indent: 0;">The focus of v1.2 was to improve IAM by adding role-based access and other
+        features:</p>
       <ul>
         <li>Roles defined in Keycloak, with varying permission sets enforced through Spring Security</li>
         <li>All content creation and modification APIs secured behind user authentication and RBA</li>
-        <li>Refactored front-end auth-services to separate user data access from authentication by creating a user service</li>
+        <li>Refactored front-end auth-services to separate user data access from authentication by creating a user
+          service
+        </li>
         <li>User profile improvements:</li>
-          <ul>
-            <li>Added user listing soft deletion to allow for listing review and exporting for moderation language model training</li>
-            <li>Update for user listings, including patching existing field values into update form</li>
-            <li>Moderation tab with exclusive moderator RBA for viewing and deleting listings</li>
-            <li>Improvements to user profile listing view table interactivity</li>
-          </ul>
+        <ul>
+          <li>Added user listing soft deletion to allow for listing review and exporting for moderation language model
+            training
+          </li>
+          <li>Update for user listings, including patching existing field values into update form</li>
+          <li>Moderation tab with exclusive moderator RBA for viewing and deleting listings</li>
+          <li>Improvements to user profile listing view table interactivity</li>
+        </ul>
         <li>Listing form refactored into separate service, was previously nested in the create listing component</li>
       </ul>
     </div>
@@ -271,15 +278,16 @@
         FleetFinder is nearing the MVP. In v1.3, I will focus on a refactor of the main listing view table and some
         other associated features:
       </p>
-        <ul>
-          <li>Pagination</li>
-          <li>Search, filter, and sort</li>
-          <li>Content reporting by users for spam/inappropriate content</li>
-          <li>Listing bookmarking</li>
-          <li>Templating (saving form templates for reuse)</li>
-          <li>Adding an additional tab within the moderator panel for viewing reported listings and various mod
-            actions</li>
-        </ul>
+      <ul>
+        <li>Pagination</li>
+        <li>Search, filter, and sort</li>
+        <li>Content reporting by users for spam/inappropriate content</li>
+        <li>Listing bookmarking</li>
+        <li>Templating (saving form templates for reuse)</li>
+        <li>Adding an additional tab within the moderator panel for viewing reported listings and various mod
+          actions
+        </li>
+      </ul>
       <p>
         I hope to have these features completed within the coming week, after which I will move on to the final pre-MVP
         development stage which will include RabbitMQ and WebSockets for instant messaging features and MVP deployment
@@ -287,18 +295,17 @@
       </p>
       <p>
         Once I have completed the MVP features, I plan to create posts on several relevant
-        <span style="font-style: italic">Star Citizen</span> community forms to attract users to test the platform. I have been working
+        <span style="font-style: italic">Star Citizen</span> community forms to attract users to test the platform. I
+        have been working
         on this project off and on for over a year now, and I am very excited to release the MVP and see people
         using the platform that I have developed. I am hoping to deploy the MVP sometime around mid December 2025.
       </p>
     </div>
 
 
-
     <span class="ext-link-h"><a class="int-link"
                                 onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
-          Back To Top</a></span>
-
+            Back To Top</a></span>
 
 
     <h2 id="architecture">Architecture Overview</h2>
@@ -312,26 +319,26 @@
       <h3 id="backend-arch">Backend Architecture</h3>
       <ul>
         <li class="bullet-item">Relational Data Model</li>
-          <p class="bullet-text-body">
-            The foundation of the backend is a MySQL 8.2 database structured around a normalized schema. Reusable
-            values such as PvP statuses, gameplay categories, and planetary systems are separated into dedicated lookup
-            tables, alongside tables for user-generated data like user accounts and group listings.
-            I chose this approach primarily in order to simplify searching and filtering by requiring normalized
-            attributes for listings, but also to minimize redundancy and simplify future
-            expansion or modification of these fields.
-          </p>
-          <p class="bullet-text-body">
-            I have also integrated Flyway for database migration in order to simplify improvements and additions to the
-            database, such as soft-delete implementation, stored procedures for expired content removal, and inclusion
-            of relevant instant messaging tables.
-          </p>
+        <p class="bullet-text-body">
+          The foundation of the backend is a MySQL 8.2 database structured around a normalized schema. Reusable
+          values such as PvP statuses, gameplay categories, and planetary systems are separated into dedicated lookup
+          tables, alongside tables for user-generated data like user accounts and group listings.
+          I chose this approach primarily in order to simplify searching and filtering by requiring normalized
+          attributes for listings, but also to minimize redundancy and simplify future
+          expansion or modification of these fields.
+        </p>
+        <p class="bullet-text-body">
+          I have also integrated Flyway for database migration in order to simplify improvements and additions to the
+          database, such as soft-delete implementation, stored procedures for expired content removal, and inclusion
+          of relevant instant messaging tables.
+        </p>
         <li class="bullet-item">Entity-DTO Separation</li>
-          <p class="bullet-text-body">
-            Spring Data JPA maps the relational database tables to the Java entity classes, while Data Transfer Objects
-            (DTOs) are organized into two submodules: Response DTOs expose the necessary data to the frontend and
-            Request DTOs carry minimal identifiers from the client to the backend. This separation decouples the
-            internal model from the API interface, enables strong input validation, and simplifies future refactoring.
-          </p>
+        <p class="bullet-text-body">
+          Spring Data JPA maps the relational database tables to the Java entity classes, while Data Transfer Objects
+          (DTOs) are organized into two submodules: Response DTOs expose the necessary data to the frontend and
+          Request DTOs carry minimal identifiers from the client to the backend. This separation decouples the
+          internal model from the API interface, enables strong input validation, and simplifies future refactoring.
+        </p>
         <li class="bullet-item">Lookup Table Structure</li>
         <p class="bullet-text-body">
           Each lookup table is mapped to its own entity and DTO class, with corresponding repository, service
@@ -340,100 +347,100 @@
           maintain separation of concerns, and allow the tables to evolve independently if necessary.
         </p>
         <li class="bullet-item">Object Mapping and Validation</li>
-          <p class="bullet-text-body">
-            ModelMapper is used to streamline conversions between entities and DTOs, with the majority of the simple
-            lookup table conversions using implicit mappings while the more complex mappings, like group listings, use
-            explicit ModelMapper configurations. Spring Boot's built in validation annotations help enforce data
-            integrity at each stage before persisting new listings or returning data to the client.
-          </p>
+        <p class="bullet-text-body">
+          ModelMapper is used to streamline conversions between entities and DTOs, with the majority of the simple
+          lookup table conversions using implicit mappings while the more complex mappings, like group listings, use
+          explicit ModelMapper configurations. Spring Boot's built in validation annotations help enforce data
+          integrity at each stage before persisting new listings or returning data to the client.
+        </p>
         <li class="bullet-item">Caching</li>
-          <p class="bullet-text-body">
-            Lookup data is cached on both the frontend and in the backend using EhCache to reduce redundant database
-            queries for static reference data. This lightweight caching layer ensures that frequently requested
-            reference data can be served quickly without repeated access to the database.
-          </p>
+        <p class="bullet-text-body">
+          Lookup data is cached on both the frontend and in the backend using EhCache to reduce redundant database
+          queries for static reference data. This lightweight caching layer ensures that frequently requested
+          reference data can be served quickly without repeated access to the database.
+        </p>
         <li class="bullet-item">RESTful API Design</li>
-          <p class="bullet-text-body">
-            The backend is built with Spring Boot and runs on an embedded Tomcat server, exposing a REST API secured
-            with Spring Security. This API provides endpoints for group listings and lookup data. The API is organized
-            using RESTful conventions for statelessness and designed to be easily extendable as new features are added.
-          </p>
+        <p class="bullet-text-body">
+          The backend is built with Spring Boot and runs on an embedded Tomcat server, exposing a REST API secured
+          with Spring Security. This API provides endpoints for group listings and lookup data. The API is organized
+          using RESTful conventions for statelessness and designed to be easily extendable as new features are added.
+        </p>
         <li class="bullet-item">Backend Testing</li>
-          <p class="bullet-text-body">
-            The backend also includes extensive unit and integration testing to ensure reliability, maintainability,
-            and safe future deployments. These tests include edge cases for invalid objects as well as success and
-            failure paths. The tests were created with the goal of integrating a Jenkins CI/CD pipeline in
-            v2 of the app, enabling automated test runs before deploying updates and new versions to
-            the EC2 instance.
-          </p>
+        <p class="bullet-text-body">
+          The backend also includes extensive unit and integration testing to ensure reliability, maintainability,
+          and safe future deployments. These tests include edge cases for invalid objects as well as success and
+          failure paths. The tests were created with the goal of integrating a Jenkins CI/CD pipeline in
+          v2 of the app, enabling automated test runs before deploying updates and new versions to
+          the EC2 instance.
+        </p>
       </ul>
     </div>
 
 
     <span class="ext-link-h"><a class="int-link"
                                 onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
-        Back To Top</a></span>
+          Back To Top</a></span>
 
 
     <div class="text-body">
       <h3 id="frontend-arch">Frontend Architecture</h3>
-        <ul>
-          <li class="bullet-item">Angular SPA</li>
-            <p class="bullet-text-body">
-              The frontend is built with Angular 19 as a single-page application, utilizing Angular routing for page
-              navigation and maintaining application state across views.
-            </p>
-          <li class="bullet-item">Component-Based Design</li>
-            <p class="bullet-text-body">
-              The UI is broken into modular, reusable components, including a shared dropdowns module that integrates
-              directly with Angular forms. This structure improves code clarity by keeping logic encapsulated and
-              simplifies future development (e.g. filtering search results) and testing.
-            </p>
-          <li class="bullet-item">Distinct and Typed Request/View Models</li>
-            <p class="bullet-text-body">
-              The frontend defines separate, strongly typed models for request and response data for group listings to
-              mirror the backend entity and DTO structure. This distinction maintains a clear boundary between form
-              submission logic and UI rendering.
-            </p>
-          <li class="bullet-item">Reactive Forms</li>
-            <p class="bullet-text-body">
-              Angular Reactive Forms are used to manage group listing creation, providing real-time validation
-              and fine-grained control over form data and structure.
-            </p>
-          <li class="bullet-item">Dropdowns with Lookup Data</li>
-            <p class="bullet-text-body">
-              Form dropdowns are dynamically populated by calling backend endpoints that serve the cached lookup data.
-              The form stores the ID values while displaying the corresponding human-readable names.  Some of the fields
-              are also context-sensitive.  For example, the available gameplay subcategories are filtered based on the
-              selected gameplay category.  Another example is the event schedule fields for the date picker, time zone,
-              and time, which become enabled or disabled based on the user's "group status" selection.
-            </p>
-          <li class="bullet-item">Time Zone Normalization</li>
-            <p class="bullet-text-body">
-              The Create Listing form accepts separate user inputs for the date, time, and time zone of the "event
-              schedule" field. These inputs are combined and converted into a UTC-normalized ISO string for consistent
-              storage in the database, regardless of the user's local time zone.  The event timestamps, as well as
-              the creation and update timestamps generated by the database, are converted back to the user's browser
-              time for display to provide a seamless and intuitive experience across different regions.
-            </p>
-          <li class="bullet-item">Frontend Caching</li>
-            <p class="bullet-text-body">
-              The frontend also caches static lookup data on the client side using a generic helper method in the lookup
-              service. This prevents repeated HTTP requests from the same user during a session and complements the
-              backend caching strategy by reducing unnecessary network traffic and improving performance.
-            </p>
-          <li class="bullet-item">Responsive Design</li>
-            <p class="bullet-text-body">
-              The interface is styled with customized Angular Material Components for a clean, responsive experience
-              across desktop and mobile devices.
-            </p>
-        </ul>
+      <ul>
+        <li class="bullet-item">Angular SPA</li>
+        <p class="bullet-text-body">
+          The frontend is built with Angular 19 as a single-page application, utilizing Angular routing for page
+          navigation and maintaining application state across views.
+        </p>
+        <li class="bullet-item">Component-Based Design</li>
+        <p class="bullet-text-body">
+          The UI is broken into modular, reusable components, including a shared dropdowns module that integrates
+          directly with Angular forms. This structure improves code clarity by keeping logic encapsulated and
+          simplifies future development (e.g. filtering search results) and testing.
+        </p>
+        <li class="bullet-item">Distinct and Typed Request/View Models</li>
+        <p class="bullet-text-body">
+          The frontend defines separate, strongly typed models for request and response data for group listings to
+          mirror the backend entity and DTO structure. This distinction maintains a clear boundary between form
+          submission logic and UI rendering.
+        </p>
+        <li class="bullet-item">Reactive Forms</li>
+        <p class="bullet-text-body">
+          Angular Reactive Forms are used to manage group listing creation, providing real-time validation
+          and fine-grained control over form data and structure.
+        </p>
+        <li class="bullet-item">Dropdowns with Lookup Data</li>
+        <p class="bullet-text-body">
+          Form dropdowns are dynamically populated by calling backend endpoints that serve the cached lookup data.
+          The form stores the ID values while displaying the corresponding human-readable names. Some of the fields
+          are also context-sensitive. For example, the available gameplay subcategories are filtered based on the
+          selected gameplay category. Another example is the event schedule fields for the date picker, time zone,
+          and time, which become enabled or disabled based on the user's "group status" selection.
+        </p>
+        <li class="bullet-item">Time Zone Normalization</li>
+        <p class="bullet-text-body">
+          The Create Listing form accepts separate user inputs for the date, time, and time zone of the "event
+          schedule" field. These inputs are combined and converted into a UTC-normalized ISO string for consistent
+          storage in the database, regardless of the user's local time zone. The event timestamps, as well as
+          the creation and update timestamps generated by the database, are converted back to the user's browser
+          time for display to provide a seamless and intuitive experience across different regions.
+        </p>
+        <li class="bullet-item">Frontend Caching</li>
+        <p class="bullet-text-body">
+          The frontend also caches static lookup data on the client side using a generic helper method in the lookup
+          service. This prevents repeated HTTP requests from the same user during a session and complements the
+          backend caching strategy by reducing unnecessary network traffic and improving performance.
+        </p>
+        <li class="bullet-item">Responsive Design</li>
+        <p class="bullet-text-body">
+          The interface is styled with customized Angular Material Components for a clean, responsive experience
+          across desktop and mobile devices.
+        </p>
+      </ul>
     </div>
 
 
     <span class="ext-link-h"><a class="int-link"
                                 onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
-        Back To Top</a></span>
+          Back To Top</a></span>
 
 
     <div class="text-body">
@@ -442,17 +449,22 @@
         <li class="bullet-item">OpenID Connect Authentication with PKCE</li>
         <p class="bullet-text-body">
           FleetFinder uses Keycloak as its identity provider and authenticates users through the OpenID Connect (OIDC)
-          Authorization Code Flow with Proof Key for Code Exchange (PKCE). As a public client, the Angular frontend does not
+          Authorization Code Flow with Proof Key for Code Exchange (PKCE). As a public client, the Angular frontend does
+          not
           store a client secret; instead, PKCE ensures secure authentication by requiring a dynamically generated,
-          one-time verification code (“code challenge”) during the login flow. This prevents authorization code interception
+          one-time verification code (“code challenge”) during the login flow. This prevents authorization code
+          interception
           attacks and ensures that only the legitimate browser session can complete the exchange for tokens.
         </p>
 
         <li class="bullet-item">JWT-Based, Stateless Authorization</li>
         <p class="bullet-text-body">
-          After successful authentication, Keycloak issues signed JSON Web Tokens (JWTs) that include the user’s identity and
-          role assignments. Spring Security validates each token using the realm’s <em>issuer-uri</em> and published JWKS,
-          ensuring cryptographic integrity without relying on session state. This stateless model improves scalability and
+          After successful authentication, Keycloak issues signed JSON Web Tokens (JWTs) that include the user’s
+          identity and
+          role assignments. Spring Security validates each token using the realm’s <em>issuer-uri</em> and published
+          JWKS,
+          ensuring cryptographic integrity without relying on session state. This stateless model improves scalability
+          and
           simplifies deployment between local and production environments.
         </p>
 
@@ -460,23 +472,29 @@
         <p class="bullet-text-body">
           Keycloak realm roles are mapped on the backend to Spring Security authorities, enabling fine-grained
           authorization using method-level annotations like <code>&#64;PreAuthorize("hasRole('USER')")</code> and
-          <code>&#64;PreAuthorize("hasRole('MOD')")</code>. Normal application functionality like viewing the listing table
-          and browsing current listings does not require authorization. Beyond this, any further interaction like creating
+          <code>&#64;PreAuthorize("hasRole('MOD')")</code>. Normal application functionality like viewing the listing
+          table
+          and browsing current listings does not require authorization. Beyond this, any further interaction like
+          creating
           listings, reporting listings, and messaging users (coming soon), requires the <code>USER</code> role, while
           moderation and administrative actions require <code>MOD</code> or <code>ADMIN</code>.
         </p>
 
         <li class="bullet-item">Endpoint Protection and API Hardening</li>
         <p class="bullet-text-body">
-          All sensitive or state-changing endpoints require valid JWTs and appropriate roles. The API distinguishes between
-          public, user-only, moderator-only, and admin-only endpoints, ensuring least-privilege access throughout the system
+          All sensitive or state-changing endpoints require valid JWTs and appropriate roles. The API distinguishes
+          between
+          public, user-only, moderator-only, and admin-only endpoints, ensuring least-privilege access throughout the
+          system
           and preventing unauthorized access even if raw endpoint URLs are known.
         </p>
 
         <li class="bullet-item">CORS and Origin Access Control</li>
         <p class="bullet-text-body">
-          Strict Cross-Origin Resource Sharing (CORS) policies allow only trusted FleetFinder frontend origins to interact with
-          the API from a browser context. This prevents malicious websites from issuing authenticated requests on behalf of
+          Strict Cross-Origin Resource Sharing (CORS) policies allow only trusted FleetFinder frontend origins to
+          interact with
+          the API from a browser context. This prevents malicious websites from issuing authenticated requests on behalf
+          of
           logged-in users, complementing token-based authorization and strengthening overall client-side security. With
           respect to the reference data tables, CORS policies also deny all modification requests, allowing only
           <code>GET</code> requests.
@@ -484,8 +502,10 @@
 
         <li class="bullet-item">Defense in Depth</li>
         <p class="bullet-text-body">
-          PKCE, OIDC login, JWT validation, RBAC, HTTPS enforcement, method-level authorization, and CORS restrictions work
-          together to provide layered protections across identity, transport, and API boundaries. This design avoids storing
+          PKCE, OIDC login, JWT validation, RBAC, HTTPS enforcement, method-level authorization, and CORS restrictions
+          work
+          together to provide layered protections across identity, transport, and API boundaries. This design avoids
+          storing
           secrets in the browser and maintains robust security without relying on server-managed sessions or cookies.
         </p>
       </ul>
@@ -493,34 +513,34 @@
 
     <span class="ext-link-h"><a class="int-link"
                                 onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
-        Back To Top</a></span>
+          Back To Top</a></span>
 
     <div class="text-body">
       <h3 id="deployment">Deployment and Containerization</h3>
-        <ul>
-          <li class="bullet-item">Dockerized Environment</li>
-            <p class="bullet-text-body">
-              The entire application is containerized using Docker, with each major service running in its own
-              container for separation of concerns and ease of deployment:
-            </p>
-                  <ul class="tier-two-bullets">
-                    <li>MySQL - relational database</li>
-                    <li>Spring Boot Backend - REST API server</li>
-                    <li>Angular Frontend - compiled and served with NGINX</li>
-                    <li>Keycloak container - Identity and Access Management Server</li>
-                    <li>NGINX Reverse Proxy - handles HTTPS and routes traffic to backend and frontend containers</li>
-                  </ul>
-          <li class="bullet-item">Docker Compose</li>
-            <p class="bullet-text-body">
-              Docker Compose orchestrates all services for local and production environments, enabling consistent
-              builds and simplified development workflows.
-            </p>
-          <li class="bullet-item">SSL and HTTPS</li>
-            <p class="bullet-text-body">
-              The app is served over HTTPS for secure communication between client and server, using NGINX configuration
-              for SSL termination.
-            </p>
+      <ul>
+        <li class="bullet-item">Dockerized Environment</li>
+        <p class="bullet-text-body">
+          The entire application is containerized using Docker, with each major service running in its own
+          container for separation of concerns and ease of deployment:
+        </p>
+        <ul class="tier-two-bullets">
+          <li>MySQL - relational database</li>
+          <li>Spring Boot Backend - REST API server</li>
+          <li>Angular Frontend - compiled and served with NGINX</li>
+          <li>Keycloak container - Identity and Access Management Server</li>
+          <li>NGINX Reverse Proxy - handles HTTPS and routes traffic to backend and frontend containers</li>
         </ul>
+        <li class="bullet-item">Docker Compose</li>
+        <p class="bullet-text-body">
+          Docker Compose orchestrates all services for local and production environments, enabling consistent
+          builds and simplified development workflows.
+        </p>
+        <li class="bullet-item">SSL and HTTPS</li>
+        <p class="bullet-text-body">
+          The app is served over HTTPS for secure communication between client and server, using NGINX configuration
+          for SSL termination.
+        </p>
+      </ul>
     </div>
 
     <div class="conclusion">
@@ -530,7 +550,7 @@
       </p>
     </div>
     <span class="dev-text"><a class="int-link"
-                                onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
-          Back To Top</a></span>
+                              onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
+            Back To Top</a></span>
   </div>
 </div>
