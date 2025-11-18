@@ -53,19 +53,23 @@
           >Create Listing</a>
         </li>
       </ul>
-
-
-      <div class="navbar-search">
-        <form class="navbar-nav form" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search">
-          <button class="btn btn-outline-secondary" id="navbar-search-button" type="submit">Search</button>
-        </form>
-      </div>
-
-
-      <div class="navbar-icons navbar-text navbar-welcome-msg" *ngIf="auth.isLoggedIn$ | async">
-        <span>Welcome, {{ userService.localUsername$ | async }}</span>
-      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse navbar-search">
+      <form class="navbar-nav form" role="search">
+        <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search">
+        <button class="btn btn-outline-secondary" id="navbar-search-button" type="submit">Search</button>
+      </form>
+    </div>
+  </div>
+  <div class="container-fluid collapse navbar-collapse navbar-text">
+      <ng-container *ngIf="auth.isLoggedIn$ | async; else blankWelcome">
+        <span class="navbar-icons navbar-welcome-msg">Welcome, {{ userService.localUsername$ | async }}</span>
+      </ng-container>
+      <ng-template #blankWelcome>
+        <span class="blank-welcome"></span>
+      </ng-template>
       <div class="navbar-icons">
         <span class="navbar-text">
           <a href="#">
@@ -90,12 +94,12 @@
             </ng-container>
             <ng-template #loggedOut>
               <li><button class="dropdown-item" (click)="auth.loginWithPopup(); closeDropdown()">Login</button></li>
-              <li><button class="dropdown-item" (click)="auth.registerWithPopup(); closeDropdown()">Sign Up</button></li>
+              <li><button class="dropdown-item"
+                          (click)="auth.registerWithPopup(); closeDropdown()">Sign Up</button></li>
             </ng-template>
           </ul>
           </div>
         </span>
       </div>
-    </div>
   </div>
 </nav>

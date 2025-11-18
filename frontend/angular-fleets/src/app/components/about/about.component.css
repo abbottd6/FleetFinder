@@ -2,6 +2,11 @@ html {
   scroll-behavior: smooth;
 }
 
+#about-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 131, 7, .2) transparent;
+}
+
 p, ul, h1, h2, h3, h4 {
   color: rgba(150, 168, 183, 0.8);
 }

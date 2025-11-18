@@ -1,29 +1,33 @@
-import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
 import {MatTableDataSource, MatTableModule} from "@angular/material/table";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {SelectionModel} from "@angular/cdk/collections";
 import {AuthService} from "../../services/auth/auth-services/auth.service";
-import {DatePipe, NgIf} from "@angular/common";
+import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
 import {Router, RouterLink} from "@angular/router";
 import {UserListingService} from "../../services/group-listing-services/user-listing.service";
 import {UserService} from "../../services/user-services/user.service";
 import {environment} from "../../../environments/environment";
 import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
+import {map, shareReplay} from "rxjs";
+import {BreakpointObserver} from "@angular/cdk/layout";
 
 @Component({
   selector: 'app-user-acct-listings-table',
   standalone: true,
   templateUrl: './user-acct-listings-table.component.html',
   styleUrl: './user-acct-listings-table.component.css',
-  imports: [MatTableModule, MatCheckboxModule, DatePipe, RouterLink],
+  imports: [MatTableModule, MatCheckboxModule, DatePipe, RouterLink, AsyncPipe, NgIf],
 })
 export class UserAcctListingsTableComponent implements OnChanges {
   @Input() userListings: GroupListingViewModel[] = [];
   @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
+  private breakpointObserver = inject(BreakpointObserver);
 
-  displayedColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
+  largeColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
+  mobileColumns = ['select', 'title', 'updated']
   dataSource = new MatTableDataSource(this.userListings);
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 
@@ -114,4 +118,9 @@ export class UserAcctListingsTableComponent implements OnChanges {
       console.log("HERE IS THE LISTING DATA: ", tempListing);
     }
   }
+
+  isMobile$ = this.breakpointObserver
+    .observe('(min-width: 399px)')
+    .pipe(map(result => result.matches),
+      shareReplay());
 }

@@ -26,8 +26,8 @@
   margin-inline: .75rem;
   color: rgba(255, 131, 7, .75);
   font-size: 1rem;
-  border-radius: .1rem;
-  transition: 0.15s ease;
+  border-radius: .2rem;
+  transition: 0.2s ease;
 }
 
 .action-buttons:disabled {
@@ -36,8 +36,8 @@
   background-color: rgba(92, 96, 101, .4);
   margin-inline: .75rem;
   color: rgba(33, 37, 41, .4);
-  border-radius: .1rem;
-  transition: background-color 0.15s ease;
+  border-radius: .2rem;
+  transition: .3s ease;
 }
 
 .action-buttons:hover:disabled {
@@ -46,8 +46,7 @@
   background-color: rgba(92, 96, 101, .4);
   margin-inline: .75rem;
   color: rgba(255, 131, 7, .4);
-  border-radius: .1rem;
-  transition: background-color 0.15s ease;
+  border-radius: .2rem;
 }
 
 .action-buttons:hover {
@@ -57,22 +56,28 @@
   cursor: pointer;
 }
 
+.mat-mdc-table__content {
+
+}
+
 .mat-mdc-header-row {
   position: sticky !important;
   top: 0 !important;
   z-index: 1 !important;
-  background-color: rgba(88, 92, 96, .2);
-  color: rgba(150, 168, 183, 0.8);
+  background-color: rgba(45, 45, 45, 0.9);
+  color: rgba(150, 168, 183, 1);
   font-family: Orbitron, sans-serif !important;
   font-weight: 700 !important;
-  font-size: 1.2rem !important;
+  font-size: 1.1rem !important;
 }
 
 .mdc-data-table__row.mat-mdc-row {
-  color: rgba(150, 168, 183, 0.8);
+  color: rgba(150, 168, 183, 1);
   font-family: "Exo 2", sans-serif !important;
   font-weight: 400 !important;
   font-size: 1rem !important;
+  background-color: rgba(44, 44, 44, 0.2);
+  transition: 0.2s ease;
 }
 
 .mat-mdc-row:hover {
@@ -81,41 +86,53 @@
 }
 
 .user-table {
-  display: block !important;
-  overflow-y: scroll !important;
-  overflow-x: scroll !important;
-  max-height: 58% !important;
-  scrollbar-width: none;
+  display: block;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  max-height: 50vh;
+  scrollbar-color: #2c2c2c transparent;
 }
 
 @media(min-width: 725px) and (max-width: 2000px) {
 
   .action-buttons {
-    border: 1px solid rgba(255, 131, 7, .75);
-    padding: .42rem 1.12rem .42rem 1.12rem !important;
-    background-color: rgba(33, 37, 41, .4);
-    color: rgba(255, 131, 7, .75);
     font-size: 0.9rem;
-    border-radius: .1rem;
-    transition: background-color 0.15s ease;
   }
 
   .action-button-container-right {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
     width: 20%;
     margin: 1rem 1rem 1rem auto;
   }
+
+  .user-table {
+    max-height: 50vh;
+  }
 }
+
+@media(max-width: 1350px) {
+  .mat-mdc-header-row {
+    font-size: clamp(0.8rem, 0.7rem, 1.5rem) !important;
+  }
+
+  .mdc-data-table__row.mat-mdc-row {
+    font-size: clamp(0.6rem, 0.8rem, 1.2rem) !important;
+  }
+
+  .action-buttons {
+    font-size: clamp(0.6rem, 0.8rem, 1.2rem);
+  }
+}
+
 @media(max-width: 724px) {
   .mat-mdc {
     overflow: scroll;
   }
 
+  .user-table {
+    max-height: 50vh;
+  }
+
   .mat-mdc-header-row {
-    color: rgba(36, 36, 39, .8) !important;
-    font-family: Orbitron, sans-serif !important;
     font-weight: 700 !important;
     font-size: clamp(0.5rem, 0.8rem, 1.5rem) !important;
   }
@@ -128,17 +145,10 @@
     margin: 1rem auto 1rem 1rem;
   }
   .action-button-container-right {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
     width: 80%;
     margin: 1rem 0.25rem 1rem auto;
   }
-
   .mat-mdc-row {
-    color: rgba(36, 36, 39, .9) !important;
-    font-family: "Exo 2", sans-serif !important;
-    font-weight: 400 !important;
     font-size: clamp(0.5rem, 0.7rem, 1.5rem) !important;
   }
 

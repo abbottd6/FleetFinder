@@ -15,6 +15,7 @@
   color: rgba(255, 131, 7, .75);
   font-weight: 600;
   padding-left: 1vw;
+  margin-right: 2vw;
 }
 
 .navbar-text {
@@ -94,9 +95,14 @@
 
 }
 
+.navbar-nav.me-auto.mb-lg-0 {
+  margin-right: 0 !important;
+}
+
 /* removing searchbar and icons when navbar dropdown toggle appears */
 @media(max-width: 1199px) {
   .navbar-search,
+  .blank-welcome,
   .navbar-icons {
     display: none;
   }
@@ -206,7 +212,7 @@ input::placeholder {
 }
 
 .navbar-search {
-  margin-left: 0;
+  margin-left: 3.6vw;
   left: 0;
   margin-right: auto;
 }
@@ -263,6 +269,9 @@ input::placeholder {
     margin-left: 0;
   }
   .bi-chat-fill {
+    margin-left: 0;
+  }
+  .navbar-search {
     margin-left: 0;
   }
 }

@@ -58,22 +58,22 @@
 }
 
 .mat-mdc-header-row {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 1 !important;
+  position: sticky;
+  top: 0;
+  z-index: 1;
   background-color: rgba(44, 44, 44, .75);
-  color: rgba(188, 191, 200, .9) !important;
-  box-shadow: 1px 1.5px 1.5px rgba(255, 131, 7, .4) !important;
-  font-family: Orbitron, sans-serif !important;
-  font-weight: 500 !important;
-  font-size: 1.25rem !important;
+  color: rgba(188, 191, 200, .9);
+  box-shadow: 1px 1px 1px rgba(255, 131, 7, .4);
+  font-family: Orbitron, sans-serif;
+  font-weight: 500;
+  font-size: 1.15rem;
 }
 
 .mdc-data-table__row.mat-mdc-row {
-  color: rgba(188, 191, 200, .9) !important;
-  font-family: "Exo 2", sans-serif !important;
-  font-weight: 400 !important;
-  font-size: 1.15rem !important;
+  color: rgba(188, 191, 200, .9);
+  font-family: "Exo 2", sans-serif;
+  font-weight: 400;
+  font-size: 1.15rem;
   background-color: rgba(44, 44, 44, 0.3);
   transition: 0.08s ease;
 }
@@ -92,14 +92,13 @@
   display: block !important;
   overflow-y: scroll !important;
   overflow-x: scroll !important;
-  max-height: 85% !important;
+  max-height: 60% !important;
   min-height: 75%;
   min-width: 100%;
   scrollbar-width: none;
   /*border-top: 1px solid rgba(255, 131, 7, .25);*/
   /*border-left: 1px solid rgba(255, 131, 7, .5);*/
   box-shadow: -3px 0 2px -2px rgba(255, 131, 7, .4);
-  border-radius: 0.25rem;
 }
 
 .options-menu-icon {
@@ -151,16 +150,10 @@
   border-radius: 0.25rem;
 }
 
-@media(min-width: 725px) and (max-width: 2000px) {
+@media(min-width: 1400px) and (max-width: 2000px) {
 
   .action-buttons {
-    border: 2px solid rgba(255, 131, 7, .75);
-    padding: .42rem 1.12rem .42rem 1.12rem !important;
-    background-color: rgba(33, 37, 41, .4);
-    color: rgba(255, 131, 7, .75);
     font-size: 0.9rem;
-    border-radius: .25rem;
-    transition: background-color 0.15s ease;
   }
 
   .action-button-container-right {
@@ -171,16 +164,28 @@
     margin: 1rem 1rem 1rem auto;
   }
 }
+
+@media(min-width: 725px) and (max-width: 1399px) {
+  .mat-mdc-header-row {
+    font-size: clamp(0.8rem, 1rem, 1.5rem);
+  }
+  .mat-mdc-row {
+    font-size: clamp(0.7rem, 0.9rem, 1rem) !important;
+  }
+}
+
 @media(max-width: 724px) {
   .mat-mdc {
     overflow: scroll;
   }
 
   .mat-mdc-header-row {
-    color: rgba(36, 36, 39, .8) !important;
-    font-family: Orbitron, sans-serif !important;
-    font-weight: 700 !important;
     font-size: clamp(0.5rem, 0.8rem, 1.5rem) !important;
+  }
+
+  .table-container {
+    max-height: 50% !important;
+    padding-bottom: 8rem;
   }
 
   .action-buttons-container {
@@ -199,9 +204,6 @@
   }
 
   .mat-mdc-row {
-    color: rgba(36, 36, 39, .9) !important;
-    font-family: "Exo 2", sans-serif !important;
-    font-weight: 400 !important;
     font-size: clamp(0.5rem, 0.7rem, 1.5rem) !important;
   }
 

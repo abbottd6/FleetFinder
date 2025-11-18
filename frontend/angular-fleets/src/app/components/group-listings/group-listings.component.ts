@@ -4,12 +4,13 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import {environment} from "../../../environments/environment";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatMenuTrigger} from "@angular/material/menu";
-import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {TooltipPosition} from "@angular/material/tooltip";
 import {MatSort, MatSortHeader, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator} from "@angular/material/paginator";
+import {BreakpointObserver} from "@angular/cdk/layout";
+import {map, shareReplay} from "rxjs";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -21,6 +22,7 @@ import {MatPaginator} from "@angular/material/paginator";
 export class GroupListingsComponent implements OnInit, AfterViewInit{
   @ViewChild(MatSort) sort!: MatSort;
 
+  private breakpointObserver = inject(BreakpointObserver);
   private CLICKED_KEY = 'ff_user_clicked_listings';
   private _liveAnnouncer = inject(LiveAnnouncer)
 
@@ -121,4 +123,9 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
       }
     });
   }
+
+  isMobile$ = this.breakpointObserver
+    .observe('(max-width: 1250px)')
+    .pipe(map(result => result.matches),
+      shareReplay());
 }

@@ -32,6 +32,7 @@ body {
   overflow: auto;
   scrollbar-width: none;
   padding: 0.5rem;
+  overflow-y: scroll;
 
   border-left: 1px solid rgba(255, 131, 7, .25);
   border-right: 1px solid rgba(255, 131, 7, .25);
