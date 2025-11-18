@@ -1,10 +1,17 @@
+.page-title {
+  display: inline-block;
+  font-size: clamp(1.1rem, 3vw, 2rem);
+  margin-top: 0.3rem;
+  margin-left: 4rem;
+  padding: .75rem;
+}
+
 .account-sidenav-container {
-  color: rgba(36, 36, 39, 100);
-  background-color: #585c60;
+  color: rgba(150, 168, 183, 0.8);
+  background-color: rgba(88, 92, 96, .2);
   min-height: 70vh;
   width: 95%;
   align-self: center;
-  border: 2px solid rgba(44, 44, 44, 0.5);
 }
 
 .mat-drawer {
@@ -13,7 +20,7 @@
   height: 100%;
   overflow-y: scroll;
   scrollbar-width: none;
-  background-color: rgba(136, 138, 143, 0.8);
+  background-color: rgba(136, 138, 143, 0.1);
 }
 
 .account-tabs-button {
@@ -27,7 +34,7 @@
 }
 
 .account-tabs-button:hover {
-  background-color: rgba(255, 131, 7, .4);
+  background-color: rgba(255, 131, 7, .3);
   cursor: pointer;
   font-size: 102% !important;
 }
@@ -132,9 +139,7 @@
     overflow: scroll;
   }
 
-  .page-title {
-    font-size: clamp(1.1rem, 3vw, 2rem);
-  }
+
 
   .account-sidenav-container {
     min-height: 70vh;

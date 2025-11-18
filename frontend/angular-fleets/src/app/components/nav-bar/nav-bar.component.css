@@ -169,6 +169,10 @@
     display: none;
   }
 
+  .navbar .nav-item.dropdown .nav-link.show {
+    color: rgba(150, 168, 183, 0.8) !important;
+  }
+
 }
 
 .navbar-nav form {
@@ -181,8 +185,7 @@
 
 .form-control {
   width: 22vw;
-  /*border: 1px solid rgba(255, 131, 7, .5);*/
-  border: 1px solid rgba(150, 168, 183, 1)
+  border: 1px solid rgba(150, 168, 183, 1);
 }
 
 .form-control.form-control.me-2 {
@@ -191,8 +194,11 @@
 }
 
 .form-control:focus {
-  border-color: rgba(255, 131, 7, .75);
-  box-shadow: 0 0 0 0.25rem rgba(255, 131, 7, .25);
+  box-shadow: 0 0 0.2rem 0.1rem rgba(150, 168, 183, .4);
+}
+
+.form-control.form-control.me-2:focus {
+  background-color: rgba(140, 152, 163, 0.2)
 }
 
 input::placeholder {

@@ -24,7 +24,6 @@ import {ModListingsTableComponent} from "../mod-listings-table/mod-listings-tabl
     templateUrl: './user.component.html',
     styleUrls: [
       './user.component.css',
-      '../create-listing/create-listing.component.css',
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
     UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent, ModListingsTableComponent],
