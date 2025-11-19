@@ -1,0 +1,16 @@
+<div class="search-input">
+  <mat-form-field>
+    <mat-label>Search listings...</mat-label>
+    <input
+      matInput
+      [formControl]="searchControl"
+      maxlength="65"
+      placeholder="Enter listing details..."
+      [attr.aria-labelledby]="'listing-title'">
+  </mat-form-field>
+  <div class="search-button-container-right">
+    <a>
+      <button class="action-buttons">Search</button>
+    </a>
+  </div>
+</div>

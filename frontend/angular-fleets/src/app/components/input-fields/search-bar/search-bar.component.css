@@ -1,0 +1,161 @@
+.search-input {
+  display: flex;
+  flex: 1;
+  padding: clamp(0.5rem, 1rem ,1.5rem);
+  width: 100%;
+}
+
+.mat-mdc-form-field {
+  min-width: 45%;
+  transition: color 0.5s ease, font-size 0.5s ease;
+  font-size: clamp(0.3rem, 1rem, 1rem);
+}
+
+.search-button-container-right {
+  width: 15%;
+  margin: 0.25rem auto auto 1rem;
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined {
+  border-color: rgba(188, 191, 200, .6);
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+  color: rgba(188, 191, 200, .75);
+  top: 2.5vh;
+}
+
+@media(max-width: 724px) {
+  .mat-mdc-form-field {
+    max-width: 45%;
+    transition: color 0.5s ease, font-size 0.5s ease;
+    font-size: 0.8rem;
+  }
+}
+
+@media(max-width: 724px) {
+  :host ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined {
+    max-height: 7.25vh;
+    margin-right: 0.25rem;
+    /*background-color: hotpink;*/
+  }
+}
+@media(max-width: 724px) {
+  :host ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    top: 3.5vh;
+  }
+}
+
+/* --------------------------------------------------------------------------------------------------*/
+
+.action-buttons {
+  border: 1px solid rgba(255, 131, 7, .75);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .75);
+  font-size: 1rem;
+  border-radius: .2rem;
+  transition: 0.2s ease;
+}
+
+.action-buttons:disabled {
+  border: 1px solid rgba(33, 37, 41, .4);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(92, 96, 101, .4);
+  margin-inline: .75rem;
+  color: rgba(33, 37, 41, .4);
+  border-radius: .2rem;
+  transition: .3s ease;
+}
+
+.action-buttons:hover:disabled {
+  border: 1px solid rgba(255, 131, 7, .4);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(92, 96, 101, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .4);
+  border-radius: .2rem;
+}
+
+.action-buttons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+  cursor: pointer;
+}
+
+@media(min-width: 725px) and (max-width: 2000px) {
+
+  .action-buttons {
+    font-size: 0.9rem;
+  }
+}
+
+@media(max-width: 724px) {
+  .action-buttons {
+    font-size: .7rem;
+  }
+  .search-button-container-right {
+    width: 10%;
+    margin: 0.1rem auto 0 0;
+  }
+  .mat-mdc-form-field {
+    min-width: 70%;
+  }
+}
+
+/* label transition */
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
+  padding-left: 1rem;
+  padding-right: 1rem;
+  transition: color 0.5s ease, font-size 0.5s ease !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field-flex {
+  max-height: 5vh;
+}
+
+/* outline transition */
+:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mat-mdc-notch-piece {
+  transition: border-color 0.5s ease !important;
+  color: rgba(188, 191, 200, .75);
+}
+
+/* label hover */
+:host ::ng-deep .mat-mdc-form-field:hover:not(:focus-within) .mat-mdc-floating-label {
+  color: rgba(255, 131, 7, 0.4) !important;
+  font-size: 105% !important;
+}
+
+/* outline hover */
+:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mat-mdc-notch-piece {
+  border-color: rgba(255, 131, 7, 0.4) !important;
+}
+/* outline focused */
+:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):focus-within .mat-mdc-notch-piece {
+  border-color:  rgba(255, 131, 7, 0.4) !important;
+}
+
+/* input text/placeholder text */
+:host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
+  padding-left: 1rem;
+  wrap-option: wrap;
+  caret-color: rgba(255, 131, 7, 0.5) !important;
+}
+
+/* character counter */
+.mat-mdc-form-field-hint {
+  color: rgba(188, 191, 200, .75);
+  font-size: clamp(0.8rem, 1vw, 1rem);
+}
+
+/* VALIDATION STYLES */
+:host ::ng-deep  .mat-mdc-form-field.ng-touched.ng-invalid .mat-mdc-notch-piece {
+  border-color: rgba(161, 13, 13, 0.4);
+}
+
+mat-error {
+  color: rgba(161, 13, 13, 0.4) !important;
+  font-size: clamp(0.7rem, 1vw, 1rem);
+}

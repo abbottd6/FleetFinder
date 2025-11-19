@@ -13,7 +13,7 @@ import { WelcomeScreenComponent } from './components/welcome-screen/welcome-scre
 import { CreateListingModule } from "./components/create-listing/create-listing.module";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatError} from "@angular/material/form-field";
+import {MAT_FORM_FIELD_DEFAULT_OPTIONS, MatError, MatFormField, MatHint, MatLabel} from "@angular/material/form-field";
 import {NgSelectComponent} from "@ng-select/ng-select";
 import { GroupListingModalComponent } from './components/group-listing-modal/group-listing-modal.component';
 import { AboutComponent } from './components/about/about.component';
@@ -33,7 +33,7 @@ import { ModListingsTableComponent } from './components/mod-listings-table/mod-l
 import {
   MatCell,
   MatCellDef,
-  MatColumnDef,
+  MatColumnDef, MatFooterCell, MatFooterCellDef, MatFooterRow, MatFooterRowDef,
   MatHeaderCell, MatHeaderCellDef,
   MatHeaderRow,
   MatHeaderRowDef,
@@ -44,6 +44,9 @@ import {MatMenu, MatMenuTrigger} from "@angular/material/menu";
 import {MatIcon} from "@angular/material/icon";
 import {TooltipPosition, MatTooltipModule} from "@angular/material/tooltip";
 import {MatSort, MatSortHeader} from "@angular/material/sort";
+import {MatPaginator} from "@angular/material/paginator";
+import { SearchBarComponent } from './components/input-fields/search-bar/search-bar.component';
+import {MatInput} from "@angular/material/input";
 
 
 @NgModule({
@@ -55,6 +58,7 @@ import {MatSort, MatSortHeader} from "@angular/material/sort";
     WelcomeScreenComponent,
     AboutComponent,
     LoginModalComponent,
+    SearchBarComponent,
   ],
   imports: [
     BrowserModule,
@@ -97,6 +101,15 @@ import {MatSort, MatSortHeader} from "@angular/material/sort";
     MatTooltipModule,
     MatSortHeader,
     MatSort,
+    MatFooterRowDef,
+    MatFooterRow,
+    MatFooterCellDef,
+    MatFooterCell,
+    MatPaginator,
+    MatFormField,
+    MatHint,
+    MatInput,
+    MatLabel,
   ],
   providers: [
     provideClientHydration(),

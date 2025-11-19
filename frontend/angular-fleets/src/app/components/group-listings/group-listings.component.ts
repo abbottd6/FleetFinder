@@ -21,6 +21,7 @@ import {map, shareReplay} from "rxjs";
 
 export class GroupListingsComponent implements OnInit, AfterViewInit{
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private breakpointObserver = inject(BreakpointObserver);
   private CLICKED_KEY = 'ff_user_clicked_listings';
@@ -90,6 +91,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
 
   ngAfterViewInit() {
     this.loadClickedListings();
+    this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
 
@@ -125,7 +127,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   }
 
   isMobile$ = this.breakpointObserver
-    .observe('(max-width: 1250px)')
+    .observe('(max-width: 1350px)')
     .pipe(map(result => result.matches),
       shareReplay());
 }
