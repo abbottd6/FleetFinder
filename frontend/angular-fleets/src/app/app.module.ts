@@ -47,6 +47,8 @@ import {MatSort, MatSortHeader} from "@angular/material/sort";
 import {MatPaginator} from "@angular/material/paginator";
 import { SearchBarComponent } from './components/input-fields/search-bar/search-bar.component';
 import {MatInput} from "@angular/material/input";
+import { ConfirmDeleteComponent } from './components/pop-ups/confirm-delete/confirm-delete.component';
+import {MatDialogActions, MatDialogContent, MatDialogTitle} from "@angular/material/dialog";
 
 
 @NgModule({
@@ -59,6 +61,7 @@ import {MatInput} from "@angular/material/input";
     AboutComponent,
     LoginModalComponent,
     SearchBarComponent,
+    ConfirmDeleteComponent,
   ],
   imports: [
     BrowserModule,
@@ -110,6 +113,9 @@ import {MatInput} from "@angular/material/input";
     MatHint,
     MatInput,
     MatLabel,
+    MatDialogContent,
+    MatDialogTitle,
+    MatDialogActions,
   ],
   providers: [
     provideClientHydration(),

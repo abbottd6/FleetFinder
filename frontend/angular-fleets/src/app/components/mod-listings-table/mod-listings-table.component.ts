@@ -146,7 +146,7 @@ export class ModListingsTableComponent implements OnInit {
   }
 
   isMobile$ = this.breakpointObserver
-    .observe('(min-width: 399px)')
+    .observe('(min-width: 499px)')
     .pipe(map(result => result.matches),
       shareReplay());
 }
