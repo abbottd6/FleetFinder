@@ -2,7 +2,7 @@
 
 .search-filter-wrapper {
   display: grid;
-  grid-template-columns: 45% 55%;
+  grid-template-columns: 40% 60%;
 }
 
 .search-input {
@@ -13,7 +13,7 @@
 }
 
 .mat-mdc-form-field {
-  min-width: 80%;
+  min-width: 95%;
   transition: color 0.5s ease, font-size 0.5s ease;
   font-size: clamp(0.3rem, 1rem, 1rem);
 }
@@ -46,7 +46,7 @@
 .filter-dropdowns {
   display: grid;
 
-  grid-template-columns: repeat(3, 28%);
+  grid-template-columns: 8% 25% 25% 25% 17%;
 }
 
 .dropdown-component .ng-select {
@@ -209,7 +209,7 @@
   }
   .search-button-container-right {
     width: 10%;
-    margin: 0.1rem auto 0 0;
+    margin: auto auto 0.25rem 0;
   }
   .mat-mdc-form-field {
     min-width: 70%;

@@ -2,7 +2,7 @@
   <div class="background-color-container">
     <div class="search-criteria-container">
       <div class="search-bar-wrapper">
-        <app-search-bar (search)="applyFilterFromChild($event)"></app-search-bar>
+        <app-search-bar (search)="applySearchFromChild($event)" (filters)="applyFiltersFromChild($event)"></app-search-bar>
       </div>
       <div class="filters-container">
         <h6 class="filters-title">Filters:</h6>

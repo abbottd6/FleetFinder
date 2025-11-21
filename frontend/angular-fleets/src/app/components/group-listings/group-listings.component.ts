@@ -63,8 +63,11 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
     this.dataSource.sort = this.sort;
   }
 
-  applyFilterFromChild(term: string): void {
+  applySearchFromChild(term: string): void {
     this.dataSource.filter = term.trim().toLowerCase();
+  }
+
+  applyFiltersFromChild(terms: string[]): void {
   }
 
   isRowClicked(row: GroupListingViewModel): boolean {

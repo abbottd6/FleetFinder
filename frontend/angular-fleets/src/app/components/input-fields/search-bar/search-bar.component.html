@@ -20,13 +20,13 @@
         <mat-icon>clear</mat-icon>
       </button>
     </mat-form-field>
-    <div class="search-button-container-right">
-      <a>
-        <button class="action-buttons">Search</button>
-      </a>
-    </div>
   </div>
   <div class="filter-dropdowns">
+    <div class=dropdown-component>
+      <a>
+        <button class="action-buttons">Add</button>
+      </a>
+    </div>
     <div class="dropdown-component">
       <ng-select
         [items]="filterCategories"
@@ -37,7 +37,7 @@
     </div>
     <div class="dropdown-component">
       <ng-select
-        [items]="filterCategories"
+        [items]="parentFilters$ | async"
         [formControl]="parentCtrl"
         placeholder="Parent Filter..."
         [attr.aria-labelledby]="'Parent Filter'">
@@ -50,6 +50,11 @@
         placeholder="Sub-filter..."
         [attr.aria-labelledby]="'Child Filter'">
       </ng-select>
+    </div>
+    <div class="dropdown-component">
+      <a>
+        <button class="action-buttons">Clear All</button>
+      </a>
     </div>
   </div>
 </div>
