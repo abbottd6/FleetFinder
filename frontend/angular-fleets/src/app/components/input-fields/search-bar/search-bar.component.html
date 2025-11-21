@@ -1,16 +1,55 @@
-<div class="search-input">
-  <mat-form-field>
-    <mat-label>Search listings...</mat-label>
-    <input
-      matInput
-      [formControl]="searchControl"
-      maxlength="65"
-      placeholder="Enter listing details..."
-      [attr.aria-labelledby]="'listing-title'">
-  </mat-form-field>
-  <div class="search-button-container-right">
-    <a>
-      <button class="action-buttons">Search</button>
-    </a>
+<div class="search-filter-wrapper">
+  <div class="search-input">
+    <mat-form-field>
+      <mat-label>Search listings...</mat-label>
+      <input
+        matInput
+        #searchInput
+        type="text"
+        (keyup)="onKeyup($event)"
+        maxlength="65"
+        placeholder="Enter Title or Description details..."
+        [attr.aria-labelledby]="'searchInput'">
+      <button
+        *ngIf="searchInput.value"
+        mat-icon-button
+        matSuffix
+        aria-label="Clear-search"
+        class="search-clear"
+        (click)="clearSearch(searchInput)">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </mat-form-field>
+    <div class="search-button-container-right">
+      <a>
+        <button class="action-buttons">Search</button>
+      </a>
+    </div>
+  </div>
+  <div class="filter-dropdowns">
+    <div class="dropdown-component">
+      <ng-select
+        [items]="filterCategories"
+        [formControl]="principalCtrl"
+        placeholder="Filter by..."
+        [attr.aria-labelledby]="'Principal Filter'">
+      </ng-select>
+    </div>
+    <div class="dropdown-component">
+      <ng-select
+        [items]="filterCategories"
+        [formControl]="parentCtrl"
+        placeholder="Parent Filter..."
+        [attr.aria-labelledby]="'Parent Filter'">
+      </ng-select>
+    </div>
+    <div class="dropdown-component">
+      <ng-select
+        [items]="filterCategories"
+        [formControl]="childCtrl"
+        placeholder="Sub-filter..."
+        [attr.aria-labelledby]="'Child Filter'">
+      </ng-select>
+    </div>
   </div>
 </div>

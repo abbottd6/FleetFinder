@@ -40,6 +40,64 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar) {}
 
+  ngOnInit(): void {
+    this.loadGroupListings();
+
+    this.dataSource.filterPredicate = (
+      data: GroupListingViewModel,
+      filter: string
+    ) => {
+      const term = filter.trim().toLowerCase();
+
+      return (
+        data.listingTitle.toLowerCase().includes(term) ||
+        data.listingDescription.toLowerCase().includes(term) ||
+        data.availableRoles.toLowerCase().includes(term)
+      );
+    };
+  }
+
+  ngAfterViewInit() {
+    this.loadClickedListings();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  applyFilterFromChild(term: string): void {
+    this.dataSource.filter = term.trim().toLowerCase();
+  }
+
+  isRowClicked(row: GroupListingViewModel): boolean {
+    return this.clickedRows.has(row.groupId);
+  }
+
+  announceSortChange(sortState: Sort) {
+    if (sortState.direction) {
+      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this._liveAnnouncer.announce('Sorting cleared');
+    }
+  }
+
+  loadGroupListings() {
+    this.groupListingService.getGroupListings().subscribe({
+      next: (data: GroupListingViewModel[]) => {
+        // if(!environment.production) {
+        //   console.log('Data received in component:', data);
+        // }
+        this.dataSource.data = data;
+      },
+      error: (error) => {
+        console.error('Error fetching group listings from component:', error);
+      },
+      complete: () => {
+        if(!environment.production) {
+          console.log('Group listings fetching completed.');
+        }
+      }
+    });
+  }
+
   //on-row-click instructions for groupListing modal popup
   onRowClick(tempListing: GroupListingViewModel) {
     this.selectedListing = tempListing;
@@ -82,48 +140,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
     }
     this.isModalVisible = false;
     this.selectedListing = null;
-  }
-
-  ngOnInit(): void {
-    this.loadGroupListings();
-
-  }
-
-  ngAfterViewInit() {
-    this.loadClickedListings();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
-
-  isRowClicked(row: GroupListingViewModel): boolean {
-    return this.clickedRows.has(row.groupId);
-  }
-
-  announceSortChange(sortState: Sort) {
-    if (sortState.direction) {
-      this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
-    } else {
-      this._liveAnnouncer.announce('Sorting cleared');
-    }
-  }
-
-  loadGroupListings() {
-    this.groupListingService.getGroupListings().subscribe({
-      next: (data: GroupListingViewModel[]) => {
-        // if(!environment.production) {
-        //   console.log('Data received in component:', data);
-        // }
-        this.dataSource.data = data;
-      },
-      error: (error) => {
-        console.error('Error fetching group listings from component:', error);
-      },
-      complete: () => {
-        if(!environment.production) {
-          console.log('Group listings fetching completed.');
-        }
-      }
-    });
   }
 
   isMobile$ = this.breakpointObserver

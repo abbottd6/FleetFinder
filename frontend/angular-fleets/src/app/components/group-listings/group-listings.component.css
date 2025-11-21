@@ -23,6 +23,15 @@
   padding-top: 1rem;
 }
 
+.filters-title {
+  margin: 0 3rem 0 3rem;
+  border-bottom: 1px solid rgba(188, 191, 200, .75);
+}
+
+.filters-container {
+  background-color: rgba(44, 44, 44, .75);
+}
+
 .mat-mdc-header-row {
   position: sticky;
   top: 0;

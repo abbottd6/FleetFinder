@@ -1,28 +1,139 @@
+@import '../../dropdowns/dropdown-module/dropdown-styles.css';
+
+.search-filter-wrapper {
+  display: grid;
+  grid-template-columns: 45% 55%;
+}
+
 .search-input {
   display: flex;
   flex: 1;
-  padding: clamp(0.5rem, 1rem ,1.5rem);
   width: 100%;
+  padding: clamp(0.5rem, 1rem, 1.5rem) clamp(0.5rem, 1rem, 1.5rem) 0;
 }
 
 .mat-mdc-form-field {
-  min-width: 45%;
+  min-width: 80%;
   transition: color 0.5s ease, font-size 0.5s ease;
   font-size: clamp(0.3rem, 1rem, 1rem);
 }
 
-.search-button-container-right {
-  width: 15%;
-  margin: 0.25rem auto auto 1rem;
+.search-clear {
+  z-index: 20000;
+  color: rgba(188, 191, 200, .75);
+  margin-right: 1rem;
+  transition: color 0.15s ease, font-size 0.15s ease;
+  pointer-events: all;
 }
+
+.search-clear:hover {
+  color: rgba(255, 131, 7, .6);
+  font-size: 1.5rem !important;
+}
+
+.search-clear:active {
+  color: rgba(255, 131, 7, 1);
+}
+
+.search-button-container-right {
+  width: 6%;
+  margin: 0.25rem 1rem auto 1rem;
+}
+
+
+/* ----- FILTER DROPDOWNS -------------------------------------------------------------------------------------- */
+
+.filter-dropdowns {
+  display: grid;
+
+  grid-template-columns: repeat(3, 28%);
+}
+
+.dropdown-component .ng-select {
+  padding-bottom: clamp(0.9rem, 1.2rem, 1.8rem);
+  min-width: 14rem !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(88, 92, 96, .9) transparent !important;
+}
+
+:host ::ng-deep .ng-dropdown-panel {
+  background-color: rgba(33, 37, 41, 1) !important;
+}
+
+:host ::ng-deep .ng-dropdown-panel .ng-option-label {
+  color: rgba(188, 191, 200, .75) !important;
+  transition: color 0.15s ease, font-size 0.15s ease;
+}
+
+:host ::ng-deep .ng-dropdown-panel .ng-option:hover {
+  background-color: rgba(44, 44, 44, 0.7);
+
+}
+
+:host ::ng-deep .ng-dropdown-panel .ng-option:hover .ng-option-label {
+  color: rgba(255, 131, 7, .6) !important;
+  font-size: 1.05rem;
+}
+
+:host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 90%;
+  color: rgba(188, 191, 200, .75) !important;
+  transition: font-size 0.3s ease;
+}
+
+:host ::ng-deep .ng-select .ng-select-container:hover .ng-placeholder {
+  color: rgba(255, 131, 7, .6) !important;
+  font-size: 1.05rem !important;
+}
+
+/* Dropdown selected val */
+:host ::ng-deep .ng-select .ng-select-container {
+  color: rgba(255, 131, 7, .6);
+}
+
+/* Dropdown underline */
+:host ::ng-deep .ng-select .ng-select-container::after {
+  border-color: rgba(188, 191, 200, .5);
+  transition: border-color 0.5s ease;
+}
+
+/* Dropdown arrow pre-selection */
+:host ::ng-deep .ng-select:not(.ng-select.ng-select-disabled):not(.ng-select-single .ng-value) .ng-arrow {
+  color: rgba(188, 191, 200, .75);
+  transition: color 0.75s ease;
+}
+
+/* Dropdown arrow while focused/open */
+:host ::ng-deep .ng-select.ng-select-single:focus-within .ng-select-container .ng-arrow-wrapper .ng-arrow {
+  color: rgba(255, 131, 7, 0.5);
+}
+
+/* Dropdown arrow post-selection */
+:host ::ng-deep .ng-select.ng-select-single .ng-has-value .ng-arrow {
+  color: rgba(188, 191, 200, .75) !important;
+}
+
+/* Dropdown clear: value selected, not focused */
+:host ::ng-deep .ng-select .ng-clear-wrapper {
+  color: rgba(188, 191, 200, .75);
+  transition: color 0.75s ease;
+}
+
+/* ----- SEARCH INPUT FIELD ---------------------------------------------------------------------------------- */
 
 :host ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined {
   border-color: rgba(188, 191, 200, .6);
 }
 
 :host ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
-  color: rgba(188, 191, 200, .75);
+  color: rgba(188, 191, 200, .5);
   top: 2.5vh;
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-input-element::placeholder {
+  color: rgba(188, 191, 200, .5) !important;
 }
 
 @media(max-width: 724px) {
@@ -141,6 +252,7 @@
 :host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
   padding-left: 1rem;
   wrap-option: wrap;
+  color: rgba(188, 191, 200, .5);
   caret-color: rgba(255, 131, 7, 0.5) !important;
 }
 
