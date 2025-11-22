@@ -18,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -66,9 +67,11 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     @Override
     public Page<GroupListingResponseDto> searchGroupListings(String search, List<String> filters, Pageable pageable) {
+        Map<String, Integer> filterMap = parseSearchFilters(filters);
 
+        Specification<GroupListing> spec = buildListingFilterSpec(search, filterMap);
 
-        Page<GroupListing> groupListings = groupListingRepository.findAll(pageable);
+        Page<GroupListing> groupListings = groupListingRepository.findAll(spec, pageable);
         return groupListings.map(groupListingConversionService::convertListingToResponseDto);
     }
 
@@ -155,5 +158,56 @@ public class GroupListingServiceImpl implements GroupListingService {
                 });
 
         return groupListingConversionService.convertListingToResponseDto(groupListing);
+    }
+
+    private Map<String, Integer> parseSearchFilters(List<String> filters) {
+        Map<String, Integer> result = new HashMap<>();
+        if (filters == null || filters.isEmpty()) {
+            return result;
+        }
+
+        for (String filter : filters) {
+            String[] parts = filter.split(":", 3);
+            if (parts.length == 2) {
+                String fieldName = parts[0].trim();
+                Integer lookupId = Integer.valueOf(parts[1].trim());
+                result.put(fieldName, lookupId);
+            } else if (parts.length == 3) {
+                String fieldName = parts[0].trim();
+                Integer lookupId = Integer.valueOf(parts[1].trim());
+                result.put(fieldName, lookupId);
+                if(fieldName.equals("category")) {
+                    String subfieldName = "subcategory";
+                    Integer sublookupId = Integer.valueOf(parts[2].trim());
+                    result.put(subfieldName, sublookupId);
+                }
+            }
+        }
+        return result;
+    }
+
+    private Specification<GroupListing> buildListingFilterSpec(String search, Map<String, Integer> filtersMap) {
+        Specification<GroupListing> spec = Specification.where(null);
+
+        if (search != null && !search.isBlank()) {
+            String like = "%" + search.toLowerCase() + "%";
+
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.or(
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("listingTitle")), like),
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("listingDescription")), like)
+                    )
+            );
+        }
+
+        for (Map.Entry<String, Integer> filterEntry : filtersMap.entrySet()) {
+            String fieldName = filterEntry.getKey();
+            Integer lookupId = filterEntry.getValue();
+
+            spec = spec.and((root, query, criteriaBuilder) ->
+                    criteriaBuilder.equal(root.get(fieldName).get("id"), lookupId));
+        }
+
+        return spec;
     }
 }
