@@ -6,12 +6,16 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
 public interface GroupListingService {
+
+    Page<GroupListingResponseDto> searchGroupListings(String search, List<String> filters, Pageable pageable);
 
     List<GroupListingResponseDto> getAllGroupListings();
 

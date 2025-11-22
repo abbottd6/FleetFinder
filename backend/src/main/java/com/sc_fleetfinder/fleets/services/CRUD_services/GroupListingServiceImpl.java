@@ -16,6 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -60,6 +62,14 @@ public class GroupListingServiceImpl implements GroupListingService {
         return groupListings.stream()
                 .map(groupListingConversionService::convertListingToResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<GroupListingResponseDto> searchGroupListings(String search, List<String> filters, Pageable pageable) {
+
+
+        Page<GroupListing> groupListings = groupListingRepository.findAll(pageable);
+        return groupListings.map(groupListingConversionService::convertListingToResponseDto);
     }
 
     @Override

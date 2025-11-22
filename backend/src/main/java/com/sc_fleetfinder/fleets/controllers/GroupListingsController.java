@@ -4,6 +4,7 @@ package com.sc_fleetfinder.fleets.controllers;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -11,10 +12,15 @@ import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -45,6 +51,19 @@ public class GroupListingsController {
     private GroupListingService groupListingService;
     @Autowired
     private UserRepository userRepository;
+
+    @PostMapping("/search")
+    public Page<GroupListingResponseDto> searchGroupListings(@RequestBody SearchListingsDto request) {
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+
+        log.info("Here is the page:" + request.getFilters());
+
+        return groupListingService.searchGroupListings(
+                request.getSearch(),
+                request.getFilters(),
+                pageable
+        );
+    }
 
     @GetMapping
     public CollectionModel<EntityModel<GroupListingResponseDto>> getAllGroupListings() {
