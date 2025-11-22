@@ -8,9 +8,10 @@ import {TooltipPosition} from "@angular/material/tooltip";
 import {MatSort, MatSortHeader, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
-import {MatPaginator} from "@angular/material/paginator";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {map, shareReplay} from "rxjs";
+import {map, Observable, shareReplay} from "rxjs";
+import {ListingsFilterState} from "../input-fields/search-bar/search-bar.component";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -26,11 +27,16 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   private breakpointObserver = inject(BreakpointObserver);
   private CLICKED_KEY = 'ff_user_clicked_listings';
   private _liveAnnouncer = inject(LiveAnnouncer)
+  protected searchAndFilterCriteria!: ListingsFilterState;
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
   selectedListing: GroupListingViewModel | null = null;
   isModalVisible: boolean = false;
   clickedRows = new Set<number>();
+
+  pageIndex = 0;
+  pageSize = 25;
+  totalElements = 0;
 
   /* TO DO: set up bookmarks and change this */
   userBookmarks: GroupListingViewModel[] = [];
@@ -41,33 +47,30 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
+    this.searchAndFilterCriteria = {
+      search: '',
+      filters: ['']
+    }
+
     this.loadGroupListings();
-
-    this.dataSource.filterPredicate = (
-      data: GroupListingViewModel,
-      filter: string
-    ) => {
-      const term = filter.trim().toLowerCase();
-
-      return (
-        data.listingTitle.toLowerCase().includes(term) ||
-        data.listingDescription.toLowerCase().includes(term) ||
-        data.availableRoles.toLowerCase().includes(term)
-      );
-    };
   }
 
   ngAfterViewInit() {
+    //just for page styling to show clicked listings
     this.loadClickedListings();
-    this.dataSource.paginator = this.paginator;
+
+    this.paginator.page.subscribe((event: PageEvent) => {
+      this.pageIndex = event.pageIndex;
+      this.pageSize = event.pageSize;
+      this.loadGroupListings();
+    })
+
     this.dataSource.sort = this.sort;
   }
 
-  applySearchFromChild(term: string): void {
-    this.dataSource.filter = term.trim().toLowerCase();
-  }
-
-  applyFiltersFromChild(terms: string[]): void {
+  applyFiltersFromChild(state: ListingsFilterState): void {
+    this.searchAndFilterCriteria = state;
+    this.loadGroupListings();
   }
 
   isRowClicked(row: GroupListingViewModel): boolean {
@@ -83,21 +86,25 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   }
 
   loadGroupListings() {
-    this.groupListingService.getGroupListings().subscribe({
-      next: (data: GroupListingViewModel[]) => {
-        // if(!environment.production) {
-        //   console.log('Data received in component:', data);
-        // }
-        this.dataSource.data = data;
-      },
-      error: (error) => {
-        console.error('Error fetching group listings from component:', error);
-      },
-      complete: () => {
-        if(!environment.production) {
-          console.log('Group listings fetching completed.');
+    this.groupListingService.searchGroupListings(this.searchAndFilterCriteria, this.pageIndex, this.pageSize)
+      .subscribe({
+        next: (page) => {
+          // if(!environment.production) {
+          //   console.log('Data received in component:', data);
+          // }
+          this.dataSource.data = page.content;
+          this.totalElements = page.totalElements;
+          this.pageSize = page.size;
+          this.pageIndex = page.number;
+        },
+        error: (error) => {
+          console.error('Error fetching group listings from component:', error);
+        },
+        complete: () => {
+          if(!environment.production) {
+            console.log('Group listings fetching completed.');
+          }
         }
-      }
     });
   }
 

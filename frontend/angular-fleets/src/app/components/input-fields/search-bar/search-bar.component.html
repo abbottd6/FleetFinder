@@ -6,7 +6,6 @@
         matInput
         #searchInput
         type="text"
-        (keyup)="onKeyup($event)"
         maxlength="65"
         placeholder="Enter Title or Description details..."
         [attr.aria-labelledby]="'searchInput'">
@@ -20,17 +19,21 @@
         <mat-icon>clear</mat-icon>
       </button>
     </mat-form-field>
-  </div>
-  <div class="filter-dropdowns">
-    <div class=dropdown-component>
+    <div class="search-button-container-right">
       <a>
-        <button class="action-buttons">Add</button>
+        <button
+          class="action-buttons"
+          (click)="emitSearchAndFilter(searchInput.value)">Search</button>
       </a>
     </div>
+  </div>
+  <div class="filter-dropdowns">
     <div class="dropdown-component">
       <ng-select
-        [items]="filterCategories"
+        [items]="FILTER_CATEGORIES"
         [formControl]="principalCtrl"
+        bindLabel="label"
+        bindValue="value"
         placeholder="Filter by..."
         [attr.aria-labelledby]="'Principal Filter'">
       </ng-select>
@@ -38,6 +41,8 @@
     <div class="dropdown-component">
       <ng-select
         [items]="parentFilters$ | async"
+        bindLabel="option"
+        bindValue="id"
         [formControl]="parentCtrl"
         placeholder="Parent Filter..."
         [attr.aria-labelledby]="'Parent Filter'">
@@ -45,7 +50,7 @@
     </div>
     <div class="dropdown-component">
       <ng-select
-        [items]="filterCategories"
+        [items]="FILTER_CATEGORIES"
         [formControl]="childCtrl"
         placeholder="Sub-filter..."
         [attr.aria-labelledby]="'Child Filter'">
@@ -53,8 +58,14 @@
     </div>
     <div class="dropdown-component">
       <a>
-        <button class="action-buttons">Clear All</button>
+        <button
+          class="action-buttons"
+          (click)="addFilter(principalCtrl.value, parentCtrl.value, childCtrl.value)">Add Filter</button>
       </a>
     </div>
   </div>
+</div>
+<div class="filters-container">
+  <h6 class="filters-title">Filters:</h6>
+  <span *ngFor="let filters of selectedFilters"> {{ filters }}</span>
 </div>

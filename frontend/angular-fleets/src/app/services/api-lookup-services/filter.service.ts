@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import {LookupService} from "./lookup.service";
 import {map, Observable} from "rxjs";
 
+export interface filterOptions {
+  id: number,
+  option: string,
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -9,59 +14,102 @@ export class FilterService {
 
   constructor(private lookup: LookupService) {}
 
-  filterGroupStatus(): Observable<string[]> {
+  filterGroupStatus(): Observable<filterOptions[]> {
     return this.lookup.getGroupStatuses().pipe(
       map(arr =>
-        arr.map(d => d.groupStatus)
+        arr.map(data => ({
+          id: data.groupStatusId,
+          option: data.groupStatus,
+        }))
       )
     );
   }
 
-  filterServerRegions(): Observable<string[]> {
+  filterServerRegions(): Observable<filterOptions[]> {
     return this.lookup.getServerRegions().pipe(
-      map(arr => arr.map(d => d.servername))
+      map(arr =>
+        arr.map(data => ({
+          id: data.serverId,
+          option: data.servername,
+        }))
+      )
     );
   }
 
-  filterEnvironments(): Observable<string[]> {
+  filterEnvironments(): Observable<filterOptions[]> {
     return this.lookup.getGameEnvironments().pipe(
-      map(arr => arr.map(d => d.environmentType))
-    )
+      map(arr =>
+        arr.map(data => ({
+          id: data.environmentId,
+          option: data.environmentType,
+        }))
+      )
+    );
   }
 
-  filterExperiences(): Observable<string[]> {
+  filterExperiences(): Observable<filterOptions[]> {
     return this.lookup.getGameExperiences().pipe(
-      map(arr => arr.map(d => d.experienceType))
-    )
+      map(arr =>
+        arr.map(data => ({
+          id: data.experienceId,
+          option: data.experienceType,
+        }))
+      )
+    );
   }
 
-  filterCategories(): Observable<string[]> {
+  filterCategories(): Observable<filterOptions[]> {
     return this.lookup.getGameplayCategories().pipe(
-      map(arr => arr.map(d => d.gameplayCategoryName))
+      map(arr =>
+        arr.map(data => ({
+          id: data.gameplayCategoryId,
+          option: data.gameplayCategoryName,
+        }))
+      )
     );
   }
 
-  filterSystems(): Observable<string[]> {
+  filterSystems(): Observable<filterOptions[]> {
     return this.lookup.getPlanetarySystems().pipe(
-      map(arr => arr.map(d => d.systemName))
+      map(arr =>
+        arr.map(data => ({
+          id: data.systemId,
+          option: data.systemName,
+        }))
+      )
     );
   }
 
-  filterPvp(): Observable<string[]> {
+  filterPvp(): Observable<filterOptions[]> {
     return this.lookup.getPvpStatuses().pipe(
-      map(arr => arr.map(d => d.pvpStatus))
+      map(arr =>
+        arr.map(data => ({
+          id: data.pvpStatusId,
+          option: data.pvpStatus,
+        }))
+      )
     );
   }
 
-  filterLegalities(): Observable<string[]> {
+  filterLegalities(): Observable<filterOptions[]> {
     return this.lookup.getLegalities().pipe(
-      map(arr => arr.map(d => d.legalityStatus))
+      map(arr =>
+        arr.map(data => ({
+          id: data.legalityId,
+          option: data.legalityStatus,
+        }))
+      )
     );
   }
 
-  filterPlayStyles(): Observable<string[]> {
+  filterPlayStyles(): Observable<filterOptions[]> {
     return this.lookup.getPlayStyles().pipe(
-      map(arr => arr.map(d => d.playStyle))
+      map(arr =>
+        arr.map(data => ({
+          id: data.styleId,
+          option: data.playStyle,
+        }))
+      )
     );
   }
 }

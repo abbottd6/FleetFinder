@@ -1,11 +1,16 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl} from "@angular/forms";
-import {Observable, of} from 'rxjs';
-import {FilterService} from "../../../services/api-lookup-services/filter.service";
+import {async, concat, Observable, of} from 'rxjs';
+import {filterOptions, FilterService} from "../../../services/api-lookup-services/filter.service";
 
 export interface ListingsFilterState {
   search: string;
   filters: string[];
+}
+
+export interface FilterPrincipal {
+  value: string;
+  label: string;
 }
 
 @Component({
@@ -19,16 +24,36 @@ export class SearchBarComponent implements OnInit{
   parentCtrl = new FormControl<string | null>(null);
   childCtrl = new FormControl<string | null>(null);
 
-  /* TO DO
-  combine these into a single object to pass back to the parent component
-   */
-  @Output() search = new EventEmitter<string>();
-  @Output() filters = new EventEmitter<string[]>();
+  selectedFilters: string[] = [];
 
-  filterCategories: string[] = ['Group Status', 'Server Region', 'Environment', 'Experience',
-    'Gameplay Category', 'Star System', 'PvP Status', 'Legality', 'Comms Options', 'Play Style', 'Schedule']
-  readonly COMMS_OPTIONS: string[] = ['Required', 'Optional', 'No Comms'];
-  parentFilters$!: Observable<string[]>;
+  private filterState: ListingsFilterState = {
+    search: '',
+    filters: []
+  }
+
+  @Output() applySearchAndFilters = new EventEmitter<ListingsFilterState>();
+
+  readonly FILTER_CATEGORIES: FilterPrincipal[] = [
+    { value: 'groupStatus', label: 'Group Status' },
+    { value: 'server', label: 'Server Region' },
+    { value: 'environment', label: 'Environment' },
+    { value: 'experience', label: 'Experience' },
+    { value: 'category', label: 'Gameplay Category' },
+    { value: 'system', label: 'Star System' },
+    { value: 'pvpStatus', label: 'PvP Status' },
+    { value: 'legality', label: 'Legality' },
+    { value: 'commsOption', label: 'Comms Options' },
+    { value: 'playStyle', label: 'Play Style' },
+    { value: 'eventSchedule', label: 'Schedule' },
+  ]
+
+  readonly COMMS_OPTIONS: filterOptions[] = [
+    { id: 1, option: 'Required'},
+    { id: 2, option: 'Optional'},
+    { id: 3, option: 'No Comms'},
+  ];
+
+  parentFilters$!: Observable<filterOptions[]>;
 
   constructor(private filter: FilterService) {}
 
@@ -40,63 +65,80 @@ export class SearchBarComponent implements OnInit{
 
     this.parentCtrl.valueChanges.subscribe( value => {
       this.childCtrl.reset();
-      this.emitFilters();
     })
 
     this.childCtrl.valueChanges.subscribe( value => {
-      this.emitFilters();
+
     })
   }
 
-  onKeyup(event: Event): void {
-    const input = (event.target as HTMLInputElement).value;
-    this.search.emit(input);
-  }
-
-  emitFilters(): void {
-    this.filters.emit([
-      this.principalCtrl.value ?? '',
-      this.parentCtrl.value ?? '',
-      this.childCtrl.value ?? '',
-    ]);
+  emitSearchAndFilter(searchInput: string): void {
+    this.filterState = {
+      search: searchInput.trim().toLowerCase(),
+      filters: this.selectedFilters,
+    }
+    console.log(this.filterState);
+    this.applySearchAndFilters.emit(this.filterState);
   }
 
   clearSearch(input: HTMLInputElement): void {
     input.value = '';
-    this.search.emit('');
-    this.onKeyup({ target: input } as unknown as Event);
+  }
+
+  addFilter(principal: string | null, parent: string | null, child: string | null): void {
+    const tempFilter = [principal, parent, child]
+      .filter(val => val != null && val != '')
+      .join(':');
+
+    const addIfNew = (value: string) => {
+      if (value == null) return;
+
+      if(principal != null && principal != '') {
+        const alreadyExists = this.selectedFilters.some(
+          f => f.includes(principal));
+        if (!alreadyExists) {
+          this.selectedFilters.push(value);
+          this.principalCtrl.reset();
+          this.parentCtrl.reset();
+          this.childCtrl.reset();
+        }
+      }
+    };
+
+    addIfNew(tempFilter);
+    console.log(this.selectedFilters)
   }
 
   getParentOptions() {
     switch(this.principalCtrl.value) {
-      case 'Group Status':
+      case 'groupStatus':
         this.parentFilters$ = this.filter.filterGroupStatus();
         break;
-      case 'Server Region':
+      case 'server':
         this.parentFilters$ = this.filter.filterServerRegions();
         break;
-      case 'Environment':
+      case 'environment':
         this.parentFilters$ = this.filter.filterEnvironments();
         break;
-      case 'Experience':
+      case 'experience':
         this.parentFilters$ = this.filter.filterExperiences();
         break;
-      case 'Gameplay Category':
+      case 'category':
         this.parentFilters$ = this.filter.filterCategories();
         break;
-      case 'Star System':
+      case 'system':
         this.parentFilters$ = this.filter.filterSystems();
         break;
-      case 'PvP Status':
+      case 'pvpStatus':
         this.parentFilters$ = this.filter.filterPvp();
         break;
-      case 'Legality':
+      case 'legality':
         this.parentFilters$ = this.filter.filterLegalities();
         break;
-      case 'Comms Options':
+      case 'commsOption':
         this.parentFilters$ = of(this.COMMS_OPTIONS);
         break;
-      case 'Play Style':
+      case 'playStyle':
         this.parentFilters$ = this.filter.filterPlayStyles();
         break;
     }

@@ -2,10 +2,9 @@
   <div class="background-color-container">
     <div class="search-criteria-container">
       <div class="search-bar-wrapper">
-        <app-search-bar (search)="applySearchFromChild($event)" (filters)="applyFiltersFromChild($event)"></app-search-bar>
-      </div>
-      <div class="filters-container">
-        <h6 class="filters-title">Filters:</h6>
+        <app-search-bar
+          (applySearchAndFilters)="applyFiltersFromChild($event)">
+        </app-search-bar>
       </div>
     </div>
   </div>
@@ -140,7 +139,9 @@
 <div class="paginator">
   <mat-paginator
     [pageSizeOptions]="[5, 10, 25, 50]"
-    [pageSize]="25"
+    [pageIndex]="pageIndex"
+    [pageSize]="pageSize"
+    [length]="totalElements"
     showFirstLastButtons>
   </mat-paginator>
 </div>
