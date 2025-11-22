@@ -113,6 +113,8 @@ app-update-listing {
 
 app-group-listings-table {
   min-width: 95% !important;
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 app-user {

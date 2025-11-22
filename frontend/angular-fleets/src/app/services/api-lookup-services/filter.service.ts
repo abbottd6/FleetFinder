@@ -1,10 +1,17 @@
 import { Injectable } from '@angular/core';
 import {LookupService} from "./lookup.service";
-import {map, Observable} from "rxjs";
+import {map, Observable, of} from "rxjs";
 
 export interface filterOptions {
   id: number,
   option: string,
+}
+
+export interface filterChildOptions {
+  id: number,
+  option: string,
+  parentId: number,
+  parentOption: string
 }
 
 @Injectable({
@@ -69,6 +76,25 @@ export class FilterService {
     );
   }
 
+  filterSubcategories(parent: string | null): Observable<filterChildOptions[]> {
+    if(!parent) {
+      return of([]);
+    }
+
+    return this.lookup.getGameplaySubcategories().pipe(
+      map(arr =>
+        arr
+          .filter(subcat => subcat.gameplayCategoryId === parent)
+          .map(data => ({
+          id: data.subcategoryId,
+          option: data.subcategoryName,
+          parentId: data.gameplayCategoryId,
+          parentOption: data.gameplayCategoryName,
+        }))
+      )
+    );
+  }
+
   filterSystems(): Observable<filterOptions[]> {
     return this.lookup.getPlanetarySystems().pipe(
       map(arr =>
@@ -78,6 +104,24 @@ export class FilterService {
         }))
       )
     );
+  }
+
+  filterPlanets(parent: string | null): Observable<filterChildOptions[]> {
+    if(!parent) {
+      return of([]);
+    }
+
+    return this.lookup.getPlanetMoonSystems().pipe(
+      map(arr =>
+        arr
+          .filter(planet => planet.systemId === parent)
+          .map(data => ({
+            id: data.planetId,
+            option: data.planetName,
+            parentId: data.systemId,
+            parentOption: data.systemName,
+        })))
+    )
   }
 
   filterPvp(): Observable<filterOptions[]> {

@@ -1,7 +1,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {FormControl} from "@angular/forms";
 import {async, concat, Observable, of} from 'rxjs';
-import {filterOptions, FilterService} from "../../../services/api-lookup-services/filter.service";
+import {filterChildOptions, filterOptions, FilterService} from "../../../services/api-lookup-services/filter.service";
 
 export interface ListingsFilterState {
   search: string;
@@ -21,10 +21,11 @@ export interface FilterPrincipal {
 })
 export class SearchBarComponent implements OnInit{
   principalCtrl = new FormControl<string | null>(null);
-  parentCtrl = new FormControl<string | null>(null);
-  childCtrl = new FormControl<string | null>(null);
+  parentCtrl = new FormControl<string | null>({ value: null, disabled: true });
+  childCtrl = new FormControl<string | null>({ value: null, disabled: true});
 
   selectedFilters: string[] = [];
+  displayedFilters: string[] = [];
 
   private filterState: ListingsFilterState = {
     search: '',
@@ -54,6 +55,10 @@ export class SearchBarComponent implements OnInit{
   ];
 
   parentFilters$!: Observable<filterOptions[]>;
+  childFilters$!: Observable<filterChildOptions[]>;
+  parentLabel: string | null = null;
+  childLabel: string | null = null;
+
 
   constructor(private filter: FilterService) {}
 
@@ -65,6 +70,7 @@ export class SearchBarComponent implements OnInit{
 
     this.parentCtrl.valueChanges.subscribe( value => {
       this.childCtrl.reset();
+      this.getChildOptions();
     })
 
     this.childCtrl.valueChanges.subscribe( value => {
@@ -98,6 +104,12 @@ export class SearchBarComponent implements OnInit{
           f => f.includes(principal));
         if (!alreadyExists) {
           this.selectedFilters.push(value);
+          if (this.parentLabel != null) {
+            this.displayedFilters.push(this.parentLabel);
+          }
+          if (this.childLabel != null) {
+            this.displayedFilters.push(this.childLabel);
+          }
           this.principalCtrl.reset();
           this.parentCtrl.reset();
           this.childCtrl.reset();
@@ -109,38 +121,79 @@ export class SearchBarComponent implements OnInit{
     console.log(this.selectedFilters)
   }
 
+  onParentChange(option: filterOptions | null): void {
+    this.parentLabel = option?.option ?? null;
+  }
+
+  onChildChange(option: filterChildOptions | null): void {
+    this.childLabel = option?.option ?? null;
+  }
+
+  clearFilters(searchInput: string) {
+    this.selectedFilters = [];
+    this.displayedFilters = [];
+    this.emitSearchAndFilter(searchInput);
+  }
+
   getParentOptions() {
     switch(this.principalCtrl.value) {
       case 'groupStatus':
         this.parentFilters$ = this.filter.filterGroupStatus();
+        this.parentCtrl.enable();
         break;
       case 'server':
         this.parentFilters$ = this.filter.filterServerRegions();
+        this.parentCtrl.enable();
         break;
       case 'environment':
         this.parentFilters$ = this.filter.filterEnvironments();
+        this.parentCtrl.enable();
         break;
       case 'experience':
         this.parentFilters$ = this.filter.filterExperiences();
+        this.parentCtrl.enable();
         break;
       case 'category':
         this.parentFilters$ = this.filter.filterCategories();
+        this.parentCtrl.enable();
         break;
       case 'system':
         this.parentFilters$ = this.filter.filterSystems();
+        this.parentCtrl.enable();
         break;
       case 'pvpStatus':
         this.parentFilters$ = this.filter.filterPvp();
+        this.parentCtrl.enable();
         break;
       case 'legality':
         this.parentFilters$ = this.filter.filterLegalities();
+        this.parentCtrl.enable();
         break;
       case 'commsOption':
         this.parentFilters$ = of(this.COMMS_OPTIONS);
+        this.parentCtrl.enable();
         break;
       case 'playStyle':
         this.parentFilters$ = this.filter.filterPlayStyles();
+        this.parentCtrl.enable();
         break;
+      default:
+        this.parentCtrl.disable();
+    }
+  }
+
+  getChildOptions() {
+    switch(this.principalCtrl.value) {
+      case 'category':
+        this.childCtrl.enable()
+        this.childFilters$ = this.filter.filterSubcategories(this.parentCtrl.value);
+        break;
+      case 'system':
+        this.childCtrl.enable()
+        this.childFilters$ = this.filter.filterPlanets(this.parentCtrl.value);
+        break;
+      default:
+        this.childCtrl.disable()
     }
   }
 }

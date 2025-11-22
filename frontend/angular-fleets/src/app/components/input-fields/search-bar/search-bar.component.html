@@ -41,19 +41,23 @@
     <div class="dropdown-component">
       <ng-select
         [items]="parentFilters$ | async"
+        [formControl]="parentCtrl"
         bindLabel="option"
         bindValue="id"
-        [formControl]="parentCtrl"
-        placeholder="Parent Filter..."
-        [attr.aria-labelledby]="'Parent Filter'">
+        placeholder="Filter for..."
+        (change)="onParentChange($event)"
+        [attr.aria-labelledby]="'Filter for'">
       </ng-select>
     </div>
     <div class="dropdown-component">
       <ng-select
-        [items]="FILTER_CATEGORIES"
+        [items]="childFilters$ | async"
         [formControl]="childCtrl"
-        placeholder="Sub-filter..."
-        [attr.aria-labelledby]="'Child Filter'">
+        bindValue="id"
+        bindLabel="option"
+        placeholder="Additional..."
+        (change)="onChildChange($event)"
+        [attr.aria-labelledby]="'Additional filter'">
       </ng-select>
     </div>
     <div class="dropdown-component">
@@ -67,5 +71,20 @@
 </div>
 <div class="filters-container">
   <h6 class="filters-title">Filters:</h6>
-  <span *ngFor="let filters of selectedFilters"> {{ filters }}</span>
+  <div class="filters-bubble-wrapper-row">
+    <div class="clear-button-container-right">
+      <button
+        class="action-buttons"
+        (click)="clearFilters(searchInput.value)">
+        Clear
+      </button>
+    </div>
+    <div class="filter-bubbles">
+      <mat-chip-set aria-label="Active Filter">
+        <mat-chip *ngFor="let filter of displayedFilters" class="filter-bubbles">
+          <span class="filter-bubbles-content"> {{ filter }} <mat-icon class="bubble-close">clear</mat-icon></span>
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+  </div>
 </div>
