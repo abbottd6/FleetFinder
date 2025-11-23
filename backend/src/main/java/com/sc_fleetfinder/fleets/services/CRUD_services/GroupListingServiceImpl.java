@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
+import com.sc_fleetfinder.fleets.entities.CommsOption;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
@@ -166,19 +167,32 @@ public class GroupListingServiceImpl implements GroupListingService {
             return result;
         }
 
+        /* THIS BREAKS ON COMMS OPTION FILTER BECAUSE THE OPTIONS DONT HAVE IDs
+
+         */
+
         for (String filter : filters) {
             String[] parts = filter.split(":", 3);
             if (parts.length == 2) {
                 String fieldName = parts[0].trim();
-                Integer lookupId = Integer.valueOf(parts[1].trim());
+                String lookup = parts[1].substring(0, parts[1].indexOf('*'));
+                Integer lookupId = Integer.valueOf(lookup);
                 result.put(fieldName, lookupId);
             } else if (parts.length == 3) {
                 String fieldName = parts[0].trim();
-                Integer lookupId = Integer.valueOf(parts[1].trim());
+                String lookup = parts[1].substring(0, parts[1].indexOf('*'));
+                Integer lookupId = Integer.valueOf(lookup);
                 result.put(fieldName, lookupId);
                 if(fieldName.equals("category")) {
                     String subfieldName = "subcategory";
-                    Integer sublookupId = Integer.valueOf(parts[2].trim());
+                    String sublookup = parts[2].substring(0, parts[2].indexOf('*'));
+                    Integer sublookupId = Integer.valueOf(sublookup);
+                    result.put(subfieldName, sublookupId);
+                }
+                else if(fieldName.equals("system")) {
+                    String subfieldName = "planetMoonSystem";
+                    String sublookup = parts[2].substring(0, parts[2].indexOf('*'));
+                    Integer sublookupId = Integer.valueOf(sublookup);
                     result.put(subfieldName, sublookupId);
                 }
             }
@@ -195,7 +209,8 @@ public class GroupListingServiceImpl implements GroupListingService {
             spec = spec.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.or(
                             criteriaBuilder.like(criteriaBuilder.lower(root.get("listingTitle")), like),
-                            criteriaBuilder.like(criteriaBuilder.lower(root.get("listingDescription")), like)
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("listingDescription")), like),
+                            criteriaBuilder.like(criteriaBuilder.lower(root.get("availableRoles")), like)
                     )
             );
         }
@@ -204,8 +219,17 @@ public class GroupListingServiceImpl implements GroupListingService {
             String fieldName = filterEntry.getKey();
             Integer lookupId = filterEntry.getValue();
 
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.equal(root.get(fieldName).get("id"), lookupId));
+            if(fieldName.equals("commsOption")) {
+
+                String tempOption = CommsOption.getById(lookupId);
+
+                spec = spec.and((root, query, criteriaBuilder) ->
+                criteriaBuilder.equal(root.get(fieldName), tempOption));
+            }
+            else {
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get(fieldName).get("id"), lookupId));
+            }
         }
 
         return spec;
