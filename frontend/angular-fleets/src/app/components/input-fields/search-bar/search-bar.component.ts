@@ -7,6 +7,8 @@ import {
   FilterService,
   ListingFilterState
 } from "../../../services/api-lookup-services/filter.service";
+import {MAT_DATE_FORMATS} from "@angular/material/core";
+import {EVENT_RANGE_FORMATS} from "../../../models/event-range-formats";
 
 // interface for creating the primary filter options
 export interface FilterPrincipal {
@@ -18,29 +20,35 @@ export interface FilterPrincipal {
   selector: 'app-search-bar',
   standalone: false,
   templateUrl: './search-bar.component.html',
-  styleUrl: './search-bar.component.css'
+  styleUrl: './search-bar.component.css',
+  providers: [
+    {provide: MAT_DATE_FORMATS, useValue: EVENT_RANGE_FORMATS }
+  ]
 })
 export class SearchBarComponent implements OnInit{
   principalCtrl = new FormControl<FilterOptionKey | null>(null);
   parentCtrl = new FormControl<filterOptions | null>({ value: null, disabled: true });
   childCtrl = new FormControl<filterOptions | null>({ value: null, disabled: true});
+  dateRange = new FormGroup({
+    start: new FormControl<Date | null>(null),
+    end: new FormControl<Date | null>(null),
+  })
 
   displayedFilters$!: Observable<{ key: FilterOptionKey; value: any}[]>;
 
   @Output() applySearchAndFilters = new EventEmitter<ListingFilterState>();
 
   readonly FILTER_CATEGORIES: FilterPrincipal[] = [
-    { value: 'groupStatus', label: 'Group Status' },
     { value: 'server', label: 'Server Region' },
     { value: 'environment', label: 'Environment' },
     { value: 'experience', label: 'Experience' },
     { value: 'category', label: 'Gameplay Category' },
-    { value: 'system', label: 'Star System' },
+    { value: 'groupStatus', label: 'Date/Current' },
     { value: 'pvpStatus', label: 'PvP Status' },
     { value: 'legality', label: 'Legality' },
+    { value: 'system', label: 'Star System' },
     { value: 'commsOption', label: 'Comms Options' },
     { value: 'playStyle', label: 'Play Style' },
-    { value: 'scheduleDate', label: 'Schedule' },
   ]
 
   readonly COMMS_OPTIONS: filterOptions[] = [
@@ -52,7 +60,9 @@ export class SearchBarComponent implements OnInit{
   parentFilters$!: Observable<filterOptions[]>;
   childFilters$!: Observable<filterOptions[]>;
 
-  constructor(private filter: FilterService) {}
+  constructor(private filter: FilterService) {
+    this.maxDate.setMonth(this.maxDate.getMonth() +6);
+  }
 
   ngOnInit() {
     this.principalCtrl?.valueChanges.subscribe( value => {
@@ -95,7 +105,7 @@ export class SearchBarComponent implements OnInit{
 
     this.filter.updateOption(principal, parent)
 
-    if(!this.childCtrl.value) {
+    if(!this.childCtrl.value && !this.dateRange.value) {
       this.principalCtrl.reset();
       this.parentCtrl.reset();
       this.childCtrl.reset();
@@ -104,10 +114,17 @@ export class SearchBarComponent implements OnInit{
 
     switch(principal) {
       case 'category':
-        this.filter.update('subcategory', this.childCtrl.value)
+        this.filter.update('subcategory', this.childCtrl.value);
         break;
       case 'system':
-        this.filter.update('planetMoonSystem', this.childCtrl.value)
+        this.filter.update('planetMoonSystem', this.childCtrl.value);
+        break;
+      case 'groupStatus':
+        if(this.dateRange.value.start != null && this.dateRange.value.end != null) {
+          this.filter.update('dateStart', this.toDateOnly(this.dateRange.value.start));
+          this.filter.update('dateEnd', this.toDateOnly(this.dateRange.value.end));
+          this.dateRange.reset();
+        }
         break;
     }
 
@@ -115,6 +132,10 @@ export class SearchBarComponent implements OnInit{
     this.parentCtrl.reset();
     this.childCtrl.reset();
   }
+
+  toDateOnly = (filterDate: Date | null): string | null => {
+    return filterDate ? filterDate.toISOString().substring(0,10) : null;
+  };
 
   removeFilter(value: FilterOptionKey): void {
     this.filter.updateOption(value, null);
@@ -127,9 +148,24 @@ export class SearchBarComponent implements OnInit{
 
   displayFilterValue(value: any): string {
     if(!value) return '';
-    if('option' in value) return value.option;
+    if(typeof value === 'object') {
+      if ('option' in value) return value.option;
+    }
     return String(value);
   }
+
+  //variable for disabling dates prior to current date
+  minDate: Date = new Date();
+
+  //variable for disabling dates more than 6 months ahead
+  maxDate: Date = new Date();
+
+  //class for applying styles to disabled dates
+  disabledDatesClass = (date: Date): string => {
+    const currDate = new Date();
+    currDate.setHours(0, 0, 0, 0);
+    return date < currDate ? 'disabled-date' : '';
+  };
 
   getParentOptions() {
     switch(this.principalCtrl.value) {
@@ -182,14 +218,20 @@ export class SearchBarComponent implements OnInit{
     switch(this.principalCtrl.value) {
       case 'category':
         if (this.parentCtrl.value != null) {
-          this.childCtrl.enable()
+          this.childCtrl.enable();
           this.childFilters$ = this.filter.filterSubcategories(this.parentCtrl.value.id);
         }
         break;
       case 'system':
         if (this.parentCtrl.value != null) {
-          this.childCtrl.enable()
+          this.childCtrl.enable();
           this.childFilters$ = this.filter.filterPlanets(this.parentCtrl.value.id);
+        }
+        break;
+      case 'groupStatus':
+        if(this.parentCtrl.value?.option == 'Future/Scheduled') {
+          this.childCtrl.disable();
+          this.dateRange.enable();
         }
         break;
       default:

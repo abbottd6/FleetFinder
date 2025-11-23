@@ -57,6 +57,13 @@ import {MatInput} from "@angular/material/input";
 import { ConfirmDeleteComponent } from './components/pop-ups/confirm-delete/confirm-delete.component';
 import {MatDialogActions, MatDialogContent, MatDialogTitle} from "@angular/material/dialog";
 import {MatChip, MatChipSet} from "@angular/material/chips";
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerToggle,
+  MatDateRangeInput, MatDateRangePicker,
+  MatEndDate, MatStartDate
+} from "@angular/material/datepicker";
 
 
 @NgModule({
@@ -127,6 +134,13 @@ import {MatChip, MatChipSet} from "@angular/material/chips";
     MatSuffix,
     MatChipSet,
     MatChip,
+    MatDatepicker,
+    MatDatepickerInput,
+    MatDatepickerToggle,
+    MatDateRangeInput,
+    MatEndDate,
+    MatDateRangePicker,
+    MatStartDate,
   ],
   providers: [
     provideClientHydration(),

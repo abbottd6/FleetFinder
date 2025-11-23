@@ -21,7 +21,8 @@ export interface ListingFilterState {
   system: filterOptions | null;
   planetMoonSystem: filterOptions | null;
   groupStatus: filterOptions | null;
-  scheduleDate: Date | null;
+  dateStart: string | null;
+  dateEnd: string | null;
   commsOption: filterOptions | null;
 }
 
@@ -38,7 +39,8 @@ export type FilterOptionKey =
   | 'planetMoonSystem'
   | 'groupStatus'
   | 'commsOption'
-  | 'scheduleDate'
+  | 'dateStart'
+  | 'dateEnd'
 
 
 @Injectable({
@@ -61,7 +63,8 @@ export class FilterService {
     system: null,
     planetMoonSystem: null,
     groupStatus: null,
-    scheduleDate: null,
+    dateStart: null,
+    dateEnd: null,
     commsOption: null,
   }
 
@@ -87,7 +90,8 @@ export class FilterService {
       system: null,
       planetMoonSystem: null,
       groupStatus: null,
-      scheduleDate: null,
+      dateStart: null,
+      dateEnd: null,
       commsOption: null,
     }
   }

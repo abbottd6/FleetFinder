@@ -16,9 +16,9 @@ export class ListingFilterRequest {
       system: filterData.system?.id ?? null,
       planetMoonSystem: filterData.planetMoonSystem?.id ?? null,
       groupStatus: filterData.groupStatus?.id ?? null,
-      eventSchedule: filterData.scheduleDate ?? null,
+      dateStart: filterData.dateStart ?? null,
+      dateEnd: filterData.dateEnd ?? null,
       commsOption: filterData.commsOption?.id ?? null,
     })
-
   }
 }

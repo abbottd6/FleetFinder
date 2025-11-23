@@ -191,3 +191,110 @@
   color: rgba(37, 106, 37, 0.86);
 }
 
+
+/* ------ DATE PICKER POPUP CONTAINER -------------------------------------------------------------------- */
+@media(min-width: 725px) {
+  /* datepicker calendar container */
+  ::ng-deep .mat-datepicker-content {
+    background-color: var(--bs-gray-900) !important;
+    color: rgba(188, 191, 200, .7) !important;
+    border-radius: 1rem !important;
+  }
+}
+
+@media(max-width: 724px) {
+  /* datepicker calendar container */
+  ::ng-deep .mat-datepicker-content {
+    margin-bottom: 5rem;
+  }
+}
+
+/* datepicker calendar */
+::ng-deep .mat-datepicker-content .mat-calendar {
+  border: 1px solid rgba(255, 131, 7, 0.5);
+  border-radius: 1rem !important;
+  max-height: 40vh;
+  overflow: auto;
+  scrollbar-width: none;
+}
+
+::ng-deep .custom-datepicker .mat-calender-body-in-preview .mat-calendar-body-cell {
+  border: none;
+}
+
+::ng-deep .custom-datepicker .mat-calendar-body-preview-start .mat-calendar-body-cell-preview {
+  border-left: 1px solid rgba(255, 131, 7, 0.5) !important;
+}
+
+::ng-deep .custom-datepicker .mat-calendar-body-preview-end .mat-calendar-body-cell-preview {
+  border-right: 1px solid rgba(255, 131, 7, 0.5) !important;
+}
+
+/* the datepicker range 'pill' */
+::ng-deep .custom-datepicker .mat-calendar-body-in-preview .mat-calendar-body-cell-preview {
+  background-color: rgba(44, 44, 44, .7) !important;
+  border-top: 1px solid rgba(255, 131, 7, 0.5) !important;
+  border-bottom: 1px solid rgba(255, 131, 7, 0.5) !important;
+}
+
+/* the datepicker cells within the selected pill */
+::ng-deep .custom-datepicker .mat-calendar-body-in-preview .mat-calendar-body-cell-content {
+  background-color: transparent !important;
+  border: 1px solid rgba(255, 131, 7, 0.1) !important;
+}
+
+/* datepicker calendar days */
+::ng-deep .mat-calendar-body-cell-content {
+  background-color: rgba(44, 44, 44, .9) !important;
+  color: var(--stark-blue) !important;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease, font-size 0.3s ease, color 0.4s ease;
+}
+
+/* datepicker calendar days NOT disabled hover */
+::ng-deep .mat-calendar-body-cell-content:not(.mat-calendar-body-disabled):hover {
+  font-size: 103%;
+  border-color: rgba(255, 131, 7, 0.5) !important;
+  box-shadow: 0 0 1px 1px rgba(255, 131, 7, 0.5) !important;
+  color: rgba(255, 131, 7, 0.5) !important;
+}
+
+/* datepicker year change dropdown arrow */
+::ng-deep .mat-calendar .mat-calendar-arrow {
+  display: none; /* not displayed, not a button */
+  fill: var(--stark-blue) !important;
+}
+
+/* datepicker year dropdown button, making it not a button */
+::ng-deep .mat-mdc-button:not(:disabled) {
+  pointer-events: none;
+}
+
+/* datepicker year dropdown button hover*/
+::ng-deep .mat-mdc-button:not(:disabled):hover {
+  font-size: 105%;
+}
+
+/* disabled/previous dates */
+::ng-deep .mat-calendar-body-cell.disabled-date .mat-calendar-body-cell-content{
+  background-color: rgba(108, 117, 125, 0.2) !important;
+  color: rgba(188, 191, 200, .2) !important;
+}
+
+/* disabled/previous dates hover */
+::ng-deep .mat-calendar-body-cell.disabled-date:hover .mat-calendar-body-cell-content {
+  border-color: rgba(27, 72, 120, 100) !important;
+  box-shadow: 0 0 3px 2px rgba(27, 72, 120, 0.75) !important;
+}
+
+/* calendar month pervious/next buttons */
+::ng-deep .mat-calendar-previous-button,
+::ng-deep .mat-calendar-next-button {
+  transition: filter 0.3s ease;
+}
+
+/* calendar month previous/next buttons hover */
+::ng-deep .mat-calendar-previous-button:hover,
+::ng-deep .mat-calendar-next-button:hover {
+  color: rgba(255, 131, 7, 0.5) !important;
+  filter: drop-shadow(0 0 6px rgba(255, 131, 7, 0.75)) drop-shadow(0 0 12px rgba(255, 131, 7, 0.75)) !important;
+}

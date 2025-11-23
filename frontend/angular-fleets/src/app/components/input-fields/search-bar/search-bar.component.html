@@ -23,7 +23,7 @@
       <a>
         <button
           class="action-buttons"
-          (click)="emitSearchAndFilter(searchInput.value)">Search</button>
+          (click)="emitSearchAndFilter(searchInput.value)">Update</button>
       </a>
     </div>
   </div>
@@ -48,7 +48,8 @@
       </ng-select>
     </div>
     <div class="dropdown-component">
-      <ng-select
+      <ng-select *ngIf="!(principalCtrl.value == 'groupStatus'
+        && parentCtrl.value?.option == 'Future/Scheduled') else datePicker"
         [items]="childFilters$ | async"
         [formControl]="childCtrl"
         bindLabel="option"
@@ -56,12 +57,47 @@
         [attr.aria-labelledby]="'Additional filter'">
       </ng-select>
     </div>
+    <ng-template #datePicker>
+      <div class="event-schedule-datepicker">
+        <mat-form-field>
+          <mat-label>Date Range</mat-label>
+          <mat-date-range-input
+            [rangePicker]="picker"
+            [formGroup]="dateRange"
+          >
+            <input
+              matStartDate
+              formControlName="start"
+              placeholder="Start date"
+              [min]="minDate"
+              [max]="maxDate"
+            >
+            <input
+              matEndDate
+              formControlName="end"
+              placeholder="End date"
+              [min]="minDate"
+              [max]="maxDate"
+            >
+          </mat-date-range-input>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+            class="date-picker-search-bar">
+          </mat-datepicker-toggle>
+          <mat-date-range-picker
+            #picker
+            panelClass="custom-datepicker"
+            [dateClass]="disabledDatesClass">
+          </mat-date-range-picker>
+        </mat-form-field>
+      </div>
+    </ng-template>
     <div class="dropdown-component">
-      <a>
         <button
           class="action-buttons"
+          id="addFilter"
           (click)="addFilter()">Add Filter</button>
-      </a>
     </div>
   </div>
 </div>
