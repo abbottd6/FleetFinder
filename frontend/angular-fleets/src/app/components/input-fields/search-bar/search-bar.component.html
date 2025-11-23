@@ -7,7 +7,7 @@
         #searchInput
         type="text"
         maxlength="65"
-        placeholder="Enter Title or Description details..."
+        placeholder="Keywords like: role, event name, ship style..."
         [attr.aria-labelledby]="'searchInput'">
       <button
         *ngIf="searchInput.value"
@@ -64,7 +64,7 @@
       <a>
         <button
           class="action-buttons"
-          (click)="addFilter(principalCtrl.value, parentCtrl.value, childCtrl.value)">Add Filter</button>
+          (click)="addFilter()">Add Filter</button>
       </a>
     </div>
   </div>
@@ -82,7 +82,9 @@
     <div class="filter-bubbles">
       <mat-chip-set aria-label="Active Filter">
         <mat-chip *ngFor="let filter of displayedFilters" class="filter-bubbles">
-          <span class="filter-bubbles-content"> {{ filter }} <mat-icon class="bubble-close">clear</mat-icon></span>
+          <span class="filter-bubbles-content"> {{ filter }}
+            <mat-icon class="bubble-close" (click)="removeSingleFilter(filter, searchInput.value)">clear</mat-icon>
+          </span>
         </mat-chip>
       </mat-chip-set>
     </div>

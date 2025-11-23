@@ -56,8 +56,8 @@ export class SearchBarComponent implements OnInit{
 
   parentFilters$!: Observable<filterOptions[]>;
   childFilters$!: Observable<filterChildOptions[]>;
-  parentLabel: string | null = null;
-  childLabel: string | null = null;
+  parentLabel: filterOptions | null = null;
+  childLabel: filterOptions | null = null;
 
 
   constructor(private filter: FilterService) {}
@@ -91,7 +91,23 @@ export class SearchBarComponent implements OnInit{
     input.value = '';
   }
 
-  addFilter(principal: string | null, parent: string | null, child: string | null): void {
+  addFilter(): void {
+    const delimiter = '**'
+
+    const principal = this.principalCtrl.value ?? null;
+    const parentId = this.parentLabel?.id ?? null;
+    const parentVal = this.parentLabel?.option ?? null;
+    const childId = this.childLabel?.id ?? null;
+    const childVal = this.childLabel?.option ?? null;
+
+    const parent = [parentId, parentVal]
+      .filter(val => val != null && val != '')
+      .join(delimiter);
+
+    const child = [childId, childVal]
+      .filter(val => val != undefined && val != '')
+      .join(delimiter);
+
     const tempFilter = [principal, parent, child]
       .filter(val => val != null && val != '')
       .join(':');
@@ -104,15 +120,22 @@ export class SearchBarComponent implements OnInit{
           f => f.includes(principal));
         if (!alreadyExists) {
           this.selectedFilters.push(value);
-          if (this.parentLabel != null) {
-            this.displayedFilters.push(this.parentLabel);
-          }
-          if (this.childLabel != null) {
-            this.displayedFilters.push(this.childLabel);
-          }
+          this.parseForLabel(value);
           this.principalCtrl.reset();
           this.parentCtrl.reset();
           this.childCtrl.reset();
+          this.parentLabel = null;
+          this.childLabel = null;
+        }
+        if (alreadyExists) {
+          this.replaceSingleFilter(value, principal)
+          this.selectedFilters = this.selectedFilters.map(f =>
+            f.includes(principal) ? value : f);
+          this.principalCtrl.reset();
+          this.parentCtrl.reset();
+          this.childCtrl.reset();
+          this.parentLabel = null;
+          this.childLabel = null;
         }
       }
     };
@@ -121,18 +144,71 @@ export class SearchBarComponent implements OnInit{
     console.log(this.selectedFilters)
   }
 
+  parseForLabel(criteria: string) {
+    return criteria.split(':')
+      .filter(el => el.includes('**'))
+      .map(val => {
+        const idx = val.indexOf('**');
+        this.displayedFilters.push(val.slice(idx + 2))
+      })
+
+  }
+
   onParentChange(option: filterOptions | null): void {
-    this.parentLabel = option?.option ?? null;
+    if(option) {
+      this.parentLabel = {
+        id: option.id,
+        option: option.option,
+      };
+    }
   }
 
   onChildChange(option: filterChildOptions | null): void {
-    this.childLabel = option?.option ?? null;
+    if(option) {
+      this.childLabel = {
+        id: option.id,
+        option: option.option,
+      }
+    }
   }
 
   clearFilters(searchInput: string) {
     this.selectedFilters = [];
     this.displayedFilters = [];
     this.emitSearchAndFilter(searchInput);
+  }
+
+  removeSingleFilter(thisFilter: string, searchInput: string) {
+    const cleanedFilter = this.selectedFilters.filter(val => val.includes(thisFilter))
+      .map(val => val.split(':'))
+      .flat()
+      .filter(part => !part.includes(thisFilter));
+
+    const tempFilter = cleanedFilter.filter(val => val != null && val != '')
+      .join(':');
+
+    this.selectedFilters = this.selectedFilters.filter(val => !val.includes(thisFilter));
+    this.selectedFilters.push(tempFilter);
+    this.displayedFilters = this.displayedFilters.filter(val => !val.includes(thisFilter));
+  }
+
+  replaceSingleFilter(thisFilter: string, principal: string) {
+    const existing = this.selectedFilters.filter(f => f.includes(principal))
+      .map(val => val );
+
+    const existingParts = existing.filter(val => val)
+      .map(parts => {
+        parts.split(':')
+        .flat()
+        .filter(part => part)
+          .map(val => {
+            const idx = val.indexOf('**');
+            const lbl = val.substring(idx + 2);
+          this.displayedFilters = this.displayedFilters.filter(el => !el.includes(lbl));
+          })
+      });
+
+    this.parseForLabel(thisFilter);
   }
 
   getParentOptions() {

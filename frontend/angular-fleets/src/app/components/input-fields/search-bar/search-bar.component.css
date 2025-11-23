@@ -212,7 +212,8 @@
 
 .mdc-evolution-chip {
   background-color: rgba(33, 37, 41, 1) !important;
-  color: rgba(188, 191, 200, .6) !important;
+  color: rgba(255, 131, 7, 0.5);
+  font-size: clamp(0.7rem, 1rem, 1.2rem);
 }
 
 :host ::ng-deep .mdc-evolution-chip__action--primary {
