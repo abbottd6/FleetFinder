@@ -43,9 +43,7 @@
         [items]="parentFilters$ | async"
         [formControl]="parentCtrl"
         bindLabel="option"
-        bindValue="id"
         placeholder="Filter for..."
-        (change)="onParentChange($event)"
         [attr.aria-labelledby]="'Filter for'">
       </ng-select>
     </div>
@@ -53,10 +51,8 @@
       <ng-select
         [items]="childFilters$ | async"
         [formControl]="childCtrl"
-        bindValue="id"
         bindLabel="option"
         placeholder="Additional..."
-        (change)="onChildChange($event)"
         [attr.aria-labelledby]="'Additional filter'">
       </ng-select>
     </div>
@@ -81,9 +77,9 @@
     </div>
     <div class="filter-bubbles">
       <mat-chip-set aria-label="Active Filter">
-        <mat-chip *ngFor="let filter of displayedFilters" class="filter-bubbles">
-          <span class="filter-bubbles-content"> {{ filter }}
-            <mat-icon class="bubble-close" (click)="removeSingleFilter(filter, searchInput.value)">clear</mat-icon>
+        <mat-chip *ngFor="let filter of displayedFilters$ | async" class="filter-bubbles">
+          <span class="filter-bubbles-content"> {{ displayFilterValue(filter.value) }}
+            <mat-icon (click)="removeFilter(filter.key)" class="bubble-close">clear</mat-icon>
           </span>
         </mat-chip>
       </mat-chip-set>

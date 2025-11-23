@@ -1,15 +1,16 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
-import {FormControl} from "@angular/forms";
-import {async, concat, Observable, of} from 'rxjs';
-import {filterChildOptions, filterOptions, FilterService} from "../../../services/api-lookup-services/filter.service";
+import {FormControl, FormGroup} from "@angular/forms";
+import {map, Observable, of} from 'rxjs';
+import {
+  FilterOptionKey,
+  filterOptions,
+  FilterService,
+  ListingFilterState
+} from "../../../services/api-lookup-services/filter.service";
 
-export interface ListingsFilterState {
-  search: string;
-  filters: string[];
-}
-
+// interface for creating the primary filter options
 export interface FilterPrincipal {
-  value: string;
+  value: FilterOptionKey;
   label: string;
 }
 
@@ -20,19 +21,13 @@ export interface FilterPrincipal {
   styleUrl: './search-bar.component.css'
 })
 export class SearchBarComponent implements OnInit{
-  principalCtrl = new FormControl<string | null>(null);
-  parentCtrl = new FormControl<string | null>({ value: null, disabled: true });
-  childCtrl = new FormControl<string | null>({ value: null, disabled: true});
+  principalCtrl = new FormControl<FilterOptionKey | null>(null);
+  parentCtrl = new FormControl<filterOptions | null>({ value: null, disabled: true });
+  childCtrl = new FormControl<filterOptions | null>({ value: null, disabled: true});
 
-  selectedFilters: string[] = [];
-  displayedFilters: string[] = [];
+  displayedFilters$!: Observable<{ key: FilterOptionKey; value: any}[]>;
 
-  private filterState: ListingsFilterState = {
-    search: '',
-    filters: []
-  }
-
-  @Output() applySearchAndFilters = new EventEmitter<ListingsFilterState>();
+  @Output() applySearchAndFilters = new EventEmitter<ListingFilterState>();
 
   readonly FILTER_CATEGORIES: FilterPrincipal[] = [
     { value: 'groupStatus', label: 'Group Status' },
@@ -45,7 +40,7 @@ export class SearchBarComponent implements OnInit{
     { value: 'legality', label: 'Legality' },
     { value: 'commsOption', label: 'Comms Options' },
     { value: 'playStyle', label: 'Play Style' },
-    { value: 'eventSchedule', label: 'Schedule' },
+    { value: 'scheduleDate', label: 'Schedule' },
   ]
 
   readonly COMMS_OPTIONS: filterOptions[] = [
@@ -55,10 +50,7 @@ export class SearchBarComponent implements OnInit{
   ];
 
   parentFilters$!: Observable<filterOptions[]>;
-  childFilters$!: Observable<filterChildOptions[]>;
-  parentLabel: filterOptions | null = null;
-  childLabel: filterOptions | null = null;
-
+  childFilters$!: Observable<filterOptions[]>;
 
   constructor(private filter: FilterService) {}
 
@@ -73,18 +65,20 @@ export class SearchBarComponent implements OnInit{
       this.getChildOptions();
     })
 
-    this.childCtrl.valueChanges.subscribe( value => {
-
-    })
+    this.displayedFilters$ = this.filter.state$.pipe(
+      map(state =>
+        Object.entries(state)
+          .filter(([field, value]) => value !== null && value !== '' && field != 'searchInput')
+          .map(([key, value]) => ({ key: key as FilterOptionKey, value: value })),)
+    )
   }
 
-  emitSearchAndFilter(searchInput: string): void {
-    this.filterState = {
-      search: searchInput.trim().toLowerCase(),
-      filters: this.selectedFilters,
-    }
-    console.log(this.filterState);
-    this.applySearchAndFilters.emit(this.filterState);
+  emitSearchAndFilter(search: string): void {
+    this.filter.update('searchInput', search || null);
+
+    const state = this.filter.pullState()
+
+    this.applySearchAndFilters.emit(state);
   }
 
   clearSearch(input: HTMLInputElement): void {
@@ -92,123 +86,49 @@ export class SearchBarComponent implements OnInit{
   }
 
   addFilter(): void {
-    const delimiter = '**'
-
-    const principal = this.principalCtrl.value ?? null;
-    const parentId = this.parentLabel?.id ?? null;
-    const parentVal = this.parentLabel?.option ?? null;
-    const childId = this.childLabel?.id ?? null;
-    const childVal = this.childLabel?.option ?? null;
-
-    const parent = [parentId, parentVal]
-      .filter(val => val != null && val != '')
-      .join(delimiter);
-
-    const child = [childId, childVal]
-      .filter(val => val != undefined && val != '')
-      .join(delimiter);
-
-    const tempFilter = [principal, parent, child]
-      .filter(val => val != null && val != '')
-      .join(':');
-
-    const addIfNew = (value: string) => {
-      if (value == null) return;
-
-      if(principal != null && principal != '') {
-        const alreadyExists = this.selectedFilters.some(
-          f => f.includes(principal));
-        if (!alreadyExists) {
-          this.selectedFilters.push(value);
-          this.parseForLabel(value);
-          this.principalCtrl.reset();
-          this.parentCtrl.reset();
-          this.childCtrl.reset();
-          this.parentLabel = null;
-          this.childLabel = null;
-        }
-        if (alreadyExists) {
-          this.replaceSingleFilter(value, principal)
-          this.selectedFilters = this.selectedFilters.map(f =>
-            f.includes(principal) ? value : f);
-          this.principalCtrl.reset();
-          this.parentCtrl.reset();
-          this.childCtrl.reset();
-          this.parentLabel = null;
-          this.childLabel = null;
-        }
-      }
-    };
-
-    addIfNew(tempFilter);
-    console.log(this.selectedFilters)
-  }
-
-  parseForLabel(criteria: string) {
-    return criteria.split(':')
-      .filter(el => el.includes('**'))
-      .map(val => {
-        const idx = val.indexOf('**');
-        this.displayedFilters.push(val.slice(idx + 2))
-      })
-
-  }
-
-  onParentChange(option: filterOptions | null): void {
-    if(option) {
-      this.parentLabel = {
-        id: option.id,
-        option: option.option,
-      };
+    if(!this.principalCtrl.value || !this.parentCtrl.value) {
+      return
     }
+
+    const principal: FilterOptionKey = this.principalCtrl.value;
+    const parent = this.parentCtrl.value;
+
+    this.filter.updateOption(principal, parent)
+
+    if(!this.childCtrl.value) {
+      this.principalCtrl.reset();
+      this.parentCtrl.reset();
+      this.childCtrl.reset();
+      return
+    }
+
+    switch(principal) {
+      case 'category':
+        this.filter.update('subcategory', this.childCtrl.value)
+        break;
+      case 'system':
+        this.filter.update('planetMoonSystem', this.childCtrl.value)
+        break;
+    }
+
+    this.principalCtrl.reset();
+    this.parentCtrl.reset();
+    this.childCtrl.reset();
   }
 
-  onChildChange(option: filterChildOptions | null): void {
-    if(option) {
-      this.childLabel = {
-        id: option.id,
-        option: option.option,
-      }
-    }
+  removeFilter(value: FilterOptionKey): void {
+    this.filter.updateOption(value, null);
   }
 
   clearFilters(searchInput: string) {
-    this.selectedFilters = [];
-    this.displayedFilters = [];
+    this.filter.clearFilters();
     this.emitSearchAndFilter(searchInput);
   }
 
-  removeSingleFilter(thisFilter: string, searchInput: string) {
-    const cleanedFilter = this.selectedFilters.filter(val => val.includes(thisFilter))
-      .map(val => val.split(':'))
-      .flat()
-      .filter(part => !part.includes(thisFilter));
-
-    const tempFilter = cleanedFilter.filter(val => val != null && val != '')
-      .join(':');
-
-    this.selectedFilters = this.selectedFilters.filter(val => !val.includes(thisFilter));
-    this.selectedFilters.push(tempFilter);
-    this.displayedFilters = this.displayedFilters.filter(val => !val.includes(thisFilter));
-  }
-
-  replaceSingleFilter(thisFilter: string, principal: string) {
-    const existing = this.selectedFilters.filter(f => f.includes(principal))
-      .map(val => val );
-
-    const existingParts = existing.filter(val => val)
-      .map(parts => {
-        parts.split(':')
-        .flat()
-        .filter(part => part)
-          .map(val => {
-            const idx = val.indexOf('**');
-            const lbl = val.substring(idx + 2);
-          this.displayedFilters = this.displayedFilters.filter(el => !el.includes(lbl));
-          })
-      });
-
-    this.parseForLabel(thisFilter);
+  displayFilterValue(value: any): string {
+    if(!value) return '';
+    if('option' in value) return value.option;
+    return String(value);
   }
 
   getParentOptions() {
@@ -261,12 +181,16 @@ export class SearchBarComponent implements OnInit{
   getChildOptions() {
     switch(this.principalCtrl.value) {
       case 'category':
-        this.childCtrl.enable()
-        this.childFilters$ = this.filter.filterSubcategories(this.parentCtrl.value);
+        if (this.parentCtrl.value != null) {
+          this.childCtrl.enable()
+          this.childFilters$ = this.filter.filterSubcategories(this.parentCtrl.value.id);
+        }
         break;
       case 'system':
-        this.childCtrl.enable()
-        this.childFilters$ = this.filter.filterPlanets(this.parentCtrl.value);
+        if (this.parentCtrl.value != null) {
+          this.childCtrl.enable()
+          this.childFilters$ = this.filter.filterPlanets(this.parentCtrl.value.id);
+        }
         break;
       default:
         this.childCtrl.disable()

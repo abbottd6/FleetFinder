@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {map, Observable, tap} from "rxjs";
+import {Observable, tap} from "rxjs";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from '../../../environments/environment';
-import {ListingsFilterState} from "../../components/input-fields/search-bar/search-bar.component";
+import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 
 export interface Page<T> {
   content: T[];
@@ -23,16 +23,16 @@ export class GroupListingFetchService {
   constructor(private httpClient: HttpClient) { }
 
   searchGroupListings(
-    filterState: ListingsFilterState,
+    filters: ListingFilterRequest,
     page: number,
     size: number
   ): Observable<Page<GroupListingViewModel>> {
     const requestBody = {
-      search: filterState.search,
-      filters: filterState.filters,
+      ...filters,
       page,
       size};
 
+    console.log(requestBody);
     return this.httpClient.post<Page<GroupListingViewModel>>(`${this.baseUrl}/search`, requestBody)
       .pipe(
         tap(response => {

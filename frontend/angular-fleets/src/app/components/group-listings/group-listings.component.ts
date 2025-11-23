@@ -3,7 +3,6 @@ import {GroupListingFetchService} from "../../services/group-listing-services/gr
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {MatMenuTrigger} from "@angular/material/menu";
 import {TooltipPosition} from "@angular/material/tooltip";
 import {MatSort, MatSortHeader, Sort} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
@@ -11,7 +10,8 @@ import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {map, Observable, shareReplay} from "rxjs";
-import {ListingsFilterState} from "../input-fields/search-bar/search-bar.component";
+import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
+import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -27,7 +27,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   private breakpointObserver = inject(BreakpointObserver);
   private CLICKED_KEY = 'ff_user_clicked_listings';
   private _liveAnnouncer = inject(LiveAnnouncer)
-  protected searchAndFilterCriteria!: ListingsFilterState;
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
   selectedListing: GroupListingViewModel | null = null;
@@ -44,33 +43,30 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   displayedColumns = ['options', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated'];
   dataSource = new MatTableDataSource<GroupListingViewModel>();
 
-  constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar) {}
+  constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
+              private filter: FilterService,) {}
 
   ngOnInit(): void {
-    this.searchAndFilterCriteria = {
-      search: '',
-      filters: ['']
-    }
-
-    this.loadGroupListings();
+    this.applyFiltersFromChild(this.filter.pullState())
   }
 
   ngAfterViewInit() {
     //just for page styling to show clicked listings
     this.loadClickedListings();
 
+
     this.paginator.page.subscribe((event: PageEvent) => {
       this.pageIndex = event.pageIndex;
       this.pageSize = event.pageSize;
-      this.loadGroupListings();
+      this.applyFiltersFromChild(this.filter.pullState());
     })
 
     this.dataSource.sort = this.sort;
   }
 
-  applyFiltersFromChild(state: ListingsFilterState): void {
-    this.searchAndFilterCriteria = state;
-    this.loadGroupListings();
+  applyFiltersFromChild(state: ListingFilterState): void {
+    const filterDto = new ListingFilterRequest(state);
+    this.loadGroupListings(filterDto);
   }
 
   isRowClicked(row: GroupListingViewModel): boolean {
@@ -85,8 +81,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
     }
   }
 
-  loadGroupListings() {
-    this.groupListingService.searchGroupListings(this.searchAndFilterCriteria, this.pageIndex, this.pageSize)
+  loadGroupListings(dto: ListingFilterRequest) {
+    this.groupListingService.searchGroupListings(dto, this.pageIndex, this.pageSize)
       .subscribe({
         next: (page) => {
           // if(!environment.production) {

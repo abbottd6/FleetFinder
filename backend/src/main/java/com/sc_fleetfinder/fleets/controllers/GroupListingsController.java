@@ -56,13 +56,9 @@ public class GroupListingsController {
     public Page<GroupListingResponseDto> searchGroupListings(@RequestBody SearchListingsDto request) {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
 
-        log.info("Here is the page:" + request.getFilters());
+        log.info("Here is the page:" + request);
 
-        return groupListingService.searchGroupListings(
-                request.getSearch(),
-                request.getFilters(),
-                pageable
-        );
+        return groupListingService.searchGroupListings(request, pageable);
     }
 
     @GetMapping

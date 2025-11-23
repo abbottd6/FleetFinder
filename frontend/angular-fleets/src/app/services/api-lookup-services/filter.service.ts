@@ -1,18 +1,45 @@
 import { Injectable } from '@angular/core';
 import {LookupService} from "./lookup.service";
-import {map, Observable, of} from "rxjs";
+import {BehaviorSubject, map, Observable, of} from "rxjs";
 
 export interface filterOptions {
   id: number,
   option: string,
 }
 
-export interface filterChildOptions {
-  id: number,
-  option: string,
-  parentId: number,
-  parentOption: string
+export interface ListingFilterState {
+  searchInput: string | null;
+
+  server: filterOptions | null;
+  environment: filterOptions | null;
+  experience: filterOptions | null;
+  playStyle: filterOptions | null;
+  category: filterOptions | null;
+  subcategory: filterOptions | null;
+  legality: filterOptions | null;
+  pvpStatus: filterOptions | null;
+  system: filterOptions | null;
+  planetMoonSystem: filterOptions | null;
+  groupStatus: filterOptions | null;
+  scheduleDate: Date | null;
+  commsOption: filterOptions | null;
 }
+
+export type FilterOptionKey =
+  | 'server'
+  | 'environment'
+  | 'experience'
+  | 'playStyle'
+  | 'category'
+  | 'subcategory'
+  | 'legality'
+  | 'pvpStatus'
+  | 'system'
+  | 'planetMoonSystem'
+  | 'groupStatus'
+  | 'commsOption'
+  | 'scheduleDate'
+
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +47,58 @@ export interface filterChildOptions {
 export class FilterService {
 
   constructor(private lookup: LookupService) {}
+
+  private state: ListingFilterState = {
+    searchInput: null,
+    server: null,
+    environment: null,
+    experience: null,
+    playStyle: null,
+    category: null,
+    subcategory: null,
+    legality: null,
+    pvpStatus: null,
+    system: null,
+    planetMoonSystem: null,
+    groupStatus: null,
+    scheduleDate: null,
+    commsOption: null,
+  }
+
+  private stateSubject = new BehaviorSubject<ListingFilterState>(this.state);
+  readonly state$ = this.stateSubject.asObservable();
+
+  update<K extends keyof ListingFilterState>(key: K, value: ListingFilterState[K]) {
+    this.state = { ...this.state, [key]: value };
+    this.stateSubject.next(this.state)
+  }
+
+  clearFilters() {
+    this.state = {
+      searchInput: null,
+      server: null,
+      environment: null,
+      experience: null,
+      playStyle: null,
+      category: null,
+      subcategory: null,
+      legality: null,
+      pvpStatus: null,
+      system: null,
+      planetMoonSystem: null,
+      groupStatus: null,
+      scheduleDate: null,
+      commsOption: null,
+    }
+  }
+
+  updateOption(key: FilterOptionKey, value: filterOptions | null) {
+    this.update(key, value);
+  }
+
+  pullState(): ListingFilterState {
+    return this.state;
+  }
 
   filterGroupStatus(): Observable<filterOptions[]> {
     return this.lookup.getGroupStatuses().pipe(
@@ -76,7 +155,7 @@ export class FilterService {
     );
   }
 
-  filterSubcategories(parent: string | null): Observable<filterChildOptions[]> {
+  filterSubcategories(parent: number): Observable<filterOptions[]> {
     if(!parent) {
       return of([]);
     }
@@ -88,8 +167,6 @@ export class FilterService {
           .map(data => ({
           id: data.subcategoryId,
           option: data.subcategoryName,
-          parentId: data.gameplayCategoryId,
-          parentOption: data.gameplayCategoryName,
         }))
       )
     );
@@ -106,7 +183,7 @@ export class FilterService {
     );
   }
 
-  filterPlanets(parent: string | null): Observable<filterChildOptions[]> {
+  filterPlanets(parent: number): Observable<filterOptions[]> {
     if(!parent) {
       return of([]);
     }
@@ -118,8 +195,6 @@ export class FilterService {
           .map(data => ({
             id: data.planetId,
             option: data.planetName,
-            parentId: data.systemId,
-            parentOption: data.systemName,
         })))
     )
   }
