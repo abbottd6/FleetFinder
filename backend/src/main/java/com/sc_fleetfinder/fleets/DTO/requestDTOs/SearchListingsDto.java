@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +21,8 @@ public class SearchListingsDto {
     private Integer system;
     private Integer planetMoonSystem;
     private Integer groupStatus;
-    private Date dateStart;
-    private Date dateEnd;
+    private LocalDate dateStart;
+    private LocalDate dateEnd;
     private Integer commsOption;
     private int page;
     private int size;

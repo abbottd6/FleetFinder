@@ -31,6 +31,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -246,13 +247,13 @@ public class GroupListingServiceImpl implements GroupListingService {
             }
 
             else if(fieldName.equals("dateStart")) {
-                Date date = (Date) value;
+                LocalDate date = (LocalDate) value;
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.greaterThanOrEqualTo(root.get("eventSchedule"), date)
                 );
             }
             else if(fieldName.equals("dateEnd")) {
-                Date date = (Date) value;
+                LocalDate date = (LocalDate) value;
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.lessThanOrEqualTo(root.get("eventSchedule"), date)
                 );
