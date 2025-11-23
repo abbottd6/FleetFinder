@@ -20,7 +20,8 @@ public class SearchListingsDto {
     private Integer system;
     private Integer planetMoonSystem;
     private Integer groupStatus;
-    private Date eventSchedule;
+    private Date dateStart;
+    private Date dateEnd;
     private Integer commsOption;
     private int page;
     private int size;

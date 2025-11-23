@@ -242,21 +242,28 @@ public class GroupListingServiceImpl implements GroupListingService {
                 String tempOption = CommsOption.getById(lookupId);
 
                 spec = spec.and((root, query, criteriaBuilder) ->
-                criteriaBuilder.equal(root.get(fieldName), tempOption));
+                        criteriaBuilder.equal(root.get(fieldName), tempOption));
             }
 
-            else if(fieldName.equals("eventSchedule")) {
+            else if(fieldName.equals("dateStart")) {
                 Date date = (Date) value;
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.equal(root.get(fieldName), date)
+                        criteriaBuilder.greaterThanOrEqualTo(root.get("eventSchedule"), date)
                 );
             }
+            else if(fieldName.equals("dateEnd")) {
+                Date date = (Date) value;
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.lessThanOrEqualTo(root.get("eventSchedule"), date)
+                );
+            }
+
             else if (value instanceof Integer lookupId) {
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.equal(root.get(fieldName).get("id"), lookupId));
             }
         }
-        log.info("here is the spec?" + spec);
+
         return spec;
     }
 }
