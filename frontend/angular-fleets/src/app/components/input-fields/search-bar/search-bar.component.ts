@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
 import {map, Observable, of} from 'rxjs';
 import {
@@ -9,6 +9,8 @@ import {
 } from "../../../services/api-lookup-services/filter.service";
 import {MAT_DATE_FORMATS} from "@angular/material/core";
 import {EVENT_RANGE_FORMATS} from "../../../models/event-range-formats";
+import {PageEvent} from "@angular/material/paginator";
+import {Page} from "../../../services/group-listing-services/group-listing-fetch.service";
 
 // interface for creating the primary filter options
 export interface FilterPrincipal {
@@ -85,9 +87,7 @@ export class SearchBarComponent implements OnInit{
 
   emitSearchAndFilter(search: string): void {
     this.filter.update('searchInput', search || null);
-
     const state = this.filter.pullState()
-
     this.applySearchAndFilters.emit(state);
   }
 

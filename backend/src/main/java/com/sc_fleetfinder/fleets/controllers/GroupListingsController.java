@@ -21,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -54,7 +55,13 @@ public class GroupListingsController {
 
     @PostMapping("/search")
     public Page<GroupListingResponseDto> searchGroupListings(@RequestBody SearchListingsDto request) {
-        Pageable pageable = PageRequest.of(request.getPage(), request.getSize());
+        Sort sort = Sort.unsorted();
+        if (request.getSortField() != null && !request.getSortField().isBlank()) {
+            Sort.Direction direction = "desc".equalsIgnoreCase(request.getSortDirection())
+                    ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, request.getSortField());
+        }
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         log.info("Here is the page:" + request);
 

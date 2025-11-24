@@ -1,10 +1,10 @@
 import {AfterViewInit, Component, inject, Input, OnInit, ViewChild} from '@angular/core';
-import {GroupListingFetchService} from "../../services/group-listing-services/group-listing-fetch.service";
+import {GroupListingFetchService, Page} from "../../services/group-listing-services/group-listing-fetch.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TooltipPosition} from "@angular/material/tooltip";
-import {MatSort, MatSortHeader, Sort} from "@angular/material/sort";
+import {MatSort, MatSortHeader, Sort, SortDirection} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
@@ -36,6 +36,9 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   pageIndex = 0;
   pageSize = 25;
   totalElements = 0;
+  currentFilterState: ListingFilterState | null = null;
+  sortActive = 'creationTimestamp';
+  sortDirection: SortDirection = 'desc';
 
   /* TO DO: set up bookmarks and change this */
   userBookmarks: GroupListingViewModel[] = [];
@@ -58,15 +61,41 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
     this.paginator.page.subscribe((event: PageEvent) => {
       this.pageIndex = event.pageIndex;
       this.pageSize = event.pageSize;
-      this.applyFiltersFromChild(this.filter.pullState());
+      this.reloadListings();
+    })
+
+    this.sort.sortChange.subscribe((event: Sort) => {
+      this.sortActive = event.active;
+      this.sortDirection = event.direction || 'desc';
+
+      this.pageIndex = 0;
+      if(this.paginator) {
+        this.paginator.pageIndex = 0;
+      }
+
+      this.reloadListings();
     })
 
     this.dataSource.sort = this.sort;
   }
 
-  applyFiltersFromChild(state: ListingFilterState): void {
+  private reloadListings(): void {
+    const state = this.currentFilterState ?? this.filter.pullState();
     const filterDto = new ListingFilterRequest(state);
-    this.loadGroupListings(filterDto);
+
+    this.loadGroupListings(filterDto, this.pageIndex, this.pageSize, this.sortActive, this.sortDirection);
+  }
+
+  applyFiltersFromChild(state: ListingFilterState): void {
+    this.currentFilterState = state;
+
+    this.pageIndex = 0;
+
+    if(this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
+
+    this.reloadListings();
   }
 
   isRowClicked(row: GroupListingViewModel): boolean {
@@ -81,13 +110,13 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
     }
   }
 
-  loadGroupListings(dto: ListingFilterRequest) {
-    this.groupListingService.searchGroupListings(dto, this.pageIndex, this.pageSize)
+  loadGroupListings(dto: ListingFilterRequest, idx: number, sz: number, sortA: string, sortD: string) {
+    this.groupListingService.searchGroupListings(dto, idx, sz, sortA, sortD)
       .subscribe({
         next: (page) => {
-          // if(!environment.production) {
-          //   console.log('Data received in component:', data);
-          // }
+          if(!environment.production) {
+            console.log('Data received in component:', page);
+          }
           this.dataSource.data = page.content;
           this.totalElements = page.totalElements;
           this.pageSize = page.size;

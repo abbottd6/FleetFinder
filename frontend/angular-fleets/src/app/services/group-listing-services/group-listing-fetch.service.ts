@@ -4,6 +4,7 @@ import {Observable, tap} from "rxjs";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from '../../../environments/environment';
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
+import {SortDirection} from "@angular/material/sort";
 
 export interface Page<T> {
   content: T[];
@@ -11,6 +12,13 @@ export interface Page<T> {
   totalPages: number;
   size: number;
   number: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+    asc: boolean;
+    desc: boolean;
+  }
 }
 
 @Injectable({
@@ -25,14 +33,19 @@ export class GroupListingFetchService {
   searchGroupListings(
     filters: ListingFilterRequest,
     page: number,
-    size: number
+    size: number,
+    sortField: string,
+    sortDirection: string,
   ): Observable<Page<GroupListingViewModel>> {
     const requestBody = {
       ...filters,
       page,
-      size};
+      size,
+      sortField: sortField,
+      sortDirection: sortDirection,
+      };
 
-    console.log(requestBody);
+
     return this.httpClient.post<Page<GroupListingViewModel>>(`${this.baseUrl}/search`, requestBody)
       .pipe(
         tap(response => {

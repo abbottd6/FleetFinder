@@ -26,7 +26,8 @@ public class SearchListingsDto {
     private Integer commsOption;
     private int page;
     private int size;
-
+    private String sortField;
+    private String sortDirection;
 
     public Map<String, Integer> getFilters() {
 //        Map<String, Integer> filters = new HashMap<>();
