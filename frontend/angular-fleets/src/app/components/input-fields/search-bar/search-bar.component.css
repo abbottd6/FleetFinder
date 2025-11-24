@@ -290,8 +290,34 @@
 /* --------------------------------------------------------------------------------------------------*/
 
 .filters-title {
+  display: flex;
+  flex-direction: row;
   margin: 0 3rem 0 3rem;
   border-bottom: 1px solid rgba(188, 191, 200, .75);
+}
+
+.filters-applied {
+  display: flex;
+  flex-direction: row;
+  color: rgba(14, 89, 61, 0.9);
+}
+
+.check-mark {
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+  line-height: 1rem;
+  padding: 0;
+  color: rgba(14, 89, 61, 0.9);
+}
+
+.filter-state-notice {
+  margin-left: 0.5rem;
+  color: rgba(255, 131, 7, 0.7);
+}
+
+.header-row {
+  display: flex;
+  flex-direction: row;
 }
 
 .filters-container {

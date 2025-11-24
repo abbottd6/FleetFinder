@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, inject, Input, OnInit, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  booleanAttribute,
+  Component,
+  EventEmitter, Inject,
+  inject,
+  Input,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {GroupListingFetchService, Page} from "../../services/group-listing-services/group-listing-fetch.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
@@ -9,7 +19,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {map, Observable, shareReplay} from "rxjs";
+import {BehaviorSubject, map, shareReplay} from "rxjs";
 import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 
@@ -24,6 +34,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  @Output() filtersUpToDate = new EventEmitter<boolean>();
+
   private breakpointObserver = inject(BreakpointObserver);
   private CLICKED_KEY = 'ff_user_clicked_listings';
   private _liveAnnouncer = inject(LiveAnnouncer)
@@ -36,7 +48,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   pageIndex = 0;
   pageSize = 25;
   totalElements = 0;
-  currentFilterState: ListingFilterState | null = null;
+  submittedState: ListingFilterState | null = null;
   sortActive = 'creationTimestamp';
   sortDirection: SortDirection = 'desc';
 
@@ -47,7 +59,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   dataSource = new MatTableDataSource<GroupListingViewModel>();
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
-              private filter: FilterService,) {}
+              private filter: FilterService) {}
 
   ngOnInit(): void {
     this.applyFiltersFromChild(this.filter.pullState())
@@ -80,14 +92,15 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
   }
 
   private reloadListings(): void {
-    const state = this.currentFilterState ?? this.filter.pullState();
+    const state = this.submittedState ?? this.filter.pullState();
     const filterDto = new ListingFilterRequest(state);
+    this.submittedState = structuredClone(state);
 
     this.loadGroupListings(filterDto, this.pageIndex, this.pageSize, this.sortActive, this.sortDirection);
   }
 
   applyFiltersFromChild(state: ListingFilterState): void {
-    this.currentFilterState = state;
+    this.submittedState = state;
 
     this.pageIndex = 0;
 
@@ -97,6 +110,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
 
     this.reloadListings();
   }
+
+
 
   isRowClicked(row: GroupListingViewModel): boolean {
     return this.clickedRows.has(row.groupId);

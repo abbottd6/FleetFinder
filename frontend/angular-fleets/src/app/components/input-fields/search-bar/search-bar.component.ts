@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
 import {map, Observable, of} from 'rxjs';
 import {
@@ -9,8 +9,6 @@ import {
 } from "../../../services/api-lookup-services/filter.service";
 import {MAT_DATE_FORMATS} from "@angular/material/core";
 import {EVENT_RANGE_FORMATS} from "../../../models/event-range-formats";
-import {PageEvent} from "@angular/material/paginator";
-import {Page} from "../../../services/group-listing-services/group-listing-fetch.service";
 
 // interface for creating the primary filter options
 export interface FilterPrincipal {
@@ -27,7 +25,9 @@ export interface FilterPrincipal {
     {provide: MAT_DATE_FORMATS, useValue: EVENT_RANGE_FORMATS }
   ]
 })
-export class SearchBarComponent implements OnInit{
+export class SearchBarComponent implements OnInit, OnChanges {
+  @Input() submittedState: ListingFilterState | null = null;
+  filtersMatch = true;
   principalCtrl = new FormControl<FilterOptionKey | null>(null);
   parentCtrl = new FormControl<filterOptions | null>({ value: null, disabled: true });
   childCtrl = new FormControl<filterOptions | null>({ value: null, disabled: true});
@@ -83,16 +83,36 @@ export class SearchBarComponent implements OnInit{
           .filter(([field, value]) => value !== null && value !== '' && field != 'searchInput')
           .map(([key, value]) => ({ key: key as FilterOptionKey, value: value })),)
     )
+
+    this.filter.state$.subscribe(state => {
+      this.compareStates(state, this.submittedState)
+    })
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.compareStates(this.filter.pullState(), this.submittedState)
   }
 
   emitSearchAndFilter(search: string): void {
     this.filter.update('searchInput', search || null);
     const state = this.filter.pullState()
     this.applySearchAndFilters.emit(state);
+    console.log("is this working? ", this.filtersMatch);
+  }
+
+  onKeyUp(event: KeyboardEvent): void {
+    const value = (event.target as  HTMLInputElement).value;
+    this.filter.update('searchInput', value || null);
+  }
+
+  inputEnterPress(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.emitSearchAndFilter(value);
   }
 
   clearSearch(input: HTMLInputElement): void {
     input.value = '';
+    this.filter.update('searchInput', null);
   }
 
   addFilter(): void {
@@ -131,21 +151,27 @@ export class SearchBarComponent implements OnInit{
     this.principalCtrl.reset();
     this.parentCtrl.reset();
     this.childCtrl.reset();
+    console.log("is this working? ", this.filtersMatch);
   }
 
+  // converting dateStart and dateEnd for date range to just dates instead of timestamps/zone/etc.
   toDateOnly = (filterDate: Date | null): string | null => {
     return filterDate ? filterDate.toISOString().substring(0,10) : null;
   };
 
+  // remove individual filter from chips
   removeFilter(value: FilterOptionKey): void {
     this.filter.updateOption(value, null);
+    console.log("is this working? ", this.filtersMatch);
   }
 
+  // clear all filters chips, resets all to null, including search and resubmits search
   clearFilters(searchInput: string) {
     this.filter.clearFilters();
     this.emitSearchAndFilter(searchInput);
   }
 
+  // function for picking the field to display in the filters chips
   displayFilterValue(value: any): string {
     if(!value) return '';
     if(typeof value === 'object') {
@@ -154,19 +180,11 @@ export class SearchBarComponent implements OnInit{
     return String(value);
   }
 
-  //variable for disabling dates prior to current date
-  minDate: Date = new Date();
+  compareStates(submitted: ListingFilterState, local: ListingFilterState | null): boolean {
+    return this.filtersMatch = JSON.stringify(submitted) === JSON.stringify(local);
+  }
 
-  //variable for disabling dates more than 6 months ahead
-  maxDate: Date = new Date();
-
-  //class for applying styles to disabled dates
-  disabledDatesClass = (date: Date): string => {
-    const currDate = new Date();
-    currDate.setHours(0, 0, 0, 0);
-    return date < currDate ? 'disabled-date' : '';
-  };
-
+  //populates the second dropdown based on values from the first dropdown
   getParentOptions() {
     switch(this.principalCtrl.value) {
       case 'groupStatus':
@@ -214,6 +232,7 @@ export class SearchBarComponent implements OnInit{
     }
   }
 
+  // populates the third dropdown based on values from the first two
   getChildOptions() {
     switch(this.principalCtrl.value) {
       case 'category':
@@ -238,5 +257,18 @@ export class SearchBarComponent implements OnInit{
         this.childCtrl.disable()
     }
   }
+
+  //variable for disabling dates prior to current date
+  minDate: Date = new Date();
+
+  //variable for disabling dates more than 6 months ahead
+  maxDate: Date = new Date();
+
+  //method for defining the dates that should be disabled in the datepicker (previous dates, distant future dates)
+  disabledDatesClass = (date: Date): string => {
+    const currDate = new Date();
+    currDate.setHours(0, 0, 0, 0);
+    return date < currDate ? 'disabled-date' : '';
+  };
 }
 

@@ -4,10 +4,12 @@
       <mat-label>Search listings...</mat-label>
       <input
         matInput
+        (keyup.enter)="inputEnterPress($event)"
+        (keyup)="onKeyUp($event)"
         #searchInput
         type="text"
         maxlength="65"
-        placeholder="Keywords like: role, event name, ship style..."
+        placeholder="Keyword filter on title, description, and roles..."
         [attr.aria-labelledby]="'searchInput'">
       <button
         *ngIf="searchInput.value"
@@ -102,7 +104,14 @@
   </div>
 </div>
 <div class="filters-container">
-  <h6 class="filters-title">Filters:</h6>
+  <div class="filters-title">
+    <h6>Filters:</h6>
+    <div *ngIf="filtersMatch else noMatch" class="filters-applied" >
+      <mat-icon class="check-mark">check</mat-icon>
+      <h6 class="filters-applied">Applied</h6>
+    </div>
+    <ng-template #noMatch><h6 class="filter-state-notice">Changes not applied. Click Update.</h6></ng-template>
+  </div>
   <div class="filters-bubble-wrapper-row">
     <div class="clear-button-container-right">
       <button

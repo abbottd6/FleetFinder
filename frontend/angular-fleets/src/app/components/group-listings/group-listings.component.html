@@ -3,7 +3,7 @@
     <div class="search-criteria-container">
       <div class="search-bar-wrapper">
         <app-search-bar
-          (applySearchAndFilters)="applyFiltersFromChild($event)">
+          (applySearchAndFilters)="applyFiltersFromChild($event)" [submittedState]="submittedState">
         </app-search-bar>
       </div>
     </div>
