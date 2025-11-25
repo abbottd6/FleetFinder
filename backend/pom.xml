@@ -202,10 +202,12 @@
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
+			<version>11.17.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-mysql</artifactId>
+			<version>11.17.0</version>
 		</dependency>
 		<dependency>
 			<groupId>io.github.cdimascio</groupId>

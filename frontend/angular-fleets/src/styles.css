@@ -24,7 +24,7 @@ body {
   flex-direction: column;
   flex: 1;
   background-color: var(--bs-dark);
-  max-height: 80vh;
+  max-height: 85vh;
   min-height: 35vh;
   margin-inline: auto;
   min-width: 80vw;
@@ -113,6 +113,8 @@ app-update-listing {
 
 app-group-listings-table {
   min-width: 95% !important;
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
 
 app-user {
@@ -123,6 +125,18 @@ app-user {
   padding-left: 0.5rem;
   background-color: rgb(52, 53, 58);
   border-radius: 0.25rem;
+}
+
+.mat-mdc-dialog-surface.mdc-dialog__surface {
+  background-color: rgba(52, 53, 58, 1);
+}
+
+.mat-mdc-dialog-title {
+  color: rgba(150, 168, 183, 1) !important;
+}
+
+.mat-mdc-dialog-content {
+  color: rgba(150, 168, 183, 1) !important;
 }
 
 .mat-mdc-tooltip {
@@ -155,4 +169,16 @@ app-user {
 .cdk-overlay-container .my-snackbar {
   margin-top: 75vh;
   background-color: rgba(33, 37, 41, .75);
+
+}
+
+.cdk-overlay-container .mobile-snackbar {
+  margin-top: 75vh;
+  background-color: rgba(33, 37, 41, .75);
+}
+
+@media(max-width: 600px) {
+  .cdk-overlay-container .mobile-snackbar {
+    font-size: clamp(0.5rem, 0.8rem, 1rem);
+  }
 }

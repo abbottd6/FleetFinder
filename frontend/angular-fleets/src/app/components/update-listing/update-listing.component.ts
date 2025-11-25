@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {ListingFormService, ListingFormShape} from "../../services/listing-form-service/listing-form.service";
 import {FormGroup, ReactiveFormsModule} from "@angular/forms";
@@ -10,6 +10,7 @@ import {UserListingService} from "../../services/group-listing-services/user-lis
 import {NgIf} from "@angular/common";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {UpdateListingRequest} from "../../models/group-listing/update-listing-request";
+import {Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-update-listing',
@@ -25,7 +26,8 @@ import {UpdateListingRequest} from "../../models/group-listing/update-listing-re
     RouterLink
   ]
 })
-export class UpdateListingComponent implements OnInit {
+export class UpdateListingComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   public formSubmitted: boolean = false;
   listingForm!: FormGroup<ListingFormShape>;
   listingData!: GroupListingViewModel;
@@ -42,6 +44,11 @@ export class UpdateListingComponent implements OnInit {
     if (draft){
       this.formService.patchFromDraft(draft);
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onSubmit() {

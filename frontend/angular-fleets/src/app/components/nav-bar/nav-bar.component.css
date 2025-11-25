@@ -115,7 +115,6 @@
   left: auto;
   top: 100%;
   right: 2% !important;
-  min-width: 100vw;
   z-index: 1050;
   background-color: var(--bs-gray-dark);
   clip-path: var(--clip-t-right-b-left);

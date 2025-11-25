@@ -1,8 +1,25 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
-import {map, Observable, tap} from "rxjs";
+import {Observable, tap} from "rxjs";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from '../../../environments/environment';
+import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
+import {SortDirection} from "@angular/material/sort";
+
+export interface Page<T> {
+  content: T[];
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+    asc: boolean;
+    desc: boolean;
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -13,20 +30,30 @@ export class GroupListingFetchService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getGroupListings(): Observable<GroupListingViewModel[]> {
-    return this.httpClient.get<GetResponse>(this.baseUrl).pipe(
-      tap(response => {
-        if (!environment.production) {
-          console.log('Raw API Response: ', response);
-        }
-      }),
-      map(response => response._embedded.groupListingResponseDtoes),
-      tap(groupListings => {
-        if (!environment.production) {
-          console.log('Transformed data: ', groupListings);
-        }
-      }),
-    )
+  searchGroupListings(
+    filters: ListingFilterRequest,
+    page: number,
+    size: number,
+    sortField: string,
+    sortDirection: string,
+  ): Observable<Page<GroupListingViewModel>> {
+    const requestBody = {
+      ...filters,
+      page,
+      size,
+      sortField: sortField,
+      sortDirection: sortDirection,
+      };
+
+
+    return this.httpClient.post<Page<GroupListingViewModel>>(`${this.baseUrl}/search`, requestBody)
+      .pipe(
+        tap(response => {
+          if (!environment.production) {
+            console.log('Raw API Response: ', response);
+          }
+        })
+      );
   }
 }
 
