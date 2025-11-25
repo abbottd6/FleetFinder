@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
-import {map, Observable, of} from 'rxjs';
+import {map, Observable, of, Subject, takeUntil} from 'rxjs';
 import {
   FilterOptionKey,
   filterOptions,
@@ -25,8 +25,11 @@ export interface FilterPrincipal {
     {provide: MAT_DATE_FORMATS, useValue: EVENT_RANGE_FORMATS }
   ]
 })
-export class SearchBarComponent implements OnInit, OnChanges {
+export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
   @Input() submittedState: ListingFilterState | null = null;
+
+  private destroy$ = new Subject<void>();
+
   filtersMatch = true;
   principalCtrl = new FormControl<FilterOptionKey | null>(null);
   parentCtrl = new FormControl<filterOptions | null>({ value: null, disabled: true });
@@ -67,12 +70,14 @@ export class SearchBarComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.principalCtrl?.valueChanges.subscribe( value => {
+    this.principalCtrl?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe( value => {
       this.parentCtrl.reset();
       this.getParentOptions();
     })
 
-    this.parentCtrl.valueChanges.subscribe( value => {
+    this.parentCtrl.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe( value => {
       this.childCtrl.reset();
       this.getChildOptions();
     })
@@ -84,9 +89,15 @@ export class SearchBarComponent implements OnInit, OnChanges {
           .map(([key, value]) => ({ key: key as FilterOptionKey, value: value })),)
     )
 
-    this.filter.state$.subscribe(state => {
+    this.filter.state$.pipe(takeUntil(this.destroy$))
+      .subscribe(state => {
       this.compareStates(state, this.submittedState)
     })
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnChanges(changes: SimpleChanges): void {

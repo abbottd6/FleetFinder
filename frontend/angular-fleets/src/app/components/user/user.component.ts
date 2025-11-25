@@ -1,19 +1,19 @@
 import {
   Component,
-  inject,
+  inject, OnDestroy,
   OnInit,
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
-import {map, Observable, shareReplay} from "rxjs";
+import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
-import {Router, RouterModule} from "@angular/router";
+import {RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListItem, MatNavList} from "@angular/material/list";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
-import {MatButton, MatButtonModule, MatIconButton} from "@angular/material/button";
+import {MatButtonModule} from "@angular/material/button";
 import {UserService} from "../../services/user-services/user.service";
 import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
@@ -29,7 +29,8 @@ import {ModListingsTableComponent} from "../mod-listings-table/mod-listings-tabl
     UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent, ModListingsTableComponent],
     standalone: true
 })
-export class UserComponent implements OnInit {
+export class UserComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
   //modal popup vars
   selectedListing: GroupListingViewModel | null = null;
@@ -44,7 +45,8 @@ export class UserComponent implements OnInit {
     this.localUser$ = this.userService.localUser$;
 
     this.localUser$.pipe(
-      map(user => user.groupListingsDto ?? [])
+      map(user => user.groupListingsDto ?? []),
+      takeUntil(this.destroy$)
     )
       .subscribe(listings => this.groupListings = listings);
   }
@@ -52,6 +54,11 @@ export class UserComponent implements OnInit {
   ngOnInit() {
     this.userService.refreshUser();
     this.shouldDisplayMod$ = this.askShouldDisplayMod();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   askShouldDisplayMod(): boolean {

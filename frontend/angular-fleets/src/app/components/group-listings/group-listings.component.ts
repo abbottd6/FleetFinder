@@ -4,7 +4,7 @@ import {
   Component,
   EventEmitter, Inject,
   inject,
-  Input,
+  Input, OnDestroy,
   OnInit,
   Output,
   ViewChild
@@ -19,7 +19,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {BehaviorSubject, map, shareReplay} from "rxjs";
+import {BehaviorSubject, map, shareReplay, Subject, takeUntil} from "rxjs";
 import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 
@@ -30,12 +30,13 @@ import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-r
     standalone: false
 })
 
-export class GroupListingsComponent implements OnInit, AfterViewInit{
+export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   @Output() filtersUpToDate = new EventEmitter<boolean>();
 
+  private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
   private CLICKED_KEY = 'ff_user_clicked_listings';
   private _liveAnnouncer = inject(LiveAnnouncer)
@@ -70,13 +71,15 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
     this.loadClickedListings();
 
 
-    this.paginator.page.subscribe((event: PageEvent) => {
+    this.paginator.page.pipe(takeUntil(this.destroy$))
+      .subscribe((event: PageEvent) => {
       this.pageIndex = event.pageIndex;
       this.pageSize = event.pageSize;
       this.reloadListings();
     })
 
-    this.sort.sortChange.subscribe((event: Sort) => {
+    this.sort.sortChange.pipe(takeUntil(this.destroy$))
+      .subscribe((event: Sort) => {
       this.sortActive = event.active;
       this.sortDirection = event.direction || 'desc';
 
@@ -89,6 +92,11 @@ export class GroupListingsComponent implements OnInit, AfterViewInit{
     })
 
     this.dataSource.sort = this.sort;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private reloadListings(): void {

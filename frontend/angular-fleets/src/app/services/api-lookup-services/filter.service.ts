@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {LookupService} from "./lookup.service";
-import {BehaviorSubject, map, Observable, of} from "rxjs";
+import {BehaviorSubject, map, Observable, of, Subject, takeUntil} from "rxjs";
 
 export interface filterOptions {
   id: number,
@@ -47,7 +47,7 @@ export type FilterOptionKey =
   providedIn: 'root'
 })
 export class FilterService {
-
+  private destroy$ = new Subject<void>();
   constructor(private lookup: LookupService) {}
 
   private state: ListingFilterState = {

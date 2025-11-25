@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatTableDataSource, MatTableModule} from "@angular/material/table";
@@ -9,7 +9,7 @@ import {Router, RouterLink} from "@angular/router";
 import {UserListingService} from "../../services/group-listing-services/user-listing.service";
 import {UserService} from "../../services/user-services/user.service";
 import {environment} from "../../../environments/environment";
-import {map, shareReplay} from "rxjs";
+import {map, shareReplay, Subject, takeUntil} from "rxjs";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
@@ -25,9 +25,12 @@ import {GroupListingsComponent} from "../group-listings/group-listings.component
   styleUrl: './user-acct-listings-table.component.css',
   imports: [MatTableModule, MatCheckboxModule, DatePipe, RouterLink, AsyncPipe, NgIf, MatIcon, MatIconButton, MatMenu, MatMenuTrigger],
 })
-export class UserAcctListingsTableComponent implements OnChanges {
+export class UserAcctListingsTableComponent implements OnChanges, OnDestroy {
   @Input() userListings: GroupListingViewModel[] = [];
   @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
+
+  private destroy$ = new Subject<void>();
+
   private breakpointObserver = inject(BreakpointObserver);
   readonly dialog = inject(MatDialog);
 
@@ -41,6 +44,11 @@ export class UserAcctListingsTableComponent implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.dataSource.data = this.userListings;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   // check whether the number of selected rows matches total rows
@@ -83,7 +91,7 @@ export class UserAcctListingsTableComponent implements OnChanges {
     if (selectedCount !== 1) {
       this.snackBar.open('Please select exactly one listing to update at a time.', 'OK',
         {duration: 4500, verticalPosition: 'top', horizontalPosition: 'center', panelClass: 'my-snackbar'})
-        .onAction().subscribe(() => this.snackBar.dismiss());
+        .onAction().pipe(takeUntil(this.destroy$)).subscribe(() => this.snackBar.dismiss());
       return;
     }
     const updateListing = this.selection.selected[0];
@@ -98,7 +106,8 @@ export class UserAcctListingsTableComponent implements OnChanges {
   userDeleteListings() {
     const selectedCount = this.selection.selected.length;
     for (let i = 0; i < this.selection.selected.length; i++) {
-      this.userListingService.deleteListing(this.selection.selected[i].groupId).subscribe({
+      this.userListingService.deleteListing(this.selection.selected[i].groupId).pipe(takeUntil(this.destroy$))
+        .subscribe({
         next: response => {
           if(!environment.production) {
             console.log(response.listingTitle)
@@ -119,7 +128,7 @@ export class UserAcctListingsTableComponent implements OnChanges {
   }
 
   userDeleteSingle(row : GroupListingViewModel) {
-    this.userListingService.deleteListing(row.groupId).subscribe({
+    this.userListingService.deleteListing(row.groupId).pipe(takeUntil(this.destroy$)).subscribe({
       next: response => {
         this.tableActionReset();
 
@@ -146,7 +155,7 @@ export class UserAcctListingsTableComponent implements OnChanges {
         }
       });
 
-      dialogRef.afterClosed().subscribe(result => {
+      dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
         if(result && (rows.length > 1)) {
           this.userDeleteListings();
         }
