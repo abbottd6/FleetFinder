@@ -40,6 +40,8 @@
         [attr.aria-labelledby]="'Principal Filter'">
       </ng-select>
     </div>
+  </div>
+  <div class="filter-dropdowns">
     <div class="dropdown-component">
       <ng-select
         [items]="parentFilters$ | async"
@@ -49,6 +51,8 @@
         [attr.aria-labelledby]="'Filter for'">
       </ng-select>
     </div>
+  </div>
+  <div class="filter-dropdowns">
     <div class="dropdown-component">
       <ng-select *ngIf="!(principalCtrl.value == 'groupStatus'
         && parentCtrl.value?.option == 'Future/Scheduled') else datePicker"
@@ -95,13 +99,15 @@
         </mat-form-field>
       </div>
     </ng-template>
-    <div class="dropdown-component">
-        <button
-          class="action-buttons"
-          id="addFilter"
-          (click)="addFilter()">Add Filter</button>
-    </div>
   </div>
+  <div class="dropdown-component">
+    <button
+      class="action-buttons"
+      id="addFilter"
+      (click)="addFilter()">Add Filter
+    </button>
+  </div>
+
 </div>
 <div class="filters-container">
   <div class="filters-title">
