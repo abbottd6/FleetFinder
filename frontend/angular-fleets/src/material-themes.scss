@@ -1,0 +1,78 @@
+@use '@angular/material' as mat;
+
+:root {
+  @include mat.paginator-overrides((
+    touch-target-display: center,
+  ));
+
+  .mat-mdc-paginator .mat-mdc-select-value {
+    display: flex;
+    padding-left: 1rem;
+    text-align: center;
+  }
+
+  .mat-mdc-paginator .mat-mdc-select-arrow {
+    padding-right: 2rem;
+    transition: color 0.15s ease;
+  }
+
+  .mdc-notched-outline.mdc-notched-outline--no-label {
+    color: rgba(188, 191, 200, .9);
+    transition: color 0.15s ease;
+  }
+
+  .mdc-text-field:hover .mdc-notched-outline.mdc-notched-outline--no-label {
+    color: rgba(255, 131, 7, .6);
+  }
+
+  .mdc-text-field:hover .mat-mdc-select-arrow {
+    color: rgba(255, 131, 7, .6);
+  }
+
+  .mat-mdc-select-panel {
+    background-color: rgba(44, 44, 44, 0.95);
+  }
+
+  .mat-mdc-select-panel .mdc-list-item {
+    color: rgba(188, 191, 200, .9);
+    background-color: transparent;
+    transition: background-color 0.15s ease;
+  }
+
+  .mat-mdc-select-panel .mdc-list-item:hover {
+    color: rgba(188, 191, 200, .9);
+    background-color: rgba(255, 131, 7, .2);
+  }
+
+  .mat-mdc-paginator .mat-mdc-paginator-icon {
+    transition: color 0.15s ease;
+  }
+
+  .mat-mdc-paginator-navigation-first.mdc-icon-button {
+    padding-right: 2rem !important;
+  }
+
+  .mat-mdc-paginator-navigation-first.mdc-icon-button:hover {
+    color: rgba(255, 131, 7, .6);
+    cursor: pointer;
+  }
+
+  .mat-mdc-paginator-navigation-last.mdc-icon-button:hover {
+    color: rgba(255, 131, 7, .6);
+    cursor: pointer;
+  }
+  .mat-mdc-paginator-navigation-next.mdc-icon-button:hover {
+    color: rgba(255, 131, 7, .6);
+    cursor: pointer;
+  }
+  .mat-mdc-paginator-navigation-previous.mdc-icon-button:hover {
+    color: rgba(255, 131, 7, .6);
+    cursor: pointer;
+  }
+
+  @media(max-width: 480px) {
+    .mat-mdc-paginator {
+      font-size: clamp(0.5rem, 0.8rem, 1rem)
+    }
+  }
+}

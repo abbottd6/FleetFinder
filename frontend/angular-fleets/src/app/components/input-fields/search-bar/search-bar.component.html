@@ -1,0 +1,139 @@
+<div class="search-filter-wrapper">
+  <div class="search-input">
+    <mat-form-field>
+      <mat-label>Search listings...</mat-label>
+      <input
+        matInput
+        (keyup.enter)="inputEnterPress($event)"
+        (keyup)="onKeyUp($event)"
+        #searchInput
+        type="text"
+        maxlength="65"
+        placeholder="Keyword filter on title, description, and roles..."
+        [attr.aria-labelledby]="'searchInput'">
+      <button
+        *ngIf="searchInput.value"
+        mat-icon-button
+        matSuffix
+        aria-label="Clear-search"
+        class="search-clear"
+        (click)="clearSearch(searchInput)">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </mat-form-field>
+    <div class="search-button-container-right">
+      <a>
+        <button
+          class="action-buttons"
+          (click)="emitSearchAndFilter(searchInput.value)">Update</button>
+      </a>
+    </div>
+  </div>
+  <div class="filter-dropdowns">
+    <div class="dropdown-component">
+      <ng-select
+        [items]="FILTER_CATEGORIES"
+        [formControl]="principalCtrl"
+        bindLabel="label"
+        bindValue="value"
+        placeholder="Filter by..."
+        [attr.aria-labelledby]="'Principal Filter'">
+      </ng-select>
+    </div>
+  </div>
+  <div class="filter-dropdowns">
+    <div class="dropdown-component">
+      <ng-select
+        [items]="parentFilters$ | async"
+        [formControl]="parentCtrl"
+        bindLabel="option"
+        placeholder="Filter for..."
+        [attr.aria-labelledby]="'Filter for'">
+      </ng-select>
+    </div>
+  </div>
+  <div class="filter-dropdowns">
+    <div class="dropdown-component">
+      <ng-select *ngIf="!(principalCtrl.value == 'groupStatus'
+        && parentCtrl.value?.option == 'Future/Scheduled') else datePicker"
+        [items]="childFilters$ | async"
+        [formControl]="childCtrl"
+        bindLabel="option"
+        placeholder="Additional..."
+        [attr.aria-labelledby]="'Additional filter'">
+      </ng-select>
+    </div>
+    <ng-template #datePicker>
+      <div class="event-schedule-datepicker">
+        <mat-form-field>
+          <mat-label>Date Range</mat-label>
+          <mat-date-range-input
+            [rangePicker]="picker"
+            [formGroup]="dateRange"
+          >
+            <input
+              matStartDate
+              formControlName="start"
+              placeholder="Start date"
+              [min]="minDate"
+              [max]="maxDate"
+            >
+            <input
+              matEndDate
+              formControlName="end"
+              placeholder="End date"
+              [min]="minDate"
+              [max]="maxDate"
+            >
+          </mat-date-range-input>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+            class="date-picker-search-bar">
+          </mat-datepicker-toggle>
+          <mat-date-range-picker
+            #picker
+            panelClass="custom-datepicker"
+            [dateClass]="disabledDatesClass">
+          </mat-date-range-picker>
+        </mat-form-field>
+      </div>
+    </ng-template>
+  </div>
+  <div class="dropdown-component">
+    <button
+      class="action-buttons"
+      id="addFilter"
+      (click)="addFilter()">Add Filter
+    </button>
+  </div>
+
+</div>
+<div class="filters-container">
+  <div class="filters-title">
+    <h6>Filters:</h6>
+    <div *ngIf="filtersMatch else noMatch" class="filters-applied" >
+      <mat-icon class="check-mark">check</mat-icon>
+      <h6 class="filters-applied">Applied</h6>
+    </div>
+    <ng-template #noMatch><h6 class="filter-state-notice">Update to apply changes.</h6></ng-template>
+  </div>
+  <div class="filters-bubble-wrapper-row">
+    <div class="clear-button-container-right">
+      <button
+        class="action-buttons"
+        (click)="clearFilters(searchInput.value)">
+        Clear
+      </button>
+    </div>
+    <div class="filter-bubbles">
+      <mat-chip-set aria-label="Active Filter">
+        <mat-chip *ngFor="let filter of displayedFilters$ | async" class="filter-bubbles">
+          <span class="filter-bubbles-content"> {{ displayFilterValue(filter.value) }}
+            <mat-icon (click)="removeFilter(filter.key)" class="bubble-close">clear</mat-icon>
+          </span>
+        </mat-chip>
+      </mat-chip-set>
+    </div>
+  </div>
+</div>
