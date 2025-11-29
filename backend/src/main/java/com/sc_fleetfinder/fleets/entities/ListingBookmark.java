@@ -35,12 +35,12 @@ public class ListingBookmark {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="id_user")
     @NotNull(message = "ListingBookmark field 'userId' cannot be null.")
-    private Users userId;
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name="id_group")
     @NotNull(message = "ListingBookmark field 'groupId' cannot be null.")
-    private GroupListing groupId;
+    private GroupListing group;
 
     @CreationTimestamp
     @Column(name="creation_ts", updatable = false)

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -23,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -172,6 +174,14 @@ public class UserServiceImpl implements UserService {
                             "{}", kcId);
                     return new ResourceNotFoundException("Users with keycloakId " + kcId + " not found");
                 });
+    }
+
+    @Override
+    public Users verifyUser(String kcId) {
+            return userRepository.findByKeycloakId(kcId)
+                    .filter(u -> !u.getIsDeleted())
+                    .orElseThrow(() -> new ResourceNotFoundException("User with keycloakId "
+                            + kcId + " not found"));
     }
 
     //helper method for normalizing emails. isolated for testing.

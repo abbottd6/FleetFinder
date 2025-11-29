@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ListingBookmarkRepository;
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteBookmarkRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingBookmarkDto;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,13 +34,16 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
     private final ListingBookmarkRepository bmr;
     private final BookmarkConversionService bcs;
     private final GroupListingRepository glr;
+    private final UserRepository userRepo;
 
     public ListingBookmarkServiceImpl(ListingBookmarkRepository bookmarkRepository,
                                       BookmarkConversionService bookmarkConversionService,
-                                      GroupListingRepository glr) {
+                                      GroupListingRepository glr,
+                                      UserRepository userRepo) {
         this.bmr = bookmarkRepository;
         this.bcs = bookmarkConversionService;
         this.glr = glr;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -52,21 +57,67 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
     }
 
     @Override
-    public Set<ListingBookmarkDto> getBookmarksByUserId(Long userId) {
+    public ResponseEntity<?> getBookmarksByUserId(Long userId) {
+        try {
+            Users user = userRepo.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Users", userId));
 
-        return bmr.findByUserId(userId)
-                .stream()
-                .map(bcs::convertToDto)
-                .collect(Collectors.toSet());
+            Set<ListingBookmarkDto> bookmarks = bmr.findByUser(user)
+                    .stream()
+                    .map(bcs::convertToDto)
+                    .collect(Collectors.toSet());
+
+            return ResponseEntity.status(HttpStatus.OK).body(bookmarks);
+        }
+        catch (ResourceNotFoundException e) {
+            log.error("Cannot retrieve bookmarks. User not found for id {}", userId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @Override
-    public List<ListingBookmarkDto> getBookmarksByListingId(Long listingId) {
+    public ResponseEntity<?> getBookmarkBriefByUserId(Long userId) {
+        try {
+            Users user = userRepo.findById(userId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Users", userId));
 
-        return bmr.findByListingId(listingId)
-                .stream()
-                .map(bcs::convertToDto)
-                .collect(Collectors.toList());
+            Set<Long> bmBrief = bmr.findByUser(user).stream()
+                    .map(bm -> bm.getGroup().getGroupId())
+                    .collect(Collectors.toSet());
+
+
+
+            Map<String, Set<Long>> response = new HashMap<>();
+            response.put("BookmarkBrief", bmBrief);
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+
+        }
+        catch (ResourceNotFoundException e) {
+            log.error("Cannot retrieve Bookmarks Brief. User not found for id {}", userId);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<ListingBookmarkDto> getBookmarksByListingId(Long groupId) {
+
+        try {
+            GroupListing listing = glr.findById(groupId)
+                    .orElseThrow(() -> new ResourceNotFoundException("GroupListing", groupId));
+
+            return bmr.findByGroup(listing)
+                    .stream()
+                    .map(bcs::convertToDto)
+                    .collect(Collectors.toList());
+        }
+
+        //TO DO: not sure what I want this to do yet. Should probably be used when deleting a listing
+        // to delete all the associated bookmarks.
+        catch (Exception e){
+            log.error("GroupListing not found for id {}", groupId);
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -77,13 +128,20 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
                 GroupListing entity = glr.findById(dto.getGroupId())
                         .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getGroupId()));
 
+                dto.setGroup(entity);
                 ListingBookmark bookmark = bcs.convertToEntity(dto);
+
+                if(bmr.findByUserAndGroup(bookmark.getUser(), bookmark.getGroup()).isPresent()) {
+                    Map<String, String> response = new HashMap<>();
+                    response.put("listingTitle", "Already bookmarked");
+                    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
+                }
 
                 bmr.save(bookmark);
 
                 String title = entity.getListingTitle();
                 Map<String, String> response = new HashMap<>();
-                response.put("listingTitle", title.length() <= 15 ? title : title.substring(0, 15) + "...");
+                response.put("listingTitle", title.length() <= 20 ? title : title.substring(0, 20) + "...");
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
             catch (Exception e) {

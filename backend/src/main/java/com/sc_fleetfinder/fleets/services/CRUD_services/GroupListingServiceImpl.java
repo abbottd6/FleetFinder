@@ -157,7 +157,7 @@ public class GroupListingServiceImpl implements GroupListingService {
         GroupListing groupListing = groupListingRepository.findById(id)
                 .orElseThrow(() -> {
                     log.error("GetGroupListingById failed to find an entity with the given group Id: {}.", id);
-                    return new ResourceNotFoundException(id);
+                    return new ResourceNotFoundException("GroupListing", id);
                 });
 
         return groupListingConversionService.convertListingToResponseDto(groupListing);

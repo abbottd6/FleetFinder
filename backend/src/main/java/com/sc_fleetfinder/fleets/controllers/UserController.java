@@ -1,10 +1,15 @@
 package com.sc_fleetfinder.fleets.controllers;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteBookmarkRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
+import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingBookmarkService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +27,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
+@Slf4j
 public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ListingBookmarkService bms;
 
     public UserController() {};
 
@@ -79,5 +90,53 @@ public class UserController {
 
         userService.deleteUser(kcId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/user_bookmark_brief")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> getBookmarkBrief(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+
+        Long userId = userService.verifyUser(kcId).getUserId();
+
+        return bms.getBookmarkBriefByUserId(userId);
+    }
+
+    @GetMapping("/user_bookmarks")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> getBookmarks(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+
+        Long userId = userService.verifyUser(kcId).getUserId();
+
+        return bms.getBookmarksByUserId(userId);
+    }
+
+    @PostMapping("/user_add_bookmark")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> addBookmark(@AuthenticationPrincipal Jwt jwt,
+                                         @RequestBody AddBookmarkRequestDto dto) {
+        String kcId = jwt.getSubject();
+
+        Users user = userService.verifyUser(kcId);
+        log.info("userId: " + user.getUserId() + ", listingId: " + dto.getGroupId());
+
+        dto.setUser(user);
+        log.info("dto username: " + dto.getUser().getUsername());
+
+        return bms.addBookmark(dto);
+    }
+
+    @DeleteMapping("/remove_bookmark")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> deleteBookmark(@AuthenticationPrincipal Jwt jwt,
+                                            @RequestBody DeleteBookmarkRequestDto dto) {
+        String kcId = jwt.getSubject();
+
+        Long userId = userService.verifyUser(kcId).getUserId();
+
+        dto.setUserId(userId);
+
+        return bms.deleteBookmarkById(dto);
     }
 }

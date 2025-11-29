@@ -63,7 +63,7 @@ public class GroupListingsController {
         }
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
-        log.info("Here is the page:" + request);
+//        log.info("Here is the page:" + request);
 
         return groupListingService.searchGroupListings(request, pageable);
     }

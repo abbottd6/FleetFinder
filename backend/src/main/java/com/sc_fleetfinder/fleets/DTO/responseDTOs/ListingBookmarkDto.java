@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
-import com.sc_fleetfinder.fleets.entities.GroupListing;
 import lombok.Data;
 
 import java.time.Instant;
