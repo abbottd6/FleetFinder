@@ -22,6 +22,8 @@ import {BreakpointObserver} from "@angular/cdk/layout";
 import {BehaviorSubject, map, shareReplay, Subject, takeUntil} from "rxjs";
 import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
+import {UserListingService} from "../../services/group-listing-services/user-listing.service";
+import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-request";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -60,7 +62,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   dataSource = new MatTableDataSource<GroupListingViewModel>();
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
-              private filter: FilterService) {}
+              private filter: FilterService, private userListingService: UserListingService) {}
 
   ngOnInit(): void {
     this.applyFiltersFromChild(this.filter.pullState())
@@ -198,6 +200,24 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     this.isModalVisible = false;
     this.selectedListing = null;
+  }
+
+  addBookmark(listingId: number) {
+    const request = new AddBookmarkRequest(listingId);
+    console.log(request);
+
+    this.userListingService.addBookmark(request).subscribe({
+        next: response => {
+          if(!environment.production) {
+            console.log(response)
+          }
+          alert(`${response.listingTitle} added to bookmarks.`);
+        },
+        error: err => {
+          alert(`There was an error creating your listing: ${err.message}`);
+        }
+      }
+    )
   }
 
   isMobile$ = this.breakpointObserver

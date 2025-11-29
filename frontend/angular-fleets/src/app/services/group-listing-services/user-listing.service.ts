@@ -4,6 +4,7 @@ import {CreateListingRequest} from "../../models/group-listing/create-listing-re
 import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {UpdateListingRequest} from "../../models/group-listing/update-listing-request";
+import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-request";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class UserListingService {
   private createListingUrl = `${environment.apiBaseUrl}/group-listings/create_listing`;
   private deleteListingUrl = `${environment.apiBaseUrl}/group-listings/delete_listing`;
   private updateListingUrl = `${environment.apiBaseUrl}/group-listings/update_listing`;
+  private addBookmarkUrl = `${environment.apiBaseUrl}/users/user_add_bookmark`;
 
   constructor(private httpClient: HttpClient) {}
 
@@ -26,5 +28,9 @@ export class UserListingService {
 
   updateListing(updateListingRequest: UpdateListingRequest): Observable<any> {
     return this.httpClient.put<any>(this.updateListingUrl, updateListingRequest);
+  }
+
+  addBookmark(request: AddBookmarkRequest): Observable<any> {
+    return this.httpClient.post<any>(this.addBookmarkUrl, request)
   }
 }

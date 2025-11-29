@@ -41,7 +41,8 @@
         <ng-container *ngIf="!(isMobile$ | async)">
           <button mat-icon-button
             matTooltip="Bookmark"
-            [matTooltipPosition]="positionOptions[0]">
+            [matTooltipPosition]="positionOptions[0]"
+            (click)="addBookmark(row.groupId)">
             <mat-icon class="bookmark-icon">bookmark_border</mat-icon>
           </button>
         </ng-container>
