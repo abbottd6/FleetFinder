@@ -92,7 +92,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/user_bookmark_brief")
+    @GetMapping("/my/bookmarks_brief")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> getBookmarkBrief(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
@@ -102,7 +102,7 @@ public class UserController {
         return bms.getBookmarkBriefByUserId(userId);
     }
 
-    @GetMapping("/user_bookmarks")
+    @GetMapping("/my/bookmarks")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> getBookmarks(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
@@ -112,30 +112,30 @@ public class UserController {
         return bms.getBookmarksByUserId(userId);
     }
 
-    @PostMapping("/user_add_bookmark")
+    @PostMapping("/my/bookmarks")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> addBookmark(@AuthenticationPrincipal Jwt jwt,
                                          @RequestBody AddBookmarkRequestDto dto) {
         String kcId = jwt.getSubject();
 
         Users user = userService.verifyUser(kcId);
-        log.info("userId: " + user.getUserId() + ", listingId: " + dto.getGroupId());
 
         dto.setUser(user);
-        log.info("dto username: " + dto.getUser().getUsername());
 
         return bms.addBookmark(dto);
     }
 
-    @DeleteMapping("/remove_bookmark")
+    @DeleteMapping("/my/bookmarks/{groupId}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> deleteBookmark(@AuthenticationPrincipal Jwt jwt,
-                                            @RequestBody DeleteBookmarkRequestDto dto) {
+                                            @PathVariable Long groupId) {
         String kcId = jwt.getSubject();
 
-        Long userId = userService.verifyUser(kcId).getUserId();
+        Users user = userService.verifyUser(kcId);
 
-        dto.setUserId(userId);
+        DeleteBookmarkRequestDto dto = new DeleteBookmarkRequestDto();
+        dto.setUser(user);
+        dto.setGroupId(groupId);
 
         return bms.deleteBookmarkById(dto);
     }

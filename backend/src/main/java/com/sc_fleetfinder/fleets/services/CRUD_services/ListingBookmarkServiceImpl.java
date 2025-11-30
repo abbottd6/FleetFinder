@@ -85,12 +85,7 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
                     .map(bm -> bm.getGroup().getGroupId())
                     .collect(Collectors.toSet());
 
-
-
-            Map<String, Set<Long>> response = new HashMap<>();
-            response.put("BookmarkBrief", bmBrief);
-            return ResponseEntity.status(HttpStatus.OK).body(response);
-
+            return ResponseEntity.status(HttpStatus.OK).body(bmBrief);
         }
         catch (ResourceNotFoundException e) {
             log.error("Cannot retrieve Bookmarks Brief. User not found for id {}", userId);
@@ -141,7 +136,7 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
 
                 String title = entity.getListingTitle();
                 Map<String, String> response = new HashMap<>();
-                response.put("listingTitle", title.length() <= 20 ? title : title.substring(0, 20) + "...");
+                response.put("listingTitle", title.length() <= 25 ? title : title.substring(0, 25) + "...");
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
             }
             catch (Exception e) {
@@ -157,17 +152,27 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
         Objects.requireNonNull(dto, "DeleteBookmarkRequestDto cannot be null");
 
         try {
-            bmr.findById(dto.getBookmarkId())
+            GroupListing group = glr.findById(dto.getGroupId())
+                    .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getGroupId()));
+            ListingBookmark bm = bmr.findByUserAndGroup(dto.getUser(), group)
                     .orElseThrow(() -> new ResourceNotFoundException("Bookmark", dto.getBookmarkId()));
 
-            bmr.deleteById(dto.getBookmarkId());
-            String response = "Bookmark removed successfully";
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            if(Objects.equals(dto.getUser(), bm.getUser())) {
+                bmr.deleteById(bm.getId());
+                Map<String, String> response = new HashMap<>();
+                response.put("message", "Bookmark removed successfully");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            else {
+                throw new ResourceNotFoundException("ListingBookmark", dto.getBookmarkId());
+            }
         }
         catch (Exception e) {
             log.error("DeleteBookmark failed. {}", e.getMessage());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "An error occurred while deleting this bookmark.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("An error occurred while deleting this bookmark.");
+                    .body(response);
         }
     }
 }
