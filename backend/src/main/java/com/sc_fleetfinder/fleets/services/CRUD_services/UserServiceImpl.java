@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService {
                 .filter(u -> !u.getIsDeleted())
                 .map(userConversionService::convertToPrivateDto)
                 .orElseThrow(() -> {
-                    log.error("Attempt to access user data by keycloakId failed due to nonexistent keycloakId: " +
+                    log.info("Attempt to access user data by keycloakId failed due to nonexistent keycloakId: " +
                             "{}", kcId);
                     return new ResourceNotFoundException("Users with keycloakId " + kcId + " not found");
                 });

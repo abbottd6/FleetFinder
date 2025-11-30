@@ -1,11 +1,10 @@
 package com.sc_fleetfinder.fleets.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.GroupStatusRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
-import com.sc_fleetfinder.fleets.entities.GroupStatus;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.GroupStatusRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GroupStatusDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GroupStatus;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GroupStatusService;
-import com.sc_fleetfinder.fleets.services.conversion_services.GroupStatusConversionService;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.GroupStatusConversionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
-import com.sc_fleetfinder.fleets.controllers.GroupStatusController;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GroupStatusService;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GroupStatusDto;
+import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.GroupStatusController;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GroupStatusService;
 import org.junit.jupiter.api.Test;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;

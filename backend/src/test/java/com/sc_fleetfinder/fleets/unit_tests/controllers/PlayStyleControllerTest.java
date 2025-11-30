@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlayStyleDto;
-import com.sc_fleetfinder.fleets.controllers.PlayStyleController;
-import com.sc_fleetfinder.fleets.services.CRUD_services.PlayStyleService;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlayStyleDto;
+import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.PlayStyleController;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.PlayStyleService;
 import org.junit.jupiter.api.Test;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;

@@ -1,10 +1,10 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.conversion_services;
 
-import com.sc_fleetfinder.fleets.DAO.GroupStatusRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
-import com.sc_fleetfinder.fleets.entities.GroupStatus;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.GroupStatusRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GroupStatusDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GroupStatus;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.conversion_services.GroupStatusConversionServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.GroupStatusConversionServiceImpl;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

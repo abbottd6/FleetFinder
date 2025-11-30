@@ -1,10 +1,10 @@
 package com.sc_fleetfinder.fleets.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.ServerRegionRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.ServerRegionDto;
-import com.sc_fleetfinder.fleets.entities.ServerRegion;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.ServerRegionRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.ServerRegionDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.conversion_services.ServerRegionConversionService;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.ServerRegionConversionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

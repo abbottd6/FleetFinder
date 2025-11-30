@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PvpStatusDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PvpStatusDto;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.CRUD_services.PvpStatusServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.PvpStatusServiceImpl;
 import com.sc_fleetfinder.fleets.services.caching_services.PvpStatusCachingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

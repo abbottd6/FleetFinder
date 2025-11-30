@@ -1,11 +1,11 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.conversion_services;
 
-import com.sc_fleetfinder.fleets.DAO.ExperienceRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
-import com.sc_fleetfinder.fleets.entities.GameExperience;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.ExperienceRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameExperienceDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.conversion_services.GameEnvironmentConversionServiceImpl;
-import com.sc_fleetfinder.fleets.services.conversion_services.GameExperienceConversionServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.GameEnvironmentConversionServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.GameExperienceConversionServiceImpl;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
-import com.sc_fleetfinder.fleets.controllers.LegalityController;
-import com.sc_fleetfinder.fleets.services.CRUD_services.LegalityService;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.LegalityDto;
+import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.LegalityController;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.LegalityService;
 import org.junit.jupiter.api.Test;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;

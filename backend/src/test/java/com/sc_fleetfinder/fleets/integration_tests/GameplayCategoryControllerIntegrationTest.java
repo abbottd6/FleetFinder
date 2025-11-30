@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GameplayCategoryService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GameplayCategoryService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;

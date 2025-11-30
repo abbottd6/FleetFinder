@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GameplayCategoryServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GameplayCategoryServiceImpl;
 import com.sc_fleetfinder.fleets.services.caching_services.CategoryCachingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

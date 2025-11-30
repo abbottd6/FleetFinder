@@ -1,16 +1,16 @@
 package com.sc_fleetfinder.fleets.config;
 
-import com.sc_fleetfinder.fleets.entities.GameEnvironment;
-import com.sc_fleetfinder.fleets.entities.GameExperience;
-import com.sc_fleetfinder.fleets.entities.GameplayCategory;
-import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
-import com.sc_fleetfinder.fleets.entities.GroupStatus;
-import com.sc_fleetfinder.fleets.entities.Legality;
-import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
-import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
-import com.sc_fleetfinder.fleets.entities.PlayStyle;
-import com.sc_fleetfinder.fleets.entities.PvpStatus;
-import com.sc_fleetfinder.fleets.entities.ServerRegion;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplaySubcategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GroupStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Legality;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetarySystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;

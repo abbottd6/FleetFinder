@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.ServerRegionDto;
-import com.sc_fleetfinder.fleets.controllers.ServerRegionController;
-import com.sc_fleetfinder.fleets.services.CRUD_services.ServerRegionService;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.ServerRegionDto;
+import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.ServerRegionController;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.ServerRegionService;
 import org.junit.jupiter.api.Test;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;

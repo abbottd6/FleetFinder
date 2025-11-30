@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetarySystemDto;
-import com.sc_fleetfinder.fleets.controllers.PlanetarySystemController;
-import com.sc_fleetfinder.fleets.services.CRUD_services.PlanetarySystemService;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlanetarySystemDto;
+import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.PlanetarySystemController;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.PlanetarySystemService;
 import org.junit.jupiter.api.Test;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;

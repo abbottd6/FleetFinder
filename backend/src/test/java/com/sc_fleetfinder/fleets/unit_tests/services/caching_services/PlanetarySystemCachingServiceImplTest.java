@@ -1,12 +1,12 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.PlanetarySystemRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetarySystemDto;
-import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
-import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.PlanetarySystemRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlanetarySystemDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.caching_services.PlanetarySystemCachingServiceImpl;
-import com.sc_fleetfinder.fleets.services.conversion_services.PlanetarySystemConversionServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.PlanetarySystemConversionServiceImpl;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

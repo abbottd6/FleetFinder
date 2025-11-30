@@ -1,11 +1,11 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.LegalityRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
-import com.sc_fleetfinder.fleets.entities.Legality;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.LegalityRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.LegalityDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Legality;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.caching_services.LegalityCachingServiceImpl;
-import com.sc_fleetfinder.fleets.services.conversion_services.LegalityConversionServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.LegalityConversionServiceImpl;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

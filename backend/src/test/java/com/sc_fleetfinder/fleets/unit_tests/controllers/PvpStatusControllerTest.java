@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PvpStatusDto;
-import com.sc_fleetfinder.fleets.controllers.PvpStatusController;
-import com.sc_fleetfinder.fleets.services.CRUD_services.PvpStatusService;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PvpStatusDto;
+import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.PvpStatusController;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.PvpStatusService;
 import org.junit.jupiter.api.Test;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;

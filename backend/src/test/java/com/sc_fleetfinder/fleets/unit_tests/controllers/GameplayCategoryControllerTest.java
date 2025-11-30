@@ -1,9 +1,9 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
-import com.sc_fleetfinder.fleets.controllers.GameplayCategoryController;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplayCategoryDto;
+import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.GameplayCategoryController;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GameplayCategoryService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GameplayCategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

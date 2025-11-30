@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
