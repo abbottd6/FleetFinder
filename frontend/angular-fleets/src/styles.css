@@ -174,7 +174,7 @@ app-user {
 
 .cdk-overlay-container .mobile-snackbar {
   margin-top: 75vh;
-  background-color: rgba(33, 37, 41, .75);
+  background-color: rgba(33, 37, 41, .95);
 }
 
 @media(max-width: 600px) {

@@ -1,19 +1,6 @@
-import {inject, Injectable, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {AuthenticatedResult, OidcSecurityService, PopupOptions} from "angular-auth-oidc-client";
-import {
-  BehaviorSubject,
-  catchError,
-  filter,
-  map,
-  merge,
-  Observable, shareReplay,
-  switchMap,
-  tap,
-  throwError, withLatestFrom
-} from "rxjs";
-import {HttpClient} from "@angular/common/http";
-import {PublicUser} from "../../../models/public-user/public-user";
-import {PrivateUser} from "../../../models/private-user/private-user";
+import {inject, Injectable} from '@angular/core';
+import {OidcSecurityService, PopupOptions} from "angular-auth-oidc-client";
+import {map} from "rxjs";
 
 @Injectable({
   providedIn: 'root'

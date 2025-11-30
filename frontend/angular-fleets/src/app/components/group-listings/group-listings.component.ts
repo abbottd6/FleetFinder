@@ -19,11 +19,18 @@ import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {BehaviorSubject, map, shareReplay, Subject, takeUntil} from "rxjs";
+import {
+  map,
+  Observable,
+  shareReplay,
+  Subject,
+  takeUntil,
+} from "rxjs";
 import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
-import {UserListingService} from "../../services/group-listing-services/user-listing.service";
 import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-request";
+import {UserBookmarkService} from "../../services/user-services/user-bookmark.service";
+import {AuthService} from "../../services/auth/auth-services/auth.service";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -42,6 +49,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   private breakpointObserver = inject(BreakpointObserver);
   private CLICKED_KEY = 'ff_user_clicked_listings';
   private _liveAnnouncer = inject(LiveAnnouncer)
+  private bmService = inject(UserBookmarkService);
+
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
   selectedListing: GroupListingViewModel | null = null;
@@ -55,23 +64,31 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   sortActive = 'creationTimestamp';
   sortDirection: SortDirection = 'desc';
 
-  /* TO DO: set up bookmarks and change this */
-  userBookmarks: GroupListingViewModel[] = [];
-
   displayedColumns = ['options', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated'];
   dataSource = new MatTableDataSource<GroupListingViewModel>();
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
-              private filter: FilterService, private userListingService: UserListingService) {}
+              private filter: FilterService, private auth: AuthService) {}
+
+  bookmarkedIds$!: Observable<Set<number>>;
+  isLoggedIn!: boolean;
 
   ngOnInit(): void {
-    this.applyFiltersFromChild(this.filter.pullState())
+    this.applyFiltersFromChild(this.filter.pullState());
+
+    this.auth.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(
+      val => this.isLoggedIn = val);
+
+    this.bmService.getBookmarksBrief();
   }
 
   ngAfterViewInit() {
     //just for page styling to show clicked listings
     this.loadClickedListings();
 
+    this.bookmarkedIds$ = this.bmService.bookmarksBrief$.pipe(
+      map((gIds: number[]) => new Set<number>(gIds))
+    );
 
     this.paginator.page.pipe(takeUntil(this.destroy$))
       .subscribe((event: PageEvent) => {
@@ -120,8 +137,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.reloadListings();
   }
-
-
 
   isRowClicked(row: GroupListingViewModel): boolean {
     return this.clickedRows.has(row.groupId);
@@ -193,6 +208,50 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
+  addBookmark(listingId: number) {
+    if(!this.isLoggedIn) {
+      this.snackBar.open("You must log in to access bookmarks.", 'OK', {
+        duration: 5000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']})
+      return;
+    }
+    const request = new AddBookmarkRequest(listingId);
+    console.log(request);
+    this.bmService.addBookmark(request).pipe(takeUntil(this.destroy$)).subscribe( {
+      next: (response: { listingTitle: string; }) =>
+        this.snackBar.open(`"${response.listingTitle}" added to bookmarks.`, 'OK', {
+          duration: 4000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+          panelClass: ['mobile-snackbar']})
+      }
+    )
+  }
+
+  deleteBookmark(listingId: number) {
+    const request = listingId;
+    console.log(request);
+    this.bmService.deleteBookmark(request).pipe(takeUntil(this.destroy$)).subscribe( {
+        next: (response: { message: string; }) =>
+          this.snackBar.open(`${response.message}`, 'OK', {
+            duration: 3000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+            panelClass: ['mobile-snackbar']})
+      }
+    )
+  }
+
+  isBookmarked(id: number, bookmarkIds: Set<number> | null): boolean {
+    if(bookmarkIds == undefined) {
+      return false;
+    }
+    return !!bookmarkIds && bookmarkIds.has(id);
+  }
+
+
   //on close instructions for groupListing modal popup
   onModalClose() {
     if(!environment.production) {
@@ -200,24 +259,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     this.isModalVisible = false;
     this.selectedListing = null;
-  }
-
-  addBookmark(listingId: number) {
-    const request = new AddBookmarkRequest(listingId);
-    console.log(request);
-
-    this.userListingService.addBookmark(request).subscribe({
-        next: response => {
-          if(!environment.production) {
-            console.log(response)
-          }
-          alert(`${response.listingTitle} added to bookmarks.`);
-        },
-        error: err => {
-          alert(`There was an error creating your listing: ${err.message}`);
-        }
-      }
-    )
   }
 
   isMobile$ = this.breakpointObserver
