@@ -1,10 +1,9 @@
 import {
   AfterViewInit,
-  booleanAttribute,
   Component,
-  EventEmitter, Inject,
+  EventEmitter,
   inject,
-  Input, OnDestroy,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild
@@ -20,6 +19,7 @@ import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {
+  async,
   map,
   Observable,
   shareReplay,
@@ -31,6 +31,8 @@ import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-r
 import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-request";
 import {UserBookmarkService} from "../../services/user-services/user-bookmark.service";
 import {AuthService} from "../../services/auth/auth-services/auth.service";
+import {ListingReportService} from "../../services/listing-report-services/listing-report.service";
+import {SubmitListingReport} from "../../models/report-requests/submit-listing-report";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -50,6 +52,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   private CLICKED_KEY = 'ff_user_clicked_listings';
   private _liveAnnouncer = inject(LiveAnnouncer)
   private bmService = inject(UserBookmarkService);
+  private reportService = inject(ListingReportService);
 
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
@@ -71,6 +74,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
               private filter: FilterService, private auth: AuthService) {}
 
   bookmarkedIds$!: Observable<Set<number>>;
+  reportedIds$!: Observable<Set<number>>;
   isLoggedIn!: boolean;
 
   ngOnInit(): void {
@@ -87,6 +91,10 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.loadClickedListings();
 
     this.bookmarkedIds$ = this.bmService.bookmarksBrief$.pipe(
+      map((gIds: number[]) => new Set<number>(gIds))
+    );
+
+    this.reportedIds$ = this.reportService.userReportsBrief$.pipe(
       map((gIds: number[]) => new Set<number>(gIds))
     );
 
@@ -251,6 +259,38 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     return !!bookmarkIds && bookmarkIds.has(id);
   }
 
+  submitReport(listingId: number) {
+    if(!this.isLoggedIn) {
+      this.snackBar.open("You must log in to submit reports.", 'OK', {
+        duration: 5000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']})
+      return;
+    }
+
+    console.log("This listing: ", listingId);
+
+    const lr = new SubmitListingReport(listingId, 1)
+
+    console.log("this report: ", lr);
+    this.reportService.submitReport(lr).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response: { reportId: string; }) =>
+        this.snackBar.open(`"Report submitted with id: ${response.reportId}. Thank you.`, 'OK', {
+          duration: 5000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+          panelClass: ['mobile-snackbar']
+        })
+    });
+  }
+
+  isReported(id: number, reportIds: Set<number> | null): boolean {
+    if(reportIds == undefined) {
+      return false;
+    }
+    return !!reportIds && reportIds.has(id);
+  }
 
   //on close instructions for groupListing modal popup
   onModalClose() {
@@ -265,4 +305,5 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     .observe('(max-width: 1350px)')
     .pipe(map(result => result.matches),
       shareReplay());
+  protected readonly async = async;
 }
