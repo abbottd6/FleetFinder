@@ -11,6 +11,7 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Planetary
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBasis;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
@@ -99,6 +100,12 @@ public class DataRestConfig implements RepositoryRestConfigurer {
         //disable HTTP methods for ServerRegion: POST, PUT, DELETE
         config.getExposureConfiguration()
                 .forDomainType(ServerRegion.class)
+                .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
+                .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
+
+        //disable HTTP methods for ListingReportBasis: POST, PUT, DELETE
+        config.getExposureConfiguration()
+                .forDomainType(ListingReportBasis.class)
                 .withItemExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods))
                 .withCollectionExposure((metdata, httpMethods) -> httpMethods.disable(unsupportedMethods));
     }

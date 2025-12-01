@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DAO.ListingBookmarkRepository;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingBookmarkDto;
 import com.sc_fleetfinder.fleets.entities.ListingBookmark;
 import jakarta.validation.Valid;
