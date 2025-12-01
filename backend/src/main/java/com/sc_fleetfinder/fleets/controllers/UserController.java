@@ -2,12 +2,14 @@ package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteBookmarkRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.SubmitListingReportDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingBookmarkService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
+import com.sc_fleetfinder.fleets.services.reporting_services.ListingReportingService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,9 @@ public class UserController {
 
     @Autowired
     private ListingBookmarkService bms;
+
+    @Autowired
+    private ListingReportingService lrs;
 
     public UserController() {};
 
@@ -138,5 +143,30 @@ public class UserController {
         dto.setGroupId(groupId);
 
         return bms.deleteBookmarkById(dto);
+    }
+
+    @PostMapping("/group_listings/submit_report")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> submitListingReport(@AuthenticationPrincipal Jwt jwt,
+                                                 @RequestBody SubmitListingReportDto dto) {
+        String kcId = jwt.getSubject();
+
+        Users user = userService.verifyUser(kcId);
+        log.info("userid: " + user.getUserId());
+
+        dto.setUser(user);
+
+        log.info("userId: " + dto.getUser().getUsername());
+
+        return lrs.generateListingReport(dto);
+    }
+
+    @GetMapping("/group_listings/report_brief")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> getListingReportBrief(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        return lrs.getUsersReportBrief(user);
     }
 }

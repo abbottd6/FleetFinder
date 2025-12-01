@@ -25,6 +25,15 @@ import java.time.Instant;
 @Setter
 public class ListingReport {
 
+    protected ListingReport() {};
+    public ListingReport(ModerationIssue issue, GroupListing listing,
+                         Users reporter, ListingReportBasis basis) {
+        this.modIssueRef = issue;
+        this.listingRef = listing;
+        this.reportingUserRef = reporter;
+        this.reportBasisObj = basis;
+    };
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="id_report")
@@ -42,7 +51,7 @@ public class ListingReport {
     private GroupListing listingRef;
 
     @ManyToOne
-    @JoinColumn(name="id_user", nullable = false)
+    @JoinColumn(name="id_reporter", nullable = false)
     @NotNull(message="ListingReport entity field 'reportingUserRef' cannot be null.")
     private Users reportingUserRef;
 

@@ -5,7 +5,6 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingBookmarkDto;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.Set;
 
 public interface ListingBookmarkService {
 

@@ -16,7 +16,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -33,6 +32,21 @@ import java.util.Set;
 @Setter
 public class ModerationIssue {
 
+    public ModerationIssue() {};
+    public ModerationIssue(GroupListing listing, Users userRef) {
+        this.groupRef = listing;
+        this.userRef = userRef;
+        this.reportTotalCount = 0;
+        this.spamCount = 0;
+        this.hateSpeechCount = 0;
+        this.nsfwCount = 0;
+        this.scamCount = 0;
+        this.offTopicCount = 0;
+        this.trollCount = 0;
+        this.doxxCount = 0;
+        this.otherCount = 0;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_issue")
@@ -41,7 +55,7 @@ public class ModerationIssue {
     @OneToOne
     @JoinColumn(name="id_group", nullable = false)
     @NotNull(message="ModerationIssue entity field 'listingRef' cannot be null.")
-    private GroupListing listingRef;
+    private GroupListing groupRef;
 
     @ManyToOne
     @JoinColumn(name="id_user", nullable = false)
