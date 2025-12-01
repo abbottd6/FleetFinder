@@ -177,6 +177,30 @@ app-user {
   background-color: rgba(33, 37, 41, .95);
 }
 
+/* Styling for dropdown menu in the listing-report popup window */
+
+.cdk-overlay-container .ng-dropdown-panel {
+  background-color: rgba(33, 37, 41, 1) !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(88, 92, 96, .9) transparent !important;
+  pointer-events: auto !important;
+  margin-left: 1rem;
+}
+
+.cdk-overlay-container .ng-dropdown-panel .ng-option-label {
+  color: rgba(188, 191, 200, .75) !important;
+  transition: color 0.15s ease, font-size 0.15s ease;
+}
+
+.cdk-overlay-container .ng-dropdown-panel .ng-option:hover {
+  background-color: rgba(44, 44, 44, 0.7);
+}
+
+.cdk-overlay-container .ng-dropdown-panel .ng-option:hover .ng-option-label {
+  color: rgba(255, 131, 7, .6) !important;
+  font-size: 1.05rem;
+}
+/* -------------------------------------------------------------*/
 @media(max-width: 600px) {
   .cdk-overlay-container .mobile-snackbar {
     font-size: clamp(0.5rem, 0.8rem, 1rem);

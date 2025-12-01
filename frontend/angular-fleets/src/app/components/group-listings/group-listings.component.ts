@@ -23,7 +23,7 @@ import {
   map,
   Observable,
   shareReplay,
-  Subject,
+  Subject, take,
   takeUntil,
 } from "rxjs";
 import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
@@ -33,6 +33,9 @@ import {UserBookmarkService} from "../../services/user-services/user-bookmark.se
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {ListingReportService} from "../../services/listing-report-services/listing-report.service";
 import {SubmitListingReport} from "../../models/report-requests/submit-listing-report";
+import {ConfirmDeleteComponent} from "../pop-ups/confirm-delete/confirm-delete.component";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmReportComponent} from "../pop-ups/confirm-report/confirm-report.component";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -53,6 +56,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   private _liveAnnouncer = inject(LiveAnnouncer)
   private bmService = inject(UserBookmarkService);
   private reportService = inject(ListingReportService);
+  readonly dialog = inject(MatDialog);
 
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
@@ -259,6 +263,25 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     return !!bookmarkIds && bookmarkIds.has(id);
   }
 
+  openConfirmReport(listing: GroupListingViewModel): void {
+    this.reportService.reportOptions$
+      .pipe(take(1))
+      .subscribe(options => {
+        const dialogRef = this.dialog.open(ConfirmReportComponent, {
+          data: {
+            listing,
+            options
+          }
+        });
+
+        dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
+          if (result) {
+            this.submitReport(listing.groupId);
+          }
+        });
+    });
+  }
+
   submitReport(listingId: number) {
     if(!this.isLoggedIn) {
       this.snackBar.open("You must log in to submit reports.", 'OK', {
@@ -276,7 +299,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     console.log("this report: ", lr);
     this.reportService.submitReport(lr).pipe(takeUntil(this.destroy$)).subscribe({
       next: (response: { reportId: string; }) =>
-        this.snackBar.open(`"Report submitted with id: ${response.reportId}. Thank you.`, 'OK', {
+        this.snackBar.open(`"Report submitted. Thank you.`, 'OK', {
           duration: 5000,
           verticalPosition: 'top',
           horizontalPosition: 'center',

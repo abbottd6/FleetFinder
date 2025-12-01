@@ -35,7 +35,7 @@
                 </li>
                 <li class="options-item" *ngIf="!isReported(row.groupId, reportedIds) ; else alreadyReported">
                   <span
-                    (click)="submitReport(row.groupId)">
+                    (click)="openConfirmReport(row)">
                     Report
                   </span>
                 </li>
