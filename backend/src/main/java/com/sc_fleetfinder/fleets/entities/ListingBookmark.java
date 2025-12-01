@@ -27,6 +27,13 @@ import java.time.Instant;
 @Setter
 public class ListingBookmark {
 
+    protected ListingBookmark() {}
+
+    public ListingBookmark(GroupListing listing, Users user) {
+        this.group = listing;
+        this.user = user;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id")

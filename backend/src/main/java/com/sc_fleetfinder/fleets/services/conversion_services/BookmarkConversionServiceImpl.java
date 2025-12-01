@@ -25,15 +25,4 @@ public class BookmarkConversionServiceImpl implements BookmarkConversionService 
     public ListingBookmarkDto convertToDto(@Valid ListingBookmark bookmark) {
         return modelMapper.map(bookmark, ListingBookmarkDto.class);
     }
-
-    @Override
-    public ListingBookmark convertToEntity(@Valid AddBookmarkRequestDto dto) {
-
-        ListingBookmark bookmark = new ListingBookmark();
-
-        bookmark.setUser(dto.getUser());
-        bookmark.setGroup(dto.getGroup());
-
-        return bookmark;
-    }
 }

@@ -117,14 +117,13 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> addBookmark(AddBookmarkRequestDto dto) {
+    public ResponseEntity<?> addBookmark(AddBookmarkRequestDto dto, Users user) {
         Objects.requireNonNull(dto, "AddBookmarkRequestDto cannot be null");
             try {
                 GroupListing entity = glr.findById(dto.getGroupId())
                         .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getGroupId()));
 
-                dto.setGroup(entity);
-                ListingBookmark bookmark = bcs.convertToEntity(dto);
+                ListingBookmark bookmark = new ListingBookmark(entity, user);
 
                 if(bmr.findByUserAndGroup(bookmark.getUser(), bookmark.getGroup()).isPresent()) {
                     Map<String, String> response = new HashMap<>();

@@ -11,7 +11,7 @@ import java.util.Set;
 
 public interface ListingReportingService {
 
-    ResponseEntity<?> generateListingReport(@Validated SubmitListingReportDto dto);
+    ResponseEntity<?> generateListingReport(@Validated SubmitListingReportDto dto, Users user);
     ModerationIssue generateModerationIssue(GroupListing groupListing);
     ResponseEntity<?> getUsersReportBrief(Users user);
 }

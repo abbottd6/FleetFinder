@@ -125,9 +125,7 @@ public class UserController {
 
         Users user = userService.verifyUser(kcId);
 
-        dto.setUser(user);
-
-        return bms.addBookmark(dto);
+        return bms.addBookmark(dto, user);
     }
 
     @DeleteMapping("/my/bookmarks/{groupId}")
@@ -152,13 +150,8 @@ public class UserController {
         String kcId = jwt.getSubject();
 
         Users user = userService.verifyUser(kcId);
-        log.info("userid: " + user.getUserId());
 
-        dto.setUser(user);
-
-        log.info("userId: " + dto.getUser().getUsername());
-
-        return lrs.generateListingReport(dto);
+        return lrs.generateListingReport(dto, user);
     }
 
     @GetMapping("/group_listings/report_brief")

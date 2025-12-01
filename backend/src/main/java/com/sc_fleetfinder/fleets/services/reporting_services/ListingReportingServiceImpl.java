@@ -39,7 +39,7 @@ public class ListingReportingServiceImpl implements ListingReportingService {
     }
 
     @Override
-    public ResponseEntity<?> generateListingReport(SubmitListingReportDto dto) {
+    public ResponseEntity<?> generateListingReport(SubmitListingReportDto dto, Users user) {
         //Get the reported listing
         GroupListing reported = glr.findById(dto.getGroupId())
                 .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getGroupId()));
@@ -53,7 +53,7 @@ public class ListingReportingServiceImpl implements ListingReportingService {
                 .orElseThrow(() -> new ResourceNotFoundException("ListingReportBasis", dto.getReportBasis()));
 
         //Use a required fields constructor to generate the ListingReport
-        ListingReport report = new ListingReport(modIssue, reported, dto.getUser(), basis);
+        ListingReport report = new ListingReport(modIssue, reported, user, basis);
         lrr.save(report);
 
         Map<String, Long> response = new HashMap<>();
