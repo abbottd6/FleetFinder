@@ -27,10 +27,11 @@ export class ConfirmReportComponent {
   ) {}
 
   onConfirm(): void {
-    this.dialogRef.close(true);
+    const selected = this.reportBasisCtrl.value;
+    this.dialogRef.close(selected);
   }
 
   onCancel(): void {
-    this.dialogRef.close(false);
+    this.dialogRef.close(null);
   }
 }

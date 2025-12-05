@@ -117,6 +117,16 @@
   border-radius: 0.25rem;
 }
 
+.visibility-icon {
+  font-size: 1.4rem !important;
+}
+
+.visibility-icon:hover {
+  color: rgba(255, 131, 7, .6);
+  background-color: rgba(44, 44, 44, 0.7);
+  border-radius: 0.25rem;
+}
+
 .paginator {
   color: rgba(188, 191, 200, .9);
   padding: 1rem 2rem 1rem 0;

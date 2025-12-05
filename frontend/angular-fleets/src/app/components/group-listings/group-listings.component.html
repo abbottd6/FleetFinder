@@ -13,10 +13,10 @@
     <!-- Options Column -->
     <ng-container matColumnDef='options'>
       <th mat-header-cell *matHeaderCellDef>
-        Options
+        Opts
       </th>
       <td mat-cell *matCellDef="let row; let i = index">
-        <ng-container *ngIf="bookmarkedIds$ | async as bookmarkIds">
+        <ng-container *ngIf="bookmarkedIds$ | async as bookmarkIds" >
           <ng-container *ngIf="reportedIds$ | async as reportedIds">
             <button mat-icon-button [matMenuTriggerFor]="listingOptionsMenu">
               <mat-icon class="options-menu-icon">more_vert</mat-icon>
@@ -26,6 +26,11 @@
                 <li class="options-item">
                   <a>
                     Message
+                  </a>
+                </li>
+                <li class="options-item">
+                  <a>
+                    Hide
                   </a>
                 </li>
                 <li class="options-item">
@@ -47,19 +52,26 @@
               </ul>
             </mat-menu>
           </ng-container>
+          <ng-container>
+            <button mat-icon-button
+                    matTooltip="Hide"
+                    [matTooltipPosition]="positionOptions[0]">
+              <mat-icon class="visibility-icon">visibility_off</mat-icon>
+            </button>
+          </ng-container>
           <ng-container *ngIf="!(isMobile$ | async)">
             <button mat-icon-button *ngIf="!isBookmarked(row.groupId, bookmarkIds) ; else alreadyBookmarked"
                     matTooltip="Bookmark"
                     [matTooltipPosition]="positionOptions[0]"
                     (click)="addBookmark(row.groupId)">
-              <mat-icon class="bookmark-icon">bookmark_border</mat-icon>
+              <mat-icon class="options-menu-icon">bookmark_border</mat-icon>
             </button>
             <ng-template #alreadyBookmarked>
               <button mat-icon-button
                       matTooltip="Unmark"
                       [matTooltipPosition]="positionOptions[0]"
                       (click)="deleteBookmark(row.groupId)">
-                <mat-icon class="bookmark-icon">bookmark</mat-icon>
+                <mat-icon class="options-menu-icon">bookmark</mat-icon>
               </button>
             </ng-template>
           </ng-container>

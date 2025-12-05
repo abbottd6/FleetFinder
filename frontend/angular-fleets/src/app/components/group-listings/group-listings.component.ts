@@ -274,15 +274,15 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
           }
         });
 
-        dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-          if (result) {
-            this.submitReport(listing.groupId);
+        dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(selected => {
+          if (selected) {
+            this.submitReport(listing.groupId, selected);
           }
         });
     });
   }
 
-  submitReport(listingId: number) {
+  submitReport(listingId: number, basisId: number) {
     if(!this.isLoggedIn) {
       this.snackBar.open("You must log in to submit reports.", 'OK', {
         duration: 5000,
@@ -294,12 +294,12 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
     console.log("This listing: ", listingId);
 
-    const lr = new SubmitListingReport(listingId, 1)
+    const lr = new SubmitListingReport(listingId, basisId)
 
     console.log("this report: ", lr);
     this.reportService.submitReport(lr).pipe(takeUntil(this.destroy$)).subscribe({
       next: (response: { reportId: string; }) =>
-        this.snackBar.open(`"Report submitted. Thank you.`, 'OK', {
+        this.snackBar.open(`Report submitted. Thank you.`, 'OK', {
           duration: 5000,
           verticalPosition: 'top',
           horizontalPosition: 'center',
