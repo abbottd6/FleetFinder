@@ -12,6 +12,7 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Planetary
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.lang.Nullable;
 import jakarta.persistence.Column;
@@ -37,8 +38,6 @@ import java.time.Instant;
 
 @Entity
 @Table(name="group_listing")
-//@SQLDelete(sql = "UPDATE group_listing SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP(6) WHERE id_group = ?")
-@SQLRestriction("is_deleted = 0")
 @Getter
 @Setter
 public class GroupListing {
@@ -153,13 +152,4 @@ public class GroupListing {
     @Column(name="last_updated")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant lastUpdated;
-
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
-
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
-
-    @Column(name = "deleted_by")
-    private Long deletedBy;
 }

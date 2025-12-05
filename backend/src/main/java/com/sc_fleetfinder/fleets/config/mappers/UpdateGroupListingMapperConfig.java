@@ -55,8 +55,6 @@ public class UpdateGroupListingMapperConfig {
                     //skipping fixed fields
                     mapper.skip(GroupListing::setGroupId);
                     mapper.skip(GroupListing::setCreationTimestamp);
-                    mapper.skip(GroupListing::setDeleted);
-                    mapper.skip(GroupListing::setDeletedAt);
 
                     mapper.using((MappingContext<Long, Users> ctx) ->
                             mapperLookupService.findUserById(ctx.getSource()))

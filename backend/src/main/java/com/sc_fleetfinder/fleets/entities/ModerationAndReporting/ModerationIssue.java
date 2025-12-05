@@ -44,6 +44,7 @@ public class ModerationIssue {
         this.offTopicCount = 0;
         this.trollCount = 0;
         this.doxxCount = 0;
+        this.cheatCount = 0;
         this.otherCount = 0;
     }
 
@@ -93,6 +94,10 @@ public class ModerationIssue {
     @Column(name="doxx_count")
     @NotNull(message="ModerationIssue entity field 'doxxCount' cannot be null.")
     private Integer doxxCount;
+
+    @Column(name="cheat_count")
+    @NotNull(message="ModerationIssue entity field 'cheatcount' cannot be null.")
+    private Integer cheatCount;
 
     @Column(name="other_count")
     @NotNull(message="ModerationIssue entity field 'otherCount' cannot be null.")

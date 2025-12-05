@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
@@ -8,6 +9,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.CommsOption;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import jakarta.persistence.EntityManager;
@@ -27,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.lang.reflect.Field;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
@@ -42,15 +43,17 @@ public class GroupListingServiceImpl implements GroupListingService {
     private static final Logger log = LoggerFactory.getLogger(GroupListingServiceImpl.class);
     private final GroupListingRepository groupListingRepository;
     private final GroupListingConversionService groupListingConversionService;
+    private final UserRepository userRepository;
 
     @PersistenceContext
     private EntityManager em;
 
     public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
-                                   GroupListingConversionService groupListingConversionService) {
+                                   GroupListingConversionService groupListingConversionService, UserRepository userRepository) {
 
         this.groupListingRepository = groupListingRepository;
         this.groupListingConversionService = groupListingConversionService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     @Override
     @Validated
-    @Transactional(transactionManager = "transactionManager")
+    @Transactional
     public ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
         Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
             try {
@@ -96,7 +99,7 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     @Override
     @Validated
-    @Transactional(transactionManager = "transactionManager")
+    @Transactional
     public GroupListing updateGroupListing(@Valid UpdateGroupListingDto dto) {
 
         GroupListing groupListing = groupListingRepository.findById(dto.getGroupId())
@@ -114,30 +117,29 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    @Transactional(transactionManager = "transactionManager")
+    @Transactional
     public ResponseEntity<?> deleteGroupListing(DeleteGroupListingDto deleteDto) {
             try {
                 GroupListing groupEntity = groupListingRepository.findById(deleteDto.getGroupId())
                     .orElseThrow(() -> new ResourceNotFoundException(deleteDto.getGroupId()));
 
                 if (Objects.equals(deleteDto.getUserId(), groupEntity.getUsers().getUserId())) {
-                    groupEntity.setDeleted(true);
-                    groupEntity.setDeletedBy(deleteDto.getUserId());
-                    groupEntity.setDeletedAt(Instant.now());
+                    Users user = groupEntity.getUsers();
+                    user.getGroupListings().remove(groupEntity);
+                    userRepository.save(user);
+                    groupListingRepository.delete(groupEntity);
+
+
+                    log.info("listing deletion passed.");
                     groupListingRepository.flush();
-                    groupListingRepository.save(groupEntity);
                 }
                 else {
                     log.error("Delete DTO and listing repository userIds do not match. \n Request userId: {} \n " +
                             "Repository userId: {}", deleteDto.getUserId(), groupEntity.getUsers().getUserId());
                 }
 
-                log.info("EM class: {}", em.getClass().getName());
-                log.info("Tx active? {}",
-                        org.springframework.transaction.support.TransactionSynchronizationManager.isActualTransactionActive());
-
                 Map<String, String> response = new HashMap<>();
-                response.put("listingTitle", groupEntity.getListingTitle());
+                response.put("listingId", deleteDto.getGroupId().toString());
                 return ResponseEntity.status(HttpStatus.OK).body(response);
             }
             catch (Exception e) {

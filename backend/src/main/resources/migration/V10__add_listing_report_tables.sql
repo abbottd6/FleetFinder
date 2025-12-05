@@ -33,14 +33,16 @@ CREATE TABLE moderation_issue
     other_count        INT                                                NOT NULL DEFAULT 0,
     first_report_ts    TIMESTAMP,
     last_report_ts     TIMESTAMP,
-    status             ENUM ('TBD', 'Accepted', 'AutoMod', 'Mod-Removed') NOT NULL DEFAULT 'TBD',
+    status             ENUM ('TBD', 'Clear', 'Actioned') NOT NULL DEFAULT 'TBD',
 
-    CONSTRAINT mod_issues_group_ref_fk_id_group
+    CONSTRAINT mod_issue_fk__ref_group
         FOREIGN KEY (id_group)
-            REFERENCES group_listing (id_group),
-    CONSTRAINT mod_issues_user_ref_fk_id_user
+            REFERENCES group_listing (id_group)
+            ON DELETE CASCADE,
+    CONSTRAINT mod_issue_fk_ref_user
         FOREIGN KEY (id_user)
             REFERENCES users (id_user)
+            ON DELETE CASCADE
 );
 
 CREATE TABLE listing_report
@@ -54,15 +56,17 @@ CREATE TABLE listing_report
     created_at  TIMESTAMP                                 NOT NULL DEFAULT CURRENT_TIMESTAMP,
     status      ENUM ('Pending', 'Actioned', 'Dismissed') NOT NULL DEFAULT 'Pending',
 
-    CONSTRAINT report_group_ref_fk_id_group
+    CONSTRAINT listing_report_fk_ref_group
         FOREIGN KEY (id_group)
-            REFERENCES group_listing (id_group),
-    CONSTRAINT report_basis_ref_fk_basis_id
+            REFERENCES group_listing (id_group)
+            ON DELETE CASCADE,
+    CONSTRAINT listing_report_fk_ref_report_basis
         FOREIGN KEY (id_basis)
             REFERENCES listing_report_basis (id_basis),
-    CONSTRAINT report_parent_issue_ref_fk_issue_id
+    CONSTRAINT listing_report_fk_ref_issue
         FOREIGN KEY (id_issue)
-            REFERENCES moderation_issue (id_issue),
+            REFERENCES moderation_issue (id_issue)
+            ON DELETE CASCADE,
     CONSTRAINT uq_reporter_to_listing
         UNIQUE (id_group, id_reporter)
 );
@@ -76,29 +80,25 @@ CREATE TABLE user_moderation_record
     is_banned TINYINT(1) NOT NULL DEFAULT 0,
     last_mod_action TIMESTAMP,
 
-    CONSTRAINT mod_record_users_ref_fk_id_user
+    CONSTRAINT mod_record_fk_ref_user
         FOREIGN KEY (id_user)
             REFERENCES users (id_user)
             ON DELETE CASCADE
 );
 
-CREATE TABLE moderator_listing_actions
+CREATE TABLE mod_listing_action
 (
     id_action   BIGINT PRIMARY KEY AUTO_INCREMENT,
-    id_group    BIGINT                  NOT NULL,
+    id_archive  BIGINT                  NOT NULL,
     id_user     BIGINT                  NOT NULL,
-    id_mod      BIGINT                  NOT NULL,
-    action_type ENUM ('Auto', 'Manual') NOT NULL DEFAULT 'Manual',
+    username    VARCHAR(32)             NOT NULL,
+    id_mod      BIGINT,
+    mod_name    VARCHAR(32),
+    action_type ENUM ('AutoMod', 'Manual') NOT NULL DEFAULT 'Manual',
     action_note VARCHAR(255),
     action_ts   TIMESTAMP               NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT mod_action_group_ref_fk_id_group
-        FOREIGN KEY (id_group)
-            REFERENCES group_listing (id_group),
-    CONSTRAINT mod_action_user_ref_fk_id_user
-        FOREIGN KEY (id_user)
-            REFERENCES users (id_user),
-    CONSTRAINT mod_action_mod_ref_fk_id_mod_to_id_user
-        FOREIGN KEY (id_mod)
-            REFERENCES users (id_user)
-)
+    CONSTRAINT mod_action_fk_ref_listing_archive
+        FOREIGN KEY (id_archive)
+            REFERENCES listing_archive (id_archive)
+);

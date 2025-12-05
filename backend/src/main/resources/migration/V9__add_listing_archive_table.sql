@@ -1,0 +1,27 @@
+CREATE TABLE listing_archive
+(
+    id_archive          BIGINT PRIMARY KEY AUTO_INCREMENT,
+    id_group            BIGINT                             NOT NULL,
+    id_user             BIGINT                             NOT NULL,
+    username            VARCHAR(32)                        NOT NULL,
+    listing_title       VARCHAR(65)                        NOT NULL,
+    listing_description VARCHAR(500)                       NOT NULL,
+    listing_roles       VARCHAR(255),
+    comms_service       VARCHAR(50),
+    report_total_count  INT                                NOT NULL DEFAULT 0,
+    spam_count          INT                                NOT NULL DEFAULT 0,
+    hate_speech_count   INT                                NOT NULL DEFAULT 0,
+    nsfw_count          INT                                NOT NULL DEFAULT 0,
+    scam_count          INT                                NOT NULL DEFAULT 0,
+    off_topic_count     INT                                NOT NULL DEFAULT 0,
+    troll_count         INT                                NOT NULL DEFAULT 0,
+    doxx_count          INT                                NOT NULL DEFAULT 0,
+    cheat_count         INT                                NOT NULL DEFAULT 0,
+    other_count         INT                                NOT NULL DEFAULT 0,
+    status              ENUM ('TBD', 'Clear', 'Actioned')  NOT NULL DEFAULT 'TBD',
+    id_mod              BIGINT,
+    modname             VARCHAR(32),
+    action_type         ENUM ('None', 'AutoMod', 'Manual') NOT NULL DEFAULT 'None',
+    action_note         VARCHAR(255),
+    archive_ts          TIMESTAMP                          NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

@@ -1,15 +1,12 @@
 package com.sc_fleetfinder.fleets.entities.ModerationAndReporting;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sc_fleetfinder.fleets.entities.Users;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.MapsId;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -19,8 +16,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name="user_moderation_record")
@@ -28,10 +23,15 @@ import java.util.Set;
 @Setter
 public class UserModerationRecord {
 
+    protected UserModerationRecord() {};
+    public UserModerationRecord(Users user) {
+        this.user = user;
+        this.modActionCount = 0;
+    }
+
     @Id
     @Column(name="id_user")
     private Long userId;
-
 
     @OneToOne(fetch= FetchType.LAZY)
     @MapsId

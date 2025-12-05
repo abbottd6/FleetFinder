@@ -80,7 +80,7 @@ public class CreateGroupListingDto {
     @NotNull(message = "Create listing DTO field 'commsOption' cannot be null")
     private String commsOption;
 
-    @Size(max = 50, message = "Create listing DTO field 'commsService' cannot exceed 50 characters")
+    @Size(max = 50, message = "Create listing DTO field 'listingCommsService' cannot exceed 50 characters")
     @Nullable
     private String commsService;
 }

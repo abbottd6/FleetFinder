@@ -174,8 +174,8 @@ class GroupListingServiceImplTest {
                         .anyMatch(violation -> violation.getPropertyPath().toString().equals("commsOption")),
                         "blank commsOption should fail validation create listing"),
                 () -> assertFalse(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("commsService")),
-                        "blank commsService should NOT fail validation create listing"));
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("listingCommsService")),
+                        "blank listingCommsService should NOT fail validation create listing"));
     }
 
     //testing HTTP response from successful create listing

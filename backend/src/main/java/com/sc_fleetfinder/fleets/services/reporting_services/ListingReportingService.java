@@ -7,8 +7,6 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 
-import java.util.Set;
-
 public interface ListingReportingService {
 
     ResponseEntity<?> generateListingReport(@Validated SubmitListingReportDto dto, Users user);

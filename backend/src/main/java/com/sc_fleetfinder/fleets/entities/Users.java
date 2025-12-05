@@ -78,7 +78,7 @@ public class Users {
     @Column(name="is_deleted")
     private Boolean isDeleted;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy="users", fetch = FetchType.EAGER)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, mappedBy="users")
     @JsonManagedReference
     private Set<GroupListing> groupListings = new HashSet<>();
 }

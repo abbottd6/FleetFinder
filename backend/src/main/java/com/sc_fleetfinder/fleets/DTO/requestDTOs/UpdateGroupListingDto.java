@@ -85,7 +85,7 @@ public class UpdateGroupListingDto {
     @NotNull(message = "Update group listing request DTO field 'commsOption' cannot be null.")
     private String commsOption;
 
-    @Size(max = 50, message = "Update group listing request DTO field 'commsService' cannot exceed 50 chars.")
+    @Size(max = 50, message = "Update group listing request DTO field 'listingCommsService' cannot exceed 50 chars.")
     @Nullable
     private String commsService;
 
