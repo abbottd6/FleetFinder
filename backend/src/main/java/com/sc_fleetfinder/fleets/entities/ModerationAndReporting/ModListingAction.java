@@ -37,7 +37,8 @@ public class ModListingAction {
     }
 
     // for manual mod deletions
-    public ModListingAction(ModerationIssue issue, String modNote, ListingArchive archive, Users mod) {
+    public ModListingAction(ModerationIssue issue, String modNote, ListingArchive archive,
+                            Users mod) {
         this.archive = archive;
         this.userId = issue.getUserRef().getUserId();
         this.username = issue.getUserRef().getUsername();

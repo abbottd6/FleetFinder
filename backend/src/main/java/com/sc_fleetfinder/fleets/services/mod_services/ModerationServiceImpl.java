@@ -108,9 +108,6 @@ public class ModerationServiceImpl implements ModerationService {
 
             prepareManualModRemovalRecords(dto, mod);
 
-            glr.flush();
-            glr.delete(groupEntity);
-
             Map<String, String> response = new HashMap<>();
             response.put("listingTitle", groupEntity.getListingTitle());
             return ResponseEntity.status(HttpStatus.OK).body(response);
