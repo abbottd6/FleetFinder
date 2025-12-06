@@ -4,9 +4,10 @@ import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingArchiveRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingReportRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ModListingActionRepository;
+import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ModerationIssueRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.UserModerationRecordRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ManualModDeleteDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
@@ -18,9 +19,11 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.events.ListingAutoDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
+import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +40,9 @@ import java.util.stream.Collectors;
 @Service
 public class ModerationServiceImpl implements ModerationService {
 
+    @Autowired
+    private ArchiveService archiveService;
+
     private static final Logger log = LoggerFactory.getLogger(GroupListingServiceImpl.class);
     private final GroupListingRepository glr;
     private final GroupListingConversionService glcs;
@@ -46,6 +52,7 @@ public class ModerationServiceImpl implements ModerationService {
     private final ListingReportRepository lrr;
     private final ModListingActionRepository mlar;
     private final ApplicationEventPublisher eventPublisher;
+    private final ModerationIssueRepository mir;
 
     public ModerationServiceImpl(GroupListingRepository groupListingRepository,
                                  GroupListingConversionService groupListingConversionService,
@@ -54,6 +61,7 @@ public class ModerationServiceImpl implements ModerationService {
                                  ListingArchiveRepository lar,
                                  ListingReportRepository lrr,
                                  ModListingActionRepository mlar,
+                                 ModerationIssueRepository mir,
                                  ApplicationEventPublisher eventPublisher) {
         this.glr = groupListingRepository;
         this.glcs = groupListingConversionService;
@@ -62,6 +70,7 @@ public class ModerationServiceImpl implements ModerationService {
         this.lar = lar;
         this.lrr = lrr;
         this.mlar = mlar;
+        this.mir = mir;
         this.eventPublisher = eventPublisher;
     }
 
@@ -78,12 +87,16 @@ public class ModerationServiceImpl implements ModerationService {
                 .collect(Collectors.toList());
     }
 
+    // ##TODO: change this to use the mod specific delete dto so that it includes a deletion/report basis and a note field
     @Override
     @Transactional(transactionManager = "transactionManager")
-    public ResponseEntity<?> modDeleteListing(DeleteGroupListingDto modDeleteDto) {
+    public ResponseEntity<?> modDeleteListing(ManualModDeleteDto dto, Users mod) {
         try {
-            GroupListing groupEntity = glr.findById(modDeleteDto.getGroupId())
-                    .orElseThrow(() -> new ResourceNotFoundException(modDeleteDto.getGroupId()));
+            GroupListing groupEntity = glr.findById(dto.getGroupId())
+                    .orElseThrow(() -> new ResourceNotFoundException(dto.getGroupId()));
+
+            prepareManualModRemovalRecords(dto, mod);
+
             glr.flush();
             glr.delete(groupEntity);
 
@@ -97,6 +110,20 @@ public class ModerationServiceImpl implements ModerationService {
                     .body(e.getMessage());
         }
     }
+
+    @Override
+    @Transactional
+    public void prepareManualModRemovalRecords(ManualModDeleteDto dto, Users mod) {
+        //verify and get listing
+        GroupListing condemned = glr.findById(dto.getGroupId())
+                .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getGroupId()));
+
+        //get the listing owner
+        Users owner = userRepo.findById(condemned.getUsers().getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("Users", condemned.getUsers().getUserId()));
+
+        //check for existing ModerationIssue or make a new one
+    };
 
     @Override
     @Transactional
@@ -120,7 +147,7 @@ public class ModerationServiceImpl implements ModerationService {
                 "Corresponding issueId: " + issue.getIssueId();
 
         //archive listing issue/reports data and user input fields from listing
-        ListingArchive archive = archiveActionedListing(condemned, issue, note);
+        ListingArchive archive = archiveService.archiveListing(condemned, issue, note);
 
         recordModeratorAction(issue, note, archive);
 
@@ -138,6 +165,25 @@ public class ModerationServiceImpl implements ModerationService {
 
         glr.delete(condemned);
         log.info("Auto-mod deleted listing: {}", condemned.getListingTitle());
+    }
+
+    @Override
+    @Transactional
+    public ModerationIssue generateModerationIssue(GroupListing listing) {
+        //verify that the ModerationIssue does not already exist
+        if(mir.findByGroupRef(listing).isPresent()) {
+            throw new IllegalStateException(
+                    "ModerationIssue already exists for listing: " + listing.getGroupId()
+            );
+        }
+
+        ModerationIssue issue = new ModerationIssue(listing, listing.getUsers());
+        mir.save(issue);
+        mir.flush();
+        log.info("New ModerationIssue created with id: {} for group: {}",
+                issue.getIssueId(), listing.getGroupId());
+
+        return issue;
     }
 
     @Override
@@ -172,15 +218,5 @@ public class ModerationServiceImpl implements ModerationService {
 
         mlar.save(modAction);
         log.info("Moderator action recorded under actionId: {}", modAction.getActionId());
-    }
-
-    @Override
-    @Transactional
-    public ListingArchive archiveActionedListing(GroupListing listing, ModerationIssue issue,
-                                                 String note) {
-        ListingArchive archiveCopy = new ListingArchive(listing, issue, note);
-        lar.save(archiveCopy);
-
-        return archiveCopy;
     }
 }

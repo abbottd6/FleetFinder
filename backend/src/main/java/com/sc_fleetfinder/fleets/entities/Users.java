@@ -35,6 +35,7 @@ import java.util.Set;
 @Setter
 public class Users {
 
+    // ##TODO Change userId type to UUID
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_user")

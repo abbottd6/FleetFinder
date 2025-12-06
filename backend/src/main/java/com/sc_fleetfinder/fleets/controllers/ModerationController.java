@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ManualModDeleteDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.mod_services.ModerationService;
@@ -18,6 +19,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -47,17 +49,16 @@ public class ModerationController {
         return CollectionModel.of(groupListingModels);
     }
 
+    // ##TODO: Change the frontend delete flow to include confirmation and a deletion/report basis.
     @DeleteMapping("/mod_delete_listing/{groupId}")
     @PreAuthorize("isAuthenticated() and hasRole('mod')")
-    public ResponseEntity<?> modDeleteListing(@Valid @PathVariable Long groupId,
+    public ResponseEntity<?> modDeleteListing(@Valid @RequestBody ManualModDeleteDto dto,
                                               @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
 
         Users requestingMod = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() -> new RuntimeException("User with Keycloak ID: " + keycloakId + " not found."));
 
-        DeleteGroupListingDto modDeleteDto = new DeleteGroupListingDto(requestingMod.getUserId(), groupId);
-
-        return mods.modDeleteListing(modDeleteDto);
+        return mods.modDeleteListing(dto, requestingMod);
     }
 }

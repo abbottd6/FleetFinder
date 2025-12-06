@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class ListingReportingServiceImpl implements ListingReportingService {
-    private final int AUTO_MOD_REPORT_THRESHOLD = 3;
+    private final int AUTO_MOD_REPORT_THRESHOLD = 5;
 
     @Autowired
     private ModerationService modService;
@@ -64,7 +64,7 @@ public class ListingReportingServiceImpl implements ListingReportingService {
         //check if the listing has already been reported, i.e. has a ModerationIssue
         //if there is not an existing ModerationIssue for this listing, then create a new one
         ModerationIssue modIssue = mir.findByGroupRef(reported)
-                .orElseGet(() -> generateModerationIssue(reported));
+                .orElseGet(() -> modService.generateModerationIssue(reported));
 
         ListingReportBasis basis = lbr.findById(dto.getReportBasis())
                 .orElseThrow(() -> new ResourceNotFoundException("ListingReportBasis", dto.getReportBasis()));
@@ -86,25 +86,6 @@ public class ListingReportingServiceImpl implements ListingReportingService {
         response.put("Report Status:", "Success");
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @Override
-    @Transactional
-    public ModerationIssue generateModerationIssue(GroupListing listing) {
-        //verify that the ModerationIssue does not already exist
-        if(mir.findByGroupRef(listing).isPresent()) {
-            throw new IllegalStateException(
-                    "ModerationIssue already exists for listing: " + listing.getGroupId()
-            );
-        }
-
-        ModerationIssue issue = new ModerationIssue(listing, listing.getUsers());
-        mir.save(issue);
-        mir.flush();
-        log.info("New ModerationIssue created with id: {} for group: {}",
-                issue.getIssueId(), listing.getGroupId());
-
-        return issue;
     }
 
     @Transactional
