@@ -48,15 +48,11 @@ public class ModerationServiceImpl implements ModerationService {
     @Autowired
     private ArchiveService archiveService;
 
-    @Autowired
-    private ListingReportingService reportingService;
-
     private static final Logger log = LoggerFactory.getLogger(GroupListingServiceImpl.class);
     private final GroupListingRepository glr;
     private final GroupListingConversionService glcs;
     private final UserRepository userRepo;
     private final UserModerationRecordRepository umrr;
-    private final ListingArchiveRepository lar;
     private final ListingReportRepository lrr;
     private final ModListingActionRepository mlar;
     private final ApplicationEventPublisher eventPublisher;
@@ -67,7 +63,6 @@ public class ModerationServiceImpl implements ModerationService {
                                  GroupListingConversionService groupListingConversionService,
                                  UserRepository userRepo,
                                  UserModerationRecordRepository umrr,
-                                 ListingArchiveRepository lar,
                                  ListingReportRepository lrr,
                                  ModListingActionRepository mlar,
                                  ModerationIssueRepository mir,
@@ -77,7 +72,6 @@ public class ModerationServiceImpl implements ModerationService {
         this.glcs = groupListingConversionService;
         this.userRepo = userRepo;
         this.umrr = umrr;
-        this.lar = lar;
         this.lrr = lrr;
         this.mlar = mlar;
         this.mir = mir;

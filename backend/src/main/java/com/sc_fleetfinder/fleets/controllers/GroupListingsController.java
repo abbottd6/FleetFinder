@@ -82,6 +82,7 @@ public class GroupListingsController {
         return groupListingService.getGroupListingById(id);
     }
 
+    //TODO this should be changed to remove userId field from the dto and just pass it as an additional argument
     @PostMapping("/create_listing")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> createGroupListing(@Valid @RequestBody CreateGroupListingDto createGroupListingDto,
@@ -98,6 +99,7 @@ public class GroupListingsController {
         return groupListingService.createGroupListing(createGroupListingDto);
     }
 
+    //TODO this should be changed to remove userId field from the dto and just pass it as an additional argument
     @PutMapping("/update_listing")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     // needs to use authenticationPrincipal and keycloakId instead of userId
@@ -113,18 +115,15 @@ public class GroupListingsController {
         return groupListingService.updateGroupListing(updateGroupListingDto);
     }
 
-    @DeleteMapping("/delete_listing/{id}")
+    @DeleteMapping("/delete_listing/{groupId}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
-    // id is the listingId
-    public ResponseEntity<?> deleteGroupListing(@Valid @PathVariable Long id,
+    public ResponseEntity<?> deleteGroupListing(@Valid @PathVariable Long groupId,
                                                    @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
 
         Users requestingUser = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() -> new RuntimeException("User with Keycloak ID: " + keycloakId + " not found"));
 
-        DeleteGroupListingDto deleteDto = new DeleteGroupListingDto(requestingUser.getUserId(), id);
-
-        return groupListingService.deleteGroupListing(deleteDto);
+        return groupListingService.deleteGroupListing(groupId, requestingUser);
     }
 }

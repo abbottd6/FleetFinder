@@ -33,7 +33,7 @@ CREATE TABLE moderation_issue
     other_count        INT                                                NOT NULL DEFAULT 0,
     first_report_ts    TIMESTAMP,
     last_report_ts     TIMESTAMP,
-    status             ENUM ('TBD', 'Clear', 'Actioned') NOT NULL DEFAULT 'TBD',
+    status             ENUM ('Pending', 'No Reports', 'Cleared', 'Actioned') NOT NULL DEFAULT 'Pending',
 
     CONSTRAINT mod_issue_fk__ref_group
         FOREIGN KEY (id_group)

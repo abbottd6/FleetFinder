@@ -56,6 +56,8 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    //TODO Find if there are any frontend usages of this, if not, then make it a mod endpoint only.
+    //TODO if there are frontend usages, they should probably just be changed to getMe
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public PublicUserResponseDto getUserById(@PathVariable Long id) {
@@ -80,6 +82,8 @@ public class UserController {
         return userService.createUser(kcId, username, email);
     }
 
+    //TODO ensure that this is not using a userId passed from the frontend
+    //TODO should only use the token derived id
     @PutMapping("/{id}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     // needs to use authentication principal and keycloakId instead of userId
@@ -89,6 +93,8 @@ public class UserController {
         return userService.updateUser(kcId, updateUserDto);
     }
 
+    //TODO ensure that this is not using a userId passed from the frontend
+    //TODO should only use the token derived id
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     // needs to use authentication principal and keycloakId instead of userId
@@ -130,6 +136,8 @@ public class UserController {
         return bms.addBookmark(dto, user);
     }
 
+    //TODO should remove userId from the dto and just pass it as a separate argument
+    //TODO should also verify that the bookmark belongs to the authorized/requesting user
     @DeleteMapping("/my/bookmarks/{groupId}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> deleteBookmark(@AuthenticationPrincipal Jwt jwt,

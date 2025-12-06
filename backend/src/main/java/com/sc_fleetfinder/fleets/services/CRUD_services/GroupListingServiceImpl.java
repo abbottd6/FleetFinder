@@ -10,7 +10,9 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.CommsOption;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -44,16 +46,20 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final GroupListingRepository groupListingRepository;
     private final GroupListingConversionService groupListingConversionService;
     private final UserRepository userRepository;
+    private final ArchiveService archiveService;
 
     @PersistenceContext
     private EntityManager em;
 
     public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
-                                   GroupListingConversionService groupListingConversionService, UserRepository userRepository) {
+                                   GroupListingConversionService groupListingConversionService,
+                                   UserRepository userRepository,
+                                   ArchiveService archiveService) {
 
         this.groupListingRepository = groupListingRepository;
         this.groupListingConversionService = groupListingConversionService;
         this.userRepository = userRepository;
+        this.archiveService = archiveService;
     }
 
     @Override
@@ -76,6 +82,7 @@ public class GroupListingServiceImpl implements GroupListingService {
         return groupListings.map(groupListingConversionService::convertListingToResponseDto);
     }
 
+    //TODO limit the number of listings per user to 3-5 listings
     @Override
     @Validated
     @Transactional
@@ -97,6 +104,7 @@ public class GroupListingServiceImpl implements GroupListingService {
             }
     }
 
+    //TODO limit the number of listings per user to 3-5 listings
     @Override
     @Validated
     @Transactional
@@ -104,9 +112,6 @@ public class GroupListingServiceImpl implements GroupListingService {
 
         GroupListing groupListing = groupListingRepository.findById(dto.getGroupId())
                 .orElseThrow(() -> new ResourceNotFoundException(dto.getGroupId()));
-
-        //ADD LOGIC TO CHECK THE NUMBER OF GROUPLISTINGS ASSOCIATED WITH A USER.
-        //LIMIT THE NUMBER OF GROUP LISTINGS PER USER TO 3
 
         GroupListing temp = groupListingConversionService.convertToEntity(dto);
 
@@ -118,34 +123,55 @@ public class GroupListingServiceImpl implements GroupListingService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteGroupListing(DeleteGroupListingDto deleteDto) {
+    public ResponseEntity<?> deleteGroupListing(Long groupId, Users user) {
             try {
-                GroupListing groupEntity = groupListingRepository.findById(deleteDto.getGroupId())
-                    .orElseThrow(() -> new ResourceNotFoundException(deleteDto.getGroupId()));
+                GroupListing listing = groupListingRepository.findById(groupId)
+                    .orElseThrow(() -> new ResourceNotFoundException("GroupListing", groupId));
 
-                if (Objects.equals(deleteDto.getUserId(), groupEntity.getUsers().getUserId())) {
-                    Users user = groupEntity.getUsers();
-                    user.getGroupListings().remove(groupEntity);
+                if (Objects.equals(listing.getUsers(), user)) {
+
+                    archiveService.prepareUserDeleteRecords(listing, user);
+
+                    //probably move all the deletes to the event handler
+                    user.getGroupListings().remove(listing);
                     userRepository.save(user);
-                    groupListingRepository.delete(groupEntity);
 
-
-                    log.info("listing deletion passed.");
+                    groupListingRepository.delete(listing);
                     groupListingRepository.flush();
+
+                    Map<String, String> response = new HashMap<>();
+                    response.put("listingId", String.valueOf(listing.getGroupId()));
+                    return ResponseEntity.status(HttpStatus.OK).body(response);
                 }
                 else {
-                    log.error("Delete DTO and listing repository userIds do not match. \n Request userId: {} \n " +
-                            "Repository userId: {}", deleteDto.getUserId(), groupEntity.getUsers().getUserId());
+                    log.error(
+                            """
+                            Delete DTO and listing repository userIds do not match.
+                                Request userId: {}
+                                Listing entity: {}
+                                Entity belongs to userId: {}
+                            """,
+                            user.getUserId(), listing.getGroupId(), listing.getUsers().getUserId()
+                    );
+                    throw new ActionNotAuthorizedException(
+                            user.getUserId(), "delete", "GroupListing", listing.getGroupId()
+                    );
                 }
-
-                Map<String, String> response = new HashMap<>();
-                response.put("listingId", deleteDto.getGroupId().toString());
-                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
+            catch (ResourceNotFoundException e) {
+                log.error("DeleteGroupListing failed. Reason: {}", e.getMessage());
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(e.getMessage());
+            }
+            catch (ActionNotAuthorizedException e) {
+                log.error("DeleteGroupListing failed. Reason: {}", e.getMessage());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(e.getMessage());
             }
             catch (Exception e) {
                 log.error("DeleteGroupListing failed. Reason: {}", e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("An error occurred while deleting this listing. The action could not be completed.");
+                        .body("An error occurred while deleting your listing: " + e.getMessage());
             }
     }
 
@@ -199,6 +225,7 @@ public class GroupListingServiceImpl implements GroupListingService {
         return result;
     }
 
+    //TODO move this into its own service package
     private Specification<GroupListing> buildListingFilterSpec(SearchListingsDto dto) {
         Specification<GroupListing> spec = Specification.where(null);
 

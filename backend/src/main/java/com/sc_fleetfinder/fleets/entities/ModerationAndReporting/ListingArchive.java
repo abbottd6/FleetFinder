@@ -274,7 +274,6 @@ public class ListingArchive {
     @Column(name="other_count")
     private Integer otherCount;
 
-    @NotNull(message="ListingArchive field 'otherCount' cannot be null.")
     @Column(name="status")
     private String status;
 
