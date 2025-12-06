@@ -8,16 +8,16 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 @Component
 @Slf4j
-public class ListingAutoModDelete {
+public class ListingModDelete {
 
     private final ModerationService modService;
 
-    public ListingAutoModDelete(ModerationService modService) {
+    public ListingModDelete(ModerationService modService) {
         this.modService = modService;
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void handleReportThresholdExcess(ListingAutoDeleteEvent event) {
+    public void handleReportThresholdExcess(ListingModDeleteEvent event) {
         try {
             modService.autoModDeleteListing(event.listing(), event.owner());
         } catch (Exception e) {

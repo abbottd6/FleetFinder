@@ -26,12 +26,25 @@ import java.time.Instant;
 public class ModListingAction {
 
     protected ModListingAction() {}
+
+    // for auto mod deletions
     public ModListingAction(ModerationIssue issue, String note, ListingArchive archive) {
         this.archive = archive;
         this.userId = issue.getUserRef().getUserId();
         this.username = issue.getUserRef().getUsername();
         this.actionType = "Auto";
         this.actionNote = note;
+    }
+
+    // for manual mod deletions
+    public ModListingAction(ModerationIssue issue, String modNote, ListingArchive archive, Users mod) {
+        this.archive = archive;
+        this.userId = issue.getUserRef().getUserId();
+        this.username = issue.getUserRef().getUsername();
+        this.modId = mod.getUserId();
+        this.modName = mod.getUsername();
+        this.actionType = "Manual";
+        this.actionNote = modNote;
     }
 
     @Id

@@ -7,6 +7,7 @@ import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
+import com.sc_fleetfinder.fleets.entities.Users;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class ArchiveServiceImpl implements ArchiveService {
 
     };
 
+    // for listings deleted by automod or a user
     @Override
     @Transactional
     public ListingArchive archiveListing(GroupListing listing, ModerationIssue issue,
@@ -47,4 +49,17 @@ public class ArchiveServiceImpl implements ArchiveService {
 
         return archive;
     };
+
+    // for listings deleted manually by a moderator
+    @Override
+    @Transactional
+    public ListingArchive archiveListing(GroupListing listing,
+                                                   ModerationIssue issue, String modNote,
+                                                   Users mod){
+
+        ListingArchive archive = new ListingArchive(listing, issue, modNote, mod);
+        lar.save(archive);
+
+        return archive;
+    }
 }

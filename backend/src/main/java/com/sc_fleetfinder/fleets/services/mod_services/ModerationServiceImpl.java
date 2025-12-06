@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.services.mod_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingArchiveRepository;
+import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingReportBasisRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingReportRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ModListingActionRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ModerationIssueRepository;
@@ -12,15 +13,17 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReport;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBasis;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.UserModerationRecord;
 import com.sc_fleetfinder.fleets.entities.Users;
-import com.sc_fleetfinder.fleets.events.ListingAutoDeleteEvent;
+import com.sc_fleetfinder.fleets.events.ListingModDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
 import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
+import com.sc_fleetfinder.fleets.services.reporting_services.ListingReportingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +40,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationConstants.AUTO_MOD_REPORT_THRESHOLD;
+
 @Service
 public class ModerationServiceImpl implements ModerationService {
 
     @Autowired
     private ArchiveService archiveService;
+
+    @Autowired
+    private ListingReportingService reportingService;
 
     private static final Logger log = LoggerFactory.getLogger(GroupListingServiceImpl.class);
     private final GroupListingRepository glr;
@@ -53,6 +61,7 @@ public class ModerationServiceImpl implements ModerationService {
     private final ModListingActionRepository mlar;
     private final ApplicationEventPublisher eventPublisher;
     private final ModerationIssueRepository mir;
+    private final ListingReportBasisRepository lrbr;
 
     public ModerationServiceImpl(GroupListingRepository groupListingRepository,
                                  GroupListingConversionService groupListingConversionService,
@@ -62,6 +71,7 @@ public class ModerationServiceImpl implements ModerationService {
                                  ListingReportRepository lrr,
                                  ModListingActionRepository mlar,
                                  ModerationIssueRepository mir,
+                                 ListingReportBasisRepository lrbr,
                                  ApplicationEventPublisher eventPublisher) {
         this.glr = groupListingRepository;
         this.glcs = groupListingConversionService;
@@ -71,6 +81,7 @@ public class ModerationServiceImpl implements ModerationService {
         this.lrr = lrr;
         this.mlar = mlar;
         this.mir = mir;
+        this.lrbr = lrbr;
         this.eventPublisher = eventPublisher;
     }
 
@@ -123,6 +134,24 @@ public class ModerationServiceImpl implements ModerationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Users", condemned.getUsers().getUserId()));
 
         //check for existing ModerationIssue or make a new one
+        ModerationIssue issue = mir.findByGroupRef(condemned)
+                .orElseGet(() -> generateModerationIssue(condemned));
+
+        //max out the count for the report basis provided by the mod
+        maxModReportedBasis(issue, dto);
+
+        // archive the listing before deletion
+        ListingArchive archive = archiveService.archiveListing(
+                condemned, issue, dto.getNote()
+        );
+
+        // create a moderator action for deletion
+        recordModeratorAction(issue, dto.getNote(), archive, mod);
+
+        // recording the users content moderation history for possibly bans
+        updateOrCreateUserModerationRecord(condemned);
+
+        eventPublisher.publishEvent(new ListingModDeleteEvent(condemned, owner));
     };
 
     @Override
@@ -153,7 +182,7 @@ public class ModerationServiceImpl implements ModerationService {
 
         updateOrCreateUserModerationRecord(condemned);
 
-        eventPublisher.publishEvent(new ListingAutoDeleteEvent(condemned, owner));
+        eventPublisher.publishEvent(new ListingModDeleteEvent(condemned, owner));
     }
 
     @Override
@@ -211,6 +240,7 @@ public class ModerationServiceImpl implements ModerationService {
         }
     }
 
+    //for auto mod deletions: uses a different ModListingAction constructor than manual mod actions
     @Transactional
     protected void recordModeratorAction(ModerationIssue issue, String note,
                                          ListingArchive archive) {
@@ -218,5 +248,81 @@ public class ModerationServiceImpl implements ModerationService {
 
         mlar.save(modAction);
         log.info("Moderator action recorded under actionId: {}", modAction.getActionId());
+    }
+
+    //for manual moderator actions: uses a different ModListingAction constructor than automod
+    @Transactional
+    protected void recordModeratorAction(ModerationIssue issue, String note,
+                                         ListingArchive archive, Users mod) {
+
+        ModListingAction modAction = new ModListingAction(issue, note, archive, mod);
+        mlar.save(modAction);
+        log.info("Manual moderator action recorded under actionId: {}", modAction.getActionId());
+    }
+
+    // maxing out report basis on manual mod deletions to try to use this as a confidence/severity
+    // for model training to classify undesirable/unacceptable user generated content.
+    @Transactional
+    protected void maxModReportedBasis(ModerationIssue issue, ManualModDeleteDto dto) {
+        ListingReportBasis modBasis = lrbr.findById(dto.getReportBasis())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "ListingReportBasis", dto.getReportBasis())
+                );
+
+        switch (modBasis.getBasisLabel()) {
+            case "Spam":
+                issue.setSpamCount(AUTO_MOD_REPORT_THRESHOLD);
+                log.info("A moderator action on issueId: {} has max spam count: {}",
+                        issue.getIssueId(), AUTO_MOD_REPORT_THRESHOLD);
+                break;
+            case "Hate Speech":
+                issue.setHateSpeechCount(AUTO_MOD_REPORT_THRESHOLD);
+                log.info("A moderator action on issueId: {} has max hateSpeechCount: {}",
+                        issue.getIssueId(), AUTO_MOD_REPORT_THRESHOLD);
+                break;
+            case "NSFW":
+                issue.setNsfwCount(AUTO_MOD_REPORT_THRESHOLD);
+                log.info("ModerationIssue with issueId: {} has incremented nsfwCount: {}",
+                        issue.getIssueId(), AUTO_MOD_REPORT_THRESHOLD);
+                break;
+            case "Scam/Fraud":
+                issue.setScamCount(AUTO_MOD_REPORT_THRESHOLD);
+                log.info("ModerationIssue with issueId: {} has incremented scamCount: {}",
+                        issue.getIssueId(), AUTO_MOD_REPORT_THRESHOLD);
+                break;
+            case "Off Topic":
+                issue.setOffTopicCount(AUTO_MOD_REPORT_THRESHOLD);
+                log.info("ModerationIssue with issueId: {} has incremented offTopicCount: {}",
+                        issue.getIssueId(), AUTO_MOD_REPORT_THRESHOLD);
+                break;
+            case "Low Quality/Troll":
+                issue.setTrollCount(AUTO_MOD_REPORT_THRESHOLD);
+                log.info("ModerationIssue with issueId: {} has incremented trollCount: {}",
+                        issue.getIssueId(), AUTO_MOD_REPORT_THRESHOLD);
+                break;
+            case "Doxxing/Personal Info":
+                issue.setDoxxCount(AUTO_MOD_REPORT_THRESHOLD);
+                log.info("ModerationIssue with issueId: {} has incremented doxxCount: {}",
+                        issue.getIssueId(), AUTO_MOD_REPORT_THRESHOLD);
+                break;
+            case "Cheating/RMT":
+                issue.setCheatCount(AUTO_MOD_REPORT_THRESHOLD);
+                log.info("ModerationIssue with issueId: {} has incremented cheatCount: {}",
+                        issue.getIssueId(), AUTO_MOD_REPORT_THRESHOLD);
+                break;
+            case "Other":
+                issue.setOtherCount(AUTO_MOD_REPORT_THRESHOLD);
+                log.info("ModerationIssue with issueId: {} has incremented otherCount: {}",
+                        issue.getIssueId(), AUTO_MOD_REPORT_THRESHOLD);
+                break;
+            default:
+                log.info("User report was unable to increment the correct ReportBasis count.");
+                throw new IllegalStateException("Unexpected value: " + modBasis.getBasisLabel());
+
+        }
+
+        issue.setReportTotalCount(AUTO_MOD_REPORT_THRESHOLD);
+
+        mir.save(issue);
     }
 }

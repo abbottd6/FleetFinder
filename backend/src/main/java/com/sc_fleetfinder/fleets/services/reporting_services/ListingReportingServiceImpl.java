@@ -28,10 +28,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationConstants.AUTO_MOD_REPORT_THRESHOLD;
+
 @Service
 @Slf4j
 public class ListingReportingServiceImpl implements ListingReportingService {
-    private final int AUTO_MOD_REPORT_THRESHOLD = 5;
 
     @Autowired
     private ModerationService modService;
@@ -183,7 +184,6 @@ public class ListingReportingServiceImpl implements ListingReportingService {
 
         return ResponseEntity.status(HttpStatus.OK).body(brief);
     }
-
 
     // debugging jpa transient instance errors
     private void dumpHibernateState(String label) {

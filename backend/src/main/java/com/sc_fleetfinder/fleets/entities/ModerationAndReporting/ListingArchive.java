@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities.ModerationAndReporting;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ManualModDeleteDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
@@ -12,6 +13,7 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Planetary
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import com.sc_fleetfinder.fleets.entities.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +36,7 @@ import java.time.Instant;
 public class ListingArchive {
 
     protected ListingArchive(){}
+    //constructor for AutoMod deletions and user deletions
     public ListingArchive(GroupListing listing, ModerationIssue issue, String note) {
         this.groupId = listing.getGroupId();
         this.userId = listing.getUsers().getUserId();
@@ -72,6 +75,50 @@ public class ListingArchive {
         this.status = issue.getStatus();
         this.actionType = "Auto";
         this.actionNote = note;
+    }
+
+    // constructor for manual moderator actions to delete a listing
+    public ListingArchive(GroupListing listing, ModerationIssue issue,
+                          String modNote, Users mod) {
+        this.groupId = listing.getGroupId();
+        this.userId = listing.getUsers().getUserId();
+        this.username = listing.getUsers().getUsername();
+        this.listingTitle = listing.getListingTitle();
+        this.listingDescription = listing.getListingDescription();
+        this.listingRoles = listing.getAvailableRoles();
+        this.listingCommsService = listing.getCommsService();
+        this.server = listing.getServer();
+        this.environment = listing.getEnvironment();
+        this.experience = listing.getExperience();
+        this.playStyle = listing.getPlayStyle();
+        this.legality = listing.getLegality();
+        this.groupStatus = listing.getGroupStatus();
+        this.eventSchedule = listing.getEventSchedule();
+        this.category = listing.getCategory();
+        this.subcategory = listing.getSubcategory();
+        this.pvpStatus = listing.getPvpStatus();
+        this.system = listing.getSystem();
+        this.planetMoonSystem = listing.getPlanetMoonSystem();
+        this.currentPartySize = listing.getCurrentPartySize();
+        this.desiredPartySize = listing.getDesiredPartySize();
+        this.commsOption = listing.getCommsOption();
+        this.listingCreationTs = listing.getCreationTimestamp();
+        this.listingLastUpdated = listing.getLastUpdated();
+        this.reportTotalCount = issue.getReportTotalCount();
+        this.spamCount = issue.getSpamCount();
+        this.hateSpeechCount = issue.getHateSpeechCount();
+        this.nsfwCount = issue.getNsfwCount();
+        this.scamCount = issue.getScamCount();
+        this.offTopicCount = issue.getOffTopicCount();
+        this.trollCount = issue.getTrollCount();
+        this.doxxCount = issue.getDoxxCount();
+        this.cheatCount = issue.getCheatCount();
+        this.otherCount = issue.getOtherCount();
+        this.status = issue.getStatus();
+        this.modId = mod.getUserId();
+        this.modname = mod.getUsername();
+        this.actionType = "Manual";
+        this.actionNote = modNote;
     }
 
     @Id
