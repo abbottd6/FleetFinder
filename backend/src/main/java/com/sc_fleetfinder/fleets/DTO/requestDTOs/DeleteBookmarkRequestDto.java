@@ -12,5 +12,6 @@ public class DeleteBookmarkRequestDto {
     @NotNull(message = "DeleteBookmarkRequestDto field 'groupId' cannot be null.")
     private Long groupId;
 
+    // ##TODO should not get userId from frontend or have it as part of the dto, should be derived from token and passed separately
     private Users user;
 }

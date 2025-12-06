@@ -48,6 +48,9 @@ public class GroupListingsController {
     @Autowired
     private UserRepository userRepository;
 
+    //##TODO make sure that all secure endpoints derive identity from the token and that the authorized user for...
+    //##TODO any requests to access or modify a resource match the resource owner
+
     @PostMapping("/search")
     public Page<GroupListingResponseDto> searchGroupListings(@RequestBody SearchListingsDto request) {
         Sort sort = Sort.unsorted();

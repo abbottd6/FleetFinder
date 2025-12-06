@@ -19,6 +19,7 @@ public class UpdateGroupListingDto {
     @NotNull(message = "Update group listing request DTO field 'groupId' cannot be null.")
     private Long groupId;
 
+    // ##TODO Make sure the front end is not passing a userid. Should be derived from token
     private Long userId;
 
     @NotNull(message = "Update group listing request DTO field 'serverId' cannot be null")

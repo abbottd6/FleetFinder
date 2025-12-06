@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class UpdateUserDto {
 
+    //##TODO this is a duplicate with CreateOrUpdateUserDto, either two separate ones or remove this
     @NotNull(message = "Update user DTO field 'userId' cannot be null")
     private Long userId;
 

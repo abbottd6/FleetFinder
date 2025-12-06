@@ -46,6 +46,8 @@ public class UserController {
     @Autowired
     private ListingReportingService lrs;
 
+    //##TODO make sure that all secure endpoints derive identity from the token and that the authorized user for...
+    //##TODO any requests to access or modify a resource match the resource owner
     public UserController() {};
 
     @GetMapping

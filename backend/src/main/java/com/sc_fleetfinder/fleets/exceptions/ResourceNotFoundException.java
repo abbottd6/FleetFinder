@@ -3,6 +3,9 @@ package com.sc_fleetfinder.fleets.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+
+//TODO create an UnauthorizedAccessException for requests that include auth but the auth does not have...
+//TODO permissions for/ownership of the resource
 @ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 

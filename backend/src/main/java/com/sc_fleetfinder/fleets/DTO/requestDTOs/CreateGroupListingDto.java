@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
-import com.sc_fleetfinder.fleets.entities.Users;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +14,7 @@ import java.time.Instant;
 @Data
 public class CreateGroupListingDto {
 
+    // ##TODO should not include a userId here, nor on the front end, it should be derived from token
     private Long userId;
 
     @NotNull(message = "Create group listing DTO field 'serverId' cannot be null")
