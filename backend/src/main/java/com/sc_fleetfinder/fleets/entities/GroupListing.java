@@ -12,8 +12,6 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Planetary
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 import org.springframework.lang.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
