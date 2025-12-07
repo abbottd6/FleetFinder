@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.services.mod_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
-import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingArchiveRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingReportBasisRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingReportRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ModListingActionRepository;
@@ -23,7 +22,6 @@ import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
 import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
-import com.sc_fleetfinder.fleets.services.reporting_services.ListingReportingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +90,6 @@ public class ModerationServiceImpl implements ModerationService {
                 .collect(Collectors.toList());
     }
 
-    // ##TODO: change this to use the mod specific delete dto so that it includes a deletion/report basis and a note field
     @Override
     @Transactional(transactionManager = "transactionManager")
     public ResponseEntity<?> modDeleteListing(ManualModDeleteDto dto, Users mod) {
@@ -133,7 +130,7 @@ public class ModerationServiceImpl implements ModerationService {
 
         // archive the listing before deletion
         ListingArchive archive = archiveService.archiveListing(
-                condemned, issue, dto.getNote()
+                condemned, issue, dto.getNote(), mod
         );
 
         // create a moderator action for deletion
