@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.AddHiddenRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.SubmitListingReportDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
@@ -137,24 +138,25 @@ public class UserController {
         return bms.deleteBookmarkById(groupId, user);
     }
 
-    @GetMapping("/my/hidden")
-    @PreAuthorize("isAuthenticated() and hasRole('user')")
-    public ResponseEntity<?> getHidden(@AuthenticationPrincipal Jwt jwt) {
-        String kcId = jwt.getSubject();
-        Users user = userService.verifyUser(kcId);
-        return hls.getMyHiddenListingsBrief(user);
-    }
+    //TODO this probably isnt necessary, filtering with the hidden listings on the backend
+//    @GetMapping("/my/hidden")
+//    @PreAuthorize("isAuthenticated() and hasRole('user')")
+//    public ResponseEntity<?> getHidden(@AuthenticationPrincipal Jwt jwt) {
+//        String kcId = jwt.getSubject();
+//        Users user = userService.verifyUser(kcId);
+//        return hls.getMyHiddenListingsBrief(user);
+//    }
 
-    @PostMapping("/my/hidden/{groupId}")
+    @PostMapping("/my/hidden:add")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> addHidden(@AuthenticationPrincipal Jwt jwt,
-                                       @PathVariable Long groupId) {
+                                       @RequestBody AddHiddenRequestDto dto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
-        return hls.userHideListing(user, groupId);
+        return hls.userAddHidden(user, dto.getGroupId());
     }
 
-    @DeleteMapping("/my/hidden/")
+    @DeleteMapping("/my/hidden:clear")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> clearHidden(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
@@ -162,7 +164,7 @@ public class UserController {
         return hls.userClearHidden(user);
     }
 
-    @DeleteMapping("/my/hidden")
+    @DeleteMapping("/my/hidden:pop")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> undoLastHide(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
@@ -181,6 +183,7 @@ public class UserController {
         return lrs.generateListingReport(dto, user);
     }
 
+    //TODO dont think i want this anymore, now that hidden listings is doing this
     @GetMapping("/group_listings/report_brief")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> getListingReportBrief(@AuthenticationPrincipal Jwt jwt) {

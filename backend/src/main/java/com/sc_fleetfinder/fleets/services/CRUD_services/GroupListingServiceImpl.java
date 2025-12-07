@@ -13,8 +13,10 @@ import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
+import com.sc_fleetfinder.fleets.utils.SearchStopWords;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,10 +33,14 @@ import org.springframework.validation.annotation.Validated;
 
 import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationConstants.USER_MAX_LISTING_COUNT;
@@ -48,6 +54,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final GroupListingConversionService groupListingConversionService;
     private final UserRepository userRepository;
     private final ArchiveService archiveService;
+    private final HiddenListingService hls;
 
     @PersistenceContext
     private EntityManager em;
@@ -55,12 +62,14 @@ public class GroupListingServiceImpl implements GroupListingService {
     public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
                                    GroupListingConversionService groupListingConversionService,
                                    UserRepository userRepository,
-                                   ArchiveService archiveService) {
+                                   ArchiveService archiveService,
+                                   HiddenListingService hls) {
 
         this.groupListingRepository = groupListingRepository;
         this.groupListingConversionService = groupListingConversionService;
         this.userRepository = userRepository;
         this.archiveService = archiveService;
+        this.hls = hls;
     }
 
     @Override
@@ -76,8 +85,14 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    public Page<GroupListingResponseDto> searchGroupListings(SearchListingsDto dto, Pageable pageable) {
+    public Page<GroupListingResponseDto> searchGroupListings(SearchListingsDto dto, Pageable pageable,
+                                                             Optional<Users> userOpt) {
         Specification<GroupListing> spec = buildListingFilterSpec(dto);
+
+        if(userOpt.isPresent()) {
+            Users user = userOpt.get();
+            spec = spec.and(notHiddenBy(user));
+        }
 
         Page<GroupListing> groupListings = groupListingRepository.findAll(spec, pageable);
         return groupListings.map(groupListingConversionService::convertListingToResponseDto);
@@ -249,22 +264,64 @@ public class GroupListingServiceImpl implements GroupListingService {
         return result;
     }
 
-    //TODO move this into its own service package
+    private Specification<GroupListing> notHiddenBy(Users user) {
+        return (root, query, cb) -> {
+            Set<Long> hiddenGroupIds = hls.getMyHiddenListingsBrief(user);
+            if (hiddenGroupIds.isEmpty()) {
+                return cb.conjunction();
+            }
+            return cb.not(root.get("groupId").in(hiddenGroupIds));
+        };
+    }
+
     private Specification<GroupListing> buildListingFilterSpec(SearchListingsDto dto) {
         Specification<GroupListing> spec = Specification.where(null);
 
         String search = dto.getSearch();
 
         if (search != null && !search.isBlank()) {
-            String like = "%" + search.toLowerCase() + "%";
+            String[] searchArray = search.trim().split("\\s+");
+            List<String> tokens = new ArrayList<>();
 
-            spec = spec.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.or(
-                            criteriaBuilder.like(criteriaBuilder.lower(root.get("listingTitle")), like),
-                            criteriaBuilder.like(criteriaBuilder.lower(root.get("listingDescription")), like),
-                            criteriaBuilder.like(criteriaBuilder.lower(root.get("availableRoles")), like)
-                    )
-            );
+            for (String word : searchArray) {
+                if (word.isBlank()) continue;
+
+                String lower = word.toLowerCase(Locale.ROOT);
+
+                String alphaOnly = lower.replaceAll("[^a-z]", "");
+
+                boolean hasDigit = word.chars().anyMatch(Character::isDigit);
+
+                boolean isStopWord = SearchStopWords.ENGLISH.contains(alphaOnly);
+
+                if(!isStopWord || hasDigit) {
+                    tokens.add(lower);
+                }
+            }
+
+            if(!tokens.isEmpty()) {
+                spec = spec.and((root, query, criteriaBuilder) -> {
+                    List<Predicate> tokenPredicates = new ArrayList<>();
+
+                    for (String token : tokens) {
+                        String like = "%" + token + "%";
+                        System.out.println(token);
+                        Predicate perToken = criteriaBuilder.or(
+                                criteriaBuilder.like(criteriaBuilder.lower(root.get("listingTitle")), like),
+                                criteriaBuilder.like(criteriaBuilder.lower(root.get("listingDescription")), like),
+                                criteriaBuilder.like(criteriaBuilder.lower(root.get("availableRoles")), like),
+                                criteriaBuilder.like(criteriaBuilder.lower(root.get("commsService")), like)
+                        );
+                        tokenPredicates.add(perToken);
+                    }
+
+                    if (tokenPredicates.isEmpty()) {
+                        return criteriaBuilder.conjunction();
+                    }
+
+                    return criteriaBuilder.or(tokenPredicates.toArray(new Predicate[0]));
+                });
+            }
         }
 
         for(Field field: SearchListingsDto.class.getDeclaredFields()) {

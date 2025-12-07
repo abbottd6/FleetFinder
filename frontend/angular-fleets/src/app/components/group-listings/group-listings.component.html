@@ -55,7 +55,8 @@
           <ng-container>
             <button mat-icon-button
                     matTooltip="Hide"
-                    [matTooltipPosition]="positionOptions[0]">
+                    [matTooltipPosition]="positionOptions[0]"
+                    (click)="userHideListing(row.groupId)">
               <mat-icon class="visibility-icon">visibility_off</mat-icon>
             </button>
           </ng-container>

@@ -48,6 +48,7 @@ export class ListingReportService {
     )
   }
 
+  //TODO dont think I want this anymore, switched to filtering with hidden on the backend
   getUserReportsBrief(): Observable<any> {
     return this.httpClient.get<any>(this.getReportBriefUrl).pipe(
       tap(response => console.log("getUserReportsBrief response: ", response))

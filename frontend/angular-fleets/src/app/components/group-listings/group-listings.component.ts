@@ -36,6 +36,9 @@ import {SubmitListingReport} from "../../models/report-requests/submit-listing-r
 import {ConfirmDeleteComponent} from "../pop-ups/confirm-delete/confirm-delete.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmReportComponent} from "../pop-ups/confirm-report/confirm-report.component";
+import {HideListingRequest} from "../../models/listing-filter/hide-listing-request.model";
+import {HiddenListingsService} from "../../services/user-services/hidden-listings.service";
+import {response} from "express";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -75,7 +78,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   dataSource = new MatTableDataSource<GroupListingViewModel>();
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
-              private filter: FilterService, private auth: AuthService) {}
+              private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsService) {}
 
   bookmarkedIds$!: Observable<Set<number>>;
   reportedIds$!: Observable<Set<number>>;
@@ -230,7 +233,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
       return;
     }
     const request = new AddBookmarkRequest(listingId);
-    console.log(request);
     this.bmService.addBookmark(request).pipe(takeUntil(this.destroy$)).subscribe( {
       next: (response: { listingTitle: string; }) =>
         this.snackBar.open(`"${response.listingTitle}" added to bookmarks.`, 'OK', {
@@ -239,6 +241,32 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
           horizontalPosition: 'center',
           panelClass: ['mobile-snackbar']})
       }
+    )
+  }
+
+  userHideListing(listingId: number) {
+    if(!this.isLoggedIn) {
+      this.snackBar.open("You must log in to hide listings.", 'OK', {
+        duration: 5000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']})
+      return;
+    }
+    const request = new HideListingRequest(listingId);
+    this.hideService.addHidden(request).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response: { Response: string; }) =>
+        this.snackBar.open(`${response.Response}`, 'OK', {
+          duration: 4000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+          panelClass: ['mobile-snackbar']
+        }),
+        complete: () => {
+          this.reloadListings();
+        }
+        }
+
     )
   }
 
@@ -304,7 +332,10 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
           verticalPosition: 'top',
           horizontalPosition: 'center',
           panelClass: ['mobile-snackbar']
-        })
+        }),
+      complete: () => {
+        this.reloadListings();
+      }
     });
   }
 
@@ -328,5 +359,4 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     .observe('(max-width: 1350px)')
     .pipe(map(result => result.matches),
       shareReplay());
-  protected readonly async = async;
 }

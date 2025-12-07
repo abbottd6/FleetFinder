@@ -11,6 +11,7 @@ import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBa
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.CRUD_services.HiddenListingService;
 import com.sc_fleetfinder.fleets.services.mod_services.ModerationService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -34,25 +35,28 @@ import static com.sc_fleetfinder.fleets.entities.ModerationAndReporting.Moderati
 @Slf4j
 public class ListingReportingServiceImpl implements ListingReportingService {
 
-    @Autowired
-    private ModerationService modService;
-
     private final GroupListingRepository glr;
     private final ModerationIssueRepository mir;
+    private final ModerationService modService;
     private final ListingReportBasisRepository lbr;
     private final ListingReportRepository lrr;
+    private final HiddenListingService hls;
 
     @PersistenceContext
     private EntityManager em;
 
     public ListingReportingServiceImpl(GroupListingRepository groupListingRepository,
                                        ModerationIssueRepository moderationIssueRepository,
+                                       ModerationService modService,
                                        ListingReportBasisRepository listingReportBasisRepository,
-                                       ListingReportRepository listingReportRepository) {
+                                       ListingReportRepository listingReportRepository,
+                                       HiddenListingService hls) {
         this.glr = groupListingRepository;
         this.mir = moderationIssueRepository;
+        this.modService = modService;
         this.lbr = listingReportBasisRepository;
         this.lrr = listingReportRepository;
+        this.hls = hls;
     }
 
     @Override
@@ -61,6 +65,9 @@ public class ListingReportingServiceImpl implements ListingReportingService {
         //Get the reported listing
         GroupListing reported = glr.findById(dto.getGroupId())
                 .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getGroupId()));
+
+        // Add listing to reporterUsers hidden listings
+        hls.userAddHidden(reporterUser, reported.getGroupId());
 
         //check if the listing has already been reported, i.e. has a ModerationIssue
         //if there is not an existing ModerationIssue for this listing, then create a new one

@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -51,7 +52,8 @@ public class GroupListingsController {
     //##TODO any requests to access or modify a resource match the resource owner
 
     @PostMapping("/search")
-    public Page<GroupListingResponseDto> searchGroupListings(@RequestBody SearchListingsDto request) {
+    public Page<GroupListingResponseDto> searchGroupListings(@AuthenticationPrincipal Jwt jwt,
+                                                             @RequestBody SearchListingsDto request) {
         Sort sort = Sort.unsorted();
         if (request.getSortField() != null && !request.getSortField().isBlank()) {
             Sort.Direction direction = "desc".equalsIgnoreCase(request.getSortDirection())
@@ -60,9 +62,10 @@ public class GroupListingsController {
         }
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
-//        log.info("Here is the page:" + request);
+        Optional<Users> userOpt = Optional.ofNullable(jwt)
+                .flatMap(auth -> userRepository.findByKeycloakId(auth.getSubject()));
 
-        return groupListingService.searchGroupListings(request, pageable);
+        return groupListingService.searchGroupListings(request, pageable, userOpt);
     }
 
     //TODO this is probably not necessary anymore since adding the search listings endpoint

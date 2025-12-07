@@ -29,31 +29,35 @@ public class HiddenListingServiceImpl implements HiddenListingService {
     }
 
     @Override
-    public ResponseEntity<?> getMyHiddenListingsBrief(Users user) {
-        Set<Long> brief = hlr.findByUser(user).stream()
+    public Set<Long> getMyHiddenListingsBrief(Users user) {
+         return hlr.findByUser(user).stream()
                 .map(hidden -> hidden.getListing().getGroupId())
                 .collect(Collectors.toSet());
-
-        return ResponseEntity.status(HttpStatus.OK).body(brief);
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> userHideListing(Users user, Long groupId) {
+    public ResponseEntity<?> userAddHidden(Users user, Long groupId) {
+        Map<String, String> response = new HashMap<>();
+
         try {
             GroupListing listing = glr.findById(groupId)
                     .orElseThrow(() -> new ResourceNotFoundException("GroupListing", groupId));
+
+            if(hlr.findByUserAndListing(user, listing).isPresent()) {
+                response.put("Response", "Already Hidden");
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+            }
 
             HiddenListing hide = new HiddenListing(user, listing);
 
             hlr.save(hide);
 
-            Map<String, String> response = new HashMap<>();
             response.put("Response", "Listing Hidden");
             return ResponseEntity.status(HttpStatus.OK).body(response);
+
         } catch (ResourceNotFoundException e) {
 
-            Map<String, String> response = new HashMap<>();
             response.put("Response", "Unable to hide this listing" + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }

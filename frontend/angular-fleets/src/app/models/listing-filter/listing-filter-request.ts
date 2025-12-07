@@ -1,4 +1,3 @@
-import {environment} from "../../../environments/environment";
 import {ListingFilterState} from "../../services/api-lookup-services/filter.service";
 
 export class ListingFilterRequest {
