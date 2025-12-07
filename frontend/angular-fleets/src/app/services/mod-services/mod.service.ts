@@ -16,6 +16,7 @@ export class ModService implements OnDestroy {
 
   constructor(private httpClient: HttpClient) {}
 
+  //TODO change this to use a dto matching backend 'ManualModDeleteDto': Long groupId, Integer reportBasis, String modNote
   modDeleteListing(listingId: number) {
     return this.httpClient.delete<any>(`${this.modDeleteListingUrl}/${listingId}`);
   }

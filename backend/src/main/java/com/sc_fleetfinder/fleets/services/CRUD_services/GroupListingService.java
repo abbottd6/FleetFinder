@@ -21,10 +21,10 @@ public interface GroupListingService {
     List<GroupListingResponseDto> getAllGroupListings();
 
     @Validated
-    ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto);
+    ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto dto, Users user);
 
     @Validated
-    GroupListing updateGroupListing(@Valid UpdateGroupListingDto updateGroupListingDto);
+    ResponseEntity<?> updateGroupListing(@Valid UpdateGroupListingDto dto, Users user);
 
     @Validated
     ResponseEntity<?> deleteGroupListing(Long groupId, Users user);

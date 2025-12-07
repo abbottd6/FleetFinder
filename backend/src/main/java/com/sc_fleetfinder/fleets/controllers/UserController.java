@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.controllers;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.SubmitListingReportDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
@@ -118,19 +119,18 @@ public class UserController {
         return bms.getBookmarksByUserId(userId);
     }
 
-    @PostMapping("/my/bookmarks/{groupId}")
+    @PostMapping("/my/bookmarks")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> addBookmark(@AuthenticationPrincipal Jwt jwt,
-                                         @PathVariable Long groupId) {
+                                         @RequestBody AddBookmarkRequestDto dto) {
         String kcId = jwt.getSubject();
 
         Users user = userService.verifyUser(kcId);
 
-        return bms.addBookmark(groupId, user);
+        return bms.addBookmark(dto.getGroupId(), user);
     }
 
-    //TODO should remove userId from the dto and just pass it as a separate argument
-    //TODO should also verify that the bookmark belongs to the authorized/requesting user
+    //user's ownership is verified by searching by user + group in bookmark repo
     @DeleteMapping("/my/bookmarks/{groupId}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> deleteBookmark(@AuthenticationPrincipal Jwt jwt,

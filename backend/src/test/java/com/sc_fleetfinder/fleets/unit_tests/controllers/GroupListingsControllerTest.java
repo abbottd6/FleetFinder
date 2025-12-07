@@ -355,7 +355,7 @@ class GroupListingsControllerTest {
         doAnswer(invocation -> {
             invocation.getArgument(0);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class));
+        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class), mockUser);
 
 
         mockMvc.perform(post("/api/group-listings/create_listing")
@@ -406,7 +406,7 @@ class GroupListingsControllerTest {
         doAnswer(invocation -> {
             invocation.getArgument(0);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class));
+        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class), mockUser);
 
 
         mockMvc.perform(post("/api/group-listings/create_listing")
@@ -455,7 +455,7 @@ class GroupListingsControllerTest {
             invocation.getArgument(0);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while creating your listing");
-        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class));
+        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class), mockUser);
 
         mockMvc.perform(post("/api/group-listings/create_listing")
                         .with(jwt()

@@ -7,6 +7,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.Valid;
@@ -81,37 +82,29 @@ public class GroupListingsController {
         return groupListingService.getGroupListingById(id);
     }
 
-    //TODO this should be changed to remove userId field from the dto and just pass it as an additional argument
     @PostMapping("/create_listing")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
-    public ResponseEntity<?> createGroupListing(@Valid @RequestBody CreateGroupListingDto createGroupListingDto,
+    public ResponseEntity<?> createGroupListing(@Valid @RequestBody CreateGroupListingDto dto,
                                                 @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
 
         Users requestingUser = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new RuntimeException("User with Keycloak ID: " + keycloakId + " not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found. Try logging out and logging back in."));
 
-        // Add logic to check the number of listings a user has and limit them
+        dto.setUserId(requestingUser.getUserId());
 
-        createGroupListingDto.setUserId(requestingUser.getUserId());
-
-        return groupListingService.createGroupListing(createGroupListingDto);
+        return groupListingService.createGroupListing(dto, requestingUser);
     }
 
-    //TODO this should be changed to remove userId field from the dto and just pass it as an additional argument
     @PutMapping("/update_listing")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
-    // needs to use authenticationPrincipal and keycloakId instead of userId
-    public GroupListing updateGroupListing(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateGroupListingDto updateGroupListingDto) {
+    public ResponseEntity<?> updateGroupListing(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateGroupListingDto dto) {
         String keycloakId = jwt.getSubject();
 
         Users requestingUser = userRepository.findByKeycloakId(keycloakId)
                 .orElseThrow(() -> new RuntimeException("User with Keycloak ID: " + keycloakId + " not found"));
 
-        updateGroupListingDto.setUserId(requestingUser.getUserId());
-        updateGroupListingDto.setGroupId(updateGroupListingDto.getGroupId());
-
-        return groupListingService.updateGroupListing(updateGroupListingDto);
+        return groupListingService.updateGroupListing(dto, requestingUser);
     }
 
     @DeleteMapping("/delete_listing/{groupId}")

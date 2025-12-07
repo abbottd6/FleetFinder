@@ -37,6 +37,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationConstants.USER_MAX_LISTING_COUNT;
+
 @Service
 @Validated
 public class GroupListingServiceImpl implements GroupListingService {
@@ -81,43 +83,66 @@ public class GroupListingServiceImpl implements GroupListingService {
         return groupListings.map(groupListingConversionService::convertListingToResponseDto);
     }
 
-    //TODO limit the number of listings per user to 3-5 listings
     @Override
     @Validated
     @Transactional
-    public ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto createGroupListingDto) {
-        Objects.requireNonNull(createGroupListingDto, "GroupListingResponseDto cannot be null");
+    public ResponseEntity<?> createGroupListing(@Valid CreateGroupListingDto dto, Users requestingUser) {
+        Objects.requireNonNull(dto, "GroupListingResponseDto cannot be null");
+        Objects.requireNonNull(requestingUser, "User cannot be null");
+
+        if(requestingUser.getGroupListings().size() >= USER_MAX_LISTING_COUNT) {
+            Map<String, String> response = new HashMap<>();
+            response.put("response", "Listing creation unsuccesful. Limit of " + USER_MAX_LISTING_COUNT + " reached.");
+
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
+
+        } else {
             try {
-                GroupListing groupListing = groupListingConversionService.convertToEntity(createGroupListingDto);
+                GroupListing groupListing = groupListingConversionService.convertToEntity(dto);
 
                 groupListingRepository.save(groupListing);
 
                 Map<String, String> response = new HashMap<>();
                 response.put("listingTitle", groupListing.getListingTitle());
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 log.error("CreateGroupListing failed. Reason: {}", e.getMessage());
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("An error occurred while creating your listing.");
             }
+        }
     }
 
-    //TODO limit the number of listings per user to 3-5 listings
     @Override
     @Validated
     @Transactional
-    public GroupListing updateGroupListing(@Valid UpdateGroupListingDto dto) {
+    public ResponseEntity<?> updateGroupListing(@Valid UpdateGroupListingDto dto, Users user) {
+        try {
+            GroupListing listing = groupListingRepository.findById(dto.getGroupId())
+                    .orElseThrow(() -> new ResourceNotFoundException(dto.getGroupId()));
 
-        GroupListing groupListing = groupListingRepository.findById(dto.getGroupId())
-                .orElseThrow(() -> new ResourceNotFoundException(dto.getGroupId()));
+            if (Objects.equals(listing.getUsers().getUserId(), user.getUserId())) {
+                GroupListing temp = groupListingConversionService.convertToEntity(dto);
 
-        GroupListing temp = groupListingConversionService.convertToEntity(dto);
+                BeanUtils.copyProperties(temp, listing,
+                        "groupId", "users", "creationTimestamp", "isDeleted", "deletedAt");
 
-        BeanUtils.copyProperties(temp, groupListing,
-                "groupId", "users", "creationTimestamp", "isDeleted", "deletedAt");
+                groupListingRepository.save(listing);
 
-        return groupListingRepository.save(groupListing);
+                Map<String, String> response = new HashMap<>();
+                String title = listing.getListingTitle();
+                response.put("listingTitle", title.length() <= 25 ? title : title.substring(0, 25) + "...");
+
+                return ResponseEntity.status(HttpStatus.OK).body(response);
+
+            } else {
+                throw new ActionNotAuthorizedException(user.getUserId(), "update", "GroupListing", dto.getGroupId());
+            }
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (ActionNotAuthorizedException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 
     @Override

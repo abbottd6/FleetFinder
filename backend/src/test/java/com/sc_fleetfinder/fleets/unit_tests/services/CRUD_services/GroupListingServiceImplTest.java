@@ -224,7 +224,7 @@ class GroupListingServiceImplTest {
         when(groupListingRepository.save(any(GroupListing.class))).thenReturn(mappedEntity);
 
         //when
-        ResponseEntity<?> response = groupListingService.createGroupListing(validDto);
+        ResponseEntity<?> response = groupListingService.createGroupListing(validDto, testUsers);
 
         //then
         assertInstanceOf(Map.class, response.getBody());
@@ -251,8 +251,13 @@ class GroupListingServiceImplTest {
         //given
         CreateGroupListingDto invalidDto = new CreateGroupListingDto();
 
+        //creating test user
+        Users mockUser = new Users();
+        mockUser.setUserId(1L);
+        mockUser.setUsername("TestUser");
+
         //when
-        ResponseEntity<?> response = groupListingService.createGroupListing(invalidDto);
+        ResponseEntity<?> response = groupListingService.createGroupListing(invalidDto, mockUser);
 
         //then
         assertAll("create listing failed assertions set:",
