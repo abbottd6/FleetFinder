@@ -64,6 +64,7 @@ public class GroupListingsController {
         return groupListingService.searchGroupListings(request, pageable);
     }
 
+    //TODO this is probably not necessary anymore since adding the search listings endpoint
     @GetMapping
     public CollectionModel<EntityModel<GroupListingResponseDto>> getAllGroupListings() {
         List<GroupListingResponseDto> groupListingResponseDto = groupListingService.getAllGroupListings();

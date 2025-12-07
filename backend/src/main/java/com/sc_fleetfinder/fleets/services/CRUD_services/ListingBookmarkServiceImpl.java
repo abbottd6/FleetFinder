@@ -147,24 +147,17 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteBookmarkById(DeleteBookmarkRequestDto dto) {
-        Objects.requireNonNull(dto, "DeleteBookmarkRequestDto cannot be null");
-
+    public ResponseEntity<?> deleteBookmarkById(Long groupId, Users user) {
         try {
-            GroupListing group = glr.findById(dto.getGroupId())
-                    .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getGroupId()));
-            ListingBookmark bm = bmr.findByUserAndGroup(dto.getUser(), group)
-                    .orElseThrow(() -> new ResourceNotFoundException("Bookmark", dto.getBookmarkId()));
+            GroupListing group = glr.findById(groupId)
+                    .orElseThrow(() -> new ResourceNotFoundException("GroupListing", groupId));
+            ListingBookmark bm = bmr.findByUserAndGroup(user, group)
+                    .orElseThrow(() -> new ResourceNotFoundException("Bookmark", user.getUserId(), groupId));
 
-            if(Objects.equals(dto.getUser(), bm.getUser())) {
-                bmr.deleteById(bm.getId());
-                Map<String, String> response = new HashMap<>();
-                response.put("message", "Bookmark removed successfully");
-                return ResponseEntity.status(HttpStatus.OK).body(response);
-            }
-            else {
-                throw new ResourceNotFoundException("ListingBookmark", dto.getBookmarkId());
-            }
+            bmr.deleteById(bm.getId());
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Bookmark removed successfully");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         catch (Exception e) {
             log.error("DeleteBookmark failed. {}", e.getMessage());

@@ -14,5 +14,5 @@ public interface ListingBookmarkService {
     ResponseEntity<?> getBookmarkBriefByUserId(Long userId);
     List<ListingBookmarkDto> getBookmarksByListingId(Long listingId);
     ResponseEntity<?> addBookmark(AddBookmarkRequestDto dto, Users user);
-    ResponseEntity<?> deleteBookmarkById(DeleteBookmarkRequestDto dto);
+    ResponseEntity<?> deleteBookmarkById(Long groupId, Users user);
 }

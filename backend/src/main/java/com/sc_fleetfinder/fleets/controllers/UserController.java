@@ -56,8 +56,7 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    //TODO Find if there are any frontend usages of this, if not, then make it a mod endpoint only.
-    //TODO if there are frontend usages, they should probably just be changed to getMe
+    //TODO This can be used once user profiles are viewable by others
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public PublicUserResponseDto getUserById(@PathVariable Long id) {
@@ -146,11 +145,7 @@ public class UserController {
 
         Users user = userService.verifyUser(kcId);
 
-        DeleteBookmarkRequestDto dto = new DeleteBookmarkRequestDto();
-        dto.setUser(user);
-        dto.setGroupId(groupId);
-
-        return bms.deleteBookmarkById(dto);
+        return bms.deleteBookmarkById(groupId, user);
     }
 
     @PostMapping("/group_listings/submit_report")
