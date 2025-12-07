@@ -176,6 +176,7 @@ public class ListingReportingServiceImpl implements ListingReportingService {
         }
     }
 
+    //TODO probably dont need this anymore after adding hide feature and hiding reported listings as part of reporting
     @Override
     public ResponseEntity<?> getUsersReportBrief(Users user) {
         Set<Long> brief = lrr.findByReportingUserRef(user).stream()

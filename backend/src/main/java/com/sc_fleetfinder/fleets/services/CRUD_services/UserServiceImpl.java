@@ -7,6 +7,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
@@ -15,8 +16,6 @@ import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +23,6 @@ import org.springframework.validation.annotation.Validated;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,7 +36,9 @@ public class UserServiceImpl implements UserService {
     private final UserConversionServiceImpl userConversionService;
     private final Validator beanValidator;
 
-    public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService, Validator beanValidator) {
+
+    public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService,
+                           Validator beanValidator) {
         this.userRepository = userRepository;
         this.userConversionService = userConversionService;
         this.beanValidator = beanValidator;

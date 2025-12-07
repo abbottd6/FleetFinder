@@ -57,9 +57,7 @@ public class UserServiceImplTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
 
-        userService = new UserServiceImpl(
-                userRepository, userConversionService, validator
-        );
+        userService = new UserServiceImpl(userRepository, userConversionService, validator);
     }
 
     @Test

@@ -6,6 +6,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.services.CRUD_services.HiddenListingService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingBookmarkService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.reporting_services.ListingReportingService;
@@ -40,6 +41,9 @@ public class UserController {
 
     @Autowired
     private ListingReportingService lrs;
+
+    @Autowired
+    private HiddenListingService hls;
 
     //##TODO make sure that all secure endpoints derive identity from the token and that the authorized user for...
     //##TODO any requests to access or modify a resource match the resource owner
@@ -94,7 +98,6 @@ public class UserController {
     // needs to use authentication principal and keycloakId instead of userId
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
-
         userService.deleteUser(kcId);
         return ResponseEntity.noContent().build();
     }
@@ -103,9 +106,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> getBookmarkBrief(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
-
         Long userId = userService.verifyUser(kcId).getUserId();
-
         return bms.getBookmarkBriefByUserId(userId);
     }
 
@@ -113,9 +114,7 @@ public class UserController {
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> getBookmarks(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
-
         Long userId = userService.verifyUser(kcId).getUserId();
-
         return bms.getBookmarksByUserId(userId);
     }
 
@@ -124,9 +123,7 @@ public class UserController {
     public ResponseEntity<?> addBookmark(@AuthenticationPrincipal Jwt jwt,
                                          @RequestBody AddBookmarkRequestDto dto) {
         String kcId = jwt.getSubject();
-
         Users user = userService.verifyUser(kcId);
-
         return bms.addBookmark(dto.getGroupId(), user);
     }
 
@@ -136,10 +133,41 @@ public class UserController {
     public ResponseEntity<?> deleteBookmark(@AuthenticationPrincipal Jwt jwt,
                                             @PathVariable Long groupId) {
         String kcId = jwt.getSubject();
-
         Users user = userService.verifyUser(kcId);
-
         return bms.deleteBookmarkById(groupId, user);
+    }
+
+    @GetMapping("/my/hidden")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> getHidden(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+        return hls.getMyHiddenListingsBrief(user);
+    }
+
+    @PostMapping("/my/hidden/{groupId}")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> addHidden(@AuthenticationPrincipal Jwt jwt,
+                                       @PathVariable Long groupId) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+        return hls.userHideListing(user, groupId);
+    }
+
+    @DeleteMapping("/my/hidden/")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> clearHidden(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+        return hls.userClearHidden(user);
+    }
+
+    @DeleteMapping("/my/hidden")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> undoLastHide(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+        return hls.userUndoLastHide(user);
     }
 
     @PostMapping("/group_listings/submit_report")
