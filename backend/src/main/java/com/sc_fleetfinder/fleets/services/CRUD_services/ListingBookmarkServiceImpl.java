@@ -3,8 +3,6 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ListingBookmarkRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteBookmarkRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingBookmarkDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ListingBookmark;
@@ -22,7 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -117,32 +114,34 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> addBookmark(AddBookmarkRequestDto dto, Users user) {
-        Objects.requireNonNull(dto, "AddBookmarkRequestDto cannot be null");
-            try {
-                GroupListing entity = glr.findById(dto.getGroupId())
-                        .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getGroupId()));
+    public ResponseEntity<?> addBookmark(Long groupId, Users user) {
+        try {
+            GroupListing listing = glr.findById(groupId)
+                    .orElseThrow(() -> new ResourceNotFoundException("GroupListing", groupId));
 
-                ListingBookmark bookmark = new ListingBookmark(entity, user);
+            if (bmr.findByUserAndGroup(user, listing).isEmpty()) {
 
-                if(bmr.findByUserAndGroup(bookmark.getUser(), bookmark.getGroup()).isPresent()) {
-                    Map<String, String> response = new HashMap<>();
-                    response.put("listingTitle", "Already bookmarked");
-                    return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
-                }
-
+                ListingBookmark bookmark = new ListingBookmark(listing, user);
                 bmr.save(bookmark);
 
-                String title = entity.getListingTitle();
+                String title = listing.getListingTitle();
                 Map<String, String> response = new HashMap<>();
                 response.put("listingTitle", title.length() <= 25 ? title : title.substring(0, 25) + "...");
+
                 return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+            } else {
+
+                Map<String, String> response = new HashMap<>();
+                response.put("listingTitle", "Already bookmarked");
+
+                return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED).body(response);
             }
-            catch (Exception e) {
-                log.error("AddBookmark failed. {}", e.getMessage());
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body("An error occurred while adding this bookmark.");
-            }
+        } catch (Exception e) {
+            log.error("AddBookmark failed. {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An error occurred while adding this bookmark.");
+        }
     }
 
     @Override

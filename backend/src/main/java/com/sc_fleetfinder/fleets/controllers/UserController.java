@@ -1,7 +1,5 @@
 package com.sc_fleetfinder.fleets.controllers;
 
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteBookmarkRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.SubmitListingReportDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
@@ -13,7 +11,6 @@ import com.sc_fleetfinder.fleets.services.reporting_services.ListingReportingSer
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -26,11 +23,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -124,15 +118,15 @@ public class UserController {
         return bms.getBookmarksByUserId(userId);
     }
 
-    @PostMapping("/my/bookmarks")
+    @PostMapping("/my/bookmarks/{groupId}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> addBookmark(@AuthenticationPrincipal Jwt jwt,
-                                         @RequestBody AddBookmarkRequestDto dto) {
+                                         @PathVariable Long groupId) {
         String kcId = jwt.getSubject();
 
         Users user = userService.verifyUser(kcId);
 
-        return bms.addBookmark(dto, user);
+        return bms.addBookmark(groupId, user);
     }
 
     //TODO should remove userId from the dto and just pass it as a separate argument
