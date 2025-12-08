@@ -99,6 +99,21 @@
   line-height: 2.25rem;
 }
 
+.handheldFiltersRow {
+  display: grid !important;
+  grid-template-columns: 1fr 3fr;
+}
+
+.handheldFiltersButton {
+  margin-left: 1rem;
+}
+
+.handheldHiddenButton {
+  margin-right: 1rem;
+  margin-left: auto;
+  min-width: 40%;
+}
+
 @media(max-width: 1700px) and (min-width: 925px) {
 
 
@@ -195,7 +210,12 @@
 
   .mobile-filters-button {
     margin-top: 0 !important;
-    margin-bottom: 0; !important;
+    margin-bottom: 0 !important;
+  }
+
+  .embedded-search-button {
+    margin-right: 0.5rem;
+    padding: 0 0.15rem 0 0.5rem;
   }
 }
 

@@ -26,13 +26,13 @@
       </a>
     </mat-form-field>
   </div>
-  <div class="mobile-filters-button" *ngIf="(isMobile$ | async)">
+  <div class="mobile-filters-button" *ngIf="(layoutMode$ | async) === 'mobile'">
     <button class="action-buttons-with-icons">
       <mat-icon class="filter-icon">filter_list</mat-icon>
       Filters
     </button>
   </div>
-  <div class="filter-dropdowns" *ngIf="!(isMobile$ | async)">
+  <div class="filter-dropdowns" *ngIf="(layoutMode$ | async) === 'full'">
     <div class="dropdown-component">
       <ng-select
         [items]="FILTER_CATEGORIES"
@@ -44,7 +44,7 @@
       </ng-select>
     </div>
   </div>
-  <div class="filter-dropdowns" *ngIf="!(isMobile$ | async)">
+  <div class="filter-dropdowns" *ngIf="(layoutMode$ | async) === 'full'">
     <div class="dropdown-component">
       <ng-select
         [items]="parentFilters$ | async"
@@ -55,7 +55,7 @@
       </ng-select>
     </div>
   </div>
-  <div class="filter-dropdowns" *ngIf="!(isMobile$ | async)">
+  <div class="filter-dropdowns" *ngIf="(layoutMode$ | async) === 'full'">
     <div class="dropdown-component">
       <ng-select *ngIf="!(principalCtrl.value == 'groupStatus'
         && parentCtrl.value?.option == 'Future/Scheduled') else datePicker"
@@ -103,7 +103,7 @@
       </div>
     </ng-template>
   </div>
-  <div class="dropdown-component" *ngIf="!(isMobile$ | async)">
+  <div class="dropdown-component" *ngIf="(layoutMode$ | async) === 'full'">
     <button
       class="action-buttons"
       id="addFilter"
@@ -112,7 +112,7 @@
   </div>
 </div>
 <div class="filters-container">
-  <div class="filters-row">
+  <div class="filters-row" *ngIf="!((layoutMode$ | async) === 'handheld')">
     <div class="filters-title">
       <h6>Filters:</h6>
       <div *ngIf="filtersMatch else noMatch" class="filters-applied" >
@@ -144,7 +144,7 @@
       </mat-menu>
     </div>
   </div>
-  <div class="filters-bubble-wrapper-row">
+  <div class="filters-bubble-wrapper-row" *ngIf="!((layoutMode$ | async) === 'handheld') else handheldFiltersRow">
     <div class="clear-button-container-left">
       <button
         class="action-buttons"
@@ -162,4 +162,38 @@
       </mat-chip-set>
     </div>
   </div>
+  <ng-template #handheldFiltersRow>
+    <div class="handheldFiltersRow">
+      <div class="handheldFiltersButton">
+        <button class="action-buttons-with-icons">
+          <mat-icon class="filter-icon">filter_list</mat-icon>
+          Filters
+        </button>
+      </div>
+      <div class="handheldHiddenButton">
+        <div class="hidden-listings-button-container">
+          <a
+            class="hidden-listings"
+            [matMenuTriggerFor]="hiddenListingsMenu">
+            Hidden
+            <mat-icon>arrow_drop_down</mat-icon>
+          </a>
+          <mat-menu #hiddenListingsMenu="matMenu">
+            <ul class="options-list">
+              <li class="options-item">
+                <a (click)="clearHiddenListings(searchInput.value)">
+                  Clear
+                </a>
+              </li>
+              <li class="options-item">
+                <a (click)="undoLastHide(searchInput.value)">
+                  Undo Last
+                </a>
+              </li>
+            </ul>
+          </mat-menu>
+        </div>
+      </div>
+    </div>
+  </ng-template>
 </div>

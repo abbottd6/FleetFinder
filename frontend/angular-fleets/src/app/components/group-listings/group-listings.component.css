@@ -51,6 +51,10 @@
   color: rgba(188, 191, 200, .5) !important;
 }
 
+.row-is-clicked.field-label {
+  color: rgba(188, 191, 200, .5) !important;
+}
+
 .mat-mdc-row:hover {
   background-color: rgba(255, 131, 7, .05) !important;
   cursor: pointer;
@@ -85,6 +89,44 @@
   color: rgba(188, 191, 200, .9);
   padding: 1rem 2rem 1rem 0;
   margin-bottom: 5rem;
+}
+
+.feed-element {
+  display: flex;
+  flex-direction: column;
+  min-height: 15vh;
+}
+
+.feed-data-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  padding-top: 0.1rem;
+  margin: 0;
+}
+
+.title-row {
+  padding-top: 0.25rem;
+  font-size: 1rem;
+}
+
+.feed-label-value-pair {
+  display: flex;
+  flex-direction: row;
+  gap: 0.2rem;
+  padding: 0;
+  margin: 0;
+}
+
+.field-label {
+  color: rgba(255, 131, 7, .6);
+  padding: 0;
+  margin: 0;
+}
+
+.description-row {
+  text-wrap: wrap;
+  padding-bottom: 0.25rem;
 }
 
 @media(min-width: 1500px) and (max-width: 2000px) {

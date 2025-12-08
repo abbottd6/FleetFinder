@@ -71,7 +71,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   sortActive = 'creationTimestamp';
   sortDirection: SortDirection = 'desc';
 
-  displayedColumns = ['options', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated'];
+  displayedColumns: string[] = ['options', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated'];
+  mobileColumns: string[] = ['options', 'details']
   dataSource = new MatTableDataSource<GroupListingViewModel>();
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,

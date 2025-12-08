@@ -29,6 +29,8 @@ export interface FilterPrincipal {
   label: string;
 }
 
+export type LayoutMode = 'handheld' | 'mobile' | 'full';
+
 @Component({
   selector: 'app-search-bar',
   standalone: false,
@@ -329,9 +331,24 @@ export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
     return date < currDate ? 'disabled-date' : '';
   };
 
-  isMobile$ = this.breakpointObserver
-    .observe('(max-width: 1050px)')
-    .pipe(map(result => result.matches),
-      shareReplay());
+  layoutMode$: Observable<LayoutMode> = this.breakpointObserver
+    .observe([
+      '(max-width: 500px)',
+      '(min-width: 501px) and (max-width: 1050px)',
+      '(min-width: 1051px)'
+    ])
+    .pipe(
+      map(state => {
+        if (state.breakpoints['(max-width: 500px)']) {
+          return 'handheld';
+        }
+        if (state.breakpoints['(min-width: 501px) and (max-width: 1050px)']) {
+          return 'mobile';
+        }
+
+        return 'full';
+      }),
+      shareReplay(1)
+    );
 }
 
