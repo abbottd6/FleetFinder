@@ -16,24 +16,9 @@ export interface reportOption {
 export class ListingReportService {
 
   private submitReportUrl = `${environment.apiBaseUrl}/users/group_listings/submit_report`;
-  private getReportBriefUrl = `${environment.apiBaseUrl}/users/group_listings/report_brief`;
-  private auth = inject(AuthService);
   private reportBasisUrl = `${environment.apiBaseUrl}/lookup/report-basis`;
 
   public reportOptions$!: Observable<reportOption[]>;
-  private refreshReportsSubject = new BehaviorSubject<void>(undefined);
-  readonly refreshUserReports$ = this.refreshReportsSubject.asObservable();
-
-  readonly userReportsBrief$: Observable<number[]> = combineLatest([
-    this.auth.isLoggedIn$,
-    this.refreshUserReports$
-  ]).pipe(
-    switchMap(([isLoggedIn]) =>
-      isLoggedIn ? this.getUserReportsBrief()
-        : of<number[]>([])
-    ),
-    shareReplay(1)
-  );
 
   constructor(private httpClient: HttpClient) {
 
@@ -48,24 +33,11 @@ export class ListingReportService {
     )
   }
 
-  //TODO dont think I want this anymore, switched to filtering with hidden on the backend
-  getUserReportsBrief(): Observable<any> {
-    return this.httpClient.get<any>(this.getReportBriefUrl).pipe(
-      tap(response => console.log("getUserReportsBrief response: ", response))
-    )
-  }
-
   submitReport(report: SubmitListingReport) {
-    return this.httpClient.post<any>(this.submitReportUrl, report).pipe(
-      tap(() => this.triggerReportsBriefRefresh())
-    )
+    return this.httpClient.post<any>(this.submitReportUrl, report)
   }
 
   getListingReportBasisApi() {
     return this.httpClient.get<any>(this.reportBasisUrl);
-  }
-
-  private triggerReportsBriefRefresh(): void {
-    this.refreshReportsSubject.next();
   }
 }

@@ -18,5 +18,11 @@ export class HiddenListingsService {
     return this.httpClient.post<any>(`${this.hiddenUrl}:add`, request)
   }
 
+  clearHidden() {
+    return this.httpClient.delete<any>(`${this.hiddenUrl}:clear`);
+  }
 
+  undoLastHide() {
+    return this.httpClient.delete<any>(`${this.hiddenUrl}:pop`);
+  }
 }

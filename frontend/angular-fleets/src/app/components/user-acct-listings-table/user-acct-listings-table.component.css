@@ -173,18 +173,18 @@
     margin-bottom: 0.75rem;
   }
 
-  .options-item {
-    display: block;
-    min-width: 85%;
-    margin: 0.0rem .5rem .25rem .5rem;
-    padding: 0.5rem 0.5rem 0.25rem 0.5rem;
-    clear: both;
-    color: rgba(255, 131, 7, .6);
-    text-align: left;
-    border-bottom: 1px solid rgba(255, 131, 7, .6);
-    font-size: 95%;
-    transition: background-color 0.15s ease;
-  }
+  /*.options-item {*/
+  /*  display: block;*/
+  /*  min-width: 85%;*/
+  /*  margin: 0.0rem .5rem .25rem .5rem;*/
+  /*  padding: 0.5rem 0.5rem 0.25rem 0.5rem;*/
+  /*  clear: both;*/
+  /*  color: rgba(255, 131, 7, .6);*/
+  /*  text-align: left;*/
+  /*  border-bottom: 1px solid rgba(255, 131, 7, .6);*/
+  /*  font-size: 95%;*/
+  /*  transition: background-color 0.15s ease;*/
+  /*}*/
 
   .options-item:hover {
     background-color: rgba(255, 131, 7, .25);

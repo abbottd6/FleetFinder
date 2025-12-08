@@ -1,6 +1,16 @@
-import {Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
-import {map, Observable, of, Subject, takeUntil} from 'rxjs';
+import {map, Observable, of, shareReplay, Subject, take, takeUntil} from 'rxjs';
 import {
   FilterOptionKey,
   filterOptions,
@@ -9,6 +19,9 @@ import {
 } from "../../../services/api-lookup-services/filter.service";
 import {MAT_DATE_FORMATS} from "@angular/material/core";
 import {EVENT_RANGE_FORMATS} from "../../../models/event-range-formats";
+import {HiddenListingsService} from "../../../services/user-services/hidden-listings.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {BreakpointObserver} from "@angular/cdk/layout";
 
 // interface for creating the primary filter options
 export interface FilterPrincipal {
@@ -27,6 +40,7 @@ export interface FilterPrincipal {
 })
 export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
   @Input() submittedState: ListingFilterState | null = null;
+  private breakpointObserver = inject(BreakpointObserver);
 
   private destroy$ = new Subject<void>();
 
@@ -65,7 +79,8 @@ export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
   parentFilters$!: Observable<filterOptions[]>;
   childFilters$!: Observable<filterOptions[]>;
 
-  constructor(private filter: FilterService) {
+  constructor(private filter: FilterService, private hideService: HiddenListingsService,
+              private snackBar: MatSnackBar) {
     this.maxDate.setMonth(this.maxDate.getMonth() +6);
   }
 
@@ -124,6 +139,7 @@ export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
   clearSearch(input: HTMLInputElement): void {
     input.value = '';
     this.filter.update('searchInput', null);
+    this.emitSearchAndFilter(input.value);
   }
 
   addFilter(): void {
@@ -169,6 +185,37 @@ export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
   toDateOnly = (filterDate: Date | null): string | null => {
     return filterDate ? filterDate.toISOString().substring(0,10) : null;
   };
+
+  // clear users hidden listings (backend filter)
+  clearHiddenListings(searchInput: string) {
+    this.hideService.clearHidden().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response: {Response: string}) =>
+        this.snackBar.open(`${response.Response}`, 'OK', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+          panelClass: ['mobile-snackbar']
+        }),
+      complete: () => {
+        this.emitSearchAndFilter(searchInput);
+      }
+    })
+  }
+
+  undoLastHide(searchInput: string) {
+    this.hideService.undoLastHide().pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response: {Response: string}) =>
+        this.snackBar.open(`${response.Response}`, 'OK', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+          panelClass: ['mobile-snackbar']
+        }),
+      complete: () => {
+        this.emitSearchAndFilter(searchInput);
+      }
+    })
+  }
 
   // remove individual filter from chips
   removeFilter(value: FilterOptionKey): void {
@@ -281,5 +328,10 @@ export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
     currDate.setHours(0, 0, 0, 0);
     return date < currDate ? 'disabled-date' : '';
   };
+
+  isMobile$ = this.breakpointObserver
+    .observe('(max-width: 1050px)')
+    .pipe(map(result => result.matches),
+      shareReplay());
 }
 

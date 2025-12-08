@@ -19,7 +19,6 @@ import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {
-  async,
   map,
   Observable,
   shareReplay,
@@ -33,12 +32,10 @@ import {UserBookmarkService} from "../../services/user-services/user-bookmark.se
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {ListingReportService} from "../../services/listing-report-services/listing-report.service";
 import {SubmitListingReport} from "../../models/report-requests/submit-listing-report";
-import {ConfirmDeleteComponent} from "../pop-ups/confirm-delete/confirm-delete.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmReportComponent} from "../pop-ups/confirm-report/confirm-report.component";
 import {HideListingRequest} from "../../models/listing-filter/hide-listing-request.model";
 import {HiddenListingsService} from "../../services/user-services/hidden-listings.service";
-import {response} from "express";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -81,7 +78,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
               private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsService) {}
 
   bookmarkedIds$!: Observable<Set<number>>;
-  reportedIds$!: Observable<Set<number>>;
   isLoggedIn!: boolean;
 
   ngOnInit(): void {
@@ -98,10 +94,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.loadClickedListings();
 
     this.bookmarkedIds$ = this.bmService.bookmarksBrief$.pipe(
-      map((gIds: number[]) => new Set<number>(gIds))
-    );
-
-    this.reportedIds$ = this.reportService.userReportsBrief$.pipe(
       map((gIds: number[]) => new Set<number>(gIds))
     );
 
@@ -265,8 +257,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         complete: () => {
           this.reloadListings();
         }
-        }
-
+      }
     )
   }
 

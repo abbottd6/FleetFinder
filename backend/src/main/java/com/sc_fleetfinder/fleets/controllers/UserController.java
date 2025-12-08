@@ -182,14 +182,4 @@ public class UserController {
 
         return lrs.generateListingReport(dto, user);
     }
-
-    //TODO dont think i want this anymore, now that hidden listings is doing this
-    @GetMapping("/group_listings/report_brief")
-    @PreAuthorize("isAuthenticated() and hasRole('user')")
-    public ResponseEntity<?> getListingReportBrief(@AuthenticationPrincipal Jwt jwt) {
-        String kcId = jwt.getSubject();
-        Users user = userService.verifyUser(kcId);
-
-        return lrs.getUsersReportBrief(user);
-    }
 }

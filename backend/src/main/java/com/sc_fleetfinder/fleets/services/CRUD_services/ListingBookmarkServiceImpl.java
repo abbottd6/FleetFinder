@@ -155,7 +155,7 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
 
             bmr.deleteById(bm.getId());
             Map<String, String> response = new HashMap<>();
-            response.put("message", "Bookmark removed successfully");
+            response.put("message", "Bookmark removed.");
             return ResponseEntity.status(HttpStatus.OK).body(response);
         }
         catch (Exception e) {

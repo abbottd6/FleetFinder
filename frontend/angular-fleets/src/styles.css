@@ -200,6 +200,52 @@ app-user {
   color: rgba(255, 131, 7, .6) !important;
   font-size: 1.05rem;
 }
+
+.options-menu-icon:hover {
+  color: rgba(255, 131, 7, .6);
+  background-color: rgba(44, 44, 44, 0.7);
+  border-radius: 0.25rem;
+}
+
+.options-list {
+  padding-left: 0.25rem;
+  padding-right: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.options-item-disabled {
+  display: block;
+  min-width: 85%;
+  margin: 0.0rem .5rem .25rem .5rem;
+  padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+  clear: both;
+  color: rgba(255, 131, 7, .2);
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 131, 7, .2);
+  font-size: 95%;
+  transition: background-color 0.15s ease;
+}
+
+.options-item {
+  display: block;
+  min-width: 85%;
+  margin: 0.0rem .5rem .25rem .5rem;
+  padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+  clear: both;
+  color: rgba(255, 131, 7, .6);
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 131, 7, .6);
+  font-size: 95%;
+  transition: background-color 0.15s ease;
+}
+
+.options-item:hover {
+  background-color: rgba(255, 131, 7, .25);
+  color: #2c2c2c;
+  border-radius: 0.25rem;
+  border-bottom: 1px solid #2c2c2c;
+  cursor: pointer;
+}
 /* -------------------------------------------------------------*/
 @media(max-width: 600px) {
   .cdk-overlay-container .mobile-snackbar {
