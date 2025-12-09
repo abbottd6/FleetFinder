@@ -1,0 +1,49 @@
+.message-container {
+  overflow: hidden;
+}
+
+.message-body {
+  border-bottom: 1px solid rgba(188, 191, 200, .6);
+}
+
+.checkbox-element {
+  padding: 1rem 1rem 0 1rem;
+}
+
+.action-buttons {
+  border: 1px solid rgba(255, 131, 7, .75);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .75);
+  border-radius: .2rem;
+  transition: 0.2s ease;
+  pointer-events: auto !important;
+}
+
+.action-buttons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+@media(min-width: 725px) and (max-width: 2000px) {
+
+  .action-buttons {
+    font-size: 0.9rem;
+  }
+}
+
+@media(max-width: 1350px)  and (min-width: 725px) {
+  .action-buttons {
+    font-size: clamp(0.6rem, 0.8rem, 1.2rem);
+  }
+}
+
+@media(max-width: 724px) {
+  .action-buttons {
+    font-size: .9rem;
+  }
+}

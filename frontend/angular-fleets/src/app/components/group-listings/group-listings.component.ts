@@ -1,30 +1,15 @@
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  inject,
-  OnDestroy,
-  OnInit,
-  Output,
-  ViewChild
-} from '@angular/core';
-import {GroupListingFetchService, Page} from "../../services/group-listing-services/group-listing-fetch.service";
+import {AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {GroupListingFetchService} from "../../services/group-listing-services/group-listing-fetch.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {TooltipPosition} from "@angular/material/tooltip";
-import {MatSort, MatSortHeader, Sort, SortDirection} from "@angular/material/sort";
+import {MatSort, Sort, SortDirection} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {
-  map,
-  Observable,
-  shareReplay,
-  Subject, take,
-  takeUntil,
-} from "rxjs";
+import {map, Observable, shareReplay, Subject, take, takeUntil,} from "rxjs";
 import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-request";
@@ -37,6 +22,16 @@ import {ConfirmReportComponent} from "../pop-ups/confirm-report/confirm-report.c
 import {HideListingRequest} from "../../models/listing-filter/hide-listing-request.model";
 import {HiddenListingsService} from "../../services/user-services/hidden-listings.service";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
+import {DontShowMeAgainPopup} from "../pop-ups/hide-how-to-popup/dont-show-me-again-popup";
+
+export const UI_PREFS_KEY = 'ff_ui_prefs';
+
+export interface UiPrefs {
+  clickedRowIds: number[];
+  hideHiddenListingHint: boolean;
+  hideReportedListingHint: boolean;
+  hideBookmarkedListingHint: boolean;
+}
 
 @Component({
     selector: 'app-group-listings-table',
@@ -63,6 +58,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
   selectedListing: GroupListingViewModel | null = null;
   isModalVisible: boolean = false;
+
+  uiPrefs!: UiPrefs;
   clickedRows = new Set<number>();
 
   pageIndex = 0;
@@ -83,6 +80,9 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   isLoggedIn!: boolean;
 
   ngOnInit(): void {
+    this.uiPrefs = this.loadUiPrefs();
+    this.loadClickedListings();
+
     this.applyFiltersFromChild(this.filter.pullState());
 
     this.auth.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(
@@ -93,7 +93,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
   ngAfterViewInit() {
     //just for page styling to show clicked listings
-    this.loadClickedListings();
+    this.loadUiPrefs();
 
     this.bookmarkedIds$ = this.bmService.bookmarksBrief$.pipe(
       map((gIds: number[]) => new Set<number>(gIds))
@@ -198,23 +198,49 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     // console.log("CLICKED ROWS: ", this.clickedRows)
   }
 
+  //TODO clickedRows is redundant now that I have added a json field for this
   saveRowClick(row: number) {
     this.clickedRows.add(row);
-    const arr = Array.from(this.clickedRows);
-    localStorage.setItem(this.CLICKED_KEY, JSON.stringify(arr));
-    // console.log("clickedRows saved: ", this.clickedRows)
+    this.uiPrefs.clickedRowIds = Array.from(this.clickedRows);
+    this.saveUiPrefs(this.uiPrefs);
+  }
+
+  private loadUiPrefs() {
+    try {
+      const localPrefs = localStorage.getItem(UI_PREFS_KEY);
+      if(!localPrefs) {
+        return {
+          clickedRowIds: [],
+          hideHiddenListingHint: false,
+          hideReportedListingHint: false,
+          hideBookmarkedListingHint: false
+        };
+      }
+      const parsed = JSON.parse(localPrefs) as Partial<UiPrefs>
+      return {
+        clickedRowIds: parsed.clickedRowIds ?? [],
+        hideHiddenListingHint: parsed.hideHiddenListingHint ?? false,
+        hideReportedListingHint: parsed.hideReportedListingHint ?? false,
+        hideBookmarkedListingHint: parsed.hideBookmarkedListingHint ?? false
+      };
+
+    } catch {
+      localStorage.removeItem(UI_PREFS_KEY);
+      return {
+        clickedRowIds: [],
+        hideHiddenListingHint: false,
+        hideReportedListingHint: false,
+        hideBookmarkedListingHint: false
+      }
+    }
+  }
+
+  private saveUiPrefs(prefs: UiPrefs): void {
+    localStorage.setItem(UI_PREFS_KEY, JSON.stringify(prefs));
   }
 
   private loadClickedListings() {
-    const clickedListings = localStorage.getItem(this.CLICKED_KEY);
-    if (!clickedListings) return;
-
-    try {
-      const arr: number[] = JSON.parse(clickedListings);
-      this.clickedRows = new Set(arr);
-    } catch {
-      //
-    }
+    this.clickedRows = new Set(this.uiPrefs.clickedRowIds);
   }
 
   addBookmark(listingId: number) {
@@ -228,14 +254,35 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     const request = new AddBookmarkRequest(listingId);
     this.bmService.addBookmark(request).pipe(takeUntil(this.destroy$)).subscribe( {
-      next: (response: { listingTitle: string; }) =>
+      next: (response: { listingTitle: string; }) => {
         this.snackBar.open(`"${response.listingTitle}" added to bookmarks.`, 'OK', {
           duration: 4000,
           verticalPosition: 'top',
           horizontalPosition: 'center',
-          panelClass: ['mobile-snackbar']})
+          panelClass: ['mobile-snackbar']
+        });
+
+        if (!this.uiPrefs.hideBookmarkedListingHint) {
+          const dialogRef = this.dialog.open(DontShowMeAgainPopup, {
+            data: {
+              message: "<p>This listing has been added to your bookmarks.</p>" +
+                "<p>Bookmarks can be accessed by visiting your 'Profile' " +
+                "page and viewing the 'Bookmarks' tab.</p>"
+            }
+          });
+
+          dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(dontShow => {
+            if (dontShow) {
+              this.uiPrefs.hideBookmarkedListingHint = true;
+              this.saveUiPrefs(this.uiPrefs);
+            }
+          })
+        }
+      },
+      error: (err) => {
+        console.error(err);
       }
-    )
+    })
   }
 
   userHideListing(listingId: number) {
@@ -249,23 +296,45 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     }
     const request = new HideListingRequest(listingId);
     this.hideService.addHidden(request).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (response: { Response: string; }) =>
+      next: (response: { Response: string; }) => {
         this.snackBar.open(`${response.Response}`, 'OK', {
           duration: 4000,
           verticalPosition: 'top',
           horizontalPosition: 'center',
           panelClass: ['mobile-snackbar']
-        }),
-        complete: () => {
-          this.reloadListings();
+        });
+        if(!this.uiPrefs.hideHiddenListingHint) {
+          const dialogRef = this.dialog.open(DontShowMeAgainPopup, {
+            data: {
+              message: "<p>This listing has been hidden and will no longer appear in your search results.</p>" +
+                "<p>To unhide listings, use the 'Hidden' menu to the right above the listings table.</p>"
+            }
+          });
+
+          dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(dontShow => {
+            if (dontShow) {
+              this.uiPrefs.hideHiddenListingHint = true;
+              this.saveUiPrefs(this.uiPrefs);
+            }
+          })
         }
+      },
+
+      error: (err) => {
+        console.error(err);
+      },
+
+      complete: () => {
+          this.reloadListings();
       }
-    )
+    })
   }
 
   deleteBookmark(listingId: number) {
     const request = listingId;
-    console.log(request);
+    if (!environment.production) {
+      console.log(request);
+    }
     this.bmService.deleteBookmark(request).pipe(takeUntil(this.destroy$)).subscribe( {
         next: (response: { message: string; }) =>
           this.snackBar.open(`${response.message}`, 'OK', {
@@ -285,6 +354,15 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   openConfirmReport(listing: GroupListingViewModel): void {
+    if(!this.isLoggedIn) {
+      this.snackBar.open("You must log in to submit reports.", 'OK', {
+        duration: 5000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']})
+      return;
+    }
+
     this.reportService.reportOptions$
       .pipe(take(1))
       .subscribe(options => {
@@ -304,28 +382,39 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   submitReport(listingId: number, basisId: number) {
-    if(!this.isLoggedIn) {
-      this.snackBar.open("You must log in to submit reports.", 'OK', {
-        duration: 5000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']})
-      return;
-    }
-
-    console.log("This listing: ", listingId);
-
     const lr = new SubmitListingReport(listingId, basisId)
 
-    console.log("this report: ", lr);
     this.reportService.submitReport(lr).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (response: { reportId: string; }) =>
+      next: (response: { reportId: string; }) => {
         this.snackBar.open(`Report submitted. Thank you.`, 'OK', {
           duration: 5000,
           verticalPosition: 'top',
           horizontalPosition: 'center',
           panelClass: ['mobile-snackbar']
-        }),
+        });
+        if(!this.uiPrefs.hideReportedListingHint) {
+          const dialogRef = this.dialog.open(DontShowMeAgainPopup, {
+            data: {
+              message: "<p>Listing Reported.</p>" +
+                "<p>Reported listings are automatically added to your hidden listings.</p>" +
+                "<p>You can make changes to your hidden listings using the 'Hidden' dropdown" +
+                " to the right, above the listings table.</p>"
+            }
+          });
+
+          dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(dontShow => {
+            if (dontShow) {
+              this.uiPrefs.hideReportedListingHint = true;
+              this.saveUiPrefs(this.uiPrefs);
+            }
+          })
+        }
+      },
+
+      error: (err) => {
+        console.error(err);
+      },
+
       complete: () => {
         this.reloadListings();
       }

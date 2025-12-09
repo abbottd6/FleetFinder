@@ -32,7 +32,6 @@ import {MatSidenav, MatSidenavContainer} from "@angular/material/sidenav";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import { LoginModalComponent } from './components/login-modal/login-modal.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
-import { UpdateListingComponent } from './components/update-listing/update-listing.component';
 import {DropdownModule} from "./components/dropdowns/dropdown-module/dropdown.module";
 import {InputFieldModule} from "./components/input-fields/input-field/input-field.module";
 import {MatButtonModule} from "@angular/material/button";
@@ -67,6 +66,7 @@ import {
 import { ConfirmReportComponent } from './components/pop-ups/confirm-report/confirm-report.component';
 import { MobileFiltersPopupComponent } from './components/pop-ups/mobile-filters-popup/mobile-filters-popup.component';
 import { FilterDropdownsComponent } from './components/dropdowns/filter-dropdowns/filter-dropdowns.component';
+import { DontShowMeAgainPopup } from './components/pop-ups/hide-how-to-popup/dont-show-me-again-popup';
 
 
 @NgModule({
@@ -83,6 +83,7 @@ import { FilterDropdownsComponent } from './components/dropdowns/filter-dropdown
     ConfirmReportComponent,
     MobileFiltersPopupComponent,
     FilterDropdownsComponent,
+    DontShowMeAgainPopup,
   ],
   imports: [
     BrowserModule,
