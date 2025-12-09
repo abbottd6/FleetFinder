@@ -56,18 +56,18 @@
         <mat-icon>arrow_drop_down</mat-icon>
       </a>
       <mat-menu #hiddenListingsMenu="matMenu">
-        <ul class="options-list">
-          <li class="options-item">
-            <a (click)="clearHiddenListings(searchInput.value)">
+          <button
+            mat-menu-item
+            class="options-item"
+            (click)="clearHiddenListings(searchInput.value)">
               Clear
-            </a>
-          </li>
-          <li class="options-item">
-            <a (click)="undoLastHide(searchInput.value)">
+          </button>
+          <button
+            mat-menu-item
+            class="options-item"
+            (click)="undoLastHide(searchInput.value)">
               Undo Last
-            </a>
-          </li>
-        </ul>
+          </button>
       </mat-menu>
     </div>
   </div>
@@ -107,18 +107,18 @@
             <mat-icon>arrow_drop_down</mat-icon>
           </a>
           <mat-menu #hiddenListingsMenu="matMenu">
-            <ul class="options-list">
-              <li class="options-item">
-                <a (click)="clearHiddenListings(searchInput.value)">
-                  Clear
-                </a>
-              </li>
-              <li class="options-item">
-                <a (click)="undoLastHide(searchInput.value)">
-                  Undo Last
-                </a>
-              </li>
-            </ul>
+            <button
+              mat-menu-item
+              class="options-item"
+              (click)="clearHiddenListings(searchInput.value)">
+              Clear
+            </button>
+            <button
+              mat-menu-item
+              class="options-item"
+              (click)="undoLastHide(searchInput.value)">
+              Undo Last
+            </button>
           </mat-menu>
         </div>
       </div>

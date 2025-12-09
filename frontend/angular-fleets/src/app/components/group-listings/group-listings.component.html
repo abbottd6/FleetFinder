@@ -28,31 +28,31 @@
                 <mat-icon class="options-column-icon">more_vert</mat-icon>
               </button>
             </ng-container>
-            <mat-menu #listingOptionsMenu="matMenu">
-              <ul class="options-list">
-                <li class="options-item">
-                  <a>
-                    Message
-                  </a>
-                </li>
-                <li class="options-item">
-                  <a (click)="userHideListing(row.groupId)">
-                    Hide
-                  </a>
-                </li>
-                <li class="options-item">
-                  <a (click)="addBookmark(row.groupId)">
-                    Bookmark
-                  </a>
-                </li>
-                <li class="options-item">
-                  <span
-                    (click)="openConfirmReport(row)">
-                    Report
-                  </span>
-                </li>
-              </ul>
-            </mat-menu>
+          <mat-menu #listingOptionsMenu="matMenu">
+              <button
+                mat-menu-item
+                class="options-item">
+                Message
+              </button>
+              <button
+                mat-menu-item
+                class="options-item"
+                (click)="userHideListing(row.groupId)">
+                Hide
+              </button>
+              <button
+                mat-menu-item
+                class="options-item"
+                (click)="addBookmark(row.groupId)">
+                Bookmark
+              </button>
+              <button
+                mat-menu-item
+                class="options-item"
+                (click)="openConfirmReport(row)">
+                Report
+              </button>
+          </mat-menu>
           <ng-container *ngIf="(layoutMode$ | async) === 'full'">
             <button mat-icon-button
                     matTooltip="Hide"
@@ -184,31 +184,31 @@
           <button mat-icon-button [matMenuTriggerFor]="listingOptionsMenu">
             <mat-icon class="options-menu-icon">more_vert</mat-icon>
           </button>
-          <mat-menu #listingOptionsMenu="matMenu">
-            <ul class="options-list">
-              <li class="options-item">
-                <a>
-                  Message
-                </a>
-              </li>
-              <li class="options-item">
-                <a>
-                  Hide
-                </a>
-              </li>
-              <li class="options-item">
-                <a>
-                  Bookmark
-                </a>
-              </li>
-              <li class="options-item">
-                  <span
-                    (click)="openConfirmReport(row)">
-                    Report
-                  </span>
-              </li>
-            </ul>
-          </mat-menu>
+        <mat-menu #listingOptionsMenu="matMenu">
+          <button
+            mat-menu-item
+            class="options-item">
+            Message
+          </button>
+          <button
+            mat-menu-item
+            class="options-item"
+            (click)="userHideListing(row.groupId)">
+            Hide
+          </button>
+          <button
+            mat-menu-item
+            class="options-item"
+            (click)="addBookmark(row.groupId)">
+            Bookmark
+          </button>
+          <button
+            mat-menu-item
+            class="options-item"
+            (click)="openConfirmReport(row)">
+            Report
+          </button>
+        </mat-menu>
       </td>
       <ng-container matColumnDef='details'>
         <th mat-header-cell *matHeaderCellDef>
