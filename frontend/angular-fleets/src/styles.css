@@ -177,6 +177,11 @@ app-user {
   background-color: rgba(33, 37, 41, .95);
 }
 
+.cdk-overlay-container .mobile-filters-popup {
+  border: 1px solid rgba(255, 131, 7, .6);
+  border-radius: 0.5rem;
+}
+
 /* Styling for dropdown menu in the listing-report popup window */
 
 .cdk-overlay-container .ng-dropdown-panel {
@@ -246,7 +251,76 @@ app-user {
   border-bottom: 1px solid #2c2c2c;
   cursor: pointer;
 }
-/* -------------------------------------------------------------*/
+
+/* ------------------------------------------- ACTION BUTTONS -----------------------------------------------------*/
+.action-buttons {
+  border: 1px solid rgba(255, 131, 7, .75);
+  padding: .42rem 1.12rem .42rem 1.12rem;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .75);
+  font-size: 0.9rem;
+  border-radius: .2rem;
+  transition: 0.2s ease;
+}
+
+.action-buttons-with-icons {
+  display: inline-flex;
+  gap: 0.25rem;
+  border: 1px solid rgba(255, 131, 7, .75);
+  padding: .42rem 1.12rem .42rem 1.12rem;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .75);
+  font-size: 0.9rem;
+  border-radius: .2rem;
+  transition: 0.2s ease;
+  align-items: center;
+}
+
+
+.action-buttons:disabled {
+  border: 1px solid rgba(33, 37, 41, .4);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(92, 96, 101, .4);
+  margin-inline: .75rem;
+  color: rgba(33, 37, 41, .4);
+  border-radius: .2rem;
+  transition: .3s ease;
+}
+
+.action-buttons:hover:disabled {
+  border: 1px solid rgba(255, 131, 7, .4);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(92, 96, 101, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .4);
+  border-radius: .2rem;
+}
+
+.action-buttons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+  cursor: pointer;
+}
+
+@media(max-width: 1700px) {
+  .action-buttons {
+    padding: .2rem .5rem .2rem .5rem !important;
+    margin-inline: .2rem !important;
+    font-size: clamp(0.5rem, 0.9rem, 1rem) !important;
+    border-radius: .2rem;
+  }
+}
+
+@media(max-width: 1700px) {
+  .action-buttons-with-icons {
+    padding: .21rem .56rem .21rem .56rem !important;
+  }
+}
+
+/* ------------------------------------------- 600PX MAX ----------------------------------------------------------*/
 @media(max-width: 600px) {
   .cdk-overlay-container .mobile-snackbar {
     font-size: clamp(0.5rem, 0.8rem, 1rem);

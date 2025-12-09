@@ -1,0 +1,24 @@
+<div class="mobile-filters-dropdowns">
+  <app-filter-dropdowns>
+  </app-filter-dropdowns>
+</div>
+<div *ngIf="(isHandheld$ | async)" class="filters-bubbles-container">
+  <div class="filters-title">
+    <h6>Filters:</h6>
+  </div>
+  <div class="filter-bubbles">
+    <mat-chip-set aria-label="Active Filter">
+      <mat-chip *ngFor="let filter of data.currentFilters | async" class="filter-bubbles">
+        <span class="filter-bubbles-content"> {{ displayFilterValue(filter.value)}}
+          <mat-icon (click)="removeFilter(filter.key)" class="bubble-close">clear</mat-icon>
+        </span>
+      </mat-chip>
+    </mat-chip-set>
+  </div>
+
+</div>
+
+<mat-dialog-actions align="end">
+  <button mat-button class="action-buttons" (click)="onCancel()">Cancel</button>
+  <button mat-button class="action-buttons" (click)="onConfirm()">Apply</button>
+</mat-dialog-actions>

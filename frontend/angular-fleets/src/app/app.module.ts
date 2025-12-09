@@ -65,6 +65,8 @@ import {
   MatEndDate, MatStartDate
 } from "@angular/material/datepicker";
 import { ConfirmReportComponent } from './components/pop-ups/confirm-report/confirm-report.component';
+import { MobileFiltersPopupComponent } from './components/pop-ups/mobile-filters-popup/mobile-filters-popup.component';
+import { FilterDropdownsComponent } from './components/dropdowns/filter-dropdowns/filter-dropdowns.component';
 
 
 @NgModule({
@@ -79,6 +81,8 @@ import { ConfirmReportComponent } from './components/pop-ups/confirm-report/conf
     SearchBarComponent,
     ConfirmDeleteComponent,
     ConfirmReportComponent,
+    MobileFiltersPopupComponent,
+    FilterDropdownsComponent,
   ],
   imports: [
     BrowserModule,

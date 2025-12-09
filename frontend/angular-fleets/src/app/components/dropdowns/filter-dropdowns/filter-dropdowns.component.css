@@ -1,0 +1,244 @@
+.dropdown-row {
+  display: grid;
+  grid-template-columns: 1.25fr 1.25fr 1.25fr 1fr;
+  align-items: center;
+  padding-top: 0.25rem;
+}
+
+@media(max-width: 1050px) and (min-width: 750px) {
+  .dropdown-row {
+    grid-template-columns: 1.25fr 1.25fr 1.25fr;
+    gap: 2rem;
+  }
+
+  .dropdown-component .ng-select {
+    min-width: 10rem;
+  }
+}
+
+@media(max-width: 749px) {
+  .dropdown-row {
+    grid-template-columns: 1fr;
+  }
+
+  .dropdown-component {
+    margin: 0;
+  }
+}
+
+#addFilter {
+  margin-left: 0;
+}
+
+.add-filter-button-wrapper {
+  display: flex;
+  align-self: baseline !important;
+}
+
+
+/* ----------------------------------------- FILTER DROPDOWNS ---------------------------------------------------- */
+.dropdown-component .ng-select {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(88, 92, 96, .9) transparent !important;
+}
+
+:host ::ng-deep .ng-dropdown-panel {
+  background-color: rgba(33, 37, 41, 1) !important;
+}
+
+:host ::ng-deep .ng-dropdown-panel .ng-option-label {
+  color: rgba(188, 191, 200, .75) !important;
+  transition: color 0.15s ease, font-size 0.15s ease;
+}
+
+:host ::ng-deep .ng-dropdown-panel .ng-option:hover {
+  background-color: rgba(44, 44, 44, 0.7);
+}
+
+:host ::ng-deep .ng-dropdown-panel .ng-option:hover .ng-option-label {
+  color: rgba(255, 131, 7, .6) !important;
+  /*font-size: 1.05rem;*/
+}
+
+:host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 90%;
+  color: rgba(188, 191, 200, .75) !important;
+  transition: font-size 0.3s ease;
+}
+
+:host ::ng-deep .ng-select .ng-select-container:hover .ng-placeholder {
+  color: rgba(255, 131, 7, .6) !important;
+  font-size: 1.05rem !important;
+}
+
+/* Dropdown selected val */
+:host ::ng-deep .ng-select .ng-select-container {
+  color: rgba(255, 131, 7, .6);
+}
+
+/* Dropdown underline */
+:host ::ng-deep .ng-select .ng-select-container::after {
+  border-color: rgba(188, 191, 200, .5);
+  transition: border-color 0.5s ease;
+}
+
+:host ::ng-deep .ng-select-disabled .ng-select-container::after {
+  border-color: rgba(188, 191, 200, .2);
+}
+
+/* Dropdown arrow pre-selection */
+:host ::ng-deep .ng-select:not(.ng-select.ng-select-disabled):not(.ng-select-single .ng-value) .ng-arrow {
+  color: rgba(188, 191, 200, .75);
+  transition: color 0.75s ease;
+}
+
+:host ::ng-deep .ng-select-disabled .ng-arrow {
+  color: rgba(188, 191, 200, .2) !important;
+}
+
+/* Dropdown arrow while focused/open */
+:host ::ng-deep .ng-select.ng-select-single:focus-within .ng-select-container .ng-arrow-wrapper .ng-arrow {
+  color: rgba(255, 131, 7, 0.5);
+}
+
+/* Dropdown arrow post-selection */
+:host ::ng-deep .ng-select.ng-select-single .ng-has-value .ng-arrow {
+  color: rgba(188, 191, 200, .75) !important;
+}
+
+/* Dropdown clear: value selected, not focused */
+:host ::ng-deep .ng-select .ng-clear-wrapper {
+  color: rgba(188, 191, 200, .75);
+  transition: color 0.75s ease;
+}
+
+@media(min-width: 1701px) {
+  .filter-dropdowns {
+    display: grid;
+    font-size: clamp(0.3rem, 0.8rem, 1rem);
+    /*grid-template-columns: 28% 28% 28% 15%;*/
+  }
+
+  .dropdown-component .ng-select {
+    padding-bottom: clamp(0.9rem, 1.2rem, 1.8rem);
+    max-width: 14rem !important;
+  }
+}
+
+@media(max-width: 1700px) and (min-width: 750px) {
+  .dropdown-component .ng-select {
+    max-width: 10rem;
+    font-size: clamp(0.3rem, 0.8rem, 1rem);
+  }
+
+  :host ::ng-deep .ng-dropdown-panel {
+    font-size: clamp(0.3rem, 0.8rem, 1rem);
+  }
+
+  :host ::ng-deep .ng-dropdown-panel .ng-option-label {
+    font-size: clamp(0.3rem, 0.8rem, 1rem);
+  }
+
+  :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
+    font-size: clamp(0.3rem, 0.8rem, 1rem);
+    min-width: 90%;
+  }
+
+  /* Dropdown selected val */
+  :host ::ng-deep .ng-select .ng-select-container {
+    font-size: clamp(0.3rem, 0.8rem, 1rem) !important;
+    line-height: 2.5rem;
+  }
+}
+
+/* ------------------------------------------ DATE PICKER---------- ------------------------------------------------*/
+.event-schedule-datepicker {
+  margin-right: 0;
+  margin-bottom: 0 !important;
+}
+
+:host ::ng-deep .filter-dropdowns .mat-mdc-form-field-subscript-wrapper {
+  max-height: 0.5rem;
+}
+
+.mat-mdc-form-field {
+  color: rgba(33, 37, 41, .75);
+}
+
+/* label/placeholder */
+:host ::ng-deep .mat-mdc-form-field:not(.mat-mdc-form-field--disabled):not(.cdk--disabled) .mat-mdc-floating-label {
+  padding-left: 0.75rem;
+  color: rgba(188, 191, 200, .5) !important;
+  transition: color 0.5s ease, font-size 0.5s ease !important;
+}
+
+/* label/placeholder DISABLED */
+:host ::ng-deep .mat-mdc-form-field .mdc-text-field--disabled .mat-mdc-floating-label {
+  color: rgba(69, 72, 74, 0.5) !important;
+}
+
+/* label/placeholder NOT disabled */
+:host ::ng-deep .mat-mdc-form-field:not(.mat-mdc-form-field--disabled) .mat-mdc-floating-label {
+  color: rgba(255, 131, 7, 0.5);
+  transition: color 0.5s ease, font-size 0.5s ease !important;
+}
+
+/* Event datepicker outline transition */
+:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mat-mdc-notch-piece {
+  transition: border-color 0.5s ease !important;
+}
+
+/* Event Date Disabled state */
+:host ::ng-deep .mdc-text-field--outlined.mdc-text-field--disabled .mat-mdc-notch-piece{
+  color: rgba(69, 72, 74, 0.5) !important;
+}
+
+/* label/placeholder hover */
+:host ::ng-deep .mdc-text-field:not(.mdc-text-field--disabled):hover:not(:focus-within) .mat-mdc-floating-label {
+  color: rgba(255, 131, 7, 0.5);
+  font-size: 1rem;
+}
+
+:host ::ng-deep .mdc-notched-outline:hover {
+  border-color: rgba(69, 72, 74, 0.5) !important;
+}
+
+/* outline hover */
+:host ::ng-deep .mdc-text-field--outlined.mat-mdc-notch-piece:hover {
+  color: rgba(188, 191, 200, .5) !important;
+}
+
+/* calendar icon */
+:host ::ng-deep .mat-mdc-icon-button {
+  color: rgba(188, 191, 200, .3) !important;
+  transition: color 0.5s ease !important;
+}
+
+/* Input field selected date text */
+:host ::ng-deep .mdc-text-field__input {
+  padding-left: 1rem;
+}
+
+:host ::ng-deep .mat-mdc-form-field:not(.mat-mdc-form-field--disabled) .mdc-text-field__input,
+:host ::ng-deep .mat-mdc-form-field:not(.mat-mdc-form-field--disabled) .mdc-floating-label.mdc-floating-label--float-above {
+  color: rgba(255, 131, 7, .6);
+}
+
+/* calendar icon hover */
+:host ::ng-deep .mat-mdc-icon-button:hover {
+  color: rgba(255, 131, 7, 0.5) !important;
+}
+
+@media(max-width: 749px) {
+  .dropdown-component .ng-select {
+    min-width: 12rem !important;
+    font-size: clamp(0.3rem, 0.8rem, 1rem);
+  }
+
+  .dropdown-component {
+    margin-left: 5%;
+  }
+}
+/* ------------------------------------------------------------------------------------------------------------------*/

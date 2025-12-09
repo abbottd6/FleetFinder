@@ -129,7 +129,11 @@
   padding-bottom: 0.25rem;
 }
 
-@media(min-width: 1500px) and (max-width: 2000px) {
+.handheld-table {
+  min-height: 50vh;
+}
+
+@media(min-width: 1530px) and (max-width: 2000px) {
 
   .action-buttons {
     font-size: 0.9rem;
@@ -144,7 +148,7 @@
   }
 }
 
-@media(min-width: 725px) and (max-width: 1499px) {
+@media(min-width: 725px) and (max-width: 1529px) {
   .mat-mdc-header-row {
     font-size: clamp(0.8rem, 1rem, 1.5rem);
   }
@@ -168,8 +172,8 @@
   }
 
   .table-container {
-    max-height: 70% !important;
-    padding-bottom: 3rem;
+    max-height: 90% !important;
+    padding-bottom: 1rem;
   }
 
   .action-buttons-container {

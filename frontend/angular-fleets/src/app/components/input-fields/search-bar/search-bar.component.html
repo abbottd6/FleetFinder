@@ -26,88 +26,20 @@
       </a>
     </mat-form-field>
   </div>
+
+
+  <app-filter-dropdowns
+    *ngIf="(layoutMode$ | async) === 'full'"
+    (applyFilters)="emitFilterState()">
+  </app-filter-dropdowns>
+
+
   <div class="mobile-filters-button" *ngIf="(layoutMode$ | async) === 'mobile'">
-    <button class="action-buttons-with-icons">
+    <button
+      class="action-buttons-with-icons"
+      (click)="openMobileFilters()">
       <mat-icon class="filter-icon">filter_list</mat-icon>
       Filters
-    </button>
-  </div>
-  <div class="filter-dropdowns" *ngIf="(layoutMode$ | async) === 'full'">
-    <div class="dropdown-component">
-      <ng-select
-        [items]="FILTER_CATEGORIES"
-        [formControl]="principalCtrl"
-        bindLabel="label"
-        bindValue="value"
-        placeholder="Filter by..."
-        [attr.aria-labelledby]="'Principal Filter'">
-      </ng-select>
-    </div>
-  </div>
-  <div class="filter-dropdowns" *ngIf="(layoutMode$ | async) === 'full'">
-    <div class="dropdown-component">
-      <ng-select
-        [items]="parentFilters$ | async"
-        [formControl]="parentCtrl"
-        bindLabel="option"
-        placeholder="Filter for..."
-        [attr.aria-labelledby]="'Filter for'">
-      </ng-select>
-    </div>
-  </div>
-  <div class="filter-dropdowns" *ngIf="(layoutMode$ | async) === 'full'">
-    <div class="dropdown-component">
-      <ng-select *ngIf="!(principalCtrl.value == 'groupStatus'
-        && parentCtrl.value?.option == 'Future/Scheduled') else datePicker"
-        [items]="childFilters$ | async"
-        [formControl]="childCtrl"
-        bindLabel="option"
-        placeholder="Additional..."
-        [attr.aria-labelledby]="'Additional filter'">
-      </ng-select>
-    </div>
-    <ng-template #datePicker>
-      <div class="event-schedule-datepicker">
-        <mat-form-field>
-          <mat-label>Date Range</mat-label>
-          <mat-date-range-input
-            [rangePicker]="picker"
-            [formGroup]="dateRange"
-          >
-            <input
-              matStartDate
-              formControlName="start"
-              placeholder="Start date"
-              [min]="minDate"
-              [max]="maxDate"
-            >
-            <input
-              matEndDate
-              formControlName="end"
-              placeholder="End date"
-              [min]="minDate"
-              [max]="maxDate"
-            >
-          </mat-date-range-input>
-          <mat-datepicker-toggle
-            matIconSuffix
-            [for]="picker"
-            class="date-picker-search-bar">
-          </mat-datepicker-toggle>
-          <mat-date-range-picker
-            #picker
-            panelClass="custom-datepicker"
-            [dateClass]="disabledDatesClass">
-          </mat-date-range-picker>
-        </mat-form-field>
-      </div>
-    </ng-template>
-  </div>
-  <div class="dropdown-component" *ngIf="(layoutMode$ | async) === 'full'">
-    <button
-      class="action-buttons"
-      id="addFilter"
-      (click)="addFilter()">Add Filter
     </button>
   </div>
 </div>
@@ -115,11 +47,6 @@
   <div class="filters-row" *ngIf="!((layoutMode$ | async) === 'handheld')">
     <div class="filters-title">
       <h6>Filters:</h6>
-      <div *ngIf="filtersMatch else noMatch" class="filters-applied" >
-        <mat-icon class="check-mark">check</mat-icon>
-        <h6 class="filters-applied">Applied</h6>
-      </div>
-      <ng-template #noMatch><h6 class="filter-state-notice">'Search' to apply changes.</h6></ng-template>
     </div>
     <div class="hidden-listings-button-container">
       <a
@@ -148,7 +75,7 @@
     <div class="clear-button-container-left">
       <button
         class="action-buttons"
-        (click)="clearFilters(searchInput.value)">
+        (click)="clearFilters()">
         Clear
       </button>
     </div>
@@ -165,7 +92,8 @@
   <ng-template #handheldFiltersRow>
     <div class="handheldFiltersRow">
       <div class="handheldFiltersButton">
-        <button class="action-buttons-with-icons">
+        <button class="action-buttons-with-icons"
+                (click)="openMobileFilters()">
           <mat-icon class="filter-icon">filter_list</mat-icon>
           Filters
         </button>

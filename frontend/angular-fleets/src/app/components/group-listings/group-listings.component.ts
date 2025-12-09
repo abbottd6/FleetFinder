@@ -36,6 +36,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ConfirmReportComponent} from "../pop-ups/confirm-report/confirm-report.component";
 import {HideListingRequest} from "../../models/listing-filter/hide-listing-request.model";
 import {HiddenListingsService} from "../../services/user-services/hidden-listings.service";
+import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -347,8 +348,23 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.selectedListing = null;
   }
 
-  isMobile$ = this.breakpointObserver
-    .observe('(max-width: 1350px)')
-    .pipe(map(result => result.matches),
-      shareReplay());
+  layoutMode$: Observable<LayoutMode> = this.breakpointObserver
+    .observe([
+      '(max-width: 900px)',
+      '(min-width: 901px) and (max-width: 1375px)',
+      '(min-width: 1051px)'
+    ])
+    .pipe(
+      map(state => {
+        if (state.breakpoints['(max-width: 900px)']) {
+          return 'handheld';
+        }
+        if (state.breakpoints['(min-width: 901px) and (max-width: 1375px)']) {
+          return 'mobile';
+        }
+
+        return 'full';
+      }),
+      shareReplay(1)
+    );
 }

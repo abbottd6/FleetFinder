@@ -1,0 +1,82 @@
+<div class="dropdown-row">
+  <div class="filter-dropdowns">
+    <div class="dropdown-component">
+      <ng-select
+        [items]="FILTER_CATEGORIES"
+        [formControl]="principalCtrl"
+        bindLabel="label"
+        bindValue="value"
+        placeholder="Filter by..."
+        [attr.aria-labelledby]="'Principal Filter'">
+      </ng-select>
+    </div>
+  </div>
+  <div class="filter-dropdowns">
+    <div class="dropdown-component">
+      <ng-select
+        [items]="parentFilters$ | async"
+        [formControl]="parentCtrl"
+        bindLabel="option"
+        placeholder="Filter for..."
+        [attr.aria-labelledby]="'Filter for'">
+      </ng-select>
+    </div>
+  </div>
+  <div class="filter-dropdowns">
+    <div class="dropdown-component">
+      <ng-select *ngIf="!(principalCtrl.value == 'groupStatus'
+        && parentCtrl.value?.option == 'Future/Scheduled') else datePicker"
+                 [items]="childFilters$ | async"
+                 [formControl]="childCtrl"
+                 bindLabel="option"
+                 placeholder="Additional..."
+                 [attr.aria-labelledby]="'Additional filter'">
+      </ng-select>
+    </div>
+    <ng-template #datePicker>
+      <div class="event-schedule-datepicker">
+        <mat-form-field>
+          <mat-label>Date Range</mat-label>
+          <mat-date-range-input
+            [rangePicker]="picker"
+            [formGroup]="dateRange"
+          >
+            <input
+              matStartDate
+              formControlName="start"
+              placeholder="Start date"
+              [min]="minDate"
+              [max]="maxDate"
+            >
+            <input
+              matEndDate
+              formControlName="end"
+              placeholder="End date"
+              [min]="minDate"
+              [max]="maxDate"
+            >
+          </mat-date-range-input>
+          <mat-datepicker-toggle
+            matIconSuffix
+            [for]="picker"
+            class="date-picker-search-bar">
+          </mat-datepicker-toggle>
+          <mat-date-range-picker
+            #picker
+            panelClass="custom-datepicker"
+            [dateClass]="disabledDatesClass">
+          </mat-date-range-picker>
+        </mat-form-field>
+      </div>
+    </ng-template>
+  </div>
+  <div class="filter-dropdowns">
+    <div class="add-filter-button-wrapper">
+      <button
+        class="action-buttons"
+        id="addFilter"
+        (click)="addFilter()">Add Filter
+      </button>
+    </div>
+  </div>
+</div>

@@ -8,7 +8,11 @@
       </div>
     </div>
   </div>
-  <table mat-table [dataSource]="dataSource" matSort (matSortChange)="announceSortChange($event)" *ngIf="!(isMobile$ | async)">
+  <table mat-table
+         [dataSource]="dataSource"
+         matSort
+         (matSortChange)="announceSortChange($event)"
+         *ngIf="!((layoutMode$ | async) === 'handheld')">
 
     <!-- Options Column -->
     <ng-container matColumnDef='options'>
@@ -45,7 +49,7 @@
                 </li>
               </ul>
             </mat-menu>
-          <ng-container *ngIf="!(isMobile$ | async)">
+          <ng-container *ngIf="(layoutMode$ | async) === 'full'">
             <button mat-icon-button
                     matTooltip="Hide"
                     [matTooltipPosition]="positionOptions[0]"
@@ -53,7 +57,7 @@
               <mat-icon class="visibility-icon">visibility_off</mat-icon>
             </button>
           </ng-container>
-          <ng-container *ngIf="!(isMobile$ | async)">
+          <ng-container *ngIf="(layoutMode$ | async) === 'full'">
             <button mat-icon-button *ngIf="!isBookmarked(row.groupId, bookmarkIds) ; else alreadyBookmarked"
                     matTooltip="Bookmark"
                     [matTooltipPosition]="positionOptions[0]"
@@ -162,10 +166,11 @@
   <!-------------------------------- MOBILE/FEED-VIEW TABLE ------------------------------------------------------>
   <table
     mat-table
+    class="handheld-table"
     [dataSource]="dataSource"
     matSort
     (matSortChange)="announceSortChange($event)"
-    *ngIf="(isMobile$ | async)">
+    *ngIf="(layoutMode$ | async) === 'handheld'">
 
     <ng-container matColumnDef='options'>
       <th mat-header-cell *matHeaderCellDef>
