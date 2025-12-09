@@ -60,29 +60,24 @@
   cursor: pointer;
 }
 
-.options-menu-icon {
-  transition: color 0.15s ease;
+.table-options-column {
+  display: inline-flex;
+  flex-direction: row;
 }
 
-.bookmark-icon {
-  margin-left: 1rem;
+.options-column-icon {
   transition: color 0.15s ease;
+
 }
 
-.bookmark-icon:hover {
+.options-column-icon:hover {
   color: rgba(255, 131, 7, .6);
   background-color: rgba(44, 44, 44, 0.7);
   border-radius: 0.25rem;
 }
 
 .visibility-icon {
-  font-size: 1.4rem !important;
-}
-
-.visibility-icon:hover {
-  color: rgba(255, 131, 7, .6);
-  background-color: rgba(44, 44, 44, 0.7);
-  border-radius: 0.25rem;
+  scale: 0.9 !important;
 }
 
 .paginator {
@@ -235,6 +230,9 @@
   /* datepicker calendar container */
   ::ng-deep .mat-datepicker-content {
     margin-bottom: 5rem;
+    border-radius: 1rem;
+    background-color: var(--bs-gray-900) !important;
+    color: rgba(188, 191, 200, .7) !important;
   }
 }
 
