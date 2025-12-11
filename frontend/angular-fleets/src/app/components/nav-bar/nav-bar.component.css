@@ -18,6 +18,10 @@
   margin-right: 2vw;
 }
 
+.navbar .navbar-expand-xl bg-primary {
+  line-height: 1rem !important;
+}
+
 .navbar-text {
   display: flex;
   align-items: center;
@@ -28,6 +32,11 @@
 .nav-link {
   color: rgba(25, 40, 44, .75);
 }
+
+.navbar-nav .nav-link.show {
+  color: rgba(255, 131, 7, .6);
+}
+
 @media(min-width: 1200px) {
   .nav-item-toggle-only {
     display: none;
@@ -50,27 +59,36 @@
   display: block;
   width: 80%;
   margin: 0.0rem .5rem .5rem .5rem;
-  padding: 0.25rem 0.0rem 0.25rem 0.5rem;
+  padding: 0.25rem 0.25rem 0.25rem 0.5rem;
   clear: both;
-  color: rgba(52, 135, 168, 0.9);
+  color: rgba(188, 191, 200, .75);
   text-align: left;
-  border-bottom: 1px ridge rgba(52, 135, 168, 0.75);
+  border-bottom: 1px solid rgba(188, 191, 200, .3);
+  transition: color .15s ease, border .15s ease, background-color .15s ease;
   clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
 }
 
 /* custom dropdown for full display navbar */
 .dropdown-item:hover {
-  background-color: rgba(52, 135, 168, 0.25);
-  color: rgb(0, 0, 0)
+  background-color: rgba(65, 103, 142, .5);
+  border-bottom: 1px solid rgba(255, 131, 7, .5);
+  clip-path: none;
+  border-radius: 0.25rem;
+  border-bottom: none;
 }
 
 /* Custom dropdown for full-display navbar dropdown */
 .navbar-nav .dropdown-menu {
   background-color: var(--bs-gray-dark);
   clip-path: var(--clip-t-right-b-left);
-  border-bottom: 1px solid var(--stark-blue);
-  border-right: 1px solid var(--stark-blue);
+  border-radius: 0;
   font-size: 85%;
+  /*border-left: 1px solid var(--stark-blue);*/
+  /*border-bottom: 1px solid var(--stark-blue);*/
+
+  /*border-bottom: 1px solid rgba(255, 131, 7, .5);*/
+  /*border-left: 1px solid rgba(255, 131, 7, .5);*/
+
 }
 
 .navbar-icons {
@@ -81,10 +99,12 @@
 .navbar-icons .dropdown-menu {
   background-color: var(--bs-gray-dark);
   clip-path: var(--clip-t-right-b-left);
-  border-bottom: 1px solid var(--stark-blue);
-  border-right: 1px solid var(--stark-blue);
   font-size: 85%;
-
+  border-radius: 0;
+  /*border-bottom: 1px solid var(--stark-blue);*/
+  /*border-left: 1px solid var(--stark-blue);*/
+  /*border-bottom: 1px solid rgba(255, 131, 7, .5);*/
+  /*border-left: 1px solid rgba(255, 131, 7, .5);*/
 }
 
 .navbar-nav {
@@ -115,11 +135,12 @@
   left: auto;
   top: 100%;
   right: 2% !important;
+  padding-bottom: .5rem;
   z-index: 1050;
   background-color: var(--bs-gray-dark);
   clip-path: var(--clip-t-right-b-left);
-  border-bottom: 2px solid var(--stark-blue);
-  border-left: 2px solid var(--stark-blue);
+  /*border-bottom: 1px solid rgba(255, 131, 7, .5);*/
+  /*border-left: 1px solid rgba(255, 131, 7, .5);*/
   font-size: 110%;
 }
 
@@ -130,14 +151,19 @@
   top: 100%;
   right: 2%;
   width: auto;
+  padding-bottom: .5rem;
   z-index: 1050;
   background-color: var(--bs-gray-dark);
   clip-path: polygon(0% 0%, 87.5% 0%, 100% 12.5%, 100% 100%, 12.5% 100%, 0% 87.5%);
-  border-bottom: 2px solid var(--stark-blue);
-  border-left: 2px solid var(--stark-blue);
+  /*border-bottom: 1px solid rgba(255, 131, 7, .5);*/
+  /*border-left: 1px solid rgba(255, 131, 7, .5);*/
   font-size: 110%;
   overflow: visible;
   text-align: left;
+}
+
+.navbar-nav.form {
+
 }
 
 @media(max-width: 1199px) {
@@ -147,8 +173,9 @@
   }
 
   .navbar-nav .nav-link {
-    color: rgba(52, 135, 168, 0.75) !important;
-    border-bottom: 1px ridge rgba(52, 135, 168, 0.75);
+    color: rgba(188, 191, 200, .75);
+    font-weight: 500;
+    border-bottom: 1px solid rgba(188, 191, 200, .3);
     padding: 0.5rem 0.0rem 0.25rem 0.5rem;
     clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
     cursor: pointer;
@@ -158,6 +185,10 @@
     background-color: rgba(52, 135, 168, 0.25);
     font-size: 105%;
     cursor: pointer;
+  }
+
+  .navbar-brand {
+    padding-bottom: 0;
   }
 
   a.nav-link:hover {
@@ -187,23 +218,18 @@
   width: 100%;
 }
 
-
 .form-control {
   width: 22vw;
   border: 1px solid rgba(150, 168, 183, 1);
 }
 
 .form-control.form-control.me-2 {
-  /*background-color: rgba(91, 105, 119, 0.3);*/
-  background-color: rgba(150, 168, 183, 0.2)
+  background-color: rgba(222, 225, 234, 0.8);
+
 }
 
 .form-control:focus {
   box-shadow: 0 0 0.2rem 0.1rem rgba(150, 168, 183, .4);
-}
-
-.form-control.form-control.me-2:focus {
-  background-color: rgba(140, 152, 163, 0.2)
 }
 
 input::placeholder {
