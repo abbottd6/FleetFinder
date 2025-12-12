@@ -23,6 +23,7 @@ import {HideListingRequest} from "../../models/listing-filter/hide-listing-reque
 import {HiddenListingsService} from "../../services/user-services/hidden-listings.service";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 import {DontShowMeAgainPopup} from "../pop-ups/hide-how-to-popup/dont-show-me-again-popup";
+import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
 
 export const UI_PREFS_KEY = 'ff_ui_prefs';
 
@@ -429,12 +430,35 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   //on close instructions for groupListing modal popup
-  onModalClose() {
+  onModalClose(action: CloseValue) {
     if(!environment.production) {
       console.log("Modal closed");
     }
     this.isModalVisible = false;
     this.selectedListing = null;
+
+    if(!action.value) return;
+
+    if(action.value && action.group) {
+      switch (action.value) {
+        case 'hide':
+          return this.userHideListing(action.group.groupId);
+        case 'bookmark':
+          this.bookmarkedIds$.pipe(take(1)).subscribe(
+            ids=> {
+              const set = new Set(ids);
+              if(action.group?.groupId && set.has(action.group?.groupId)) {
+                this.deleteBookmark(action.group.groupId);
+              } else if(action.group?.groupId) {
+                this.addBookmark(action.group.groupId);
+              }
+            }
+          )
+          return this.addBookmark(action.group.groupId);
+        case 'report':
+          return this.openConfirmReport(action.group)
+      }
+    }
   }
 
   layoutMode$: Observable<LayoutMode> = this.breakpointObserver

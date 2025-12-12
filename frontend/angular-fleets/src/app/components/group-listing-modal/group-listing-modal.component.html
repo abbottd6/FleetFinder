@@ -13,7 +13,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-dash">//</h1><h4 class="modal-title">{{ selectedListing?.listingTitle}}</h4>
-        <button type="button" class="close" (click)="closeModal()" aria-label="Close">
+        <button type="button" class="close" (click)="closeModal(null, null)" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -159,18 +159,49 @@
           </div>
 
           <div class="modal-footer">
-            <button type="button" class="modal-buttons" (click)="closeModal()">Close</button>
-            <ng-container *ngIf="userIsListingOwner(); else notOwner">
-              <a [routerLink]="['/user-account']">
-                <button type="button" class="modal-buttons">Manage</button>
-              </a>
-            </ng-container>
-            <ng-template #notOwner>
-              <button type="button" class="modal-buttons">
-                <mat-icon class="msg-icon">rss_feed</mat-icon>
-                Message
+            <div class="footer-buttons-left">
+              <button
+                type="button"
+                class="modal-button-with-icon"
+                [matMenuTriggerFor]="listingOptionsMenu">
+                Options
+                <mat-icon>arrow_drop_down</mat-icon>
               </button>
-            </ng-template>
+              <mat-menu #listingOptionsMenu="matMenu">
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="closeModal('hide', selectedListing)">
+                  Hide
+                </button>
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="closeModal('bookmark', selectedListing)">
+                  Bookmark
+                </button>
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="closeModal('report', selectedListing)">
+                  Report
+                </button>
+              </mat-menu>
+            </div>
+            <div class="footer-buttons-right">
+              <button type="button" class="modal-buttons" (click)="closeModal(null, null)">Close</button>
+              <ng-container *ngIf="userIsListingOwner(); else notOwner">
+                <a [routerLink]="['/user-account']">
+                  <button type="button" class="modal-buttons">Manage</button>
+                </a>
+              </ng-container>
+              <ng-template #notOwner>
+                <button type="button" class="modal-button-with-icon">
+                  <mat-icon class="msg-icon">rss_feed</mat-icon>
+                  Message
+                </button>
+              </ng-template>
+            </div>
           </div>
         </div>
       </div>

@@ -6,7 +6,12 @@ import {MatIconModule} from "@angular/material/icon";
 import {RouterLink} from "@angular/router";
 import {map, Observable} from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
+export interface CloseValue {
+  value: 'hide' | 'bookmark' | 'report' | null,
+  group: GroupListingViewModel | null
+}
 
 @Component({
   selector: 'app-group-listing-modal',
@@ -17,14 +22,17 @@ import {PrivateUser} from "../../models/private-user/private-user";
     DatePipe,
     NgIf,
     MatIconModule,
-    RouterLink
+    RouterLink,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem
   ],
   styleUrl: './group-listing-modal.component.css'
 })
 export class GroupListingModalComponent implements OnInit {
   @Input() isVisible!: boolean;
   @Input() selectedListing: GroupListingViewModel | null = null;
-  @Output() close = new EventEmitter<void>
+  @Output() close = new EventEmitter<CloseValue>
   localUser$: Observable<PrivateUser>;
   userListings: GroupListingViewModel[] = [];
   userService = new UserService();
@@ -55,12 +63,16 @@ export class GroupListingModalComponent implements OnInit {
     );
   }
 
-  closeModal() {
+  closeModal(action: CloseValue['value'], group: GroupListingViewModel | null) {
     this.isVisible = false;
-    this.close.emit();
+    const emitVal: CloseValue = {
+      value: action,
+      group: group
+    };
+    this.close.emit(emitVal);
   }
 
-  closeOnBackdropClick(event: MouseEvent) {
-    this.closeModal();
-  }
+  // closeOnBackdropClick(event: MouseEvent) {
+  //   this.closeModal();
+  // }
 }
