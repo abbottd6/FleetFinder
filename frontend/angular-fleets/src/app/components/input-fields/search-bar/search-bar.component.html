@@ -93,7 +93,9 @@
     <div class="handheldFiltersRow">
       <div class="handheldFiltersButton">
         <button class="action-buttons-with-icons"
-                (click)="openMobileFilters()">
+                *ngIf="displayedFilters$ | async as filters"
+                (click)="openMobileFilters()"
+                matBadge="{{ filters.length }}">
           <mat-icon class="filter-icon">filter_list</mat-icon>
           Filters
         </button>

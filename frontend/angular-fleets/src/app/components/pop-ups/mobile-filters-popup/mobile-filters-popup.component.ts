@@ -8,7 +8,10 @@ import {FilterOptionKey, FilterService} from "../../../services/api-lookup-servi
   selector: 'app-listing-view-mobile-filters-popup',
   standalone: false,
   templateUrl: './mobile-filters-popup.component.html',
-  styleUrl: './mobile-filters-popup.component.css'
+  styleUrls: [
+    './mobile-filters-popup.component.css',
+    '../../../../styles.css'
+  ],
 })
 export class MobileFiltersPopupComponent {
 
@@ -24,7 +27,6 @@ export class MobileFiltersPopupComponent {
   ) {}
 
   onConfirm(): void {
-    const selected = 0;
     this.dialogRef.close(true);
   }
 

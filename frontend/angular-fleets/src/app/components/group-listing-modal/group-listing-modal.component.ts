@@ -1,6 +1,6 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
-import {DatePipe, NgClass, NgIf} from "@angular/common";
+import {AsyncPipe, DatePipe, NgClass, NgIf} from "@angular/common";
 import {UserService} from "../../services/user-services/user.service";
 import {MatIconModule} from "@angular/material/icon";
 import {RouterLink} from "@angular/router";
@@ -9,7 +9,7 @@ import {PrivateUser} from "../../models/private-user/private-user";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 export interface CloseValue {
-  value: 'hide' | 'bookmark' | 'report' | null,
+  value: 'hide' | 'bookmark' | 'unbookmark' | 'report' | null,
   group: GroupListingViewModel | null
 }
 
@@ -25,13 +25,15 @@ export interface CloseValue {
     RouterLink,
     MatMenuTrigger,
     MatMenu,
-    MatMenuItem
+    MatMenuItem,
+    AsyncPipe
   ],
   styleUrl: './group-listing-modal.component.css'
 })
 export class GroupListingModalComponent implements OnInit {
   @Input() isVisible!: boolean;
   @Input() selectedListing: GroupListingViewModel | null = null;
+  @Input() isBookmarked$!: Observable<boolean>;
   @Output() close = new EventEmitter<CloseValue>
   localUser$: Observable<PrivateUser>;
   userListings: GroupListingViewModel[] = [];

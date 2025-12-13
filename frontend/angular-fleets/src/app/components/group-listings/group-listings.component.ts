@@ -9,7 +9,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {map, Observable, shareReplay, Subject, take, takeUntil,} from "rxjs";
+import {combineLatest, map, Observable, of, shareReplay, Subject, take, takeUntil,} from "rxjs";
 import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-request";
@@ -22,7 +22,7 @@ import {ConfirmReportComponent} from "../pop-ups/confirm-report/confirm-report.c
 import {HideListingRequest} from "../../models/listing-filter/hide-listing-request.model";
 import {HiddenListingsService} from "../../services/user-services/hidden-listings.service";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
-import {DontShowMeAgainPopup} from "../pop-ups/hide-how-to-popup/dont-show-me-again-popup";
+import {DontShowMeAgainPopup} from "../pop-ups/dont-show-me-again-popup/dont-show-me-again-popup";
 import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
 
 export const UI_PREFS_KEY = 'ff_ui_prefs';
@@ -78,6 +78,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
               private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsService) {}
 
   bookmarkedIds$!: Observable<Set<number>>;
+  selectedIsBookmarked$!: Observable<boolean>;
   isLoggedIn!: boolean;
 
   ngOnInit(): void {
@@ -186,6 +187,12 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   //on-row-click instructions for groupListing modal popup
   onRowClick(tempListing: GroupListingViewModel) {
     this.selectedListing = tempListing;
+    this.selectedIsBookmarked$ = combineLatest([
+      this.bookmarkedIds$,
+      of(this.selectedListing.groupId),
+    ]).pipe(
+      map(([ids, selectedId]) => !!selectedId && ids.has(selectedId))
+    );
     // if(!environment.production) {
     //   console.log("HERE IS THE LISTING DATA: ", tempListing);
     // }
@@ -444,17 +451,9 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         case 'hide':
           return this.userHideListing(action.group.groupId);
         case 'bookmark':
-          this.bookmarkedIds$.pipe(take(1)).subscribe(
-            ids=> {
-              const set = new Set(ids);
-              if(action.group?.groupId && set.has(action.group?.groupId)) {
-                this.deleteBookmark(action.group.groupId);
-              } else if(action.group?.groupId) {
-                this.addBookmark(action.group.groupId);
-              }
-            }
-          )
           return this.addBookmark(action.group.groupId);
+        case 'unbookmark':
+          return this.deleteBookmark(action.group.groupId);
         case 'report':
           return this.openConfirmReport(action.group)
       }

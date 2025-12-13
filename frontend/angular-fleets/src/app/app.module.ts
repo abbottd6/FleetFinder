@@ -66,7 +66,8 @@ import {
 import { ConfirmReportComponent } from './components/pop-ups/confirm-report/confirm-report.component';
 import { MobileFiltersPopupComponent } from './components/pop-ups/mobile-filters-popup/mobile-filters-popup.component';
 import { FilterDropdownsComponent } from './components/dropdowns/filter-dropdowns/filter-dropdowns.component';
-import { DontShowMeAgainPopup } from './components/pop-ups/hide-how-to-popup/dont-show-me-again-popup';
+import { DontShowMeAgainPopup } from './components/pop-ups/dont-show-me-again-popup/dont-show-me-again-popup';
+import {MatBadge} from "@angular/material/badge";
 
 
 @NgModule({
@@ -149,6 +150,7 @@ import { DontShowMeAgainPopup } from './components/pop-ups/hide-how-to-popup/don
     MatDateRangePicker,
     MatStartDate,
     MatMenuItem,
+    MatBadge,
   ],
   providers: [
     provideClientHydration(),

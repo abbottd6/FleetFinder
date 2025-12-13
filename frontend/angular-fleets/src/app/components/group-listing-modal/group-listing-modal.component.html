@@ -174,12 +174,22 @@
                   (click)="closeModal('hide', selectedListing)">
                   Hide
                 </button>
-                <button
-                  mat-menu-item
-                  class="options-item"
-                  (click)="closeModal('bookmark', selectedListing)">
-                  Bookmark
-                </button>
+                <ng-container *ngIf="(isBookmarked$ | async) === false; else notBookmarked">
+                  <button
+                    mat-menu-item
+                    class="options-item"
+                    (click)="closeModal('bookmark', selectedListing)">
+                    Bookmark
+                  </button>
+                </ng-container>
+                <ng-template #notBookmarked>
+                  <button
+                    mat-menu-item
+                    class="options-item"
+                    (click)="closeModal('unbookmark', selectedListing)">
+                    Unmark
+                  </button>
+                </ng-template>
                 <button
                   mat-menu-item
                   class="options-item"

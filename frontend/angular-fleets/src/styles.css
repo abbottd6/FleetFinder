@@ -178,7 +178,6 @@ app-user {
 }
 
 .cdk-overlay-container .mobile-filters-popup {
-  border: 1px solid rgba(255, 131, 7, .6);
   border-radius: 0.5rem;
 }
 
@@ -318,6 +317,16 @@ app-user {
   border-color: rgba(255, 131, 7, .75);
   background-color: rgba(255, 131, 7, .25);
   cursor: pointer;
+}
+
+.action-buttons-with-icons .mat-badge-content {
+  background-color: rgb(52, 53, 58);
+  /*color: rgba(223, 241, 255, 0.75);*/
+  color: rgba(223, 241, 255, 0.5);
+  font-size: .85rem !important;
+  font-family: monospace;
+  border: 1px solid rgba(223, 241, 255, 0.5);
+  border-radius: 100rem;
 }
 
 @media(max-width: 1700px) {

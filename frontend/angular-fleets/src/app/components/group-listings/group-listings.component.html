@@ -262,8 +262,9 @@
 </div>
 
 <app-group-listing-modal
-  *ngIf="isModalVisible"
+  *ngIf="isModalVisible && (bookmarkedIds$ | async) as bookmarkedIds"
   [isVisible]="isModalVisible"
   [selectedListing]="selectedListing"
+  [isBookmarked$]="selectedIsBookmarked$"
   (close)="onModalClose($event)"
 ></app-group-listing-modal>

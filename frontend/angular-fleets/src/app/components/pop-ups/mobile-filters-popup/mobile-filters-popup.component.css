@@ -65,7 +65,7 @@
 
 .action-buttons {
   border: 1px solid rgba(255, 131, 7, .75);
-  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  padding: .42rem 1.12rem .42rem 1.12rem;
   background-color: rgba(33, 37, 41, .4);
   margin-inline: .75rem;
   color: rgba(255, 131, 7, .75);
@@ -91,12 +91,14 @@
 
 @media(max-width: 1350px)  and (min-width: 725px) {
   .action-buttons {
+    padding: .21rem .56rem .21rem .56rem;
     font-size: clamp(0.6rem, 0.8rem, 1.2rem);
   }
 }
 
 @media(max-width: 724px) {
   .action-buttons {
+    padding: .21rem .56rem .21rem .56rem;
     font-size: .9rem;
   }
 }
