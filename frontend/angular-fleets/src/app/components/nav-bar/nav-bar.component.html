@@ -57,14 +57,14 @@
       </ul>
     </div>
   </div>
-  <div class="container-fluid">
-    <div class="collapse navbar-collapse navbar-search">
-      <form class="navbar-nav form" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search">
-        <button class="btn btn-outline-secondary" id="navbar-search-button" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
+<!--  <div class="container-fluid">-->
+<!--    <div class="collapse navbar-collapse navbar-search">-->
+<!--      <form class="navbar-nav form" role="search">-->
+<!--        <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search">-->
+<!--        <button class="btn btn-outline-secondary" id="navbar-search-button" type="submit">Search</button>-->
+<!--      </form>-->
+<!--    </div>-->
+<!--  </div>-->
   <div class="container-fluid collapse navbar-collapse navbar-text">
       <ng-container *ngIf="auth.isLoggedIn$ | async; else blankWelcome">
         <span class="navbar-icons navbar-welcome-msg">Welcome, {{ userService.localUsername$ | async }}</span>
