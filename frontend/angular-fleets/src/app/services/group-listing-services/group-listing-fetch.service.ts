@@ -5,6 +5,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import {environment} from '../../../environments/environment';
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 import {SortDirection} from "@angular/material/sort";
+import {UI_PREFS_KEY} from "../../components/group-listings/group-listings.component";
 
 export interface Page<T> {
   content: T[];
@@ -31,6 +32,7 @@ export class GroupListingFetchService {
   constructor(private httpClient: HttpClient) { }
 
   searchGroupListings(
+    clickedRows: Set<number>,
     filters: ListingFilterRequest,
     page: number,
     size: number,
@@ -38,6 +40,7 @@ export class GroupListingFetchService {
     sortDirection: string,
   ): Observable<Page<GroupListingViewModel>> {
     const requestBody = {
+      clickedRows,
       ...filters,
       page,
       size,

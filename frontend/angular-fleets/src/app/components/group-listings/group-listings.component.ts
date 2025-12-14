@@ -32,6 +32,7 @@ export interface UiPrefs {
   hideHiddenListingHint: boolean;
   hideReportedListingHint: boolean;
   hideBookmarkedListingHint: boolean;
+  storedFilters: ListingFilterState | null;
 }
 
 @Component({
@@ -147,6 +148,9 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     this.reloadListings();
+    state.searchInput = null;
+    this.uiPrefs.storedFilters = state;
+    this.saveUiPrefs(this.uiPrefs);
   }
 
   isRowClicked(row: GroupListingViewModel): boolean {
@@ -162,7 +166,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   loadGroupListings(dto: ListingFilterRequest, idx: number, sz: number, sortA: string, sortD: string) {
-    this.groupListingService.searchGroupListings(dto, idx, sz, sortA, sortD)
+    this.groupListingService.searchGroupListings(this.clickedRows,dto, idx, sz, sortA, sortD)
       .subscribe({
         next: (page) => {
           if(!environment.production) {
@@ -221,7 +225,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
           clickedRowIds: [],
           hideHiddenListingHint: false,
           hideReportedListingHint: false,
-          hideBookmarkedListingHint: false
+          hideBookmarkedListingHint: false,
+          storedFilters: null
         };
       }
       const parsed = JSON.parse(localPrefs) as Partial<UiPrefs>
@@ -229,7 +234,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         clickedRowIds: parsed.clickedRowIds ?? [],
         hideHiddenListingHint: parsed.hideHiddenListingHint ?? false,
         hideReportedListingHint: parsed.hideReportedListingHint ?? false,
-        hideBookmarkedListingHint: parsed.hideBookmarkedListingHint ?? false
+        hideBookmarkedListingHint: parsed.hideBookmarkedListingHint ?? false,
+        storedFilters: parsed.storedFilters ?? null
       };
 
     } catch {
@@ -238,7 +244,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         clickedRowIds: [],
         hideHiddenListingHint: false,
         hideReportedListingHint: false,
-        hideBookmarkedListingHint: false
+        hideBookmarkedListingHint: false,
+        storedFilters: null
       }
     }
   }

@@ -5,9 +5,11 @@ import lombok.Data;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 public class SearchListingsDto {
+    private Set<Long> clicked;
     private String search;
     private Integer server;
     private Integer environment;
