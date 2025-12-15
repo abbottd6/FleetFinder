@@ -32,7 +32,6 @@ export class GroupListingFetchService {
   constructor(private httpClient: HttpClient) { }
 
   searchGroupListings(
-    clickedRows: Set<number>,
     filters: ListingFilterRequest,
     page: number,
     size: number,
@@ -40,7 +39,6 @@ export class GroupListingFetchService {
     sortDirection: string,
   ): Observable<Page<GroupListingViewModel>> {
     const requestBody = {
-      clickedRows,
       ...filters,
       page,
       size,

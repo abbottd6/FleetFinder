@@ -1,15 +1,14 @@
-import {inject, Injectable, OnChanges, OnDestroy} from '@angular/core';
+import {inject, Injectable, OnDestroy} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {PublicUser} from "../../models/public-user/public-user";
 import {
   BehaviorSubject,
-  catchError, combineLatest,
+  combineLatest,
   filter,
   map,
   Observable,
   shareReplay, Subject,
   switchMap, takeUntil,
-  throwError,
   withLatestFrom
 } from "rxjs";
 import {environment} from '../../../environments/environment';

@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {
+  afterNextRender,
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  inject,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {GroupListingFetchService} from "../../services/group-listing-services/group-listing-fetch.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
@@ -24,11 +34,17 @@ import {HiddenListingsService} from "../../services/user-services/hidden-listing
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 import {DontShowMeAgainPopup} from "../pop-ups/dont-show-me-again-popup/dont-show-me-again-popup";
 import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
+import {UiCleanupService} from "../../services/cleanup-services/ui-cleanup.service";
 
 export const UI_PREFS_KEY = 'ff_ui_prefs';
+export const MAX_CLICKED = 300;
+export const CLICKED_EVICT_COUNT = 1;
+export const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+export const SOFT_MAX_CLICKED = 3;
 
 export interface UiPrefs {
-  clickedRowIds: number[];
+  clickedRowIds: Set<number>;
+  lastClickedClean: number;
   hideHiddenListingHint: boolean;
   hideReportedListingHint: boolean;
   hideBookmarkedListingHint: boolean;
@@ -50,7 +66,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
   private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
-  private CLICKED_KEY = 'ff_user_clicked_listings';
   private _liveAnnouncer = inject(LiveAnnouncer)
   private bmService = inject(UserBookmarkService);
   private reportService = inject(ListingReportService);
@@ -62,7 +77,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   isModalVisible: boolean = false;
 
   uiPrefs!: UiPrefs;
-  clickedRows = new Set<number>();
 
   pageIndex = 0;
   pageSize = 25;
@@ -76,7 +90,13 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   dataSource = new MatTableDataSource<GroupListingViewModel>();
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
-              private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsService) {}
+              private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsService,
+              private uiCleanup: UiCleanupService) {
+
+    afterNextRender(() => {
+      this.clickedCleanupCheck();
+    })
+  }
 
   bookmarkedIds$!: Observable<Set<number>>;
   selectedIsBookmarked$!: Observable<boolean>;
@@ -84,7 +104,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
   ngOnInit(): void {
     this.uiPrefs = this.loadUiPrefs();
-    this.loadClickedListings();
 
     this.applyFiltersFromChild(this.filter.pullState());
 
@@ -92,12 +111,11 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
       val => this.isLoggedIn = val);
 
     this.bmService.getBookmarksBrief();
+
+    console.log("clickedIds: ", this.uiPrefs.clickedRowIds);
   }
 
   ngAfterViewInit() {
-    //just for page styling to show clicked listings
-    this.loadUiPrefs();
-
     this.bookmarkedIds$ = this.bmService.bookmarksBrief$.pipe(
       map((gIds: number[]) => new Set<number>(gIds))
     );
@@ -135,6 +153,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     const filterDto = new ListingFilterRequest(state);
     this.submittedState = structuredClone(state);
 
+    const clickedIds: Set<number> = this.uiPrefs.clickedRowIds;
+
     this.loadGroupListings(filterDto, this.pageIndex, this.pageSize, this.sortActive, this.sortDirection);
   }
 
@@ -154,7 +174,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   isRowClicked(row: GroupListingViewModel): boolean {
-    return this.clickedRows.has(row.groupId);
+    return this.uiPrefs.clickedRowIds.has(row.groupId);
   }
 
   announceSortChange(sortState: Sort) {
@@ -166,7 +186,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   loadGroupListings(dto: ListingFilterRequest, idx: number, sz: number, sortA: string, sortD: string) {
-    this.groupListingService.searchGroupListings(this.clickedRows,dto, idx, sz, sortA, sortD)
+    this.groupListingService.searchGroupListings(dto, idx, sz, sortA, sortD)
       .subscribe({
         next: (page) => {
           if(!environment.production) {
@@ -197,23 +217,26 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     ]).pipe(
       map(([ids, selectedId]) => !!selectedId && ids.has(selectedId))
     );
-    // if(!environment.production) {
-    //   console.log("HERE IS THE LISTING DATA: ", tempListing);
-    // }
-    // if(!environment.production) {
-    //   console.log("Logging selected listing ID: ", this.selectedListing.groupId);
-    // }
     this.isModalVisible = true;
-    // if(!environment.production) {
-    //   console.log("Parent modal visibility: ", this.isModalVisible);
-    // }
     // console.log("CLICKED ROWS: ", this.clickedRows)
   }
 
-  //TODO clickedRows is redundant now that I have added a json field for this
   saveRowClick(row: number) {
-    this.clickedRows.add(row);
-    this.uiPrefs.clickedRowIds = Array.from(this.clickedRows);
+    if (this.uiPrefs.clickedRowIds.size >= MAX_CLICKED) {
+      let removed = 0;
+      for(const oldest of Array.from(this.uiPrefs.clickedRowIds)) {
+        this.uiPrefs.clickedRowIds.delete(oldest);
+        removed++;
+        if(removed >= CLICKED_EVICT_COUNT) break;
+      }
+    }
+
+    if(this.uiPrefs.clickedRowIds.has(row)) {
+      this.uiPrefs.clickedRowIds.delete(row);
+    }
+
+    this.uiPrefs.clickedRowIds.add(row);
+
     this.saveUiPrefs(this.uiPrefs);
   }
 
@@ -222,7 +245,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
       const localPrefs = localStorage.getItem(UI_PREFS_KEY);
       if(!localPrefs) {
         return {
-          clickedRowIds: [],
+          clickedRowIds: new Set<number>(),
+          lastClickedClean: 0,
           hideHiddenListingHint: false,
           hideReportedListingHint: false,
           hideBookmarkedListingHint: false,
@@ -231,7 +255,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
       }
       const parsed = JSON.parse(localPrefs) as Partial<UiPrefs>
       return {
-        clickedRowIds: parsed.clickedRowIds ?? [],
+        clickedRowIds: new Set<number>(parsed.clickedRowIds ?? []),
+        lastClickedClean: parsed.lastClickedClean ?? 0,
         hideHiddenListingHint: parsed.hideHiddenListingHint ?? false,
         hideReportedListingHint: parsed.hideReportedListingHint ?? false,
         hideBookmarkedListingHint: parsed.hideBookmarkedListingHint ?? false,
@@ -241,7 +266,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     } catch {
       localStorage.removeItem(UI_PREFS_KEY);
       return {
-        clickedRowIds: [],
+        clickedRowIds: new Set<number>([]),
+        lastClickedClean: 0,
         hideHiddenListingHint: false,
         hideReportedListingHint: false,
         hideBookmarkedListingHint: false,
@@ -250,12 +276,25 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     }
   }
 
-  private saveUiPrefs(prefs: UiPrefs): void {
-    localStorage.setItem(UI_PREFS_KEY, JSON.stringify(prefs));
+  clickedCleanupCheck() {
+    const lastClean = this.uiPrefs.lastClickedClean;
+
+    if((Date.now() - lastClean >= ONE_DAY_MS) || (this.uiPrefs.clickedRowIds.size >= SOFT_MAX_CLICKED)) {
+      this.uiCleanup.cleanClickedListings(Array.from(this.uiPrefs.clickedRowIds)).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (response: {cleaned: number[] }) => {
+          this.uiPrefs.clickedRowIds = new Set(response.cleaned);
+          this.uiPrefs.lastClickedClean = Date.now();
+          this.saveUiPrefs(this.uiPrefs);
+        }
+      })
+    }
   }
 
-  private loadClickedListings() {
-    this.clickedRows = new Set(this.uiPrefs.clickedRowIds);
+  private saveUiPrefs(prefs: UiPrefs): void {
+    localStorage.setItem(UI_PREFS_KEY, JSON.stringify({
+      ...prefs,
+      clickedRowIds: Array.from(prefs.clickedRowIds),
+    }));
   }
 
   addBookmark(listingId: number) {
