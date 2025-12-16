@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingReportRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
@@ -55,6 +56,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final UserRepository userRepository;
     private final ArchiveService archiveService;
     private final HiddenListingService hls;
+    private final ListingReportRepository lrr;
 
     @PersistenceContext
     private EntityManager em;
@@ -63,13 +65,15 @@ public class GroupListingServiceImpl implements GroupListingService {
                                    GroupListingConversionService groupListingConversionService,
                                    UserRepository userRepository,
                                    ArchiveService archiveService,
-                                   HiddenListingService hls) {
+                                   HiddenListingService hls,
+                                   ListingReportRepository lrr) {
 
         this.groupListingRepository = groupListingRepository;
         this.groupListingConversionService = groupListingConversionService;
         this.userRepository = userRepository;
         this.archiveService = archiveService;
         this.hls = hls;
+        this.lrr = lrr;
     }
 
     @Override
@@ -91,7 +95,7 @@ public class GroupListingServiceImpl implements GroupListingService {
 
         if(userOpt.isPresent()) {
             Users user = userOpt.get();
-            spec = spec.and(notHiddenBy(user));
+            spec = spec.and(notHiddenBy(user)).and(notReportedBy(user));
         }
 
         Page<GroupListing> groupListings = groupListingRepository.findAll(spec, pageable);
@@ -225,44 +229,6 @@ public class GroupListingServiceImpl implements GroupListingService {
         return groupListingConversionService.convertListingToResponseDto(groupListing);
     }
 
-    private Map<String, Integer> parseSearchFilters(List<String> filters) {
-        Map<String, Integer> result = new HashMap<>();
-        if (filters == null || filters.isEmpty()) {
-            return result;
-        }
-
-        /* THIS BREAKS ON COMMS OPTION FILTER BECAUSE THE OPTIONS DONT HAVE IDs
-
-         */
-
-        for (String filter : filters) {
-            String[] parts = filter.split(":", 3);
-            if (parts.length == 2) {
-                String fieldName = parts[0].trim();
-                String lookup = parts[1].substring(0, parts[1].indexOf('*'));
-                Integer lookupId = Integer.valueOf(lookup);
-                result.put(fieldName, lookupId);
-            } else if (parts.length == 3) {
-                String fieldName = parts[0].trim();
-                String lookup = parts[1].substring(0, parts[1].indexOf('*'));
-                Integer lookupId = Integer.valueOf(lookup);
-                result.put(fieldName, lookupId);
-                if(fieldName.equals("category")) {
-                    String subfieldName = "subcategory";
-                    String sublookup = parts[2].substring(0, parts[2].indexOf('*'));
-                    Integer sublookupId = Integer.valueOf(sublookup);
-                    result.put(subfieldName, sublookupId);
-                }
-                else if(fieldName.equals("system")) {
-                    String subfieldName = "planetMoonSystem";
-                    String sublookup = parts[2].substring(0, parts[2].indexOf('*'));
-                    Integer sublookupId = Integer.valueOf(sublookup);
-                    result.put(subfieldName, sublookupId);
-                }
-            }
-        }
-        return result;
-    }
 
     private Specification<GroupListing> notHiddenBy(Users user) {
         return (root, query, cb) -> {
@@ -271,6 +237,16 @@ public class GroupListingServiceImpl implements GroupListingService {
                 return cb.conjunction();
             }
             return cb.not(root.get("groupId").in(hiddenGroupIds));
+        };
+    }
+
+    private Specification<GroupListing> notReportedBy(Users user) {
+        return (root, query, cb) -> {
+            Set<Long> reportedGroupIds = lrr.findByReportingUserRef(user);
+            if (reportedGroupIds.isEmpty()) {
+                return cb.conjunction();
+            }
+            return cb.not(root.get("groupId").in(reportedGroupIds));
         };
     }
 

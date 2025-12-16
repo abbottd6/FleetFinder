@@ -40,7 +40,6 @@ public class ListingReportingServiceImpl implements ListingReportingService {
     private final ModerationService modService;
     private final ListingReportBasisRepository lbr;
     private final ListingReportRepository lrr;
-    private final HiddenListingService hls;
 
     @PersistenceContext
     private EntityManager em;
@@ -49,14 +48,12 @@ public class ListingReportingServiceImpl implements ListingReportingService {
                                        ModerationIssueRepository moderationIssueRepository,
                                        ModerationService modService,
                                        ListingReportBasisRepository listingReportBasisRepository,
-                                       ListingReportRepository listingReportRepository,
-                                       HiddenListingService hls) {
+                                       ListingReportRepository listingReportRepository) {
         this.glr = groupListingRepository;
         this.mir = moderationIssueRepository;
         this.modService = modService;
         this.lbr = listingReportBasisRepository;
         this.lrr = listingReportRepository;
-        this.hls = hls;
     }
 
     @Override
@@ -65,9 +62,6 @@ public class ListingReportingServiceImpl implements ListingReportingService {
         //Get the reported listing
         GroupListing reported = glr.findById(dto.getGroupId())
                 .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getGroupId()));
-
-        // Add listing to reporterUsers hidden listings
-        hls.userAddHidden(reporterUser, reported.getGroupId());
 
         //check if the listing has already been reported, i.e. has a ModerationIssue
         //if there is not an existing ModerationIssue for this listing, then create a new one
@@ -185,12 +179,8 @@ public class ListingReportingServiceImpl implements ListingReportingService {
 
     //TODO probably dont need this anymore after adding hide feature and hiding reported listings as part of reporting
     @Override
-    public ResponseEntity<?> getUsersReportBrief(Users user) {
-        Set<Long> brief = lrr.findByReportingUserRef(user).stream()
-                .map(report -> report.getListingRef().getGroupId())
-                .collect(Collectors.toSet());
-
-        return ResponseEntity.status(HttpStatus.OK).body(brief);
+    public Set<Long> getUsersReportBrief(Users user) {
+        return lrr.findByReportingUserRef(user);
     }
 
     // debugging jpa transient instance errors

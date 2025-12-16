@@ -123,10 +123,6 @@ export class FilterService {
     return rest;
   }
 
-  toFilterState(persisted: PersistedFilterState) {
-
-  }
-
   filterGroupStatus(): Observable<filterOptions[]> {
     return this.lookup.getGroupStatuses().pipe(
       map(arr =>

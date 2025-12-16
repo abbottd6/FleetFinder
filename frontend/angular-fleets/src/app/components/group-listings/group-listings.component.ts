@@ -458,9 +458,9 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
           const dialogRef = this.dialog.open(DontShowMeAgainPopup, {
             data: {
               message: "<p>Listing Reported.</p>" +
-                "<p>Reported listings are automatically added to your hidden listings.</p>" +
-                "<p>You can make changes to your hidden listings using the 'Hidden' dropdown" +
-                " to the right, above the listings table.</p>"
+                "<p>Reported listings will no longer appear in your search results. This action cannot be undone.</p>" +
+                "<p>If you just want to hide a particular listing, use the 'hide' feature instead. Hide actions can " +
+                "be undone. </p>"
             }
           });
 
