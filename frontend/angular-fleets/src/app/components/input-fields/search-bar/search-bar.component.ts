@@ -23,6 +23,7 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {MatDialog} from "@angular/material/dialog";
 import {MobileFiltersPopupComponent} from "../../pop-ups/mobile-filters-popup/mobile-filters-popup.component";
+import {UI_PREFS_KEY} from "../../group-listings/group-listings.component";
 
 export type LayoutMode = 'handheld' | 'mobile' | 'full';
 
@@ -55,7 +56,7 @@ export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
       map(state =>
         Object.entries(state)
           .filter(([field, value]) => value !== null && value !== '' && field != 'searchInput')
-          .map(([key, value]) => ({ key: key as FilterOptionKey, value: value })),)
+          .map(([key, value]) => ({ key: key as FilterOptionKey, value: value })))
     )
 
     this.filter.state$.pipe(takeUntil(this.destroy$))
@@ -76,6 +77,7 @@ export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
 
   emitFilterState(): void {
     const state = this.filter.pullState();
+
     this.applySearchAndFilters.emit(state);
   }
 
@@ -130,7 +132,7 @@ export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
           duration: 3000,
           verticalPosition: 'top',
           horizontalPosition: 'center',
-          panelClass: ['mobile-snackbar']
+          panelClass: ['mobile-snackbar'],
         }),
       complete: () => {
         this.emitSearchAndFilter(searchInput);

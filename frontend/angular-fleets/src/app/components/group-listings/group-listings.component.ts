@@ -20,7 +20,11 @@ import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {combineLatest, map, Observable, of, shareReplay, Subject, take, takeUntil,} from "rxjs";
-import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
+import {
+  FilterService,
+  ListingFilterState,
+  PersistedFilterState
+} from "../../services/api-lookup-services/filter.service";
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-request";
 import {UserBookmarkService} from "../../services/user-services/user-bookmark.service";
@@ -35,6 +39,7 @@ import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 import {DontShowMeAgainPopup} from "../pop-ups/dont-show-me-again-popup/dont-show-me-again-popup";
 import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
 import {UiCleanupService} from "../../services/cleanup-services/ui-cleanup.service";
+import {UserService} from "../../services/user-services/user.service";
 
 export const UI_PREFS_KEY = 'ff_ui_prefs';
 export const MAX_CLICKED = 300;
@@ -48,7 +53,7 @@ export interface UiPrefs {
   hideHiddenListingHint: boolean;
   hideReportedListingHint: boolean;
   hideBookmarkedListingHint: boolean;
-  storedFilters: ListingFilterState | null;
+  storedFilters: PersistedFilterState;
 }
 
 @Component({
@@ -91,7 +96,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
               private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsService,
-              private uiCleanup: UiCleanupService) {
+              private uiCleanup: UiCleanupService, private userService: UserService) {
 
     afterNextRender(() => {
       this.clickedCleanupCheck();
@@ -105,14 +110,19 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   ngOnInit(): void {
     this.uiPrefs = this.loadUiPrefs();
 
+    this.filter.pushStoredState(this.uiPrefs.storedFilters, this.filter.pullState());
+
+
+    if(this.auth.isLoggedIn$) {
+      this.userService.refreshUser();
+    }
+
     this.applyFiltersFromChild(this.filter.pullState());
 
     this.auth.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(
       val => this.isLoggedIn = val);
 
     this.bmService.getBookmarksBrief();
-
-    console.log("clickedIds: ", this.uiPrefs.clickedRowIds);
   }
 
   ngAfterViewInit() {
@@ -153,8 +163,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     const filterDto = new ListingFilterRequest(state);
     this.submittedState = structuredClone(state);
 
-    const clickedIds: Set<number> = this.uiPrefs.clickedRowIds;
-
     this.loadGroupListings(filterDto, this.pageIndex, this.pageSize, this.sortActive, this.sortDirection);
   }
 
@@ -168,8 +176,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     this.reloadListings();
-    state.searchInput = null;
-    this.uiPrefs.storedFilters = state;
+    // state.searchInput = null;
+    this.uiPrefs.storedFilters = this.filter.toPersistedState(state);
     this.saveUiPrefs(this.uiPrefs);
   }
 
@@ -250,7 +258,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
           hideHiddenListingHint: false,
           hideReportedListingHint: false,
           hideBookmarkedListingHint: false,
-          storedFilters: null
+          storedFilters: this.filter.pullState()
         };
       }
       const parsed = JSON.parse(localPrefs) as Partial<UiPrefs>
@@ -260,7 +268,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         hideHiddenListingHint: parsed.hideHiddenListingHint ?? false,
         hideReportedListingHint: parsed.hideReportedListingHint ?? false,
         hideBookmarkedListingHint: parsed.hideBookmarkedListingHint ?? false,
-        storedFilters: parsed.storedFilters ?? null
+        storedFilters: parsed.storedFilters ?? this.filter.pullState()
       };
 
     } catch {
@@ -271,7 +279,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         hideHiddenListingHint: false,
         hideReportedListingHint: false,
         hideBookmarkedListingHint: false,
-        storedFilters: null
+        storedFilters: this.filter.pullState()
       }
     }
   }

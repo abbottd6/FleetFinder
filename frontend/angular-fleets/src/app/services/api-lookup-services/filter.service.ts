@@ -26,6 +26,8 @@ export interface ListingFilterState {
   commsOption: filterOptions | null;
 }
 
+export type PersistedFilterState = Omit<ListingFilterState, 'searchInput'>;
+
 export type FilterOptionKey =
   | 'server'
   | 'environment'
@@ -77,7 +79,7 @@ export class FilterService {
   }
 
   clearFilters() {
-    this.state = {
+    const cleared: ListingFilterState = {
       searchInput: null,
       server: null,
       environment: null,
@@ -94,6 +96,9 @@ export class FilterService {
       dateEnd: null,
       commsOption: null,
     }
+
+    this.state = cleared;
+    this.stateSubject.next(cleared);
   }
 
   updateOption(key: FilterOptionKey, value: filterOptions | null) {
@@ -102,6 +107,24 @@ export class FilterService {
 
   pullState(): ListingFilterState {
     return this.state;
+  }
+
+  pushStoredState(persisted: PersistedFilterState, runtime: ListingFilterState) {
+    this.state = {
+      ...runtime,
+      ...persisted,
+    }
+
+    this.stateSubject.next(this.state);
+  }
+
+  toPersistedState(state: ListingFilterState): PersistedFilterState {
+    const { searchInput: _ignored, ...rest } = state;
+    return rest;
+  }
+
+  toFilterState(persisted: PersistedFilterState) {
+
   }
 
   filterGroupStatus(): Observable<filterOptions[]> {
