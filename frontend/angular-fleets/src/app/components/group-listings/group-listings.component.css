@@ -131,10 +131,6 @@
   padding-bottom: 0.25rem;
 }
 
-.handheld-table {
-  min-height: 50vh;
-}
-
 @media(min-width: 1530px) and (max-width: 2000px) {
 
   .action-buttons {

@@ -8,16 +8,15 @@ import {
   MatTableDataSource
 } from "@angular/material/table";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
-import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
+import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
-import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {MatMenu, MatMenuTrigger} from "@angular/material/menu";
 import {BookmarkApiService} from "../../services/api-services/bookmarks-api/bookmark-api.service";
 import {map, shareReplay, Subject, takeUntil} from "rxjs";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {SelectionModel} from "@angular/cdk/collections";
-import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-user-bookmarks-table',
@@ -34,17 +33,14 @@ import {RouterLink} from "@angular/router";
     MatIcon,
     MatIconButton,
     MatMenu,
-    MatMenuItem,
     MatRow,
     MatRowDef,
     MatTable,
     NgIf,
-    SlicePipe,
     MatMenuTrigger,
     MatHeaderCellDef,
     AsyncPipe,
-    MatCheckbox,
-    RouterLink
+    MatCheckbox
   ],
   styleUrl: './user-bookmarks-table.component.css'
 })

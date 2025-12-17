@@ -4,10 +4,14 @@
 
 .message-body {
   border-bottom: 1px solid rgba(188, 191, 200, .6);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 1.1rem;
 }
 
 .checkbox-element {
   padding: 1rem 1rem 0 1rem;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 1.1rem;
 }
 
 .action-buttons {

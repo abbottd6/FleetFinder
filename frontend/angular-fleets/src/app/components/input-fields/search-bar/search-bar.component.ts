@@ -9,10 +9,9 @@ import {
   Output,
   SimpleChanges
 } from '@angular/core';
-import {map, Observable, of, shareReplay, Subject, take, takeUntil} from 'rxjs';
+import {map, Observable, shareReplay, Subject, takeUntil} from 'rxjs';
 import {
   FilterOptionKey,
-  filterOptions,
   FilterService,
   ListingFilterState
 } from "../../../services/api-services/filter-api/filter.service";
@@ -23,7 +22,6 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {MatDialog} from "@angular/material/dialog";
 import {MobileFiltersPopupComponent} from "../../pop-ups/mobile-filters-popup/mobile-filters-popup.component";
-import {UI_PREFS_KEY} from "../../group-listings/group-listings.component";
 
 export type LayoutMode = 'handheld' | 'mobile' | 'full';
 
