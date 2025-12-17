@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GroupListingsComponent } from './components/group-listings/group-listings.component';
 import {HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi} from "@angular/common/http";
-import { GroupListingFetchService } from "./services/group-listing-services/group-listing-fetch.service";
+import { GroupListingFetchService } from "./services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { NgOptimizedImage } from "@angular/common";

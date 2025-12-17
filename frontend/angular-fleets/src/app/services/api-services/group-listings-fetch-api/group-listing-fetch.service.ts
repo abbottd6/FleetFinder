@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable, tap} from "rxjs";
-import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
-import {environment} from '../../../environments/environment';
-import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
+import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
+import {environment} from '../../../../environments/environment';
+import {ListingFilterRequest} from "../../../models/listing-filter/listing-filter-request";
 import {SortDirection} from "@angular/material/sort";
-import {UI_PREFS_KEY} from "../../components/group-listings/group-listings.component";
+import {UI_PREFS_KEY} from "../../../components/group-listings/group-listings.component";
 
 export interface Page<T> {
   content: T[];

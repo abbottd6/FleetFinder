@@ -1,7 +1,7 @@
 import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output} from '@angular/core';
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
-import {ModService} from "../../services/mod-services/mod.service";
+import {ModApiService} from "../../services/api-services/mod-api/mod-api.service";
 import {
   MatCell,
   MatCellDef,
@@ -53,7 +53,7 @@ export class ModListingsTableComponent implements OnInit {
   mobileColumns = ['select', 'title', 'updated']
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 
-  constructor(private modService: ModService, private router: Router, private snackBar: MatSnackBar) {
+  constructor(private modService: ModApiService, private router: Router, private snackBar: MatSnackBar) {
     console.log("THE DATA: ", this.modGroupListings);
   }
 

@@ -4,7 +4,7 @@ import {
   filterOptions,
   FilterService,
   ListingFilterState
-} from "../../../services/api-lookup-services/filter.service";
+} from "../../../services/api-services/filter-api/filter.service";
 import {FormControl, FormGroup} from "@angular/forms";
 import {Observable, of, Subject, takeUntil} from "rxjs";
 

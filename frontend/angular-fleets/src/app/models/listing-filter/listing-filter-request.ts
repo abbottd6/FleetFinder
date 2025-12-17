@@ -1,4 +1,4 @@
-import {ListingFilterState} from "../../services/api-lookup-services/filter.service";
+import {ListingFilterState} from "../../services/api-services/filter-api/filter.service";
 
 export class ListingFilterRequest {
   constructor(filterData: ListingFilterState) {

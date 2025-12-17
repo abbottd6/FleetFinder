@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
-import {LookupService} from "../../../services/api-lookup-services/lookup.service";
+import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";

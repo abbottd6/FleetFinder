@@ -9,7 +9,7 @@ import {
   Output,
   ViewChild
 } from '@angular/core';
-import {GroupListingFetchService} from "../../services/group-listing-services/group-listing-fetch.service";
+import {GroupListingFetchService} from "../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
 import {MatSnackBar} from "@angular/material/snack-bar";
@@ -24,17 +24,17 @@ import {
   FilterService,
   ListingFilterState,
   PersistedFilterState
-} from "../../services/api-lookup-services/filter.service";
+} from "../../services/api-services/filter-api/filter.service";
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-request";
-import {UserBookmarkService} from "../../services/user-services/user-bookmark.service";
+import {BookmarkApiService} from "../../services/api-services/bookmarks-api/bookmark-api.service";
 import {AuthService} from "../../services/auth/auth-services/auth.service";
-import {ListingReportService} from "../../services/listing-report-services/listing-report.service";
+import {ListingReportApiService} from "../../services/api-services/listing-reports-api/listing-report-api.service";
 import {SubmitListingReport} from "../../models/report-requests/submit-listing-report";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmReportComponent} from "../pop-ups/confirm-report/confirm-report.component";
 import {HideListingRequest} from "../../models/listing-filter/hide-listing-request.model";
-import {HiddenListingsService} from "../../services/user-services/hidden-listings.service";
+import {HiddenListingsApiService} from "../../services/api-services/hidden-listings-api/hidden-listings-api.service";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 import {DontShowMeAgainPopup} from "../pop-ups/dont-show-me-again-popup/dont-show-me-again-popup";
 import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
@@ -72,8 +72,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
   private _liveAnnouncer = inject(LiveAnnouncer)
-  private bmService = inject(UserBookmarkService);
-  private reportService = inject(ListingReportService);
+  private bmService = inject(BookmarkApiService);
+  private reportService = inject(ListingReportApiService);
   readonly dialog = inject(MatDialog);
 
 
@@ -96,7 +96,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   noResults!: boolean;
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
-              private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsService,
+              private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsApiService,
               private uiCleanup: UiCleanupService, private userService: UserService) {
 
     afterNextRender(() => {

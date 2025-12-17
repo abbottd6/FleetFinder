@@ -12,7 +12,7 @@ import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {UserBookmarkService} from "../../services/user-services/user-bookmark.service";
+import {BookmarkApiService} from "../../services/api-services/bookmarks-api/bookmark-api.service";
 import {map, shareReplay, Subject, takeUntil} from "rxjs";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {BreakpointObserver} from "@angular/cdk/layout";
@@ -61,7 +61,7 @@ export class UserBookmarksTableComponent implements OnDestroy {
   selection = new SelectionModel<GroupListingViewModel>(true, [])
   noResults: boolean = true;
 
-  constructor(private userBms: UserBookmarkService) {
+  constructor(private userBms: BookmarkApiService) {
     this.userBms.getBookmarks()
       .pipe(takeUntil(this.destroy$))
       .subscribe({

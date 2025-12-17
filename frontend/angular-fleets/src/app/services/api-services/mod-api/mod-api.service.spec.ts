@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { UserBookmarkService } from './user-bookmark.service';
+import { ModServiceService } from './mod-api.service';
 
-describe('UserBookmarkService', () => {
-  let service: UserBookmarkService;
+describe('ModServiceService', () => {
+  let service: ModServiceService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(UserBookmarkService);
+    service = TestBed.inject(ModServiceService);
   });
 
   it('should be created', () => {

@@ -6,7 +6,7 @@ import {InputFieldModule} from "../input-fields/input-field/input-field.module";
 import {DropdownModule} from "../dropdowns/dropdown-module/dropdown.module";
 import {MatError} from "@angular/material/form-field";
 import {environment} from "../../../environments/environment";
-import {UserListingService} from "../../services/group-listing-services/user-listing.service";
+import {UserListingManagementService} from "../../services/user-services/user-listing-management.service";
 import {NgIf} from "@angular/common";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {UpdateListingRequest} from "../../models/group-listing/update-listing-request";
@@ -32,7 +32,7 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
   listingForm!: FormGroup<ListingFormShape>;
   listingData!: GroupListingViewModel;
 
-  constructor(private userListingService: UserListingService, private router: Router,
+  constructor(private userListingService: UserListingManagementService, private router: Router,
               public formService: ListingFormService) {}
 
   ngOnInit() {

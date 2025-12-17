@@ -6,7 +6,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import {SelectionModel} from "@angular/cdk/collections";
 import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
 import {Router, RouterLink} from "@angular/router";
-import {UserListingService} from "../../services/group-listing-services/user-listing.service";
+import {UserListingManagementService} from "../../services/user-services/user-listing-management.service";
 import {UserService} from "../../services/user-services/user.service";
 import {environment} from "../../../environments/environment";
 import {map, shareReplay, Subject, takeUntil} from "rxjs";
@@ -39,7 +39,7 @@ export class UserAcctListingsTableComponent implements OnChanges, OnDestroy {
   dataSource = new MatTableDataSource(this.userListings);
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 
-  constructor(private userListingService: UserListingService, private router: Router, private userService: UserService,
+  constructor(private userListingService: UserListingManagementService, private router: Router, private userService: UserService,
               private snackBar: MatSnackBar) {}
 
   ngOnChanges(changes: SimpleChanges) {

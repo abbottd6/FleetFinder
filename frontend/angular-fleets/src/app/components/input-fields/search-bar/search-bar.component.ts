@@ -15,10 +15,10 @@ import {
   filterOptions,
   FilterService,
   ListingFilterState
-} from "../../../services/api-lookup-services/filter.service";
+} from "../../../services/api-services/filter-api/filter.service";
 import {MAT_DATE_FORMATS} from "@angular/material/core";
 import {EVENT_RANGE_FORMATS} from "../../../models/event-range-formats";
-import {HiddenListingsService} from "../../../services/user-services/hidden-listings.service";
+import {HiddenListingsApiService} from "../../../services/api-services/hidden-listings-api/hidden-listings-api.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {MatDialog} from "@angular/material/dialog";
@@ -47,7 +47,7 @@ export class SearchBarComponent implements OnInit, OnChanges, OnDestroy {
 
   @Output() applySearchAndFilters = new EventEmitter<ListingFilterState>();
 
-  constructor(private filter: FilterService, private hideService: HiddenListingsService,
+  constructor(private filter: FilterService, private hideService: HiddenListingsApiService,
               private snackBar: MatSnackBar, private dialog: MatDialog) {
   }
 

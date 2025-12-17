@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import { requiredIfGroupStatusFuture } from "../../common/validators/custom-validators";
 import {Form, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {CreateListingRequest} from "../../models/group-listing/create-listing-request";
-import {UserListingService} from "../../services/group-listing-services/user-listing.service";
+import {UserListingManagementService} from "../../services/user-services/user-listing-management.service";
 import {Router} from "@angular/router";
 import {environment} from "../../../environments/environment";
 import {ListingFormService, ListingFormShape} from "../../services/listing-form-service/listing-form.service";
@@ -17,7 +17,7 @@ export class CreateListingComponent  implements OnInit {
   public formSubmitted: boolean = false;
   listingForm!: FormGroup<ListingFormShape>;
 
-  constructor(private userListingService: UserListingService, private router: Router,
+  constructor(private userListingService: UserListingManagementService, private router: Router,
               public formService: ListingFormService) {}
 
   ngOnInit() {

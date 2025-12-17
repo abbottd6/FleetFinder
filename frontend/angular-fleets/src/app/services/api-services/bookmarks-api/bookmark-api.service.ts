@@ -1,15 +1,15 @@
 import {inject, Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, shareReplay, startWith, switchMap, tap} from "rxjs";
-import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-request";
-import {AuthService} from "../auth/auth-services/auth.service";
+import {AddBookmarkRequest} from "../../../models/bookmark-requests/add-bookmark-request";
+import {AuthService} from "../../auth/auth-services/auth.service";
 import {HttpClient} from "@angular/common/http";
-import {environment} from "../../../environments/environment";
-import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
+import {environment} from "../../../../environments/environment";
+import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserBookmarkService {
+export class BookmarkApiService {
 
   private bookmarksUrl = `${environment.apiBaseUrl}/users/my/bookmarks`;
   private bookmarksBriefUrl = `${environment.apiBaseUrl}/users/my/bookmarks_brief`;

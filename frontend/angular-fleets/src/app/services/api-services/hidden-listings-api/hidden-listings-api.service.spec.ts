@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { HiddenListingsService } from './hidden-listings.service';
+import { HiddenListingsApiService } from './hidden-listings-api.service';
 
 describe('HiddenListingsService', () => {
-  let service: HiddenListingsService;
+  let service: HiddenListingsApiService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(HiddenListingsService);
+    service = TestBed.inject(HiddenListingsApiService);
   });
 
   it('should be created', () => {

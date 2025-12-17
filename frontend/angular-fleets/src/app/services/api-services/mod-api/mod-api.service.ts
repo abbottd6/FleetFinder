@@ -1,6 +1,6 @@
 import {Injectable, OnDestroy} from '@angular/core';
-import {environment} from "../../../environments/environment";
-import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
+import {environment} from "../../../../environments/environment";
+import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 import {BehaviorSubject, map, Observable, Subject} from "rxjs";
 import {tap} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
@@ -8,7 +8,7 @@ import {HttpClient} from "@angular/common/http";
 @Injectable({
   providedIn: 'root'
 })
-export class ModService implements OnDestroy {
+export class ModApiService implements OnDestroy {
   private destroy$ = new Subject<void>();
   private baseUrl = `${environment.apiBaseUrl}/modctrl`;
   private modDeleteListingUrl = `${environment.apiBaseUrl}/modctrl/mod_delete_listing`;

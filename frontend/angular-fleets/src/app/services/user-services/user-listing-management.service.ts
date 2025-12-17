@@ -8,7 +8,7 @@ import {UpdateListingRequest} from "../../models/group-listing/update-listing-re
 @Injectable({
   providedIn: 'root'
 })
-export class UserListingService {
+export class UserListingManagementService {
 
   private createListingUrl = `${environment.apiBaseUrl}/group-listings/create_listing`;
   private deleteListingUrl = `${environment.apiBaseUrl}/group-listings/delete_listing`;

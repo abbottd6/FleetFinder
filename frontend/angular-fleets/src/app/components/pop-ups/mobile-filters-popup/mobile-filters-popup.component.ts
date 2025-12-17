@@ -2,7 +2,7 @@ import {Component, EventEmitter, inject, Inject, Output, ViewChild} from '@angul
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {map, Observable, shareReplay} from "rxjs";
-import {FilterOptionKey, FilterService} from "../../../services/api-lookup-services/filter.service";
+import {FilterOptionKey, FilterService} from "../../../services/api-services/filter-api/filter.service";
 import {FilterDropdownsComponent} from "../../dropdowns/filter-dropdowns/filter-dropdowns.component";
 
 @Component({
