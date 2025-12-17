@@ -3,12 +3,14 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ListingBookmarkRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingBookmarkDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ListingBookmark;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.BookmarkConversionService;
+import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,16 +31,19 @@ import java.util.stream.Collectors;
 public class ListingBookmarkServiceImpl implements ListingBookmarkService {
 
     private final ListingBookmarkRepository bmr;
+    private final GroupListingConversionService glcs;
     private final BookmarkConversionService bcs;
     private final GroupListingRepository glr;
     private final UserRepository userRepo;
 
     public ListingBookmarkServiceImpl(ListingBookmarkRepository bookmarkRepository,
-                                      BookmarkConversionService bookmarkConversionService,
+                                      GroupListingConversionService glcs,
+                                      BookmarkConversionService bcs,
                                       GroupListingRepository glr,
                                       UserRepository userRepo) {
         this.bmr = bookmarkRepository;
-        this.bcs = bookmarkConversionService;
+        this.glcs = glcs;
+        this.bcs = bcs;
         this.glr = glr;
         this.userRepo = userRepo;
     }
@@ -59,12 +64,12 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
             Users user = userRepo.findById(userId)
                     .orElseThrow(() -> new ResourceNotFoundException("Users", userId));
 
-            Set<ListingBookmarkDto> bookmarks = bmr.findByUser(user)
+            Set<GroupListingResponseDto> bookmarkedGroups = bmr.findByUser(user)
                     .stream()
-                    .map(bcs::convertToDto)
+                    .map(glcs::convertListingToResponseDto)
                     .collect(Collectors.toSet());
 
-            return ResponseEntity.status(HttpStatus.OK).body(bookmarks);
+            return ResponseEntity.status(HttpStatus.OK).body(bookmarkedGroups);
         }
         catch (ResourceNotFoundException e) {
             log.error("Cannot retrieve bookmarks. User not found for id {}", userId);
@@ -79,7 +84,7 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
                     .orElseThrow(() -> new ResourceNotFoundException("Users", userId));
 
             Set<Long> bmBrief = bmr.findByUser(user).stream()
-                    .map(bm -> bm.getGroup().getGroupId())
+                    .map(GroupListing::getGroupId)
                     .collect(Collectors.toSet());
 
             return ResponseEntity.status(HttpStatus.OK).body(bmBrief);

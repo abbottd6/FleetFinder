@@ -70,13 +70,9 @@
 
           <!-- USER BOOKMARKED LISTINGS TAB -->
           <ng-container *ngIf="selectedTab === 'bookmarks'">
-            <div style="margin-left: 3rem">
-              <h4>Coming Soon:</h4>
-              <span>
-                Feature that will allow users to bookmark listings of interest from the search view
-                for easy access.
-              </span>
-            </div>
+            <app-user-bookmarks-table
+              (listingForModal)="onListingSelected($event)">
+            </app-user-bookmarks-table>
           </ng-container>
 
           <!-- LISTING TEMPLATES TAB -->

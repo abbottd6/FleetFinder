@@ -18,6 +18,7 @@ import {UserService} from "../../services/user-services/user.service";
 import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
 import {ModListingsTableComponent} from "../mod-listings-table/mod-listings-table.component";
+import {UserBookmarksTableComponent} from "../user-bookmarks-table/user-bookmarks-table.component";
 
 @Component({
     selector: 'app-user',
@@ -26,7 +27,7 @@ import {ModListingsTableComponent} from "../mod-listings-table/mod-listings-tabl
       './user.component.css',
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
-    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent, ModListingsTableComponent],
+    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent, ModListingsTableComponent, UserBookmarksTableComponent],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {

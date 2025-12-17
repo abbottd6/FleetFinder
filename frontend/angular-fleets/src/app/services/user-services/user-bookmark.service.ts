@@ -4,6 +4,7 @@ import {AddBookmarkRequest} from "../../models/bookmark-requests/add-bookmark-re
 import {AuthService} from "../auth/auth-services/auth.service";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
+import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class UserBookmarkService {
 
   constructor(private httpClient: HttpClient) {}
 
-  getBookmarks(): Observable<any> {
+  getBookmarks(): Observable<GroupListingViewModel[]> {
     return this.httpClient.get<any>(this.bookmarksUrl);
   }
 
