@@ -1,8 +1,9 @@
-import {Component, inject, Inject} from '@angular/core';
+import {Component, EventEmitter, inject, Inject, Output, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {map, Observable, shareReplay} from "rxjs";
 import {FilterOptionKey, FilterService} from "../../../services/api-lookup-services/filter.service";
+import {FilterDropdownsComponent} from "../../dropdowns/filter-dropdowns/filter-dropdowns.component";
 
 @Component({
   selector: 'app-listing-view-mobile-filters-popup',
@@ -17,6 +18,8 @@ export class MobileFiltersPopupComponent {
 
   private breakpointObserver: BreakpointObserver = inject(BreakpointObserver);
 
+  @ViewChild('dropdowns') dropdowns!: FilterDropdownsComponent;
+
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
@@ -27,6 +30,7 @@ export class MobileFiltersPopupComponent {
   ) {}
 
   onConfirm(): void {
+    this.dropdowns?.addFilter();
     this.dialogRef.close(true);
   }
 

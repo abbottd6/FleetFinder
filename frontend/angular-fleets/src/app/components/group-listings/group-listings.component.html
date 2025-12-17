@@ -165,6 +165,11 @@
     <tr mat-header-row class="header-row" *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="saveRowClick(row.groupId)"
         [class.row-is-clicked]="isRowClicked(row)"></tr>
+    <tr *ngIf="noResults">
+      <td mat-footer-cell *matFooterCellDef [attr.colspan]="displayedColumns.length">
+        No active listings match the search/filter criteria.
+      </td>
+    </tr>
   </table>
 
   <!-------------------------------- MOBILE/FEED-VIEW TABLE ------------------------------------------------------>
@@ -245,9 +250,14 @@
     <tr mat-header-row class="header-row" *matHeaderRowDef="mobileColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: mobileColumns" (click)="saveRowClick(row.groupId)"
         [class.row-is-clicked]="isRowClicked(row)"></tr>
+    <tr *ngIf="noResults">
+      <td [attr.colspan]="mobileColumns.length"></td>
+    </tr>
 
   </table>
-
+  <div class="no-results-container" *ngIf="noResults">
+    <p>No active listings match the search/filter criteria.</p>
+  </div>
 </div>
 
 <!-- Paginator -->

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {
   FilterOptionKey,
   filterOptions,
@@ -24,6 +24,7 @@ export class FilterDropdownsComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
 
   @Output() applyFilters = new EventEmitter<ListingFilterState>();
+  @Input() mobileApplyButtonCheck!: boolean;
 
   principalCtrl = new FormControl<FilterOptionKey | null>(null);
   parentCtrl = new FormControl<filterOptions | null>({ value: null, disabled: true });

@@ -80,6 +80,13 @@
   scale: 0.9 !important;
 }
 
+.no-results-container {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.1rem;
+  color: rgba(188, 191, 200, .9);
+}
+
 .paginator {
   color: rgba(188, 191, 200, .9);
   padding: 1rem 2rem 1rem 0;

@@ -93,6 +93,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   displayedColumns: string[] = ['options', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated'];
   mobileColumns: string[] = ['options', 'details']
   dataSource = new MatTableDataSource<GroupListingViewModel>();
+  noResults!: boolean;
 
   constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
               private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsService,
@@ -209,9 +210,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
           console.error('Error fetching group listings from component:', error);
         },
         complete: () => {
-          if(!environment.production) {
-            console.log('Group listings fetching completed.');
-          }
+          this.noResults = (this.dataSource.data.length === 0);
         }
     });
   }
