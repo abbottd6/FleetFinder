@@ -12,31 +12,6 @@
   flex-direction: row;
 }
 
-@media(min-width: 1368px) {
-  .modal-title {
-    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 300;
-  }
-}
-
-@media(min-width: 992px) and (max-width: 1367px) {
-  .modal-title {
-    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 300;
-  }
-}
-
-@media(max-width: 991px) {
-  .modal-title {
-    font-size: clamp(1.2rem, 1.2vw, 2rem);
-    padding: clamp(0.25rem, 1vw, 1rem);
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 300;
-  }
-}
-
 .modal-dash {
   color: rgba(255, 131, 7, .75);
   margin-left: .25rem;
@@ -72,70 +47,59 @@
 
 /*The actual main container for the modal: LARGE VW*/
 @media(min-width: 1368px) {
+  .modal-title {
+    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
+  }
+
   .modal-dialog.modal-xl.modal-dialog-centered {
     max-width: 50vw;
   }
+
+  /* Grid container for modal listing blocks LARGE VW */
+  .modal-listing-container-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0 1.25rem 0;
+  }
 }
 
-/*The actual main container for the modal: MED VW*/
+
 @media(min-width: 992px) and (max-width: 1367px) {
+  /*The actual main container for the modal: MED VW*/
   .modal-dialog.modal-xl.modal-dialog-centered {
     max-width: 70vw;
+  }
+
+  .modal-title {
+    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
   }
 }
 
 /*The actual main container for the modal  SMALL VW*/
 @media (max-width: 991px) {
+  .modal-title {
+    font-size: clamp(1.2rem, 1.2vw, 2rem);
+    padding: clamp(0.25rem, 1vw, 1rem);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
+  }
+
   .modal-dialog.modal-xl.modal-dialog-centered {
     max-width: 95vw;
   }
 }
 
-/* Grid container for modal listing blocks LARGE VW */
-@media(min-width: 1368px) {
-  .modal-listing-container-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin: 1.25rem 0 1.25rem 0;
-  }
-}
-
 /* Grid container for modal listing blocks: MED VW*/
-@media(min-width: 625px) and (max-width: 1367px) {
+@media(min-width: 624px) and (max-width: 1367px) {
   .modal-listing-container-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-  }
-}
-
-/* Grid container for modal listing blocks: SMALL VW*/
-@media(max-width: 624px) {
-  .modal-listing-container-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin: 1.25rem 0 1.25rem 0;
-  }
-}
-
-/* sub-container within grid for creating separate columns i.e. R/L */
-@media(min-width: 624px) {
-  .modal-listing-block {
-    display: flex;
-    flex-direction: column;
-    max-width: 90vw;
-    padding: 0.5rem 0 0.5rem 0;
-  }
-}
-
-@media(max-width: 623px) {
-  .modal-listing-block {
-    display: flex;
-    flex-direction: column;
-    max-width: 98vw;
-    padding: 0.5rem 0 0.5rem 0;
   }
 }
 
@@ -152,6 +116,20 @@
 }
 
 @media(min-width: 624px) {
+  /* sub-container within grid for creating separate columns i.e. R/L */
+  .modal-listing-block {
+    display: flex;
+    flex-direction: column;
+    max-width: 90vw;
+    padding: 0.5rem 0 0.5rem 0;
+  }
+
+  .column-right {
+    margin-left: auto;
+    margin-right: 0;
+    text-align: end;
+  }
+
   .column-left-indent {
     margin-right: auto;
     margin-left: 1.25rem;
@@ -159,24 +137,41 @@
 }
 
 @media(max-width: 623px) {
+  /* Grid container for modal listing blocks: SMALL VW*/
+  .modal-listing-container-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0 1.25rem 0;
+  }
+
+  /* reversed to push everything to the left side at this viewport size */
+  .column-right {
+    margin-right: auto;
+  }
+
   .column-left-indent {
     margin-right: auto;
     margin-left: 0.75rem;
   }
-}
 
-@media(min-width: 624px) {
-  .column-right {
-    margin-left: auto;
-    margin-right: 0;
-    text-align: end;
+  .modal-listing-block {
+    display: flex;
+    flex-direction: column;
+    max-width: 98vw;
+    padding: 0.5rem 0 0.5rem 0;
   }
-}
 
-@media(max-width: 623px) {
-  /* reversed to push everything to the left side at this viewport size */
-  .column-right {
-    margin-right: auto;
+  .modal-button-with-icon {
+    font-size: 0.8rem !important;
+  }
+
+  .modal-button-with-icon mat-icon {
+    scale: 0.7;
+  }
+
+  .modal-buttons {
+    font-size: 0.8rem !important;
   }
 }
 

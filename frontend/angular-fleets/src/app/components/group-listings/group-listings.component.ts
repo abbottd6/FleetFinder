@@ -35,6 +35,7 @@ import {
   ListingViewInteractionsService
 } from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
+import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -188,6 +189,30 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
       return false;
     }
     return !!reportIds && reportIds.has(id);
+  }
+
+  //on close instructions for groupListing modal popup
+  onModalClose(action: CloseValue) {
+    if(!environment.production) {
+      console.log("Modal closed");
+    }
+    this.listingInteract.isModalVisible = false;
+    this.listingInteract.selectedListing = null;
+
+    if(!action.value) return;
+
+    if(action.value && action.group) {
+      switch (action.value) {
+        case 'hide':
+          return this.hide(action.group.groupId);
+        case 'bookmark':
+          return this.bookmark(action.group.groupId);
+        case 'unbookmark':
+          return this.unbookmark(action.group.groupId);
+        case 'report':
+          return this.report(action.group)
+      }
+    }
   }
 
   layoutMode$: Observable<LayoutMode> = this.breakpointObserver

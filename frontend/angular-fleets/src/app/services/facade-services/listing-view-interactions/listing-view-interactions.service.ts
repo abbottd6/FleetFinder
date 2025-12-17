@@ -154,15 +154,13 @@ export class ListingViewInteractionsService {
 
         dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(selected => {
           if (selected) {
-            this.submitReport(listing.groupId, selected);
+            this.submitReport(listing.groupId, selected, onSuccess);
           }
         });
-
-        onSuccess?.();
       });
   }
 
-  submitReport(listingId: number, basisId: number) {
+  submitReport(listingId: number, basisId: number, onSuccess?: () => void) {
     const lr = new SubmitListingReport(listingId, basisId)
 
     this.reportService.submitReport(lr).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -175,35 +173,12 @@ export class ListingViewInteractionsService {
         });
 
         this.uiPrefService.displayReportedListingHint();
+        onSuccess?.();
       },
 
       error: (err) => {
         console.error(err);
       }
     });
-  }
-
-  //on close instructions for groupListing modal popup
-  onModalClose(action: CloseValue) {
-    if(!environment.production) {
-      console.log("Modal closed");
-    }
-    this.isModalVisible = false;
-    this.selectedListing = null;
-
-    if(!action.value) return;
-
-    if(action.value && action.group) {
-      switch (action.value) {
-        case 'hide':
-          return this.userHideListing(action.group.groupId);
-        case 'bookmark':
-          return this.addBookmark(action.group.groupId);
-        case 'unbookmark':
-          return this.deleteBookmark(action.group.groupId);
-        case 'report':
-          return this.openConfirmReport(action.group)
-      }
-    }
   }
 }
