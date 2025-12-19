@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, OnDestroy, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -22,6 +22,7 @@ import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
 import {
   ListingViewInteractionsService
 } from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
+import {MatPaginator, PageEvent} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-user-bookmarks-table',
@@ -45,12 +46,15 @@ import {
     MatMenuTrigger,
     MatHeaderCellDef,
     AsyncPipe,
-    MatCheckbox
+    MatCheckbox,
+    MatPaginator
   ],
   styleUrl: './user-bookmarks-table.component.css'
 })
 
-export class UserBookmarksTableComponent implements OnInit, OnDestroy {
+export class UserBookmarksTableComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   private destroy$: Subject<void> = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
   protected listingInteract = inject(ListingViewInteractionsService)
@@ -63,17 +67,30 @@ export class UserBookmarksTableComponent implements OnInit, OnDestroy {
   selection = new SelectionModel<GroupListingViewModel>(true, [])
   noResults: boolean = true;
 
+  pageIndex = 0;
+  pageSize = 10;
+  totalElements = 0;
+
   constructor(private userBms: BookmarkApiService) {
-    this.loadBookmarks();
+    this.loadBookmarks(this.pageIndex, this.pageSize);
   }
 
   ngOnInit() {
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe(reason => {
       if(!(reason === 'bookmark')) {
-        this.loadBookmarks();
+        this.loadBookmarks(this.pageIndex = 0, this.pageSize);
         this.selection.clear();
       }
     })
+  }
+
+  ngAfterViewInit() {
+    this.paginator.page.pipe(takeUntil(this.destroy$))
+      .subscribe((event: PageEvent) => {
+        this.pageIndex = event.pageIndex;
+        this.pageSize = event.pageSize;
+        this.loadBookmarks(this.pageIndex, this.pageSize);
+      })
   }
 
   ngOnDestroy() {
@@ -81,12 +98,15 @@ export class UserBookmarksTableComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  loadBookmarks() {
-    this.userBms.getBookmarks()
+  loadBookmarks(pageIdx: number, pageSize: number) {
+    this.userBms.getBookmarks(pageIdx, pageSize)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (bm) => {
-          this.dataSource.data = bm;
+        next: (page) => {
+          this.dataSource.data = page.content;
+          this.totalElements = page.totalElements;
+          this.pageSize = page.size;
+          this.pageIndex = page.number;
           this.noResults = (this.dataSource.data.length === 0);
         }
       })

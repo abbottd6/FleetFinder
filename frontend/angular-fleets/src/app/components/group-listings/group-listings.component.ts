@@ -57,11 +57,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   private uiPrefService = inject(UiPrefsService);
   readonly dialog = inject(MatDialog);
 
-
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
-
-
-  // uiPrefs!: UiPrefs;
 
   pageIndex = 0;
   pageSize = 25;

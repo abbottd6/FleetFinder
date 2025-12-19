@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.AddHiddenRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.SubmitListingReportDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
@@ -112,12 +113,14 @@ public class UserController {
         return bms.getBookmarkBriefByUserId(userId);
     }
 
-    @GetMapping("/my/bookmarks")
+    @PostMapping("/my/bookmarks_get")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
-    public ResponseEntity<?> getBookmarks(@AuthenticationPrincipal Jwt jwt) {
+    public ResponseEntity<?> getBookmarks(@AuthenticationPrincipal Jwt jwt,
+                                          @RequestBody GenericPageRequestDto pageDto) {
         String kcId = jwt.getSubject();
         Long userId = userService.verifyUser(kcId).getUserId();
-        return bms.getBookmarksByUserId(userId);
+
+        return bms.getBookmarksByUserId(userId, pageDto);
     }
 
     @PostMapping("/my/bookmarks")

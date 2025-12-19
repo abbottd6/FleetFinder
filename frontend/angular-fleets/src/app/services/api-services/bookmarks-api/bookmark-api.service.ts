@@ -5,6 +5,7 @@ import {AuthService} from "../../auth/auth-services/auth.service";
 import {HttpClient} from "@angular/common/http";
 import {environment} from "../../../../environments/environment";
 import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
+import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
 
 @Injectable({
   providedIn: 'root'
@@ -32,8 +33,12 @@ export class BookmarkApiService {
 
   constructor(private httpClient: HttpClient) {}
 
-  getBookmarks(): Observable<GroupListingViewModel[]> {
-    return this.httpClient.get<any>(this.bookmarksUrl);
+  getBookmarks(pageIdx: number, pageSize: number): Observable<Page<GroupListingViewModel>> {
+    const requestBody = {
+      pageIdx: pageIdx,
+      pageSize: pageSize
+    }
+    return this.httpClient.post<Page<GroupListingViewModel>>(`${this.bookmarksUrl}_get`, requestBody);
   }
 
   getBookmarksBrief(): Observable<any> {

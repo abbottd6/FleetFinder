@@ -87,11 +87,6 @@
   color: rgba(188, 191, 200, .9);
 }
 
-.paginator {
-  color: rgba(188, 191, 200, .9);
-  padding: 1rem 2rem 1rem 0;
-  margin-bottom: 5rem;
-}
 
 .feed-element {
   display: flex;

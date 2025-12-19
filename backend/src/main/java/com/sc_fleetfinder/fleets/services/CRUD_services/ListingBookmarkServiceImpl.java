@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ListingBookmarkRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingBookmarkDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
@@ -12,6 +13,9 @@ import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.BookmarkConversionService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -60,15 +64,15 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
     }
 
     @Override
-    public ResponseEntity<?> getBookmarksByUserId(Long userId) {
+    public ResponseEntity<?> getBookmarksByUserId(Long userId, GenericPageRequestDto pageDto) {
         try {
+            Pageable pageable = PageRequest.of(pageDto.getPageIdx(), pageDto.getPageSize());
+
             Users user = userRepo.findById(userId)
                     .orElseThrow(() -> new ResourceNotFoundException("Users", userId));
 
-            Set<GroupListingResponseDto> bookmarkedGroups = bmr.findByUser(user)
-                    .stream()
-                    .map(glcs::convertListingToResponseDto)
-                    .collect(Collectors.toSet());
+            Page<GroupListingResponseDto> bookmarkedGroups = bmr.pageByUser(user, pageable)
+                    .map(glcs::convertListingToResponseDto);
 
             return ResponseEntity.status(HttpStatus.OK).body(bookmarkedGroups);
         }
