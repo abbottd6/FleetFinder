@@ -37,19 +37,19 @@
               <button
                 mat-menu-item
                 class="options-item"
-                (click)="hide(row.groupId)">
+                (click)="listingInteract.userHideListing(row.groupId)">
                 Hide
               </button>
               <button
                 mat-menu-item
                 class="options-item"
-                (click)="bookmark(row.groupId)">
+                (click)="listingInteract.addBookmark(row.groupId)">
                 Bookmark
               </button>
               <button
                 mat-menu-item
                 class="options-item"
-                (click)="report(row)">
+                (click)="listingInteract.openConfirmReport(row)">
                 Report
               </button>
           </mat-menu>
@@ -57,22 +57,22 @@
             <button mat-icon-button
                     matTooltip="Hide"
                     [matTooltipPosition]="positionOptions[0]"
-                    (click)="hide(row.groupId)">
+                    (click)="listingInteract.userHideListing(row.groupId)">
               <mat-icon class="visibility-icon options-column-icon">visibility_off</mat-icon>
             </button>
           </ng-container>
           <ng-container *ngIf="(layoutMode$ | async) === 'full'">
-            <button mat-icon-button *ngIf="!getIsBookmarked(row.groupId, bookmarkIds) ; else alreadyBookmarked"
+            <button mat-icon-button *ngIf="!listingInteract.isBookmarked(row.groupId, bookmarkIds) ; else alreadyBookmarked"
                     matTooltip="Bookmark"
                     [matTooltipPosition]="positionOptions[0]"
-                    (click)="bookmark(row.groupId)">
+                    (click)="listingInteract.addBookmark(row.groupId)">
               <mat-icon class="options-column-icon">bookmark_border</mat-icon>
             </button>
             <ng-template #alreadyBookmarked>
               <button mat-icon-button
                       matTooltip="Unmark"
                       [matTooltipPosition]="positionOptions[0]"
-                      (click)="unbookmark(row.groupId)">
+                      (click)="listingInteract.deleteBookmark(row.groupId)">
                 <mat-icon class="options-column-icon">bookmark</mat-icon>
               </button>
             </ng-template>
@@ -87,7 +87,7 @@
       <th mat-header-cell *matHeaderCellDef
           mat-sort-header="listingTitle"
           sortActionDescription="Sort alphabetically by Title"> Title</th>
-      <td mat-cell *matCellDef="let row" (click)="rowClick(row)">
+      <td mat-cell *matCellDef="let row" (click)="listingInteract.onRowClick(row)">
         {{ row.listingTitle.length > 45 ? (row.listingTitle|slice:0:42) + '...' : row.listingTitle}}
       </td>
     </ng-container>
@@ -99,7 +99,7 @@
           sortActionDescription="Sort alphabetically by group status">
         Group Status
       </th>
-      <td mat-cell *matCellDef="let row" (click)="rowClick(row)"> {{ row.groupStatus }}</td>
+      <td mat-cell *matCellDef="let row" (click)="listingInteract.onRowClick(row)"> {{ row.groupStatus }}</td>
     </ng-container>
 
     <!-- Category Column -->
@@ -109,7 +109,7 @@
           sortActionDescription="Sort alphabetically by category">
         Category
       </th>
-      <td mat-cell *matCellDef="let row" (click)="rowClick(row)">
+      <td mat-cell *matCellDef="let row" (click)="listingInteract.onRowClick(row)">
         {{ row.category }}
       </td>
     </ng-container>
@@ -121,7 +121,7 @@
           sortActionDescription="Sort alphabetically by PvP status">
         PvP Status
       </th>
-      <td mat-cell *matCellDef="let row" (click)="rowClick(row)"> {{ row.pvpStatus }}</td>
+      <td mat-cell *matCellDef="let row" (click)="listingInteract.onRowClick(row)"> {{ row.pvpStatus }}</td>
     </ng-container>
 
     <!-- Planetary System Column -->
@@ -131,7 +131,7 @@
           sortActionDescription="Sort alphabetically by system">
         System
       </th>
-      <td mat-cell *matCellDef="let row" (click)="rowClick(row)"> {{ row.system }}</td>
+      <td mat-cell *matCellDef="let row" (click)="listingInteract.onRowClick(row)"> {{ row.system }}</td>
     </ng-container>
 
     <!-- Available Roles Column -->
@@ -141,7 +141,7 @@
           sortActionDescription="Sort alphabetically by listed roles">
         Avail. Roles
       </th>
-      <td mat-cell *matCellDef="let row" (click)="rowClick(row)">
+      <td mat-cell *matCellDef="let row" (click)="listingInteract.onRowClick(row)">
         {{ row.availableRoles.length > 14 ? (row.availableRoles|slice:0: 11) + '...' : row.availableRoles}}</td>
     </ng-container>
 
@@ -156,7 +156,7 @@
           help_outline
         </mat-icon>
       </th>
-      <td mat-cell *matCellDef="let row" (click)="rowClick(row)">
+      <td mat-cell *matCellDef="let row" (click)="listingInteract.onRowClick(row)">
         {{ row.lastUpdated | date: 'MMM d, yyyy h:mm a' }}
       </td>
     </ng-container>
@@ -198,20 +198,20 @@
           <button
             mat-menu-item
             class="options-item"
-            (click)="hide(row.groupId)">
+            (click)="listingInteract.userHideListing(row.groupId)">
             Hide
           </button>
           <button
-            *ngIf="!getIsBookmarked(row.groupId, bookmarkedIds)"
+            *ngIf="!listingInteract.isBookmarked(row.groupId, bookmarkedIds)"
             mat-menu-item
             class="options-item"
-            (click)="bookmark(row.groupId)">
+            (click)="listingInteract.addBookmark(row.groupId)">
             Bookmark
           </button>
           <button
             mat-menu-item
             class="options-item"
-            (click)="report(row)">
+            (click)="listingInteract.openConfirmReport(row)">
             Report
           </button>
         </mat-menu>
@@ -220,7 +220,7 @@
         <th mat-header-cell *matHeaderCellDef>
           Listing Details
         </th>
-        <td class="feed-element" mat-cell *matCellDef="let row" (click)="rowClick(row)">
+        <td class="feed-element" mat-cell *matCellDef="let row" (click)="listingInteract.onRowClick(row)">
           <div class="feed-data-row title-row">
             <span>{{ row.listingTitle }}</span>
           </div>
@@ -277,5 +277,5 @@
   [isVisible]="listingInteract.isModalVisible"
   [selectedListing]="listingInteract.selectedListing"
   [isBookmarked$]="listingInteract.selectedIsBookmarked$"
-  (close)="onModalClose($event)"
+  (close)="listingInteract.onModalClose($event)"
 ></app-group-listing-modal>

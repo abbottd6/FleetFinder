@@ -161,6 +161,7 @@
           <div class="modal-footer">
             <div class="footer-buttons-left">
               <button
+                *ngIf="!userIsListingOwner()"
                 type="button"
                 class="modal-button-with-icon"
                 [matMenuTriggerFor]="listingOptionsMenu">

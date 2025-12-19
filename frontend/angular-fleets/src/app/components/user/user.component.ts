@@ -1,7 +1,7 @@
 import {
   Component,
   inject, OnDestroy,
-  OnInit,
+  OnInit, ViewChild,
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
@@ -15,10 +15,13 @@ import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButtonModule} from "@angular/material/button";
 import {UserService} from "../../services/user-services/user.service";
-import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
+import {CloseValue, GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
 import {ModListingsTableComponent} from "../mod-listings-table/mod-listings-table.component";
 import {UserBookmarksTableComponent} from "../user-bookmarks-table/user-bookmarks-table.component";
+import {
+  ListingViewInteractionsService
+} from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 
 @Component({
     selector: 'app-user',
@@ -33,16 +36,19 @@ import {UserBookmarksTableComponent} from "../user-bookmarks-table/user-bookmark
 export class UserComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
+
+  @ViewChild('bookmarks') bookmarks!: UserBookmarksTableComponent;
+
   //modal popup vars
   selectedListing: GroupListingViewModel | null = null;
-  isModalVisible: boolean = false;
 
   groupListings: GroupListingViewModel[] = []
   localUser$: Observable<PrivateUser>;
   selectedTab: 'listings'|'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
   shouldDisplayMod$: boolean = false;
 
-  constructor(public userService: UserService, protected auth: AuthService) {
+  constructor(public userService: UserService, protected auth: AuthService,
+              protected listingInteract: ListingViewInteractionsService) {
     this.localUser$ = this.userService.localUser$;
 
     this.localUser$.pipe(
@@ -73,19 +79,11 @@ export class UserComponent implements OnInit, OnDestroy {
 
   onListingSelected(listing: GroupListingViewModel) {
     this.selectedListing = listing;
-    this.isModalVisible = true;
+    this.listingInteract.isModalVisible = true;
     console.log("Role:", this.userService.getRole());
     if(!environment.production) {
-      console.log("Parent modal visibility: ", this.isModalVisible);
+      console.log("Parent modal visibility: ", this.listingInteract.isModalVisible);
     }
-  }
-
-  //on close instructions for groupListing modal popup
-  onModalClose() {
-    if(!environment.production) {
-      console.log("Modal closed");
-    }
-    this.isModalVisible = false;
   }
 
   isMobile$ = this.breakpointObserver

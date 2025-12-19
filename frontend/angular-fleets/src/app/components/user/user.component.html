@@ -137,8 +137,8 @@
 
 
 <app-group-listing-modal
-  *ngIf="isModalVisible"
-  [isVisible]="isModalVisible"
+  *ngIf="listingInteract.isModalVisible"
+  [isVisible]="listingInteract.isModalVisible"
   [selectedListing]="selectedListing"
-  (close)="onModalClose()"
+  (close)="listingInteract.onModalClose($event)"
 ></app-group-listing-modal>

@@ -1,9 +1,8 @@
-import {DestroyRef, EventEmitter, inject, Injectable} from '@angular/core';
+import {DestroyRef, inject, Injectable} from '@angular/core';
 import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
-import {combineLatest, map, Observable, of, take} from "rxjs";
+import {combineLatest, map, Observable, of, Subject, take} from "rxjs";
 import {BookmarkApiService} from "../../api-services/bookmarks-api/bookmark-api.service";
 import {environment} from "../../../../environments/environment";
-import {CloseValue} from "../../../components/group-listing-modal/group-listing-modal.component";
 import {ConfirmReportComponent} from "../../../components/pop-ups/confirm-report/confirm-report.component";
 import {AddBookmarkRequest} from "../../../models/bookmark-requests/add-bookmark-request";
 import {MatSnackBar} from "@angular/material/snack-bar";
@@ -14,6 +13,7 @@ import {HideListingRequest} from "../../../models/listing-filter/hide-listing-re
 import {HiddenListingsApiService} from "../../api-services/hidden-listings-api/hidden-listings-api.service";
 import {SubmitListingReport} from "../../../models/report-requests/submit-listing-report";
 import {UiPrefsService} from "../ui-prefs/ui-prefs.service";
+import {CloseValue} from "../../../components/group-listing-modal/group-listing-modal.component";
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +24,8 @@ export class ListingViewInteractionsService {
 
   selectedListing: GroupListingViewModel | null = null;
   isModalVisible: boolean = false;
+  refreshSubject = new Subject<'hide' | 'bookmark' | 'unbookmark' | 'report' | null>();
+  readonly refresh$ = this.refreshSubject.asObservable();
 
   bookmarkedIds$!: Observable<Set<number>>;
   selectedIsBookmarked$!: Observable<boolean>;
@@ -80,7 +82,7 @@ export class ListingViewInteractionsService {
         });
 
         this.uiPrefService.displayBookmarkListingHint();
-
+        this.emitRefresh('bookmark');
       },
       error: (err) => {
         console.error(err);
@@ -94,17 +96,20 @@ export class ListingViewInteractionsService {
       console.log(request);
     }
     this.bmService.deleteBookmark(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe( {
-        next: (response: { message: string; }) =>
+        next: (response: { message: string; }) => {
           this.snackBar.open(`${response.message}`, 'OK', {
             duration: 3000,
             verticalPosition: 'top',
             horizontalPosition: 'center',
-            panelClass: ['mobile-snackbar']})
+            panelClass: ['mobile-snackbar']
+          });
+          this.emitRefresh('unbookmark');
+        }
       }
     )
   }
 
-  userHideListing(listingId: number, onSuccess?: () => void) {
+  userHideListing(listingId: number) {
     if(!this.isLoggedIn) {
       this.snackBar.open("You must log in to hide listings.", 'OK', {
         duration: 5000,
@@ -123,7 +128,7 @@ export class ListingViewInteractionsService {
           panelClass: ['mobile-snackbar']
         });
         this.uiPrefService.displayHideListingHint();
-        onSuccess?.();
+        this.emitRefresh('hide');
       },
 
       error: (err) => {
@@ -132,7 +137,7 @@ export class ListingViewInteractionsService {
     })
   }
 
-  openConfirmReport(listing: GroupListingViewModel, onSuccess?: () => void): void {
+  openConfirmReport(listing: GroupListingViewModel): void {
     if(!this.isLoggedIn) {
       this.snackBar.open("You must log in to submit reports.", 'OK', {
         duration: 5000,
@@ -154,13 +159,13 @@ export class ListingViewInteractionsService {
 
         dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(selected => {
           if (selected) {
-            this.submitReport(listing.groupId, selected, onSuccess);
+            this.submitReport(listing.groupId, selected);
           }
         });
       });
   }
 
-  submitReport(listingId: number, basisId: number, onSuccess?: () => void) {
+  submitReport(listingId: number, basisId: number) {
     const lr = new SubmitListingReport(listingId, basisId)
 
     this.reportService.submitReport(lr).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
@@ -173,12 +178,40 @@ export class ListingViewInteractionsService {
         });
 
         this.uiPrefService.displayReportedListingHint();
-        onSuccess?.();
+        this.emitRefresh('report');
       },
 
       error: (err) => {
         console.error(err);
       }
     });
+  }
+
+  private emitRefresh(reason: 'hide' | 'bookmark' | 'unbookmark' | 'report') {
+    this.refreshSubject.next(reason);
+  }
+
+  //on close instructions for groupListing modal popup
+  onModalClose(action: CloseValue) {
+    if(!environment.production) {
+      console.log("Modal closed");
+    }
+    this.isModalVisible = false;
+    this.selectedListing = null;
+
+    if(!action.value) return;
+
+    if(action.value && action.group) {
+      switch (action.value) {
+        case 'hide':
+          return this.userHideListing(action.group.groupId);
+        case 'bookmark':
+          return this.addBookmark(action.group.groupId);
+        case 'unbookmark':
+          return this.deleteBookmark(action.group.groupId);
+        case 'report':
+          return this.openConfirmReport(action.group)
+      }
+    }
   }
 }

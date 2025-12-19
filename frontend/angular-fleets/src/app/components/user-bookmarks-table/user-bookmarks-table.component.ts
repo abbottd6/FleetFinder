@@ -1,4 +1,4 @@
-import {Component, EventEmitter, inject, OnDestroy, Output} from '@angular/core';
+import {Component, EventEmitter, inject, OnDestroy, OnInit, Output} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -17,6 +17,11 @@ import {map, shareReplay, Subject, takeUntil} from "rxjs";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {SelectionModel} from "@angular/cdk/collections";
+import {environment} from "../../../environments/environment";
+import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
+import {
+  ListingViewInteractionsService
+} from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 
 @Component({
   selector: 'app-user-bookmarks-table',
@@ -45,9 +50,10 @@ import {SelectionModel} from "@angular/cdk/collections";
   styleUrl: './user-bookmarks-table.component.css'
 })
 
-export class UserBookmarksTableComponent implements OnDestroy {
+export class UserBookmarksTableComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
+  protected listingInteract = inject(ListingViewInteractionsService)
 
   @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
 
@@ -58,6 +64,23 @@ export class UserBookmarksTableComponent implements OnDestroy {
   noResults: boolean = true;
 
   constructor(private userBms: BookmarkApiService) {
+    this.loadBookmarks();
+  }
+
+  ngOnInit() {
+    this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe(reason => {
+      if(!(reason === 'bookmark')) {
+        this.loadBookmarks();
+      }
+    })
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  loadBookmarks() {
     this.userBms.getBookmarks()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
@@ -66,11 +89,6 @@ export class UserBookmarksTableComponent implements OnDestroy {
           this.noResults = (this.dataSource.data.length === 0);
         }
       })
-  }
-
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   // check whether the number of selected rows matches total rows

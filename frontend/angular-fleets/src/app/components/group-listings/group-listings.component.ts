@@ -98,6 +98,12 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.auth.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(
       val => this.listingInteract.isLoggedIn = val);
+
+    this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
+      if(reason === 'hide' || reason === 'report') {
+        this.reloadListings();
+      }
+    })
   }
 
   ngAfterViewInit() {
@@ -191,30 +197,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     return !!reportIds && reportIds.has(id);
   }
 
-  //on close instructions for groupListing modal popup
-  onModalClose(action: CloseValue) {
-    if(!environment.production) {
-      console.log("Modal closed");
-    }
-    this.listingInteract.isModalVisible = false;
-    this.listingInteract.selectedListing = null;
-
-    if(!action.value) return;
-
-    if(action.value && action.group) {
-      switch (action.value) {
-        case 'hide':
-          return this.hide(action.group.groupId);
-        case 'bookmark':
-          return this.bookmark(action.group.groupId);
-        case 'unbookmark':
-          return this.unbookmark(action.group.groupId);
-        case 'report':
-          return this.report(action.group)
-      }
-    }
-  }
-
   layoutMode$: Observable<LayoutMode> = this.breakpointObserver
     .observe([
       '(max-width: 900px)',
@@ -234,32 +216,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
       }),
       shareReplay(1)
     );
-
-  /* ---------------------------- INTERFACE TO LISTING VIEW INTERACTIONS SERVICE ------------------------------------ */
-
-  protected hide(groupId: number) {
-    this.listingInteract.userHideListing(groupId, () => this.reloadListings());
-  }
-
-  protected bookmark(groupId: number) {
-    this.listingInteract.addBookmark(groupId);
-  }
-
-  protected unbookmark(groupId: number) {
-    this.listingInteract.deleteBookmark(groupId);
-  }
-
-  protected getIsBookmarked(groupId: number, bookmarkIds: Set<number>): boolean {
-    return this.listingInteract.isBookmarked(groupId, bookmarkIds)
-  }
-
-  protected report(listing: GroupListingViewModel) {
-    this.listingInteract.openConfirmReport(listing, () => this.reloadListings());
-  }
-
-  protected rowClick(listing: GroupListingViewModel) {
-    this.listingInteract.onRowClick(listing);
-  }
 
   /* ------------------------------------ INTERFACE TO UI PREFS SERVICE ----------------------------------------------*/
 
