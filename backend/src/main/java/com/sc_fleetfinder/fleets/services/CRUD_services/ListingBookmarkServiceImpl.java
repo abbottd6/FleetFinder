@@ -20,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -169,6 +170,33 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
             response.put("message", "An error occurred while deleting this bookmark.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(response);
+        }
+    }
+
+    @Override
+    @Transactional
+    public ResponseEntity<?> deleteMultipleBookmarks(Users user, Set<Long> groupIds) {
+        Map<String, String> response = new HashMap<>();
+        Set<Long> verifiedIds = new HashSet<>();
+
+
+
+        try {
+            for(Long groupId : groupIds) {
+                if(bmr.findByUserAndGroupId(user, groupId).isPresent()) {
+                    verifiedIds.add(groupId);
+                }
+            }
+
+            Integer count = bmr.deleteMultiple(user, verifiedIds);
+
+            response.put("message", count + " bookmarks deleted.");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        catch (Exception e) {
+            log.error("DeleteMultipleBookmarks failed. {}", e.getMessage());
+            response.put("message", "An error occurred while deleting these bookmarks.");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 }

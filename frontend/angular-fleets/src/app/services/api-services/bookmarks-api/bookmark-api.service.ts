@@ -13,6 +13,7 @@ export class BookmarkApiService {
 
   private bookmarksUrl = `${environment.apiBaseUrl}/users/my/bookmarks`;
   private bookmarksBriefUrl = `${environment.apiBaseUrl}/users/my/bookmarks_brief`;
+  private deleteMultipleUrl = `${environment.apiBaseUrl}/users/my/bookmarks/delete_multiple`
   private auth = inject(AuthService);
 
   private refreshBookmarksSubject = new BehaviorSubject<void>(undefined);
@@ -49,6 +50,14 @@ export class BookmarkApiService {
 
   deleteBookmark(request: number): Observable<any> {
     return this.httpClient.delete<any>(`${this.bookmarksUrl}/${request}`).pipe(
+      tap(() => this.triggerBookmarksRefresh())
+    )
+  }
+
+  deleteMultipleBookmarks(groupIds: number[]): Observable<any> {
+    return this.httpClient.delete<any>(this.deleteMultipleUrl, {
+      body: groupIds
+    }).pipe(
       tap(() => this.triggerBookmarksRefresh())
     )
   }

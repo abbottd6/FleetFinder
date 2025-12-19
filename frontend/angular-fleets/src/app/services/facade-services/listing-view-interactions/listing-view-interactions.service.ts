@@ -109,6 +109,22 @@ export class ListingViewInteractionsService {
     )
   }
 
+  deleteMultipleBms(selected: GroupListingViewModel[]) {
+    const bmGroupIds = selected.map(bm => bm.groupId);
+
+    this.bmService.deleteMultipleBookmarks(bmGroupIds).pipe(takeUntilDestroyed(this.destroyRef)).subscribe( {
+      next: (response: { message: string; }) => {
+        this.snackBar.open(`${response.message}`, 'OK', {
+          duration: 3000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+          panelClass: ['mobile-snackbar']
+        });
+        this.emitRefresh('unbookmark')
+      }
+    })
+  }
+
   userHideListing(listingId: number) {
     if(!this.isLoggedIn) {
       this.snackBar.open("You must log in to hide listings.", 'OK', {

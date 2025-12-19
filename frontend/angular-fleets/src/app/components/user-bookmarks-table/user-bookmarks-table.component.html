@@ -6,7 +6,8 @@
     <div class="action-buttons-container">
       <a>
         <button type="submit" class="action-buttons"
-                [disabled]="!(selection.hasValue())">
+                [disabled]="!(selection.hasValue())"
+                (click)="listingInteract.deleteMultipleBms(selection.selected)">
           Remove
         </button>
       </a>
@@ -33,12 +34,12 @@
               </a>
             </li>
             <li class="options-item">
-              <a>
+              <a (click)="listingInteract.deleteBookmark(row.groupId)">
                 Remove
               </a>
             </li>
             <li class="options-item">
-              <a>
+              <a (click)="listingInteract.openConfirmReport(row)">
                 Report
               </a>
             </li>

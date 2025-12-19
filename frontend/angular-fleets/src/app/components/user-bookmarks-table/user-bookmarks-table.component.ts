@@ -71,6 +71,7 @@ export class UserBookmarksTableComponent implements OnInit, OnDestroy {
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe(reason => {
       if(!(reason === 'bookmark')) {
         this.loadBookmarks();
+        this.selection.clear();
       }
     })
   }

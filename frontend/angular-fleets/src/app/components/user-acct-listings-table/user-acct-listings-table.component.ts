@@ -1,4 +1,14 @@
-import {Component, EventEmitter, inject, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatTableDataSource, MatTableModule} from "@angular/material/table";
@@ -17,6 +27,9 @@ import {MatMenu, MatMenuTrigger} from "@angular/material/menu";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDeleteComponent} from "../pop-ups/confirm-delete/confirm-delete.component";
 import {GroupListingsComponent} from "../group-listings/group-listings.component";
+import {
+  ListingViewInteractionsService
+} from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 
 @Component({
   selector: 'app-user-acct-listings-table',
@@ -25,7 +38,7 @@ import {GroupListingsComponent} from "../group-listings/group-listings.component
   styleUrl: './user-acct-listings-table.component.css',
   imports: [MatTableModule, MatCheckboxModule, DatePipe, RouterLink, AsyncPipe, NgIf, MatIcon, MatIconButton, MatMenu, MatMenuTrigger],
 })
-export class UserAcctListingsTableComponent implements OnChanges, OnDestroy {
+export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() userListings: GroupListingViewModel[] = [];
   @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
 
@@ -40,7 +53,15 @@ export class UserAcctListingsTableComponent implements OnChanges, OnDestroy {
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 
   constructor(private userListingService: UserListingManagementService, private router: Router, private userService: UserService,
-              private snackBar: MatSnackBar) {}
+              private snackBar: MatSnackBar, protected listingInteract: ListingViewInteractionsService) {}
+
+  ngOnInit() {
+    this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
+      if(reason != null) {
+        this.selection.clear();
+      }
+    })
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     this.dataSource.data = this.userListings;

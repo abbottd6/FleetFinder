@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ListingBookmarkService {
 
@@ -13,4 +14,5 @@ public interface ListingBookmarkService {
     List<ListingBookmarkDto> getBookmarksByListingId(Long listingId);
     ResponseEntity<?> addBookmark(Long groupId, Users user);
     ResponseEntity<?> deleteBookmarkById(Long groupId, Users user);
+    ResponseEntity<?> deleteMultipleBookmarks(Users user, Set<Long> groupIds);
 }

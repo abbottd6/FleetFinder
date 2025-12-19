@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/users")
@@ -136,6 +137,16 @@ public class UserController {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
         return bms.deleteBookmarkById(groupId, user);
+    }
+
+    @DeleteMapping("/my/bookmarks/delete_multiple")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> deleteMultipleBookmarks(@AuthenticationPrincipal Jwt jwt, @RequestBody Set<Long> groupIds) {
+
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        return bms.deleteMultipleBookmarks(user, groupIds);
     }
 
     //TODO this probably isnt necessary, filtering with the hidden listings on the backend
