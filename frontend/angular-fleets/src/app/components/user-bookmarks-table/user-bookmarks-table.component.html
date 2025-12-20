@@ -15,37 +15,6 @@
 <div class="user-table">
   <ng-container *ngIf="(layoutMode$ | async) !== 'handheld'">
     <table mat-table [dataSource]="dataSource">
-      <!-- MOBILE ONLY < 499px: Options column -->
-      <ng-container matColumnDef='options'>
-        <th mat-header-cell *matHeaderCellDef>
-
-        </th>
-        <td mat-cell *matCellDef="let row; let i = index">
-          <button mat-icon-button [matMenuTriggerFor]="listingOptionsMenu">
-            <mat-icon class="options-menu-icon">more_vert</mat-icon>
-          </button>
-          <mat-menu #listingOptionsMenu="matMenu">
-            <ul class="options-list">
-              <li class="options-item">
-                <a>
-                  Message
-                </a>
-              </li>
-              <li class="options-item">
-                <a (click)="listingInteract.deleteBookmark(row.groupId)">
-                  Remove
-                </a>
-              </li>
-              <li class="options-item">
-                <a (click)="listingInteract.openConfirmReport(row)">
-                  Report
-                </a>
-              </li>
-            </ul>
-          </mat-menu>
-        </td>
-      </ng-container>
-
       <!-- Checkbox Column -->
       <ng-container matColumnDef='select'>
         <th mat-header-cell *matHeaderCellDef>

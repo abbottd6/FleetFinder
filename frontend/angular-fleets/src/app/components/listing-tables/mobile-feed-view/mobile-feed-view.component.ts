@@ -147,10 +147,6 @@ export class MobileFeedViewComponent implements OnInit, OnDestroy {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.groupId + 1}`
   }
 
-  onRowClick(listing: GroupListingViewModel) {
-    this.listingForModal.emit(listing);
-  }
-
   // check whether the number of selected rows matches total rows
   isAllSelected() {
     const numSelected = this.selection.selected.length;
