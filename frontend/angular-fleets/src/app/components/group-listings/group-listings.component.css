@@ -60,24 +60,21 @@
   cursor: pointer;
 }
 
-.table-options-column {
-  display: inline-flex;
-  flex-direction: row;
+.indicators-column {
+  padding-right: 0;
+  padding-left: 0.5rem;
+  align-content: center;
 }
 
-.options-column-icon {
+.indicators-column-icon {
+  scale: 0.85;
   transition: color 0.15s ease;
-
 }
 
-.options-column-icon:hover {
-  color: rgba(255, 131, 7, .6);
+.indicators-column-icon:hover {
+  color: rgba(255, 131, 7, .4);
   background-color: rgba(44, 44, 44, 0.7);
   border-radius: 0.25rem;
-}
-
-.visibility-icon {
-  scale: 0.9 !important;
 }
 
 .no-results-container {
@@ -86,7 +83,6 @@
   font-size: 1.1rem;
   color: rgba(188, 191, 200, .9);
 }
-
 
 .feed-element {
   display: flex;
@@ -147,6 +143,10 @@
   }
   .mat-mdc-row {
     font-size: clamp(0.7rem, 0.9rem, 1rem) !important;
+  }
+
+  .indicators-column-icon {
+    scale: 0.7;
   }
 }
 

@@ -1,7 +1,7 @@
 import {
   afterNextRender,
   AfterViewInit,
-  Component,
+  Component, ElementRef,
   EventEmitter,
   inject,
   OnDestroy,
@@ -12,14 +12,13 @@ import {
 import {GroupListingFetchService} from "../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {TooltipPosition} from "@angular/material/tooltip";
 import {MatSort, Sort, SortDirection} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {map, Observable, shareReplay, Subject, takeUntil,} from "rxjs";
+import { map, Observable, of, shareReplay, Subject, takeUntil } from "rxjs";
 import {
   FilterService,
   ListingFilterState
@@ -27,15 +26,13 @@ import {
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {MatDialog} from "@angular/material/dialog";
-import {HiddenListingsApiService} from "../../services/api-services/hidden-listings-api/hidden-listings-api.service";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
-import {UiCleanupService} from "../../services/cleanup-services/ui-cleanup.service";
 import {UserService} from "../../services/user-services/user.service";
 import {
   ListingViewInteractionsService
 } from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
-import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
+import {MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -47,6 +44,14 @@ import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
 export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  @ViewChild('contextMenuAnchor', { read: ElementRef })
+  private contextMenuAnchor!: ElementRef<HTMLElement>;
+
+  private longPressTimer: any;
+  private readonly LONG_PRESS_MS = 500;
+
 
   @Output() filtersUpToDate = new EventEmitter<boolean>();
 
@@ -66,14 +71,13 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   sortActive = 'creationTimestamp';
   sortDirection: SortDirection = 'desc';
 
-  displayedColumns: string[] = ['options', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated'];
-  mobileColumns: string[] = ['options', 'details']
+  displayedColumns: string[] = ['indicators', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'group-size', 'updated'];
+  mobileColumns: string[] = ['indicators', 'details']
   dataSource = new MatTableDataSource<GroupListingViewModel>();
   noResults!: boolean;
 
-  constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
-              private filter: FilterService, private auth: AuthService, private hideService: HiddenListingsApiService,
-              private uiCleanup: UiCleanupService, private userService: UserService) {
+  constructor(private groupListingService: GroupListingFetchService, private filter: FilterService,
+              private auth: AuthService, private userService: UserService) {
 
     afterNextRender(() => {
       this.uiPrefService.clickedCleanupCheck();
@@ -84,7 +88,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.uiPrefService.uiPrefs = this.uiPrefService.loadUiPrefs();
 
     this.filter.pushStoredState(this.uiPrefService.uiPrefs.storedFilters, this.filter.pullState());
-
 
     if(this.auth.isLoggedIn$) {
       this.userService.refreshUser();
@@ -137,6 +140,40 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.submittedState = structuredClone(state);
 
     this.loadGroupListings(filterDto, this.pageIndex, this.pageSize, this.sortActive, this.sortDirection);
+  }
+
+  openContextMenu(event: MouseEvent, row: GroupListingViewModel) {
+    event.preventDefault();
+    this.listingInteract.setSelectedListing(row);
+
+    this.openMenuAt(event.clientX, event.clientY);
+  }
+
+  openMenuAt(x: number, y: number) {
+    const el = this.contextMenuAnchor.nativeElement;
+
+    el.style.left = `${x}px`;
+    el.style.top = `${y}px`;
+
+    queueMicrotask(() => this.menuTrigger.openMenu());
+  }
+
+  onTouchStart(event: TouchEvent, row: GroupListingViewModel) {
+    this.listingInteract.longPressTriggered = false;
+    if(event.touches.length !== 1) return;
+
+    event.preventDefault();
+    this.listingInteract.setSelectedListing(row)
+
+    const touch = event.touches[0];
+    this.longPressTimer = setTimeout(() => {
+      this.listingInteract.longPressTriggered = true;
+      this.openMenuAt(touch.clientX, touch.clientY);
+    }, this.LONG_PRESS_MS);
+  }
+
+  onTouchEnd() {
+    clearTimeout(this.longPressTimer);
   }
 
   applyFiltersFromChild(state: ListingFilterState): void {
@@ -196,7 +233,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   layoutMode$: Observable<LayoutMode> = this.breakpointObserver
     .observe([
       '(max-width: 900px)',
-      '(min-width: 901px) and (max-width: 1375px)',
+      '(min-width: 901px) and (max-width: 1650px)',
       '(min-width: 1051px)'
     ])
     .pipe(
@@ -204,7 +241,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         if (state.breakpoints['(max-width: 900px)']) {
           return 'handheld';
         }
-        if (state.breakpoints['(min-width: 901px) and (max-width: 1375px)']) {
+        if (state.breakpoints['(min-width: 901px) and (max-width: 1650px)']) {
           return 'mobile';
         }
 

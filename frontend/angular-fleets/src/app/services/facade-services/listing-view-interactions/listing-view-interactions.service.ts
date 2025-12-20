@@ -1,6 +1,6 @@
-import {DestroyRef, inject, Injectable} from '@angular/core';
+import {DestroyRef, ElementRef, inject, Injectable, ViewChild} from '@angular/core';
 import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
-import {combineLatest, map, Observable, of, Subject, take} from "rxjs";
+import {BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, of, Subject, take} from "rxjs";
 import {BookmarkApiService} from "../../api-services/bookmarks-api/bookmark-api.service";
 import {environment} from "../../../../environments/environment";
 import {ConfirmReportComponent} from "../../../components/pop-ups/confirm-report/confirm-report.component";
@@ -19,16 +19,20 @@ import {CloseValue} from "../../../components/group-listing-modal/group-listing-
   providedIn: 'root'
 })
 export class ListingViewInteractionsService {
+
   private destroyRef = inject(DestroyRef)
   isLoggedIn!: boolean;
 
-  selectedListing: GroupListingViewModel | null = null;
+  selectedListingSubject = new BehaviorSubject<GroupListingViewModel | null>(null);
+  readonly selectedListing$ = this.selectedListingSubject.asObservable();
+
+  bookmarkedIds$!: Observable<Set<number>>;
+  readonly selectedIsBookmarked$!: Observable<boolean>;
+  public longPressTriggered = false;
+
   isModalVisible: boolean = false;
   refreshSubject = new Subject<'hide' | 'bookmark' | 'unbookmark' | 'report' | null>();
   readonly refresh$ = this.refreshSubject.asObservable();
-
-  bookmarkedIds$!: Observable<Set<number>>;
-  selectedIsBookmarked$!: Observable<boolean>;
 
   constructor(private bmService: BookmarkApiService,
               private reportService: ListingReportApiService,
@@ -36,22 +40,35 @@ export class ListingViewInteractionsService {
               protected uiPrefService: UiPrefsService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog) {
+
     this.bmService.getBookmarksBrief();
 
     this.bookmarkedIds$ = this.bmService.bookmarksBrief$.pipe(
       map((gIds: number[]) => new Set<number>(gIds))
     );
+
+    this.selectedIsBookmarked$ = combineLatest([
+      this.bookmarkedIds$,
+      this.selectedListing$,
+    ]).pipe(
+      map(([ids, listing]) => !!listing && ids.has(listing.groupId)),
+      distinctUntilChanged()
+    );
+  }
+
+  setSelectedListing(row: GroupListingViewModel | null) {
+    this.selectedListingSubject.next(row);
+  }
+
+  get selectedListing(): GroupListingViewModel | null {
+    return this.selectedListingSubject.value;
   }
 
   //on-row-click instructions for groupListing modal popup
   onRowClick(tempListing: GroupListingViewModel) {
-    this.selectedListing = tempListing;
-    this.selectedIsBookmarked$ = combineLatest([
-      this.bookmarkedIds$,
-      of(this.selectedListing.groupId),
-    ]).pipe(
-      map(([ids, selectedId]) => !!selectedId && ids.has(selectedId))
-    );
+    if(this.longPressTriggered) return;
+    this.setSelectedListing(tempListing);
+
     this.isModalVisible = true;
   }
 
@@ -60,6 +77,14 @@ export class ListingViewInteractionsService {
       return false;
     }
     return !!bookmarkIds && bookmarkIds.has(id);
+  }
+
+  bookmarkSelected(): void {
+    const listingId = this.selectedListing?.groupId;
+
+    if(listingId == null) return;
+
+    this.addBookmark(listingId)
   }
 
   addBookmark(listingId: number) {
@@ -88,6 +113,12 @@ export class ListingViewInteractionsService {
         console.error(err);
       }
     })
+  }
+
+  deleteSelectedBookmark(): void {
+    const listingId = this.selectedListing?.groupId;
+    if(listingId == null) return;
+    this.deleteBookmark(listingId);
   }
 
   deleteBookmark(listingId: number) {
@@ -125,6 +156,12 @@ export class ListingViewInteractionsService {
     })
   }
 
+  hideSelected(): void {
+    const listingId = this.selectedListing?.groupId;
+    if(listingId == null) return;
+    this.userHideListing(listingId);
+  }
+
   userHideListing(listingId: number) {
     if(!this.isLoggedIn) {
       this.snackBar.open("You must log in to hide listings.", 'OK', {
@@ -151,6 +188,12 @@ export class ListingViewInteractionsService {
         console.error(err);
       }
     })
+  }
+
+  reportSelected(): void {
+    const listing = this.selectedListing;
+    if(listing == null) return;
+    this.openConfirmReport(listing)
   }
 
   openConfirmReport(listing: GroupListingViewModel): void {
@@ -213,7 +256,7 @@ export class ListingViewInteractionsService {
       console.log("Modal closed");
     }
     this.isModalVisible = false;
-    this.selectedListing = null;
+    this.setSelectedListing(null);
 
     if(!action.value) return;
 

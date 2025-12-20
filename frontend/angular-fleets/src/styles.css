@@ -259,6 +259,41 @@ app-user {
   color: #2c2c2c;
 }
 
+.context-menu-anchor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.has-response {
+  color: rgba(255, 131, 7, .4);
+}
+
+.response-pending {
+  color: rgba(29, 104, 177, .8);
+}
+
+.status-circle-icon {
+  scale: 0.45;
+}
+
+.null-circle-icon {
+  scale: 0.2;
+  color: rgba(188, 191, 200, .2);
+  transition: color 0.15s ease;
+}
+
+.null-circle-icon:hover {
+  color: rgba(255, 131, 7, .5);
+}
+
 
 /* ------------------------------------------- ACTION BUTTONS -----------------------------------------------------*/
 .action-buttons {
