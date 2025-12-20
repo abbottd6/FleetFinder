@@ -48,10 +48,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
   @ViewChild('contextMenuAnchor', { read: ElementRef })
   private contextMenuAnchor!: ElementRef<HTMLElement>;
-
   private longPressTimer: any;
-  private readonly LONG_PRESS_MS = 500;
-
+  private readonly LONG_PRESS_MS = 400;
 
   @Output() filtersUpToDate = new EventEmitter<boolean>();
 
@@ -159,8 +157,11 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     queueMicrotask(() => this.menuTrigger.openMenu());
   }
 
-  onTouchStart(event: TouchEvent, row: GroupListingViewModel) {
+  onTouchStart() {
     this.listingInteract.longPressTriggered = false;
+  }
+
+  onTouchEnd(event: TouchEvent, row: GroupListingViewModel) {
     if(event.touches.length !== 1) return;
 
     event.preventDefault();
@@ -171,9 +172,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
       this.listingInteract.longPressTriggered = true;
       this.openMenuAt(touch.clientX, touch.clientY);
     }, this.LONG_PRESS_MS);
-  }
-
-  onTouchEnd() {
     clearTimeout(this.longPressTimer);
   }
 
@@ -189,10 +187,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.reloadListings();
     this.uiPrefService.uiPrefs.storedFilters = this.filter.toPersistedState(state);
     this.uiPrefService.saveUiPrefs(this.uiPrefService.uiPrefs);
-  }
-
-  isRowClicked(row: GroupListingViewModel): boolean {
-    return this.uiPrefService.uiPrefs.clickedRowIds.has(row.groupId);
   }
 
   announceSortChange(sortState: Sort) {
@@ -255,6 +249,10 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
   protected saveClick(groupId: number) {
     this.uiPrefService.saveRowClick(groupId);
+  }
+
+  isRowClicked(row: GroupListingViewModel): boolean {
+    return this.uiPrefService.uiPrefs.clickedRowIds.has(row.groupId);
   }
 
 }

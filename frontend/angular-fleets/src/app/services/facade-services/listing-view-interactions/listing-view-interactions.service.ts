@@ -1,4 +1,4 @@
-import {DestroyRef, ElementRef, inject, Injectable, ViewChild} from '@angular/core';
+import {DestroyRef, inject, Injectable} from '@angular/core';
 import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 import {BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, of, Subject, take} from "rxjs";
 import {BookmarkApiService} from "../../api-services/bookmarks-api/bookmark-api.service";

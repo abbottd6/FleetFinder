@@ -130,9 +130,9 @@
     </ng-container>
 
     <!-- header declarations -->
-    <ng-container *ngIf="!(isMobile$ | async) ? largeColumns : mobileColumns as displayedCols">
-      <tr mat-header-row *matHeaderRowDef="displayedCols"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedCols"></tr>
+    <ng-container>
+      <tr mat-header-row *matHeaderRowDef="fullColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: fullColumns"></tr>
     </ng-container>
   </table>
 </div>

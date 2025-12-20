@@ -62,5 +62,104 @@
 .paginator {
   color: rgba(188, 191, 200, .9);
   padding: 1rem 2rem 1rem 0;
-  margin-bottom: 5rem;
+}
+
+@media(min-width: 725px) and (max-width: 1529px) {
+  .mat-mdc-header-row {
+    font-size: clamp(0.8rem, 1rem, 1.5rem);
+  }
+  .mat-mdc-row {
+    font-size: clamp(0.7rem, 0.9rem, 1rem) !important;
+  }
+
+  .indicators-column-icon {
+    scale: 0.7;
+  }
+}
+
+@media(max-width: 724px) {
+  .mat-mdc {
+    overflow: scroll;
+  }
+
+  .search-bar-wrapper {
+    padding-left: 0;
+    padding-top: 0.1rem;
+  }
+
+  .mat-mdc-header-row {
+    font-size: clamp(0.5rem, 0.8rem, 1.5rem) !important;
+  }
+
+  .table-container {
+    max-height: 90% !important;
+    padding-bottom: 1rem;
+  }
+
+  .action-buttons-container {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: left;
+    column-gap: 0;
+    margin: 1rem auto 1rem 1rem;
+  }
+  .action-button-container-right {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    width: 80%;
+    margin: 1rem 0.25rem 1rem auto;
+  }
+
+  .mat-mdc-row {
+    font-size: clamp(0.5rem, 0.7rem, 1.5rem) !important;
+  }
+
+  .action-buttons {
+    font-size: .7rem;
+  }
+
+  .paginator {
+    font-size: clamp(0.5rem, 0.8rem, 1rem);
+  }
+}
+
+/*------------------------------------ FEED VIEW TABLE ------------------------------------------------------*/
+
+.feed-element {
+  display: flex;
+  flex-direction: column;
+  min-height: 15vh;
+}
+
+.feed-data-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  padding-top: 0.1rem;
+  margin: 0;
+}
+
+.title-row {
+  padding-top: 0.25rem;
+  font-size: 1rem;
+}
+
+.feed-label-value-pair {
+  display: flex;
+  flex-direction: row;
+  gap: 0.2rem;
+  padding: 0;
+  margin: 0;
+}
+
+.field-label {
+  color: rgba(255, 131, 7, .6);
+  padding: 0;
+  margin: 0;
+}
+
+.description-row {
+  text-wrap: wrap;
+  padding-bottom: 0.25rem;
 }

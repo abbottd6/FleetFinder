@@ -1,4 +1,14 @@
-import {AfterViewInit, Component, EventEmitter, inject, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  inject,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {
   MatCell,
   MatCellDef,
@@ -8,12 +18,12 @@ import {
   MatTableDataSource
 } from "@angular/material/table";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
-import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
+import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatIconButton} from "@angular/material/button";
 import {MatMenu, MatMenuTrigger} from "@angular/material/menu";
 import {BookmarkApiService} from "../../services/api-services/bookmarks-api/bookmark-api.service";
-import {map, shareReplay, Subject, takeUntil} from "rxjs";
+import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {SelectionModel} from "@angular/cdk/collections";
@@ -23,6 +33,11 @@ import {
   ListingViewInteractionsService
 } from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
+import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
+import {MatSort} from "@angular/material/sort";
+import {MatTooltip, TooltipPosition} from "@angular/material/tooltip";
+import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
+import {MobileFeedViewComponent} from "../listing-tables/mobile-feed-view/mobile-feed-view.component";
 
 @Component({
   selector: 'app-user-bookmarks-table',
@@ -47,7 +62,8 @@ import {MatPaginator, PageEvent} from "@angular/material/paginator";
     MatHeaderCellDef,
     AsyncPipe,
     MatCheckbox,
-    MatPaginator
+    MatPaginator,
+    MobileFeedViewComponent
   ],
   styleUrl: './user-bookmarks-table.component.css'
 })
@@ -61,8 +77,8 @@ export class UserBookmarksTableComponent implements OnInit, OnDestroy, AfterView
 
   @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
 
-  normalColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
-  mobileColumns = ['options', 'title', 'updated']
+  fullColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
+  mobileColumns = ['select', 'details']
   dataSource = new MatTableDataSource<GroupListingViewModel>();
   selection = new SelectionModel<GroupListingViewModel>(true, [])
   noResults: boolean = true;
@@ -96,6 +112,15 @@ export class UserBookmarksTableComponent implements OnInit, OnDestroy, AfterView
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
+  }
+
+  emitChildClick(listing: GroupListingViewModel) {
+    console.log("listing emitted: ", listing.listingTitle);
+    this.listingForModal.emit(listing);
+  }
+
+  changeSelectedFromChild(selected: SelectionModel<GroupListingViewModel>) {
+    this.selection = selected;
   }
 
   loadBookmarks(pageIdx: number, pageSize: number) {
@@ -146,8 +171,23 @@ export class UserBookmarksTableComponent implements OnInit, OnDestroy, AfterView
     this.listingForModal.emit(listing);
   }
 
-  isMobile$ = this.breakpointObserver
-    .observe('(max-width: 499px)')
-    .pipe(map(result => result.matches),
-      shareReplay());
+  layoutMode$: Observable<LayoutMode> = this.breakpointObserver
+    .observe([
+      '(max-width: 900px)',
+      '(min-width: 901px) and (max-width: 1650px)',
+      '(min-width: 1051px)'
+    ])
+    .pipe(
+      map(state => {
+        if (state.breakpoints['(max-width: 900px)']) {
+          return 'handheld';
+        }
+        if (state.breakpoints['(min-width: 901px) and (max-width: 1650px)']) {
+          return 'mobile';
+        }
+
+        return 'full';
+      }),
+      shareReplay(1)
+    );
 }

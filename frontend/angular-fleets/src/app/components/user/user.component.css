@@ -150,13 +150,22 @@
   }
   .mat-drawer {
     background-color: rgba(88, 92, 96, .95);
-    min-width: 10vw;
-    max-width: 15vw;
-    max-height: 90%;
+    min-width: 12vw;
+    max-width: 20vw;
+    max-height: 100%;
+  }
+
+  .account-tabs-button {
+    font-size: 1rem;
   }
 
   .page-title {
     margin-top: 1rem;
+  }
+
+  .side-nav-list {
+    font-size: 0.8rem;
+    padding-right: 0;
   }
 }
 
@@ -186,9 +195,13 @@
   }
 
   .mat-drawer {
-    min-width: 45%;
-    max-width: 60%;
+    min-width: 30%;
+    max-width: 40%;
     max-height: 80vh;
+  }
+
+  .side-nav-list {
+    padding-right: 0;
   }
 
   .account-tabs-button {

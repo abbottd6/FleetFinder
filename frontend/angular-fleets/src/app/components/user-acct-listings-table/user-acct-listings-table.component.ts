@@ -47,8 +47,8 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   private breakpointObserver = inject(BreakpointObserver);
   readonly dialog = inject(MatDialog);
 
-  largeColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
-  mobileColumns = ['options', 'title', 'updated']
+  fullColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
+  mobileColumns = ['select', 'title', 'updated']
   dataSource = new MatTableDataSource(this.userListings);
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 

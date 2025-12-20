@@ -62,8 +62,8 @@
           *matCellDef="let row"
           (click)="listingInteract.onRowClick(row)"
           (contextmenu)="openContextMenu($event, row)"
-          (touchstart)="onTouchStart($event, row)"
-          (touchend)="onTouchEnd()">
+          (touchstart)="onTouchStart()"
+          (touchend)="onTouchEnd($event, row)">
         {{ row.listingTitle.length > 45 ? (row.listingTitle|slice:0:42) + '...' : row.listingTitle}}
       </td>
     </ng-container>
@@ -79,8 +79,8 @@
           *matCellDef="let row"
           (click)="listingInteract.onRowClick(row)"
           (contextmenu)="openContextMenu($event, row)"
-          (touchstart)="onTouchStart($event, row)"
-          (touchend)="onTouchEnd()">
+          (touchstart)="onTouchStart()"
+          (touchend)="onTouchEnd($event, row)">
         {{ row.groupStatus }}
       </td>
     </ng-container>
@@ -96,8 +96,8 @@
           *matCellDef="let row"
           (click)="listingInteract.onRowClick(row)"
           (contextmenu)="openContextMenu($event, row)"
-          (touchstart)="onTouchStart($event, row)"
-          (touchend)="onTouchEnd()">
+          (touchstart)="onTouchStart()"
+          (touchend)="onTouchEnd($event, row)">
         {{ row.category }}
       </td>
     </ng-container>
@@ -113,8 +113,8 @@
           *matCellDef="let row"
           (click)="listingInteract.onRowClick(row)"
           (contextmenu)="openContextMenu($event, row)"
-          (touchstart)="onTouchStart($event, row)"
-          (touchend)="onTouchEnd()">
+          (touchstart)="onTouchStart()"
+          (touchend)="onTouchEnd($event, row)">
         {{ row.pvpStatus }}
       </td>
     </ng-container>
@@ -130,8 +130,8 @@
           *matCellDef="let row"
           (click)="listingInteract.onRowClick(row)"
           (contextmenu)="openContextMenu($event, row)"
-          (touchstart)="onTouchStart($event, row)"
-          (touchend)="onTouchEnd()">
+          (touchstart)="onTouchStart()"
+          (touchend)="onTouchEnd($event, row)">
         {{ row.system }}
       </td>
     </ng-container>
@@ -147,8 +147,8 @@
           *matCellDef="let row"
           (click)="listingInteract.onRowClick(row)"
           (contextmenu)="openContextMenu($event, row)"
-          (touchstart)="onTouchStart($event, row)"
-          (touchend)="onTouchEnd()">
+          (touchstart)="onTouchStart()"
+          (touchend)="onTouchEnd($event, row)">
         {{ row.availableRoles.length > 14 ? (row.availableRoles|slice:0: 11) + '...' : row.availableRoles}}</td>
     </ng-container>
 
@@ -163,8 +163,8 @@
           *matCellDef="let row"
           (click)="listingInteract.onRowClick(row)"
           (contextmenu)="openContextMenu($event, row)"
-          (touchstart)="onTouchStart($event, row)"
-          (touchend)="onTouchEnd()">
+          (touchstart)="onTouchStart()"
+          (touchend)="onTouchEnd($event, row)">
         {{ row.currentPartySize }} / {{ row.desiredPartySize }}
       </td>
     </ng-container>
@@ -184,8 +184,8 @@
           *matCellDef="let row"
           (click)="listingInteract.onRowClick(row)"
           (contextmenu)="openContextMenu($event, row)"
-          (touchstart)="onTouchStart($event, row)"
-          (touchend)="onTouchEnd()">
+          (touchstart)="onTouchStart()"
+          (touchend)="onTouchEnd($event, row)">
         {{ row.lastUpdated | date: 'MMM d, h:mm a' }}
       </td>
     </ng-container>
@@ -241,8 +241,8 @@
           mat-cell *matCellDef="let row"
           (click)="listingInteract.onRowClick(row)"
           (contextmenu)="openContextMenu($event, row)"
-          (touchstart)="onTouchStart($event, row)"
-          (touchend)="onTouchEnd()">
+          (touchstart)="onTouchStart()"
+          (touchend)="onTouchEnd($event, row)">
         <div class="feed-data-row title-row">
           <span>{{ row.listingTitle }}</span>
         </div>

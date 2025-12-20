@@ -69,6 +69,7 @@ import { FilterDropdownsComponent } from './components/dropdowns/filter-dropdown
 import { DontShowMeAgainPopup } from './components/pop-ups/dont-show-me-again-popup/dont-show-me-again-popup';
 import {MatBadge} from "@angular/material/badge";
 import { UserBookmarksTableComponent } from './components/user-bookmarks-table/user-bookmarks-table.component';
+import { MobileFeedViewComponent } from './components/listing-tables/mobile-feed-view/mobile-feed-view.component';
 
 
 @NgModule({
@@ -163,7 +164,7 @@ import { UserBookmarksTableComponent } from './components/user-bookmarks-table/u
 
   ],
   exports: [
-    ModListingsTableComponent
+    ModListingsTableComponent,
   ],
   bootstrap: [AppComponent]
 })
