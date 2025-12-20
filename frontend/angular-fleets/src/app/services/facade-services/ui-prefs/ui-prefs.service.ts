@@ -17,6 +17,7 @@ export interface UiPrefs {
   hideHiddenListingHint: boolean;
   hideReportedListingHint: boolean;
   hideBookmarkedListingHint: boolean;
+  hideQuickAccessMenuHint: boolean;
   storedFilters: PersistedFilterState;
 }
 
@@ -42,6 +43,7 @@ export class UiPrefsService {
           hideHiddenListingHint: false,
           hideReportedListingHint: false,
           hideBookmarkedListingHint: false,
+          hideQuickAccessMenuHint: false,
           storedFilters: this.filter.pullState()
         };
       }
@@ -52,6 +54,7 @@ export class UiPrefsService {
         hideHiddenListingHint: parsed.hideHiddenListingHint ?? false,
         hideReportedListingHint: parsed.hideReportedListingHint ?? false,
         hideBookmarkedListingHint: parsed.hideBookmarkedListingHint ?? false,
+        hideQuickAccessMenuHint: parsed.hideQuickAccessMenuHint ?? false,
         storedFilters: parsed.storedFilters ?? this.filter.pullState()
       };
 
@@ -63,6 +66,7 @@ export class UiPrefsService {
         hideHiddenListingHint: false,
         hideReportedListingHint: false,
         hideBookmarkedListingHint: false,
+        hideQuickAccessMenuHint: false,
         storedFilters: this.filter.pullState()
       }
     }
@@ -153,6 +157,24 @@ export class UiPrefsService {
       dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(dontShow => {
         if (dontShow) {
           this.uiPrefs.hideReportedListingHint = true;
+          this.saveUiPrefs(this.uiPrefs);
+        }
+      })
+    }
+  }
+
+  displayQuickAccessMenuHint() {
+    if(!this.uiPrefs.hideQuickAccessMenuHint) {
+      const dialogRef = this.dialog.open(DontShowMeAgainPopup, {
+        data: {
+          message: "<p><strong>Quick Access Menu:</strong> Right-click the row on desktop, or long press on touch screen.</p>" +
+            "<p><strong>Detailed Popup:</strong> Left-click the row on desktop, or tap on touch screen.</p>"
+        }
+      });
+
+      dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef)).subscribe(dontShow => {
+        if (dontShow) {
+          this.uiPrefs.hideQuickAccessMenuHint = true;
           this.saveUiPrefs(this.uiPrefs);
         }
       })

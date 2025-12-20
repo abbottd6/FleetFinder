@@ -18,7 +18,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import { map, Observable, of, shareReplay, Subject, takeUntil } from "rxjs";
+import { map, Observable, shareReplay, Subject, takeUntil } from "rxjs";
 import {
   FilterService,
   ListingFilterState
@@ -127,6 +127,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     })
 
     this.dataSource.sort = this.sort;
+    this.uiPrefService.displayQuickAccessMenuHint();
   }
 
   ngOnDestroy() {
