@@ -113,6 +113,9 @@
       (click)="listingInteract.reportSelected()">
       Report
     </button>
+    <button mat-menu-item class="options-item">
+      Cancel
+    </button>
   </ng-container>
   <ng-template #ownerMenu>
     <button mat-menu-item class="options-item"
@@ -126,6 +129,9 @@
     <button mat-menu-item class="options-item"
             (click)="ownerService.openConfirmDelete(listingInteract.selectedListing!)">
       Delete
+    </button>
+    <button mat-menu-item class="options-item">
+      Cancel
     </button>
   </ng-template>
 </mat-menu>

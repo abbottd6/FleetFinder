@@ -112,40 +112,6 @@ export class UserProfileBookmarksComponent implements OnInit, OnDestroy, AfterVi
       })
   }
 
-  // // check whether the number of selected rows matches total rows
-  // isAllSelected() {
-  //   const numSelected = this.selection.selected.length;
-  //   const numRows = this.dataSource.data.length;
-  //   return numSelected === numRows;
-  // }
-  //
-  // singleSelected() {
-  //   // if(!environment.production) {
-  //   //   console.log("HERE IS THE USER ACCT TABLE SELECTED LISTING DATA: ", this.selection.selected);
-  //   // }
-  //   return this.selection.selected.length < 2;
-  // }
-  //
-  // toggleAllRows() {
-  //   if(this.isAllSelected()) {
-  //     this.selection.clear();
-  //     return;
-  //   }
-  //
-  //   this.selection.select(...this.dataSource.data);
-  // }
-  //
-  // checkboxLabel(row?: GroupListingViewModel){
-  //   if (!row) {
-  //     return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-  //   }
-  //   return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.groupId + 1}`
-  // }
-  //
-  // onRowClick(listing: GroupListingViewModel) {
-  //   this.listingForModal.emit(listing);
-  // }
-
   layoutMode$: Observable<LayoutMode> = this.breakpointObserver
     .observe([
       '(max-width: 900px)',

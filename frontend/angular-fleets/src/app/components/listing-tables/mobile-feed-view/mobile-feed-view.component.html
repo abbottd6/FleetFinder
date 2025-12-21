@@ -109,18 +109,21 @@
     </button>
   </ng-container>
   <ng-template #ownerMenu>
-      <button mat-menu-item class="options-item"
-              (click)="ownerService.userUpdateSelected(listingInteract.selectedListing!)">
-        Update
-      </button>
-      <button mat-menu-item class="options-item">
-        <!-- TODO user save template -->
-        Template
-      </button>
-      <button mat-menu-item class="options-item"
-              (click)="ownerService.openConfirmDelete(listingInteract.selectedListing!)">
-        Delete
-      </button>
+    <button mat-menu-item class="options-item"
+            (click)="ownerService.userUpdateSelected(listingInteract.selectedListing!)">
+      Update
+    </button>
+    <button mat-menu-item class="options-item">
+      <!-- TODO user save template -->
+      Template
+    </button>
+    <button mat-menu-item class="options-item"
+            (click)="ownerService.openConfirmDelete(listingInteract.selectedListing!)">
+      Delete
+    </button>
+    <button mat-menu-item class="options-item">
+      Cancel
+    </button>
   </ng-template>
 </mat-menu>
 
