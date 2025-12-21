@@ -1,13 +1,18 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ManualModDeleteDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ModerationIssueResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.mod_services.ModerationService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
@@ -17,9 +22,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -45,6 +52,21 @@ public class ModerationController {
                                 .getAllGroupListings()).withSelfRel()))
                 .toList();
         return CollectionModel.of(groupListingModels);
+    }
+
+    @PostMapping("/get_issues_page")
+    @PreAuthorize("isAuthenticated() and hasRole('mod')")
+    public Page<ModerationIssueResponseDto> modGetAllIssues(@RequestBody SortablePageRequestDto pageDto) {
+        Sort sort = Sort.unsorted();
+        if (pageDto.getSortField() != null && !pageDto.getSortField().isBlank()) {
+            Sort.Direction direction = "desc".equalsIgnoreCase(pageDto.getSortDirection())
+                    ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, pageDto.getSortField());
+        }
+
+        Pageable pageable = PageRequest.of(pageDto.getPage(), pageDto.getSize(), sort);
+
+        return mods.modGetAllIssues(pageable);
     }
 
     // ##TODO: Change the frontend delete flow to include confirmation and a deletion/report basis.

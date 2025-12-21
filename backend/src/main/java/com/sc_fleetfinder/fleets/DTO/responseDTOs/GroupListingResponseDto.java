@@ -16,6 +16,9 @@ public class GroupListingResponseDto {
     @NotNull(message = "GroupListingResponseDto field 'groupId' cannot be null")
     private Long groupId;
 
+    @NotNull(message="GroupListingResponseDto field 'userId' cannot be null.")
+    private Long userId;
+
     @NotNull(message = "GroupListingResponseDto field 'userName' cannot be null")
     private String userName;
 
