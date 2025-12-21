@@ -183,8 +183,6 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
         Map<String, String> response = new HashMap<>();
         Set<Long> verifiedIds = new HashSet<>();
 
-
-
         try {
             for(Long groupId : groupIds) {
                 if(bmr.findByUserAndGroupId(user, groupId).isPresent()) {

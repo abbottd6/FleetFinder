@@ -18,7 +18,7 @@ import {UserService} from "../../services/user-services/user.service";
 import {CloseValue, GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
 import {ModListingsTableComponent} from "../mod-listings-table/mod-listings-table.component";
-import {UserBookmarksTableComponent} from "../user-bookmarks-table/user-bookmarks-table.component";
+import {UserProfileBookmarksComponent} from "../user-profile-bookmarks/user-profile-bookmarks.component";
 import {
   ListingViewInteractionsService
 } from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
@@ -30,14 +30,14 @@ import {
       './user.component.css',
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
-    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent, ModListingsTableComponent, UserBookmarksTableComponent],
+    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent, ModListingsTableComponent, UserProfileBookmarksComponent],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
 
-  @ViewChild('bookmarks') bookmarks!: UserBookmarksTableComponent;
+  @ViewChild('bookmarks') bookmarks!: UserProfileBookmarksComponent;
 
   //modal popup vars
   selectedListing: GroupListingViewModel | null = null;

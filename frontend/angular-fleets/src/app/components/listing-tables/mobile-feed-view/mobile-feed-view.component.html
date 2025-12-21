@@ -28,9 +28,9 @@
     <td class="feed-element"
         mat-cell *matCellDef="let row"
         (click)="listingSelected(row)"
-        (contextmenu)="openContextMenu($event, row)"
-        (touchstart)="onTouchStart()"
-        (touchend)="onTouchEnd($event, row)">
+        (contextmenu)="quickMenu.openContextMenu($event, row)"
+        (touchstart)="quickMenu.onTouchStart($event, row)"
+        (touchend)="quickMenu.onTouchEnd($event)">
       <div class="feed-data-row title-row">
         <span>{{ row.listingTitle }}</span>
       </div>
@@ -62,9 +62,6 @@
   <tr mat-header-row class="header-row" *matHeaderRowDef="columns"></tr>
   <tr mat-row *matRowDef="let row; columns: columns" (click)="listingSelected(row)"
       [class.row-is-clicked]="isRowClicked(row)"></tr>
-  <tr *ngIf="noResults">
-    <td [attr.colspan]="columns.length"></td>
-  </tr>
 
 </table>
 

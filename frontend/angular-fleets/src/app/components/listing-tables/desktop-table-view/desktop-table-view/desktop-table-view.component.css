@@ -1,0 +1,55 @@
+.mat-mdc-header-row {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1 !important;
+  background-color: rgba(45, 45, 45, 0.9);
+  color: rgba(150, 168, 183, 1);
+  font-family: Orbitron, sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 1.1rem !important;
+}
+
+.mdc-data-table__row.mat-mdc-row {
+  color: rgba(150, 168, 183, 1);
+  font-family: "Exo 2", sans-serif !important;
+  font-weight: 400 !important;
+  font-size: 1rem !important;
+  background-color: rgba(44, 44, 44, 0.2);
+  transition: 0.2s ease;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(255, 131, 7, .07) !important;
+  cursor: pointer;
+}
+
+@media(min-width: 725px) and (max-width: 1529px) {
+  .mat-mdc-header-row {
+    font-size: clamp(0.8rem, 1rem, 1.5rem);
+  }
+  .mat-mdc-row {
+    font-size: clamp(0.7rem, 0.9rem, 1rem) !important;
+  }
+
+  .indicators-column-icon {
+    scale: 0.7;
+  }
+}
+
+@media(max-width: 724px) {
+  .mat-mdc {
+    overflow: scroll;
+  }
+
+  .mat-mdc-header-row {
+    font-size: clamp(0.5rem, 0.8rem, 1.5rem) !important;
+  }
+
+  .mat-mdc-row {
+    font-size: clamp(0.5rem, 0.7rem, 1.5rem) !important;
+  }
+
+  .action-buttons {
+    font-size: .7rem;
+  }
+}

@@ -68,7 +68,7 @@ import { MobileFiltersPopupComponent } from './components/pop-ups/mobile-filters
 import { FilterDropdownsComponent } from './components/dropdowns/filter-dropdowns/filter-dropdowns.component';
 import { DontShowMeAgainPopup } from './components/pop-ups/dont-show-me-again-popup/dont-show-me-again-popup';
 import {MatBadge} from "@angular/material/badge";
-import { UserBookmarksTableComponent } from './components/user-bookmarks-table/user-bookmarks-table.component';
+import { UserProfileBookmarksComponent } from './components/user-profile-bookmarks/user-profile-bookmarks.component';
 import { MobileFeedViewComponent } from './components/listing-tables/mobile-feed-view/mobile-feed-view.component';
 
 

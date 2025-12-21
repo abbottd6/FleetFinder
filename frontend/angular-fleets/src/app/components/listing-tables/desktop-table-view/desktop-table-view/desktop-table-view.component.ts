@@ -5,106 +5,106 @@ import {
   EventEmitter,
   inject,
   Input,
-  OnDestroy,
-  OnInit,
+  OnDestroy, OnInit,
   Output,
   ViewChild
 } from '@angular/core';
 import {
-  MatCell, MatCellDef,
-  MatColumnDef,
+  MatCell, MatCellDef, MatColumnDef,
   MatHeaderCell,
-  MatHeaderCellDef, MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef,
-  MatTable,
-  MatTableDataSource
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef, MatTable, MatTableDataSource
 } from "@angular/material/table";
-import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
+import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
 import {MatCheckbox} from "@angular/material/checkbox";
-import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
+import {Subject, takeUntil} from "rxjs";
+import {GroupListingViewModel} from "../../../../models/group-listing/group-listing-view-model";
+import {SelectionModel} from "@angular/cdk/collections";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {
   ListingViewInteractionsService
-} from "../../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
-import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {UiPrefsService} from "../../../services/facade-services/ui-prefs/ui-prefs.service";
+} from "../../../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
+import {UiPrefsService} from "../../../../services/facade-services/ui-prefs/ui-prefs.service";
+import {AuthService} from "../../../../services/auth/auth-services/auth.service";
+import {
+  QuickAccessMenuService
+} from "../../../../services/component-services/quick-access-menu/quick-access-menu.service";
 import {TooltipPosition} from "@angular/material/tooltip";
-import {SelectionModel} from "@angular/cdk/collections";
-import {Subject, takeUntil} from "rxjs";
-import {AuthService} from "../../../services/auth/auth-services/auth.service";
-import {QuickAccessMenuService} from "../../../services/component-services/quick-access-menu/quick-access-menu.service";
 
 @Component({
-  selector: 'app-mobile-feed-view',
+  selector: 'app-desktop-table-view',
   standalone: true,
-  templateUrl: './mobile-feed-view.component.html',
+  templateUrl: './desktop-table-view.component.html',
   imports: [
-    MatTable,
-    MatCheckbox,
-    MatColumnDef,
-    MatHeaderCell,
-    MatHeaderCellDef,
-    MatCell,
-    MatCellDef,
-    DatePipe,
     MatHeaderRow,
-    MatHeaderRowDef,
     MatRow,
+    MatHeaderRowDef,
     MatRowDef,
-    NgIf,
-    SlicePipe,
+    MatCell,
+    MatHeaderCell,
+    DatePipe,
+    MatHeaderCellDef,
+    MatCellDef,
+    MatColumnDef,
+    MatCheckbox,
+    MatTable,
     AsyncPipe,
     MatMenu,
     MatMenuItem,
+    NgIf,
     MatMenuTrigger
   ],
-  styleUrl: './mobile-feed-view.component.css'
+  styleUrl: './desktop-table-view.component.css'
 })
-export class MobileFeedViewComponent implements OnInit, OnDestroy, AfterViewInit {
-  private mobileDestroy$ = new Subject<void>();
+export class DesktopTableViewComponent implements OnInit, OnDestroy, AfterViewInit {
+  private desktopDestroy$ = new Subject<void>();
 
   @Input() dataSource!: MatTableDataSource<GroupListingViewModel>;
   @Input() columns!: string[];
-  @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
-  @Output() theseSelected = new EventEmitter<SelectionModel<GroupListingViewModel>>();
+  @Output() listingToEmit = new EventEmitter<GroupListingViewModel>();
+  @Output() selected = new EventEmitter<SelectionModel<GroupListingViewModel>>();
 
-  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
-  @ViewChild('contextMenuAnchor', { read: ElementRef })
-  protected contextMenuAnchor!: ElementRef<HTMLElement>;
+  @ViewChild(MatMenuTrigger) desktopTrigger!: MatMenuTrigger;
+  @ViewChild('desktopMenuAnchor', { read: ElementRef })
+  protected desktopMenuAnchor!: ElementRef<HTMLElement>;
 
 
   protected listingInteract = inject(ListingViewInteractionsService);
   protected uiPrefService = inject(UiPrefsService);
   protected auth = inject(AuthService);
-  protected quickMenu = inject(QuickAccessMenuService);
+  protected desktopQuickMenu = inject(QuickAccessMenuService);
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
 
   selection = new SelectionModel<GroupListingViewModel>(true, [])
 
-
   ngOnInit(): void {
     this.uiPrefService.uiPrefs = this.uiPrefService.loadUiPrefs();
 
-    this.auth.isLoggedIn$.pipe(takeUntil(this.mobileDestroy$)).subscribe(
+    this.auth.isLoggedIn$.pipe(takeUntil(this.desktopDestroy$)).subscribe(
       val => this.listingInteract.isLoggedIn = val);
 
     if(this.columns.includes('select')) {
-      this.selection.changed.pipe(takeUntil(this.mobileDestroy$)).subscribe(change => {
-        this.theseSelected.emit(this.selection);
+      this.selection.changed.pipe(takeUntil(this.desktopDestroy$)).subscribe(change => {
+        this.selected.emit(this.selection);
       })
     }
   }
 
   ngAfterViewInit() {
-    this.quickMenu.registerMenu(this.menuTrigger, this.contextMenuAnchor)
+    this.desktopQuickMenu.registerMenu(this.desktopTrigger, this.desktopMenuAnchor)
   }
 
   ngOnDestroy() {
-    this.mobileDestroy$.next();
-    this.mobileDestroy$.complete();
+    this.desktopDestroy$.next();
+    this.desktopDestroy$.complete();
   }
 
   listingSelected(listing: GroupListingViewModel) {
     this.saveClick(listing.groupId);
-    this.listingForModal.emit(listing)
+    this.listingToEmit.emit(listing)
   }
 
   /*------------------------------------- SELECT CHECKBOX COLUMN -----------------------------------------------------*/

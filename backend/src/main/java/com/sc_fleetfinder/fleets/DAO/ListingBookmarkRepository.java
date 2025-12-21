@@ -31,6 +31,6 @@ public interface ListingBookmarkRepository extends JpaRepository<ListingBookmark
 
     Optional<ListingBookmark> findByUserAndGroup(Users user, GroupListing group);
 
-    @Query("SELECT lb FROM ListingBookmark lb WHERE lb.group.groupId = :groupId")
+    @Query("SELECT lb FROM ListingBookmark lb WHERE lb.user = :user AND lb.group.groupId = :groupId")
     Optional<ListingBookmark> findByUserAndGroupId(@Param("user") Users user, @Param("groupId") Long groupId);
 }

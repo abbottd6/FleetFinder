@@ -15,41 +15,12 @@
   margin: 1rem auto 1rem 1rem;
 }
 
-.mat-mdc-header-row {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 1 !important;
-  background-color: rgba(45, 45, 45, 0.9);
-  color: rgba(150, 168, 183, 1);
-  font-family: Orbitron, sans-serif !important;
-  font-weight: 700 !important;
-  font-size: 1.1rem !important;
-}
-
-.mdc-data-table__row.mat-mdc-row {
-  color: rgba(150, 168, 183, 1);
-  font-family: "Exo 2", sans-serif !important;
-  font-weight: 400 !important;
-  font-size: 1rem !important;
-  background-color: rgba(44, 44, 44, 0.2);
-  transition: 0.2s ease;
-}
-
-.mat-mdc-row:hover {
-  background-color: rgba(255, 131, 7, .07) !important;
-  cursor: pointer;
-}
-
 .user-table {
   display: block;
   overflow-y: scroll;
   overflow-x: scroll;
   max-height: 50vh;
   scrollbar-color: #2c2c2c transparent;
-}
-
-.visibility-icon {
-  scale: 0.9 !important;
 }
 
 .no-results-container {
@@ -78,17 +49,10 @@
 }
 
 @media(max-width: 724px) {
-  .mat-mdc {
-    overflow: scroll;
-  }
 
   .search-bar-wrapper {
     padding-left: 0;
     padding-top: 0.1rem;
-  }
-
-  .mat-mdc-header-row {
-    font-size: clamp(0.5rem, 0.8rem, 1.5rem) !important;
   }
 
   .table-container {
@@ -111,10 +75,6 @@
     margin: 1rem 0.25rem 1rem auto;
   }
 
-  .mat-mdc-row {
-    font-size: clamp(0.5rem, 0.7rem, 1.5rem) !important;
-  }
-
   .action-buttons {
     font-size: .7rem;
   }
@@ -122,44 +82,4 @@
   .paginator {
     font-size: clamp(0.5rem, 0.8rem, 1rem);
   }
-}
-
-/*------------------------------------ FEED VIEW TABLE ------------------------------------------------------*/
-
-.feed-element {
-  display: flex;
-  flex-direction: column;
-  min-height: 15vh;
-}
-
-.feed-data-row {
-  display: flex;
-  flex-direction: row;
-  gap: 0.75rem;
-  padding-top: 0.1rem;
-  margin: 0;
-}
-
-.title-row {
-  padding-top: 0.25rem;
-  font-size: 1rem;
-}
-
-.feed-label-value-pair {
-  display: flex;
-  flex-direction: row;
-  gap: 0.2rem;
-  padding: 0;
-  margin: 0;
-}
-
-.field-label {
-  color: rgba(255, 131, 7, .6);
-  padding: 0;
-  margin: 0;
-}
-
-.description-row {
-  text-wrap: wrap;
-  padding-bottom: 0.25rem;
 }

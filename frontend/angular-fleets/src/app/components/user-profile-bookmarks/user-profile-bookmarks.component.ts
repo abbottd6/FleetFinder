@@ -10,65 +10,39 @@ import {
   ViewChild
 } from '@angular/core';
 import {
-  MatCell,
-  MatCellDef,
-  MatColumnDef,
-  MatHeaderCell, MatHeaderCellDef,
-  MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable,
   MatTableDataSource
 } from "@angular/material/table";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
-import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
-import {MatIcon} from "@angular/material/icon";
-import {MatIconButton} from "@angular/material/button";
-import {MatMenu, MatMenuTrigger} from "@angular/material/menu";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {BookmarkApiService} from "../../services/api-services/bookmarks-api/bookmark-api.service";
 import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
-import {MatCheckbox} from "@angular/material/checkbox";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {SelectionModel} from "@angular/cdk/collections";
-import {environment} from "../../../environments/environment";
-import {CloseValue} from "../group-listing-modal/group-listing-modal.component";
 import {
   ListingViewInteractionsService
 } from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
-import {MatSort} from "@angular/material/sort";
-import {MatTooltip, TooltipPosition} from "@angular/material/tooltip";
-import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
+import {
+  DesktopTableViewComponent
+} from "../listing-tables/desktop-table-view/desktop-table-view/desktop-table-view.component";
 import {MobileFeedViewComponent} from "../listing-tables/mobile-feed-view/mobile-feed-view.component";
 
 @Component({
   selector: 'app-user-bookmarks-table',
   standalone: true,
-  templateUrl: './user-bookmarks-table.component.html',
+  templateUrl: './user-profile-bookmarks.component.html',
   imports: [
-    DatePipe,
-    MatCell,
-    MatCellDef,
-    MatColumnDef,
-    MatHeaderCell,
-    MatHeaderRow,
-    MatHeaderRowDef,
-    MatIcon,
-    MatIconButton,
-    MatMenu,
-    MatRow,
-    MatRowDef,
-    MatTable,
     NgIf,
-    MatMenuTrigger,
-    MatHeaderCellDef,
     AsyncPipe,
-    MatCheckbox,
     MatPaginator,
-    MobileFeedViewComponent
+    MobileFeedViewComponent,
+    DesktopTableViewComponent
   ],
-  styleUrl: './user-bookmarks-table.component.css'
+  styleUrl: './user-profile-bookmarks.component.css'
 })
 
-export class UserBookmarksTableComponent implements OnInit, OnDestroy, AfterViewInit {
+export class UserProfileBookmarksComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   private destroy$: Subject<void> = new Subject<void>();
