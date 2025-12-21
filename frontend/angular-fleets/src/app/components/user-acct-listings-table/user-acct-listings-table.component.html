@@ -2,139 +2,77 @@
   <h5>My Listings:</h5>
 </div>
 <div class="button-row">
-  <ng-container *ngIf="!(isMobile$ | async)">
+  <ng-container *ngIf="(layoutMode$ | async) !== 'handheld'; else forHandheld">
     <div class="action-buttons-container">
-      <a>
-        <button type="submit" class="action-buttons"
-                (click)="openConfirmDelete(this.selection.selected)"
-                [disabled]="!(selection.hasValue())">
-          Remove Listing
-        </button>
-      </a>
-      <a>
-        <button class="action-buttons"
-                (click)="userUpdateSelected()"
-                [disabled]="!(selection.hasValue()) || !singleSelected()">
-          Update Listing
-        </button>
-      </a>
-      <a>
-        <button class="action-buttons"
-                [disabled]="!(selection.hasValue()) || !singleSelected()">
-          Save Template
-          <!--            (click)="userSaveTemplate()" -->
-        </button>
-      </a>
+      <button type="submit" class="action-buttons"
+              (click)="deleteListings()"
+              [disabled]="!(selection.hasValue())">
+        Delete Listing
+      </button>
+      <button class="action-buttons"
+              (click)="updateListing()"
+              [disabled]="!(selection.hasValue()) || !singleSelected()">
+        Update Listing
+      </button>
+      <button class="action-buttons"
+              [disabled]="!(selection.hasValue()) || !singleSelected()">
+        Save Template
+                                          <!-- TODO user save template -->
+      </button>
     </div>
   </ng-container>
-  <div class="action-button-container-right">
-    <a>
-      <button [routerLink]="['/create-listing']" class="action-buttons">
-        New Listing
+
+  <ng-template #forHandheld>
+    <div class="action-buttons-container">
+      <button class="action-buttons-with-icons"
+              [disabled]="!selection.hasValue()"
+              [matMenuTriggerFor]="listingOptionsMenu">
+        Options
+        <mat-icon>arrow_drop_down</mat-icon>
       </button>
-    </a>
+      <mat-menu #listingOptionsMenu="matMenu">
+        <button mat-menu-item class="options-item"
+                [disabled]="!(selection.hasValue()) || !singleSelected()"
+                (click)="updateListing()">
+          Update
+        </button>
+        <button mat-menu-item class="options-item"
+                [disabled]="!(selection.hasValue()) || !singleSelected()">
+          <!-- TODO user save template -->
+          Template
+        </button>
+        <button mat-menu-item class="options-item"
+                [disabled]="!(selection.hasValue())"
+                (click)="deleteListings()">
+          Delete
+        </button>
+      </mat-menu>
+    </div>
+  </ng-template>
+  <div class="action-button-container-right">
+    <button [routerLink]="['/create-listing']" class="action-buttons">
+      New Listing
+    </button>
   </div>
 </div>
 <div class="user-table">
-  <table mat-table [dataSource]="dataSource">
+  <ng-container *ngIf="(layoutMode$ | async) !== 'handheld'; else feedview">
+    <app-desktop-table-view
+      [dataSource]="dataSource"
+      [columns]="fullColumns"
+      (listingToEmit)="emitChildClick($event)"
+      (selected)="changeSelectedFromChild($event)">
+    </app-desktop-table-view>
+  </ng-container>
 
-    <!-- MOBILE ONLY < 499px: Options column -->
-    <ng-container matColumnDef='options'>
-      <th mat-header-cell *matHeaderCellDef>
-
-      </th>
-      <td mat-cell *matCellDef="let row; let i = index">
-        <button mat-icon-button [matMenuTriggerFor]="listingOptionsMenu">
-          <mat-icon class="options-menu-icon">more_vert</mat-icon>
-        </button>
-        <mat-menu #listingOptionsMenu="matMenu">
-          <ul class="options-list">
-            <li class="options-item">
-              <a (click)="mobileUserUpdateSingle(row)">
-                 Update
-              </a>
-            </li>
-            <li class="options-item">
-              <a (click)="openConfirmDelete(row)">
-                Delete
-              </a>
-            </li>
-            <li class="options-item">
-              <a>
-                Save Template
-              </a>
-            </li>
-          </ul>
-        </mat-menu>
-      </td>
-    </ng-container>
-
-    <!-- Checkbox Column -->
-    <ng-container matColumnDef='select'>
-      <th mat-header-cell *matHeaderCellDef>
-        <mat-checkbox (change)="$event ? toggleAllRows() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()"
-                      [aria-label]="checkboxLabel()">
-        </mat-checkbox>
-      </th>
-      <td mat-cell *matCellDef="let row; let i = index">
-        <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)"
-                      [aria-label]="checkboxLabel(row)">
-        </mat-checkbox>
-      </td>
-    </ng-container>
-
-    <!-- Title Column -->
-    <ng-container matColumnDef='title'>
-      <th mat-header-cell *matHeaderCellDef> Title</th>
-      <td mat-cell *matCellDef="let row" (click)="onRowClick(row)"> {{ row.listingTitle }}</td>
-    </ng-container>
-
-    <!-- Status Column -->
-    <ng-container matColumnDef='status'>
-      <th mat-header-cell *matHeaderCellDef> Group Status</th>
-      <td mat-cell *matCellDef="let row" (click)="onRowClick(row)"> {{ row.groupStatus }}</td>
-    </ng-container>
-
-    <!-- Category Column -->
-    <ng-container matColumnDef='category'>
-      <th mat-header-cell *matHeaderCellDef> Category</th>
-      <td mat-cell *matCellDef="let row" (click)="onRowClick(row)"> {{ row.category }}</td>
-    </ng-container>
-
-    <!-- PvP Status Column -->
-    <ng-container matColumnDef='pvp'>
-      <th mat-header-cell *matHeaderCellDef> PvP Status</th>
-      <td mat-cell *matCellDef="let row" (click)="onRowClick(row)"> {{ row.pvpStatus }}</td>
-    </ng-container>
-
-    <!-- Planetary System Column -->
-    <ng-container matColumnDef='system'>
-      <th mat-header-cell *matHeaderCellDef> System</th>
-      <td mat-cell *matCellDef="let row" (click)="onRowClick(row)"> {{ row.system }}</td>
-    </ng-container>
-
-    <!-- Available Roles Column -->
-    <ng-container matColumnDef='roles'>
-      <th mat-header-cell *matHeaderCellDef> Avail. Roles</th>
-      <td mat-cell *matCellDef="let row" (click)="onRowClick(row)"> {{ row.availableRoles }}</td>
-    </ng-container>
-
-    <!-- Last Updated TS Column -->
-    <ng-container matColumnDef='updated'>
-      <th mat-header-cell *matHeaderCellDef> Last Updated</th>
-      <td mat-cell *matCellDef="let row" (click)="onRowClick(row)"> {{ row.lastUpdated | date: 'MMM d, yyyy h:mm a' }}</td>
-    </ng-container>
-
-    <!-- header declarations -->
-    <ng-container>
-      <tr mat-header-row *matHeaderRowDef="fullColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: fullColumns"></tr>
-    </ng-container>
-  </table>
+  <ng-template #feedview>
+    <app-mobile-feed-view
+      [dataSource]="dataSource"
+      [columns]="mobileColumns"
+      (listingForModal)="emitChildClick($event)"
+      (theseSelected)="changeSelectedFromChild($event)">
+    </app-mobile-feed-view>
+  </ng-template>
 </div>
 
 

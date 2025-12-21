@@ -34,6 +34,9 @@ import {
 import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
 import {MatMenuTrigger} from "@angular/material/menu";
 import {QuickAccessMenuService} from "../../services/component-services/quick-access-menu/quick-access-menu.service";
+import {
+  ListingOwnerActionsService
+} from "../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -78,7 +81,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
               private uiPrefService: UiPrefsService,
               protected quickMenu: QuickAccessMenuService,
               private auth: AuthService,
-              private userService: UserService) {
+              private userService: UserService,
+              protected ownerService: ListingOwnerActionsService) {
 
     afterNextRender(() => {
       this.uiPrefService.clickedCleanupCheck();
@@ -185,6 +189,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         },
         complete: () => {
           this.noResults = (this.dataSource.data.length === 0);
+          console.log(this.dataSource.data[0]);
         }
     });
   }

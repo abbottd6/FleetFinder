@@ -47,7 +47,6 @@ export class UserProfileBookmarksComponent implements OnInit, OnDestroy, AfterVi
 
   private destroy$: Subject<void> = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
-  protected listingInteract = inject(ListingViewInteractionsService)
 
   @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
 
@@ -61,7 +60,9 @@ export class UserProfileBookmarksComponent implements OnInit, OnDestroy, AfterVi
   pageSize = 10;
   totalElements = 0;
 
-  constructor(private userBms: BookmarkApiService) {
+  constructor(private userBms: BookmarkApiService,
+              protected listingInteract: ListingViewInteractionsService) {
+
     this.loadBookmarks(this.pageIndex, this.pageSize);
   }
 
@@ -111,39 +112,39 @@ export class UserProfileBookmarksComponent implements OnInit, OnDestroy, AfterVi
       })
   }
 
-  // check whether the number of selected rows matches total rows
-  isAllSelected() {
-    const numSelected = this.selection.selected.length;
-    const numRows = this.dataSource.data.length;
-    return numSelected === numRows;
-  }
-
-  singleSelected() {
-    // if(!environment.production) {
-    //   console.log("HERE IS THE USER ACCT TABLE SELECTED LISTING DATA: ", this.selection.selected);
-    // }
-    return this.selection.selected.length < 2;
-  }
-
-  toggleAllRows() {
-    if(this.isAllSelected()) {
-      this.selection.clear();
-      return;
-    }
-
-    this.selection.select(...this.dataSource.data);
-  }
-
-  checkboxLabel(row?: GroupListingViewModel){
-    if (!row) {
-      return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
-    }
-    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.groupId + 1}`
-  }
-
-  onRowClick(listing: GroupListingViewModel) {
-    this.listingForModal.emit(listing);
-  }
+  // // check whether the number of selected rows matches total rows
+  // isAllSelected() {
+  //   const numSelected = this.selection.selected.length;
+  //   const numRows = this.dataSource.data.length;
+  //   return numSelected === numRows;
+  // }
+  //
+  // singleSelected() {
+  //   // if(!environment.production) {
+  //   //   console.log("HERE IS THE USER ACCT TABLE SELECTED LISTING DATA: ", this.selection.selected);
+  //   // }
+  //   return this.selection.selected.length < 2;
+  // }
+  //
+  // toggleAllRows() {
+  //   if(this.isAllSelected()) {
+  //     this.selection.clear();
+  //     return;
+  //   }
+  //
+  //   this.selection.select(...this.dataSource.data);
+  // }
+  //
+  // checkboxLabel(row?: GroupListingViewModel){
+  //   if (!row) {
+  //     return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+  //   }
+  //   return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.groupId + 1}`
+  // }
+  //
+  // onRowClick(listing: GroupListingViewModel) {
+  //   this.listingForModal.emit(listing);
+  // }
 
   layoutMode$: Observable<LayoutMode> = this.breakpointObserver
     .observe([

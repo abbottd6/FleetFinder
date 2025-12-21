@@ -31,6 +31,9 @@ import {SelectionModel} from "@angular/cdk/collections";
 import {Subject, takeUntil} from "rxjs";
 import {AuthService} from "../../../services/auth/auth-services/auth.service";
 import {QuickAccessMenuService} from "../../../services/component-services/quick-access-menu/quick-access-menu.service";
+import {
+  ListingOwnerActionsService
+} from "../../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
 
 @Component({
   selector: 'app-mobile-feed-view',
@@ -70,15 +73,15 @@ export class MobileFeedViewComponent implements OnInit, OnDestroy, AfterViewInit
   @ViewChild('contextMenuAnchor', { read: ElementRef })
   protected contextMenuAnchor!: ElementRef<HTMLElement>;
 
-
-  protected listingInteract = inject(ListingViewInteractionsService);
-  protected uiPrefService = inject(UiPrefsService);
-  protected auth = inject(AuthService);
-  protected quickMenu = inject(QuickAccessMenuService);
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
 
   selection = new SelectionModel<GroupListingViewModel>(true, [])
 
+  constructor(protected listingInteract: ListingViewInteractionsService,
+              protected uiPrefService: UiPrefsService,
+              protected auth: AuthService,
+              protected quickMenu: QuickAccessMenuService,
+              protected ownerService: ListingOwnerActionsService) {}
 
   ngOnInit(): void {
     this.uiPrefService.uiPrefs = this.uiPrefService.loadUiPrefs();

@@ -23,47 +23,6 @@
   margin: 1rem 1rem 1rem auto;
 }
 
-/*.action-buttons {*/
-/*  border: 1px solid rgba(255, 131, 7, .75);*/
-/*  padding: .42rem 1.12rem .42rem 1.12rem !important;*/
-/*  background-color: rgba(33, 37, 41, .4);*/
-/*  margin-inline: .75rem;*/
-/*  color: rgba(255, 131, 7, .75);*/
-/*  font-size: 1rem;*/
-/*  border-radius: .2rem;*/
-/*  transition: 0.2s ease;*/
-/*}*/
-
-/*.action-buttons:disabled {*/
-/*  border: 1px solid rgba(33, 37, 41, .4);*/
-/*  padding: .42rem 1.12rem .42rem 1.12rem !important;*/
-/*  background-color: rgba(92, 96, 101, .4);*/
-/*  margin-inline: .75rem;*/
-/*  color: rgba(33, 37, 41, .4);*/
-/*  border-radius: .2rem;*/
-/*  transition: .3s ease;*/
-/*}*/
-
-/*.action-buttons:hover:disabled {*/
-/*  border: 1px solid rgba(255, 131, 7, .4);*/
-/*  padding: .42rem 1.12rem .42rem 1.12rem !important;*/
-/*  background-color: rgba(92, 96, 101, .4);*/
-/*  margin-inline: .75rem;*/
-/*  color: rgba(255, 131, 7, .4);*/
-/*  border-radius: .2rem;*/
-/*}*/
-
-/*.action-buttons:hover {*/
-/*  color: var(--bs-gray-900);*/
-/*  border-color: rgba(255, 131, 7, .75);*/
-/*  background-color: rgba(255, 131, 7, .25);*/
-/*  cursor: pointer;*/
-/*}*/
-
-/*.mat-mdc-table__content {*/
-
-/*}*/
-
 .mat-mdc-header-row {
   position: sticky !important;
   top: 0 !important;
@@ -132,6 +91,10 @@
     overflow: scroll;
   }
 
+  .title-container h5 {
+    font-size: 1.1rem;
+  }
+
   .user-table {
     max-height: 50vh;
   }
@@ -177,18 +140,13 @@
     margin-bottom: 0.75rem;
   }
 
-  /*.options-item {*/
-  /*  display: block;*/
-  /*  min-width: 85%;*/
-  /*  margin: 0.0rem .5rem .25rem .5rem;*/
-  /*  padding: 0.5rem 0.5rem 0.25rem 0.5rem;*/
-  /*  clear: both;*/
-  /*  color: rgba(255, 131, 7, .6);*/
-  /*  text-align: left;*/
-  /*  border-bottom: 1px solid rgba(255, 131, 7, .6);*/
-  /*  font-size: 95%;*/
-  /*  transition: background-color 0.15s ease;*/
-  /*}*/
+  .action-buttons-with-icons mat-icon {
+    scale: 0.7;
+  }
+
+  .action-buttons-container {
+    margin-left: 0;
+  }
 
   .options-item:hover {
     background-color: rgba(255, 131, 7, .25);

@@ -15,6 +15,7 @@ import {environment} from '../../../environments/environment';
 import {PrivateUser} from "../../models/private-user/private-user";
 import {AuthService} from "../auth/auth-services/auth.service";
 import {UserApiService} from "./userApi.service";
+import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -79,6 +80,10 @@ export class UserService implements OnDestroy {
     ),
     shareReplay({bufferSize: 1, refCount: true})
   );
+
+  public userListings$: Observable<GroupListingViewModel[]> = this.localUser$.pipe(takeUntil(this.destroy$)).pipe(
+    map(user => user.groupListingsDto ?? [])
+  )
 
   public localUsername$ = this.localUser$.pipe(map(userObj => userObj.username));
 

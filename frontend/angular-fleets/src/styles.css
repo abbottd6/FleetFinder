@@ -330,12 +330,25 @@ app-user {
 
 .action-buttons:disabled {
   border: 1px solid rgba(33, 37, 41, .4);
-  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  padding: .42rem 1.12rem .42rem 1.12rem;
   background-color: rgba(92, 96, 101, .4);
   margin-inline: .75rem;
   color: rgba(33, 37, 41, .4);
   border-radius: .2rem;
   transition: .3s ease;
+}
+
+.action-buttons-with-icons:disabled {
+  border: 1px solid rgba(33, 37, 41, .4);
+  background-color: rgba(92, 96, 101, .4);
+  color: rgba(33, 37, 41, .4);
+}
+
+
+.action-buttons-with-icons:hover:disabled {
+  border: 1px solid rgba(255, 131, 7, .4);
+  background-color: rgba(92, 96, 101, .4);
+  color: rgba(255, 131, 7, .4);
 }
 
 .action-buttons:hover:disabled {

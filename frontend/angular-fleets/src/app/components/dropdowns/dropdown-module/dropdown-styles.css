@@ -48,14 +48,14 @@
 @media(max-width: 724px) {
   :host ::ng-deep .dropdown-component ng-select .ng-select-container {
     min-height: 5.5vh;
-    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    font-size: clamp(0.7rem, 1.5vw, 1rem);
   }
 }
 
 :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 1rem;
+  font-size: 0.8rem;
   min-width: 90%;
   color: rgba(255, 131, 7, 0.5) !important;
   transition: font-size 0.3s ease;

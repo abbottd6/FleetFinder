@@ -14,6 +14,7 @@ import {HiddenListingsApiService} from "../../api-services/hidden-listings-api/h
 import {SubmitListingReport} from "../../../models/report-requests/submit-listing-report";
 import {UiPrefsService} from "../ui-prefs/ui-prefs.service";
 import {CloseValue} from "../../../components/group-listing-modal/group-listing-modal.component";
+import {UserService} from "../../user-services/user.service";
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +39,7 @@ export class ListingViewInteractionsService {
               private reportService: ListingReportApiService,
               private hideService: HiddenListingsApiService,
               protected uiPrefService: UiPrefsService,
+              private userSrv: UserService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog) {
 
@@ -58,10 +60,22 @@ export class ListingViewInteractionsService {
 
   setSelectedListing(row: GroupListingViewModel | null) {
     this.selectedListingSubject.next(row);
+    console.log("set selected: ", row)
   }
 
   get selectedListing(): GroupListingViewModel | null {
     return this.selectedListingSubject.value;
+  }
+
+  userIsListingOwner(): Observable<boolean> {
+    const selectedId = this.selectedListing?.groupId;
+
+    if(!this.userSrv.localUser$ || !selectedId) return of(false);
+
+    return this.userSrv.userListings$.pipe(
+      map(listings =>
+        listings.some(group => group.groupId === selectedId))
+    );
   }
 
   //on-row-click instructions for groupListing modal popup

@@ -80,40 +80,52 @@
 </div>
 
 <mat-menu #desktopOptionsMenu="matMenu">
-  <button
-    mat-menu-item
-    class="options-item">
-    Message
-  </button>
-  <button
-    mat-menu-item
-    class="options-item"
-    [disabled]="!listingInteract.selectedListing"
-    (click)="listingInteract.hideSelected()">
-    Hide
-  </button>
-  <ng-container *ngIf="(listingInteract.selectedIsBookmarked$ | async) === true; else notBookmarked">
+  <ng-container *ngIf="!(listingInteract.userIsListingOwner() | async); else ownerMenu">
+    <button
+      mat-menu-item
+      class="options-item">
+      Message
+    </button>
     <button
       mat-menu-item
       class="options-item"
-      [disabled]="!listingInteract.selectedListing"
-      (click)="listingInteract.deleteSelectedBookmark()">
-      Unmark
+      (click)="listingInteract.hideSelected()">
+      Hide
+    </button>
+    <ng-container *ngIf="(listingInteract.selectedIsBookmarked$ | async) === true; else notBookmarked">
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="listingInteract.deleteSelectedBookmark()">
+        Unmark
+      </button>
+    </ng-container>
+    <ng-template #notBookmarked>
+      <button mat-menu-item
+              class="options-item"
+              (click)="listingInteract.bookmarkSelected()">
+        Bookmark
+      </button>
+    </ng-template>
+    <button
+      mat-menu-item
+      class="options-item"
+      (click)="listingInteract.reportSelected()">
+      Report
     </button>
   </ng-container>
-  <ng-template #notBookmarked>
-    <button mat-menu-item
-            class="options-item"
-            [disabled]="!listingInteract.selectedListing"
-            (click)="listingInteract.bookmarkSelected()">
-      Bookmark
+  <ng-template #ownerMenu>
+    <button mat-menu-item class="options-item"
+            (click)="ownerService.userUpdateSelected(listingInteract.selectedListing!)">
+      Update
+    </button>
+    <button mat-menu-item class="options-item">
+      <!-- TODO user save template -->
+      Template
+    </button>
+    <button mat-menu-item class="options-item"
+            (click)="ownerService.openConfirmDelete(listingInteract.selectedListing!)">
+      Delete
     </button>
   </ng-template>
-  <button
-    mat-menu-item
-    class="options-item"
-    [disabled]="!listingInteract.selectedListing"
-    (click)="listingInteract.reportSelected()">
-    Report
-  </button>
 </mat-menu>

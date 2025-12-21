@@ -33,6 +33,9 @@ import {
   QuickAccessMenuService
 } from "../../../../services/component-services/quick-access-menu/quick-access-menu.service";
 import {TooltipPosition} from "@angular/material/tooltip";
+import {
+  ListingOwnerActionsService
+} from "../../../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
 
 @Component({
   selector: 'app-desktop-table-view',
@@ -71,11 +74,12 @@ export class DesktopTableViewComponent implements OnInit, OnDestroy, AfterViewIn
   @ViewChild('desktopMenuAnchor', { read: ElementRef })
   protected desktopMenuAnchor!: ElementRef<HTMLElement>;
 
+  constructor(protected listingInteract: ListingViewInteractionsService,
+              protected uiPrefService: UiPrefsService,
+              protected auth: AuthService,
+              protected desktopQuickMenu: QuickAccessMenuService,
+              protected ownerService: ListingOwnerActionsService) {}
 
-  protected listingInteract = inject(ListingViewInteractionsService);
-  protected uiPrefService = inject(UiPrefsService);
-  protected auth = inject(AuthService);
-  protected desktopQuickMenu = inject(QuickAccessMenuService);
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
 
   selection = new SelectionModel<GroupListingViewModel>(true, [])
