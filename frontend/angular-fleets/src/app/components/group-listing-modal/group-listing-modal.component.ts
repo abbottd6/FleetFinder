@@ -74,7 +74,4 @@ export class GroupListingModalComponent implements OnInit {
     this.close.emit(emitVal);
   }
 
-  // closeOnBackdropClick(event: MouseEvent) {
-  //   this.closeModal();
-  // }
 }

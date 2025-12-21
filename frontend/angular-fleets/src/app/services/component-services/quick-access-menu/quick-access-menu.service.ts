@@ -13,7 +13,7 @@ export class QuickAccessMenuService {
   private anchorEl?: ElementRef<HTMLElement>;
 
   longPressTimer: any;
-  private readonly LONG_PRESS_MS = 400;
+  private readonly LONG_PRESS_MS = 500;
 
   public longPressTriggered = false;
 

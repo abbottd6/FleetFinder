@@ -21,14 +21,14 @@
 
 @media(min-width: 725px) {
   :host ::ng-deep .dropdown-component .ng-select.ng-select-searchable {
-    font-size: clamp(0.7rem, 1vw, 1rem);
+    font-size: clamp(0.7rem, 1rem, 1.2rem);
     min-width: 55%;
   }
 }
 
 @media(max-width: 724px) {
   :host ::ng-deep .dropdown-component .ng-select.ng-select-searchable {
-    font-size: clamp(0.7rem, 1vw, 1rem);
+    font-size: clamp(0.7rem, 1rem, 1.2rem);
     min-width: 50%;
   }
 }
@@ -55,6 +55,7 @@
 :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 1rem;
   min-width: 90%;
   color: rgba(255, 131, 7, 0.5) !important;
   transition: font-size 0.3s ease;

@@ -1,17 +1,7 @@
 .dropdown-component .ng-select {
   margin-inline: 5%;
   min-width: 90% !important;
-}
-
-.action-buttons {
-  border: 1px solid rgba(255, 131, 7, .75);
-  padding: .42rem 1.12rem .42rem 1.12rem !important;
-  background-color: rgba(33, 37, 41, .4);
-  margin-inline: .75rem;
-  color: rgba(255, 131, 7, .75);
-  border-radius: .2rem;
-  transition: 0.2s ease;
-  pointer-events: auto !important;
+  max-height: 100%;
 }
 
 .action-buttons:hover {
@@ -38,5 +28,25 @@
 @media(max-width: 724px) {
   .action-buttons {
     font-size: .9rem;
+  }
+  :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
+    font-size: 0.9rem;
+  }
+
+  :host ::ng-deep .ng-select .ng-select-container .ng-value-container {
+    padding: 0;
+    margin: 0 0 0 0;
+  }
+
+  :host ::ng-deep .ng-select.ng-select-focused .ng-select-container .ng-value-container {
+    margin: 0.35rem 0.2rem 0.2rem 0.2rem;
+  }
+
+  .mat-mdc-dialog-content {
+    min-height: 3rem;
+  }
+
+  .ng-select {
+    padding-bottom: 0;
   }
 }

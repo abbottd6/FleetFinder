@@ -33,6 +33,7 @@ import {
 } from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
 import {MatMenuTrigger} from "@angular/material/menu";
+import {QuickAccessMenuService} from "../../services/component-services/quick-access-menu/quick-access-menu.service";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -47,17 +48,14 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
   @ViewChild('contextMenuAnchor', { read: ElementRef })
-  private contextMenuAnchor!: ElementRef<HTMLElement>;
-  private longPressTimer: any;
-  private readonly LONG_PRESS_MS = 400;
+  protected contextMenuAnchor!: ElementRef<HTMLElement>;
+
 
   @Output() filtersUpToDate = new EventEmitter<boolean>();
 
   private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
   private _liveAnnouncer = inject(LiveAnnouncer)
-  protected listingInteract = inject(ListingViewInteractionsService);
-  private uiPrefService = inject(UiPrefsService);
   readonly dialog = inject(MatDialog);
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
@@ -74,8 +72,13 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   dataSource = new MatTableDataSource<GroupListingViewModel>();
   noResults!: boolean;
 
-  constructor(private groupListingService: GroupListingFetchService, private filter: FilterService,
-              private auth: AuthService, private userService: UserService) {
+  constructor(private groupListingService: GroupListingFetchService,
+              private filter: FilterService,
+              protected listingInteract: ListingViewInteractionsService,
+              private uiPrefService: UiPrefsService,
+              protected quickMenu: QuickAccessMenuService,
+              private auth: AuthService,
+              private userService: UserService) {
 
     afterNextRender(() => {
       this.uiPrefService.clickedCleanupCheck();
@@ -126,6 +129,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.dataSource.sort = this.sort;
     this.uiPrefService.displayQuickAccessMenuHint();
+
+    this.quickMenu.registerMenu(this.menuTrigger, this.contextMenuAnchor)
   }
 
   ngOnDestroy() {
@@ -139,40 +144,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.submittedState = structuredClone(state);
 
     this.loadGroupListings(filterDto, this.pageIndex, this.pageSize, this.sortActive, this.sortDirection);
-  }
-
-  openContextMenu(event: MouseEvent, row: GroupListingViewModel) {
-    event.preventDefault();
-    this.listingInteract.setSelectedListing(row);
-
-    this.openMenuAt(event.clientX, event.clientY);
-  }
-
-  openMenuAt(x: number, y: number) {
-    const el = this.contextMenuAnchor.nativeElement;
-
-    el.style.left = `${x}px`;
-    el.style.top = `${y}px`;
-
-    queueMicrotask(() => this.menuTrigger.openMenu());
-  }
-
-  onTouchStart() {
-    this.listingInteract.longPressTriggered = false;
-  }
-
-  onTouchEnd(event: TouchEvent, row: GroupListingViewModel) {
-    if(event.touches.length !== 1) return;
-
-    event.preventDefault();
-    this.listingInteract.setSelectedListing(row)
-
-    const touch = event.touches[0];
-    this.longPressTimer = setTimeout(() => {
-      this.listingInteract.longPressTriggered = true;
-      this.openMenuAt(touch.clientX, touch.clientY);
-    }, this.LONG_PRESS_MS);
-    clearTimeout(this.longPressTimer);
   }
 
   applyFiltersFromChild(state: ListingFilterState): void {
@@ -246,10 +217,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     );
 
   /* ------------------------------------ INTERFACE TO UI PREFS SERVICE ----------------------------------------------*/
-
-  protected saveClick(groupId: number) {
-    this.uiPrefService.saveRowClick(groupId);
-  }
 
   isRowClicked(row: GroupListingViewModel): boolean {
     return this.uiPrefService.uiPrefs.clickedRowIds.has(row.groupId);

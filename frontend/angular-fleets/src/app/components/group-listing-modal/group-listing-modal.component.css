@@ -1,7 +1,7 @@
 .modal-content {
   background-color: var(--bs-gray-900);
   color: rgba(216, 216, 216, 0.7);
-  font-size: clamp(0.8rem, 1vw, 1.2rem);
+  font-size: clamp(0.8rem, 1rem, 1.2rem);
   margin-inline: auto;
   overflow-y: auto;
   scrollbar-width: none;
@@ -172,6 +172,17 @@
 
   .modal-buttons {
     font-size: 0.8rem !important;
+  }
+
+  .modal-footer {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    padding-right: 0;
+    margin-right: 0;
+  }
+
+  .footer-buttons-right {
+    gap: 0 !important;
   }
 }
 

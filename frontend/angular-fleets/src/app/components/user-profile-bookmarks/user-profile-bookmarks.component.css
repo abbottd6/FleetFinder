@@ -36,24 +36,21 @@
 }
 
 @media(min-width: 725px) and (max-width: 1529px) {
-  .mat-mdc-header-row {
-    font-size: clamp(0.8rem, 1rem, 1.5rem);
-  }
-  .mat-mdc-row {
-    font-size: clamp(0.7rem, 0.9rem, 1rem) !important;
-  }
 
   .indicators-column-icon {
     scale: 0.7;
   }
+
+  .no-results-container {
+    font-size: 1rem;
+  }
+
+  .mat-mdc-paginator {
+    font-size: 1rem;
+  }
 }
 
 @media(max-width: 724px) {
-
-  .search-bar-wrapper {
-    padding-left: 0;
-    padding-top: 0.1rem;
-  }
 
   .table-container {
     max-height: 90% !important;
@@ -80,6 +77,10 @@
   }
 
   .paginator {
-    font-size: clamp(0.5rem, 0.8rem, 1rem);
+    font-size: 0.8rem;
+  }
+
+  .no-results-container {
+    font-size: 0.9rem;
   }
 }

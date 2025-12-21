@@ -68,8 +68,22 @@ export class ListingViewInteractionsService {
   onRowClick(tempListing: GroupListingViewModel) {
     if(this.longPressTriggered) return;
     this.setSelectedListing(tempListing);
+    this.uiPrefService.saveRowClick(tempListing.groupId);
 
     this.isModalVisible = true;
+  }
+
+  //modal popup cancel click for interactable cell
+  bookmarkWrapper(event: MouseEvent, listingId: number) {
+    event.stopPropagation();
+
+    this.addBookmark(listingId)
+  }
+
+  unmarkWrapper(event: MouseEvent, listingId: number) {
+    event.stopPropagation();
+
+    this.deleteBookmark(listingId);
   }
 
   isBookmarked(id: number, bookmarkIds: Set<number> | null): boolean {
