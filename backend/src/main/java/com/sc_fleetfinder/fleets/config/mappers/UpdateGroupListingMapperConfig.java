@@ -14,8 +14,8 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Planetary
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
-import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.convention.MatchingStrategies;
@@ -24,6 +24,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Configuration
 public class UpdateGroupListingMapperConfig {
@@ -41,13 +45,23 @@ public class UpdateGroupListingMapperConfig {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        //converter for date time strings to Instant type
-        modelMapper.addConverter(new AbstractConverter<String, Instant>() {
-            @Override
-            protected Instant convert(String source) {
-                return source != null ? Instant.parse(source) : null;
-            }
-        });
+        Converter<UpdateGroupListingDto, Instant> dateTimeAndZoneToInstantConverter = ctx -> {
+            UpdateGroupListingDto src = ctx.getSource();
+            if(src == null) return null;
+
+            String dateStr = src.getEventDate();
+            String timeStr = src.getEventTime();
+            String zoneStr = src.getEventTimeZone();
+
+            if(dateStr == null || timeStr == null || zoneStr == null) return null;
+            if(dateStr.isBlank() || timeStr.isBlank() || zoneStr.isBlank()) return null;
+
+            LocalDate date = LocalDate.parse(dateStr);
+            LocalTime time = LocalTime.parse(timeStr);
+            ZoneId zone = ZoneId.of(zoneStr);
+
+            return ZonedDateTime.of(date, time, zone).toInstant();
+        };
 
         modelMapper.createTypeMap(UpdateGroupListingDto.class, GroupListing.class)
                 .addMappings(mapper -> {
@@ -89,7 +103,7 @@ public class UpdateGroupListingMapperConfig {
                             .map(UpdateGroupListingDto::getGroupStatusId, GroupListing::setGroupStatus);
 
                     //eventScheduleDate mapped to eventSchedule Instant
-                    mapper.map(UpdateGroupListingDto::getEventSchedule, GroupListing::setEventSchedule);
+                    mapper.using(dateTimeAndZoneToInstantConverter).map(src -> src, GroupListing::setEventSchedule);
 
                     //categoryId to category entity
                     mapper.using((MappingContext<Integer, GameplayCategory> ctx) -> mapperLookupService.findCategoryById(ctx.getSource()))

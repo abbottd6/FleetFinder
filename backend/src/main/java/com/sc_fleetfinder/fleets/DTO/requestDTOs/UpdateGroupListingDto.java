@@ -42,9 +42,14 @@ public class UpdateGroupListingDto {
     @NotNull(message = "Update group listing request DTO field 'groupStatusId' cannot be null")
     private Integer groupStatusId;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Nullable
-    private Instant eventSchedule;
+    private String eventDate;
+
+    @Nullable
+    private String eventTime;
+
+    @Nullable
+    private String eventTimeZone;
 
     @NotNull(message = "Update group listing request DTO field 'categoryId' cannot be null")
     private Integer categoryId;

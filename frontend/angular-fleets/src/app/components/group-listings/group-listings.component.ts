@@ -189,7 +189,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         },
         complete: () => {
           this.noResults = (this.dataSource.data.length === 0);
-          console.log(this.dataSource.data[0]);
         }
     });
   }

@@ -60,7 +60,6 @@ export class ListingViewInteractionsService {
 
   setSelectedListing(row: GroupListingViewModel | null) {
     this.selectedListingSubject.next(row);
-    console.log("set selected: ", row)
   }
 
   get selectedListing(): GroupListingViewModel | null {

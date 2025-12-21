@@ -329,7 +329,9 @@ class GroupListingsControllerTest {
             mockDto.setPlayStyleId(1);
             mockDto.setLegalityId(2);
             mockDto.setGroupStatusId(2);
-            mockDto.setEventSchedule(Instant.now().truncatedTo(ChronoUnit.MINUTES));
+            mockDto.setEventDate("2025-03-15");
+            mockDto.setEventTime("18:30:00Z");
+            mockDto.setEventTimeZone("Pacific Standard Time");
             mockDto.setCategoryId(1);
             mockDto.setSubcategoryId(1);
             mockDto.setPvpStatusId(1);
@@ -380,7 +382,9 @@ class GroupListingsControllerTest {
         mockDto.setPlayStyleId(null);
         mockDto.setLegalityId(2);
         mockDto.setGroupStatusId(2);
-        mockDto.setEventSchedule(null);
+        mockDto.setEventDate(null);
+        mockDto.setEventTime(null);
+        mockDto.setEventTimeZone(null);
         mockDto.setCategoryId(1);
         mockDto.setSubcategoryId(null);
         mockDto.setPvpStatusId(1);
@@ -431,7 +435,9 @@ class GroupListingsControllerTest {
         mockDto.setPlayStyleId(1);
         mockDto.setLegalityId(2);
         mockDto.setGroupStatusId(2);
-        mockDto.setEventSchedule(Instant.now().truncatedTo(ChronoUnit.MINUTES));
+        mockDto.setEventDate("2025-03-15");
+        mockDto.setEventTime("18:30:00Z");
+        mockDto.setEventTimeZone("Pacific Standard Time");
         mockDto.setCategoryId(1);
         mockDto.setSubcategoryId(1);
         mockDto.setPvpStatusId(1);

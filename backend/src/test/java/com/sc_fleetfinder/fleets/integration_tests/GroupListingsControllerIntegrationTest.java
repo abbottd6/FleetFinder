@@ -138,7 +138,9 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
             testDto.setPlayStyleId(1); // Optional, can be null
             testDto.setLegalityId(1);
             testDto.setGroupStatusId(2);
-            testDto.setEventSchedule(Instant.parse("2025-03-15T18:30:00Z")); // Optional
+            testDto.setEventDate("2025-03-15"); // Optional
+            testDto.setEventTime("18:30:00Z");
+            testDto.setEventTimeZone("Pacific Standard Time");
             testDto.setCategoryId(1);
             testDto.setSubcategoryId(1); // Optional
             testDto.setPvpStatusId(1);

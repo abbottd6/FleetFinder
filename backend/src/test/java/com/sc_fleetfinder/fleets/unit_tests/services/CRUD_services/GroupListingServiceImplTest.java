@@ -193,7 +193,9 @@ class GroupListingServiceImplTest {
             validDto.setPlayStyleId(5);
             validDto.setLegalityId(3);
             validDto.setGroupStatusId(2);
-            validDto.setEventSchedule(Instant.now());
+            validDto.setEventDate("2025-03-15");
+            validDto.setEventTime("18:30:00Z");
+            validDto.setEventTimeZone("Pacific Standard Time");
             validDto.setCategoryId(5);
             validDto.setSubcategoryId(16);
             validDto.setPvpStatusId(1);

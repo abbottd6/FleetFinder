@@ -40,9 +40,14 @@ public class CreateGroupListingDto {
     @NotNull(message = "Create group listing DTO field 'groupStatusId' cannot be null")
     private Integer groupStatusId;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Nullable
-    private Instant eventSchedule;
+    private String eventDate;
+
+    @Nullable
+    private String eventTime;
+
+    @Nullable
+    private String eventTimeZone;
 
     @NotNull(message = "Create group listing DTO field 'categoryId' cannot be null")
     private Integer categoryId;

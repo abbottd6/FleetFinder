@@ -1,4 +1,5 @@
 import {environment} from "../../../environments/environment";
+import { DateTime } from 'luxon';
 
 export class UpdateListingRequest {
   constructor(formData: any, gId: number) {
@@ -17,14 +18,9 @@ export class UpdateListingRequest {
       playStyleId: formData.gameplayInfoGroup.playStyle,
       legalityId: formData.gameplayInfoGroup.legality,
       groupStatusId: formData.groupSpecInfoGroup.groupStatus,
-      //Combining users date, time, and time zone
-      //converting to UTC to store in db
-      //Listing data to be displayed in users' time zone
-      eventSchedule: UpdateListingRequest.dateTimeTZConcatenation(
-        formData.groupSpecInfoGroup.eventScheduleDate,
-        formData.groupSpecInfoGroup.eventScheduleTime,
-        formData.groupSpecInfoGroup.eventScheduleZone
-      ),
+      eventDate: this.toDateOnlyString(formData.groupSpecInfoGroup.eventScheduleDate),
+      eventTime: formData.groupSpecInfoGroup.eventScheduleTime,
+      eventTimeZone: formData.groupSpecInfoGroup.eventScheduleZone,
       categoryId: formData.gameplayInfoGroup.category,
       subcategoryId: formData.gameplayInfoGroup.subcategory,
       pvpStatusId: formData.gameplayInfoGroup.pvpStatus,
@@ -39,28 +35,10 @@ export class UpdateListingRequest {
     })
   }
 
-  //combining selections from date picker, time dropdown, time zone dropdown for single field submission
-  static dateTimeTZConcatenation(date: Date, time: string, timezone: string): string | null {
-    if (!date || !time || !timezone) {
-      return null;
-    }
-
-    //extract date from datepicker javascript date
-    const dateString = date.toISOString().split('T')[0];
-    if(!environment.production) {
-      console.log("Javascript date string extracted: ", dateString)
-    }
-
-    //combining date and time into ISO acceptable string
-    const dateTimeString = `${dateString}T${time}:00`;
-
-    //converting combined date/time to selected time zone
-    //necessary in case selected zone differs from users browser time
-    const combinedDateTimeInSelectedTZ = new Date(
-      new Date(dateTimeString).toLocaleString('sv-SE', {timeZone: timezone})
-    );
-
-    //converting the date to ISO string in UTC time for database standard
-    return combinedDateTimeInSelectedTZ.toISOString();
+  private toDateOnlyString(date: Date): String {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
