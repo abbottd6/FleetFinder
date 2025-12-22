@@ -70,6 +70,7 @@ import { DontShowMeAgainPopup } from './components/pop-ups/dont-show-me-again-po
 import {MatBadge} from "@angular/material/badge";
 import { UserProfileBookmarksComponent } from './components/user-profile-bookmarks/user-profile-bookmarks.component';
 import { MobileFeedViewComponent } from './components/listing-tables/mobile-feed-view/mobile-feed-view.component';
+import { ModParentPanelComponent } from './components/mod-tools/mod-parent-panel/mod-parent-panel.component';
 
 
 @NgModule({

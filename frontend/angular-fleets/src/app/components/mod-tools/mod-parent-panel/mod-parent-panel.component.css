@@ -1,0 +1,17 @@
+:host ::ng-deep .mat-mdc-tab-labels {
+  padding-left: 1rem;
+  gap: 2rem;
+}
+
+:host ::ng-deep .mat-mdc-tab-label-container {
+  border-bottom: none;
+}
+
+:host ::ng-deep .mdc-tab--active .mdc-tab-indicator {
+  background-color: rgba(188, 191, 200, .1);
+  transition: background-color 1s ease;
+}
+
+:host ::ng-deep .mat-mdc-tab .mdc-tab-indicator__content--underline {
+  color: rgba(255, 131, 7, .4);
+}

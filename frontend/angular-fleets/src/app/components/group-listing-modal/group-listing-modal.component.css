@@ -1,7 +1,7 @@
 .modal-content {
   background-color: var(--bs-gray-900);
   color: rgba(216, 216, 216, 0.7);
-  font-size: clamp(0.8rem, 1rem, 1.2rem);
+  font-size: 1.1rem;
   margin-inline: auto;
   overflow-y: auto;
   scrollbar-width: none;
@@ -48,7 +48,7 @@
 /*The actual main container for the modal: LARGE VW*/
 @media(min-width: 1368px) {
   .modal-title {
-    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
+    font-size: clamp(1.2rem, 1.4rem, 2.2rem);
     font-family: 'Exo 2', sans-serif;
     font-weight: 300;
   }
@@ -74,7 +74,7 @@
   }
 
   .modal-title {
-    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
+    font-size: clamp(1.2rem, 1.4rem, 2.2rem);
     font-family: 'Exo 2', sans-serif;
     font-weight: 300;
   }
@@ -83,7 +83,7 @@
 /*The actual main container for the modal  SMALL VW*/
 @media (max-width: 991px) {
   .modal-title {
-    font-size: clamp(1.2rem, 1.2vw, 2rem);
+    font-size: clamp(1.2rem, 1.2rem, 2rem);
     padding: clamp(0.25rem, 1vw, 1rem);
     font-family: 'Exo 2', sans-serif;
     font-weight: 300;
@@ -91,6 +91,10 @@
 
   .modal-dialog.modal-xl.modal-dialog-centered {
     max-width: 95vw;
+  }
+
+  .modal-content {
+    font-size: clamp(0.8rem, 1rem, 1.2rem);
   }
 }
 
