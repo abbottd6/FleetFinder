@@ -21,6 +21,6 @@ public interface ModerationService {
     void prepareManualModRemovalRecords(ManualModDeleteDto dto, Users mod);
     void prepareAutoModRemovalRecords(ModerationIssue issue);
     void autoModDeleteListing(GroupListing listing, Users owner);
-    ModerationIssue generateModerationIssue(GroupListing groupListing);
+    ModerationIssue generateModerationIssue(GroupListing groupListing, String status);
     void updateOrCreateUserModerationRecord(GroupListing listing);
 }

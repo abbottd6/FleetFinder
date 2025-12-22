@@ -140,7 +140,7 @@ public class ModerationServiceImpl implements ModerationService {
 
         //check for existing ModerationIssue or make a new one
         ModerationIssue issue = mir.findByGroupRef(condemned)
-                .orElseGet(() -> generateModerationIssue(condemned));
+                .orElseGet(() -> generateModerationIssue(condemned, "Actioned"));
 
         //max out the count for the report basis provided by the mod
         maxModReportedBasis(issue, dto);
@@ -203,7 +203,7 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     @Transactional
-    public ModerationIssue generateModerationIssue(GroupListing listing) {
+    public ModerationIssue generateModerationIssue(GroupListing listing, String status) {
         //verify that the ModerationIssue does not already exist
         if(mir.findByGroupRef(listing).isPresent()) {
             throw new IllegalStateException(
@@ -212,6 +212,7 @@ public class ModerationServiceImpl implements ModerationService {
         }
 
         ModerationIssue issue = new ModerationIssue(listing, listing.getUsers());
+        issue.setStatus(status);
         mir.save(issue);
         mir.flush();
         log.info("New ModerationIssue created with id: {} for group: {}",

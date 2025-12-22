@@ -66,7 +66,7 @@ public class ListingReportingServiceImpl implements ListingReportingService {
         //check if the listing has already been reported, i.e. has a ModerationIssue
         //if there is not an existing ModerationIssue for this listing, then create a new one
         ModerationIssue modIssue = mir.findByGroupRef(reported)
-                .orElseGet(() -> modService.generateModerationIssue(reported));
+                .orElseGet(() -> modService.generateModerationIssue(reported, "Pending"));
 
         ListingReportBasis basis = lbr.findById(dto.getReportBasis())
                 .orElseThrow(() -> new ResourceNotFoundException("ListingReportBasis", dto.getReportBasis()));
