@@ -1,7 +1,7 @@
 import {Component, EventEmitter, inject, Input, OnChanges, OnInit, Output} from '@angular/core';
-import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
-import {environment} from "../../../environments/environment";
-import {ModApiService} from "../../services/api-services/mod-api/mod-api.service";
+import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
+import {environment} from "../../../../environments/environment";
+import {ModApiService} from "../../../services/api-services/mod-api/mod-api.service";
 import {
   MatCell,
   MatCellDef,
@@ -14,7 +14,7 @@ import {
 import {SelectionModel} from "@angular/cdk/collections";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Router} from "@angular/router";
-import {UserService} from "../../services/user-services/user.service";
+import {UserService} from "../../../services/user-services/user.service";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
 import {map, shareReplay} from "rxjs";
@@ -40,7 +40,7 @@ import {BreakpointObserver} from "@angular/cdk/layout";
     AsyncPipe,
     NgIf
   ],
-  styleUrl: '../user-acct-listings-table/user-acct-listings-table.component.css'
+  styleUrl: '../../user-acct-listings-table/user-acct-listings-table.component.css'
 })
 export class ModListingsTableComponent implements OnInit {
   @Input() public modGroupListings: GroupListingViewModel[] = [];

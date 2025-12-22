@@ -1,0 +1,231 @@
+<div class="button-row">
+  <ng-container *ngIf="(layoutMode$ | async) !== 'handheld'; else forHandheld">
+    <div class="action-buttons-container">
+      <button type="submit" class="action-buttons"
+              [disabled]="!(selection.hasValue())">
+        <!-- TODO set click -->
+        Clear Counts
+      </button>
+      <button class="action-buttons"
+              [disabled]="!(selection.hasValue()) || !singleSelected()">
+        <!-- TODO set click -->
+        Mod Delete
+      </button>
+    </div>
+  </ng-container>
+  <ng-template #forHandheld>
+    <div class="action-buttons-container">
+      <button class="action-buttons-with-icons"
+              [disabled]="!selection.hasValue()"
+              [matMenuTriggerFor]="listingOptionsMenu">
+        <!-- TODO set click -->
+        Options
+        <mat-icon>arrow_drop_down</mat-icon>
+      </button>
+      <mat-menu #listingOptionsMenu="matMenu">
+        <button mat-menu-item class="options-item"
+                [disabled]="!(selection.hasValue()) || !singleSelected()">
+          <!-- TODO set click -->
+
+        </button>
+        <button mat-menu-item class="options-item"
+                [disabled]="!(selection.hasValue()) || !singleSelected()">
+          <!-- TODO set click -->
+          Clear Counts
+        </button>
+        <button mat-menu-item class="options-item"
+                [disabled]="!(selection.hasValue() || !singleSelected)">
+          <!-- TODO set click -->
+          Mod Delete
+        </button>
+      </mat-menu>
+    </div>
+  </ng-template>
+</div>
+
+<table mat-table
+  [dataSource]="dataSource"
+  matSort
+  (matSortChange)="announceSortChange($event)">
+
+  <!-- Checkbox Column -->
+  <ng-container matColumnDef='select'>
+    <th mat-header-cell *matHeaderCellDef>
+<!--      <mat-checkbox (change)="$event ? toggleAllRows() : null"-->
+<!--                    [checked]="selection.hasValue() && isAllSelected()"-->
+<!--                    [indeterminate]="selection.hasValue() && !isAllSelected()"-->
+<!--                    [aria-label]="checkboxLabel()">-->
+<!--      </mat-checkbox>-->
+    </th>
+    <td mat-cell *matCellDef="let row; let i = index">
+      <mat-checkbox (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(row) : null"
+                    [checked]="selection.isSelected(row)"
+                    [aria-label]="checkboxLabel(row)">
+      </mat-checkbox>
+    </td>
+  </ng-container>
+
+  <!-- USERNAME COLUMN -->
+  <ng-container matColumnDef='username'>
+    <th mat-header-cell *matHeaderCellDef>
+      User
+    </th>
+
+    <td mat-cell *matCellDef="let issue; let i = index">
+      {{ issue.username }}
+    </td>
+  </ng-container>
+
+  <!-- USER ID COLUMN -->
+  <ng-container matColumnDef='userId'>
+    <th mat-header-cell *matHeaderCellDef>
+      uId
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.userId }}
+    </td>
+  </ng-container>
+
+  <!-- STATUS COLUMN -->
+  <ng-container matColumnDef='status'>
+    <th mat-header-cell *matHeaderCellDef>
+      Status
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.status }}
+    </td>
+  </ng-container>
+
+  <!-- REPORTS TOTAL COLUMN -->
+  <ng-container matColumnDef='reportsTotal'>
+    <th mat-header-cell *matHeaderCellDef>
+      Total
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.reportTotalCount}}
+    </td>
+  </ng-container>
+
+  <!-- SPAM COLUMN -->
+  <ng-container matColumnDef='spam'>
+    <th mat-header-cell *matHeaderCellDef>
+      Spam
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.spamCount }}
+    </td>
+  </ng-container>
+
+  <!-- HATE SPEECH COLUMN -->
+  <ng-container matColumnDef='hate'>
+    <th mat-header-cell *matHeaderCellDef>
+      Hate
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.hateSpeechCount }}
+    </td>
+  </ng-container>
+
+  <!-- NSFW COLUMN -->
+  <ng-container matColumnDef='nsfw'>
+    <th mat-header-cell *matHeaderCellDef>
+      NSFW
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.nsfwCount }}
+    </td>
+  </ng-container>
+
+  <!-- SCAM COUNT -->
+  <ng-container matColumnDef='scam'>
+    <th mat-header-cell *matHeaderCellDef>
+      Scam
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.scamCount }}
+    </td>
+  </ng-container>
+
+  <!-- OFF TOPIC COLUMN -->
+  <ng-container matColumnDef='offTopic'>
+    <th mat-header-cell *matHeaderCellDef>
+      Off
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.offTopicCount }}
+    </td>
+  </ng-container>
+
+  <!-- TROLL COLUMN -->
+  <ng-container matColumnDef='troll'>
+    <th mat-header-cell *matHeaderCellDef>
+      Troll
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.trollCount }}
+    </td>
+  </ng-container>
+
+  <!-- DOXX COLUMN -->
+  <ng-container matColumnDef='doxx'>
+    <th mat-header-cell *matHeaderCellDef>
+      Doxx
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.doxxCount }}
+    </td>
+  </ng-container>
+
+  <!-- CHEAT COLUMN -->
+  <ng-container matColumnDef='cheat'>
+    <th mat-header-cell *matHeaderCellDef>
+      Cheat
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.cheatCount }}
+    </td>
+  </ng-container>
+
+  <!-- OTHER COLUMN -->
+  <ng-container matColumnDef='other'>
+    <th mat-header-cell *matHeaderCellDef>
+      Other
+    </th>
+
+    <td mat-cell *matCellDef="let issue">
+      {{ issue.otherCount }}
+    </td>
+  </ng-container>
+
+
+  <tr mat-header-row class="header-row" *matHeaderRowDef="fullColumns"></tr>
+  <tr mat-row *matRowDef="let issue; columns: fullColumns"
+    (click)="emitClick(issue)"></tr>
+</table>
+
+<div class="no-results-container" *ngIf="noResults">
+  <p>No active moderation issues</p>
+</div>
+
+<!-- Paginator -->
+<div class="paginator">
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    [pageIndex]="pageIndex"
+    [pageSize]="pageSize"
+    [length]="totalElements"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>

@@ -54,6 +54,10 @@ export class GroupListingFetchService {
         })
       );
   }
+
+  getGroupById(groupId: number): Observable<GroupListingViewModel> {
+    return this.httpClient.get<GroupListingViewModel>(`${this.baseUrl}/${groupId}`);
+  }
 }
 
 interface GetResponse {

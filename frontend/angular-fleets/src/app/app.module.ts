@@ -35,7 +35,7 @@ import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {DropdownModule} from "./components/dropdowns/dropdown-module/dropdown.module";
 import {InputFieldModule} from "./components/input-fields/input-field/input-field.module";
 import {MatButtonModule} from "@angular/material/button";
-import { ModListingsTableComponent } from './components/mod-listings-table/mod-listings-table.component';
+import { ModListingsTableComponent } from './components/mod-tools/mod-listings-table/mod-listings-table.component';
 import {
   MatCell,
   MatCellDef,
@@ -71,6 +71,7 @@ import {MatBadge} from "@angular/material/badge";
 import { UserProfileBookmarksComponent } from './components/user-profile-bookmarks/user-profile-bookmarks.component';
 import { MobileFeedViewComponent } from './components/listing-tables/mobile-feed-view/mobile-feed-view.component';
 import { ModParentPanelComponent } from './components/mod-tools/mod-parent-panel/mod-parent-panel.component';
+import { ModIssuesViewComponent } from './components/mod-tools/mod-issues-view/mod-issues-view.component';
 
 
 @NgModule({

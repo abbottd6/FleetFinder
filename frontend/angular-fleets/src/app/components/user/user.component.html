@@ -117,8 +117,8 @@
 
           <!-- MODERATOR TAB -->
           <ng-container *ngIf="selectedTab === 'content_mod'">
-            <app-mod-parent-panel>
-
+            <app-mod-parent-panel
+              (listingForModal)="onListingSelected($event)">
             </app-mod-parent-panel>
 <!--            <app-mod-listings-table-->
 <!--              (listingForModal)="onListingSelected($event)">-->

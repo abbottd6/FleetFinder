@@ -17,7 +17,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {UserService} from "../../services/user-services/user.service";
 import {CloseValue, GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
-import {ModListingsTableComponent} from "../mod-listings-table/mod-listings-table.component";
+import {ModListingsTableComponent} from "../mod-tools/mod-listings-table/mod-listings-table.component";
 import {UserProfileBookmarksComponent} from "../user-profile-bookmarks/user-profile-bookmarks.component";
 import {
   ListingViewInteractionsService

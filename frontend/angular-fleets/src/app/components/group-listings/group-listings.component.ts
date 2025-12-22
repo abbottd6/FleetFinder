@@ -58,7 +58,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
   private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
-  private _liveAnnouncer = inject(LiveAnnouncer)
+  private _liveAnnouncer = inject(LiveAnnouncer);
   readonly dialog = inject(MatDialog);
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];

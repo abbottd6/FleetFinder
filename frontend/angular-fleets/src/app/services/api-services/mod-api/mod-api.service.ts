@@ -4,6 +4,14 @@ import {GroupListingViewModel} from "../../../models/group-listing/group-listing
 import {BehaviorSubject, map, Observable, Subject} from "rxjs";
 import {tap} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
+import {ModIssueViewModel} from "../../../models/moderation/ModIssueViewModel";
+import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
+
+interface GetResponse {
+  _embedded: {
+    groupListingResponseDtoes: GroupListingViewModel[];
+  }
+}
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +19,7 @@ import {HttpClient} from "@angular/common/http";
 export class ModApiService implements OnDestroy {
   private destroy$ = new Subject<void>();
   private baseUrl = `${environment.apiBaseUrl}/modctrl`;
+  private getIssuesUrl = `${environment.apiBaseUrl}/modctrl/get_issues_page`
   private modDeleteListingUrl = `${environment.apiBaseUrl}/modctrl/mod_delete_listing`;
   private refreshTrigger$ = new BehaviorSubject<void>(undefined);
 
@@ -36,6 +45,24 @@ export class ModApiService implements OnDestroy {
       })
     )
   }
+
+  modGetIssues(page: number, size: number, sortField: string, sortDirection: string): Observable<Page<ModIssueViewModel>> {
+    const requestBody = {
+      page,
+      size,
+      sortField: sortField,
+      sortDirection: sortDirection,
+    }
+
+    return this.httpClient.post<Page<ModIssueViewModel>>(this.getIssuesUrl, requestBody).pipe(
+      tap(response => {
+        if (!environment.production) {
+          console.log('Raw API Response: ', response);
+        }
+      })
+    )
+  }
+
   public refreshModPanel() {
     this.refreshTrigger$.next();
   }
@@ -46,8 +73,4 @@ export class ModApiService implements OnDestroy {
   }
 }
 
-interface GetResponse {
-  _embedded: {
-    groupListingResponseDtoes: GroupListingViewModel[];
-  }
-}
+

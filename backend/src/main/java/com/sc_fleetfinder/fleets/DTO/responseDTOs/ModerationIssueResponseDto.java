@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
-import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
