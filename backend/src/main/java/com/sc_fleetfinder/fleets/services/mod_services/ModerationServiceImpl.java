@@ -10,6 +10,7 @@ import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ManualModDeleteDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ModClearIssueDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ModListingActionDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ModerationIssueResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
@@ -24,9 +25,8 @@ import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
 import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
+import com.sc_fleetfinder.fleets.services.conversion_services.ModerationORMConversions.ModListingActionConversionService;
 import com.sc_fleetfinder.fleets.services.conversion_services.ModerationORMConversions.ModerationIssueConversionService;
-import com.sc_fleetfinder.fleets.services.conversion_services.ModerationORMConversions.ModerationIssueConversionServiceImpl;
-import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +39,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,7 @@ public class ModerationServiceImpl implements ModerationService {
     private final ApplicationEventPublisher eventPublisher;
     private final ModerationIssueRepository mir;
     private final ModerationIssueConversionService mics;
+    private final ModListingActionConversionService mlacs;
     private final ListingReportBasisRepository lrbr;
 
     public ModerationServiceImpl(GroupListingRepository groupListingRepository,
@@ -74,6 +77,7 @@ public class ModerationServiceImpl implements ModerationService {
                                  ModerationIssueRepository mir,
                                  ListingReportBasisRepository lrbr,
                                  ModerationIssueConversionService mics,
+                                 ModListingActionConversionService mlacs,
                                  ApplicationEventPublisher eventPublisher) {
         this.glr = groupListingRepository;
         this.glcs = groupListingConversionService;
@@ -84,6 +88,7 @@ public class ModerationServiceImpl implements ModerationService {
         this.mir = mir;
         this.lrbr = lrbr;
         this.mics = mics;
+        this.mlacs = mlacs;
         this.eventPublisher = eventPublisher;
     }
 
@@ -106,6 +111,14 @@ public class ModerationServiceImpl implements ModerationService {
         Page<ModerationIssue> issues = mir.findAll(pageable);
 
         return issues.map(mics::convertToResponseDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ModListingActionDto> getThisWeeksModListingActions(Pageable pageable) {
+        Instant week = Instant.now().minus(7, ChronoUnit.DAYS);
+
+        return mlar.findWeeksActions(week, pageable).map(mlacs::convertToDto);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.entities.ModerationAndReporting;
 
-import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -80,10 +79,10 @@ public class ModListingAction {
     @NotNull(message="ModListingAction entity field 'username' cannot be null.")
     private String username;
 
-    @Column(name="id_mod", nullable = false)
+    @Column(name="id_mod", nullable = true)
     private Long modId;
 
-    @Column(name="mod_name")
+    @Column(name="mod_name", nullable = true)
     private String modName;
 
     @Column(name="action_type")
