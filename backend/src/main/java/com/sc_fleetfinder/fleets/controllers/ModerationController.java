@@ -96,7 +96,7 @@ public class ModerationController {
         return mods.modGetAllIssues(pageable);
     }
 
-    @GetMapping("/weeks_actions")
+    @PostMapping("/weeks_actions")
     @PreAuthorize("isAuthenticated() and hasRole('mod')")
     public Page<ModListingActionDto> getThisWeeksModActions(@AuthenticationPrincipal Jwt jwt,
                                                             @RequestBody GenericPageRequestDto pageDto) {

@@ -6,6 +6,7 @@ import {tap} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
 import {ModIssueViewModel} from "../../../models/moderation/ModIssueViewModel";
 import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
+import {ModListingActionViewModel} from "../../../models/moderation/ModListingActionViewModel";
 
 interface GetResponse {
   _embedded: {
@@ -20,7 +21,8 @@ export class ModApiService implements OnDestroy {
   private destroy$ = new Subject<void>();
   private baseUrl = `${environment.apiBaseUrl}/modctrl`;
   private clearIssueUrl = `${environment.apiBaseUrl}/modctrl/mod_clear_issue`;
-  private getIssuesUrl = `${environment.apiBaseUrl}/modctrl/get_issues_page`
+  private getIssuesUrl = `${environment.apiBaseUrl}/modctrl/get_issues_page`;
+  private getActionsUrl = `${environment.apiBaseUrl}/modctrl/weeks_actions`;
   private modDeleteListingUrl = `${environment.apiBaseUrl}/modctrl/mod_delete_listing`;
   private refreshTrigger$ = new BehaviorSubject<void>(undefined);
 
@@ -76,6 +78,15 @@ export class ModApiService implements OnDestroy {
         }
       })
     )
+  }
+
+  modGetWeeksActions(page: number, size: number): Observable<Page<ModListingActionViewModel>> {
+    const requestBody = {
+      pageIdx: page,
+      pageSize: size
+    }
+
+    return this.httpClient.post<Page<ModListingActionViewModel>>(this.getActionsUrl, requestBody);
   }
 
   public refreshModPanel() {

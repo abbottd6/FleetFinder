@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.config.mappers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ModListingActionDto;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -34,11 +35,13 @@ public class ModListingActionToDtoMapperConfig {
         });
 
 
-        modelMapper.typeMap(ModListingAction.class, ModListingActionDto.class)
-                .addMappings(mapper -> mapper.map(
-                        src -> src.getArchive() == null ? null : src.getArchive().getArchiveId(),
-                        ModListingActionDto::setArchiveId)
-                );
+        modelMapper.createTypeMap(ModListingAction.class, ModListingActionDto.class)
+                .addMappings(mapper -> {
+                    mapper.using(ctx -> {
+                        ListingArchive archive = (ListingArchive) ctx.getSource();
+                        return archive != null ? archive.getArchiveId() : null;
+                    }).map(ModListingAction::getArchive, ModListingActionDto::setArchiveId);
+                });
 
         return modelMapper;
     }

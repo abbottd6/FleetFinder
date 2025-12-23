@@ -1,0 +1,144 @@
+<div class="mod-table-wrapper">
+  <table mat-table
+         [dataSource]="dataSource">
+
+    <!-- ACTION ID COLUMN -->
+    <ng-container matColumnDef='actionId'>
+      <th mat-header-cell *matHeaderCellDef>
+        ActionId
+      </th>
+
+      <td mat-cell *matCellDef="let action; let i = index">
+        {{ action.actionId }}
+      </td>
+    </ng-container>
+
+    <!-- RECORD ID COLUMN -->
+    <ng-container matColumnDef="recordId">
+      <th mat-header-cell *matHeaderCellDef>
+        RecordId
+      </th>
+
+      <td mat-cell *matCellDef="let action">
+        <ng-container *ngIf="(action.archiveId != null); else noArchive">
+          {{ action.archiveId }}
+        </ng-container>
+        <ng-template #noArchive>
+          {{ action.groupId }}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- USER ID COLUMN -->
+    <ng-container matColumnDef='userId'>
+      <th mat-header-cell *matHeaderCellDef>
+        User ID
+      </th>
+
+      <td mat-cell *matCellDef="let action">
+        {{ action.userId }}
+      </td>
+    </ng-container>
+
+    <!-- USERNAME COLUMN -->
+    <ng-container matColumnDef='username'>
+      <th mat-header-cell *matHeaderCellDef>
+        User
+      </th>
+
+      <td mat-cell *matCellDef="let action">
+        {{ action.username }}
+      </td>
+    </ng-container>
+
+    <!-- MOD ID COLUMN -->
+    <ng-container matColumnDef='modId'>
+      <th mat-header-cell *matHeaderCellDef>
+        ModId
+      </th>
+
+      <td mat-cell *matCellDef="let action">
+        <ng-container *ngIf="(action.modId); else noModId">
+          {{ action.modId }}
+        </ng-container>
+        <ng-template #noModId>
+          {{ 'none' }}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- MOD NAME COLUMN -->
+    <ng-container matColumnDef='modName'>
+      <th mat-header-cell *matHeaderCellDef>
+        ModName
+      </th>
+
+      <td mat-cell *matCellDef="let action">
+        <ng-container *ngIf="(action.modName); else noModName">
+          {{ action.modName }}
+        </ng-container>
+        <ng-template #noModName>
+          {{ 'none' }}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- ACTION TYPE COLUMN -->
+    <ng-container matColumnDef='actionType'>
+      <th mat-header-cell *matHeaderCellDef>
+        Type
+      </th>
+
+      <td mat-cell *matCellDef="let action">
+        {{ action.actionType }}
+      </td>
+    </ng-container>
+
+    <!-- ACTION NOTE COLUMN -->
+    <ng-container matColumnDef='actionNote'>
+      <th mat-header-cell *matHeaderCellDef>
+        Note
+      </th>
+
+      <td mat-cell *matCellDef="let action">
+        <ng-container *ngIf="(action.actionNote); else noNote">
+          {{ action.actionNote }}
+        </ng-container>
+        <ng-template #noNote>
+          {{ 'none' }}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <!-- ACTION TS COLUMN -->
+    <ng-container matColumnDef='actionTs'>
+      <th mat-header-cell *matHeaderCellDef>
+        Action TS
+      </th>
+
+      <td mat-cell *matCellDef="let action">
+        {{ action.actionTs | date: 'MMM d, h:mm a' }}
+      </td>
+    </ng-container>
+
+    <ng-container *ngIf="displayedColumns$ | async as displayedColumns">
+      <tr mat-header-row class="header-row" *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let issue; columns: displayedColumns"></tr>
+    </ng-container>
+  </table>
+</div>
+
+<div class="no-results-container" *ngIf="noResults">
+  <p>No active moderation issues</p>
+</div>
+
+<!-- Paginator -->
+<div class="paginator">
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    [pageIndex]="pageIdx"
+    [pageSize]="pageSz"
+    [length]="totalElements"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>

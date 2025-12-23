@@ -48,7 +48,7 @@ import {
 import {MatCheckbox} from "@angular/material/checkbox";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatIcon} from "@angular/material/icon";
-import {TooltipPosition, MatTooltipModule} from "@angular/material/tooltip";
+import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatSort, MatSortHeader} from "@angular/material/sort";
 import {MatPaginator} from "@angular/material/paginator";
 import { SearchBarComponent } from './components/input-fields/search-bar/search-bar.component';
@@ -68,13 +68,10 @@ import { MobileFiltersPopupComponent } from './components/pop-ups/mobile-filters
 import { FilterDropdownsComponent } from './components/dropdowns/filter-dropdowns/filter-dropdowns.component';
 import { DontShowMeAgainPopup } from './components/pop-ups/dont-show-me-again-popup/dont-show-me-again-popup';
 import {MatBadge} from "@angular/material/badge";
-import { UserProfileBookmarksComponent } from './components/user-profile-bookmarks/user-profile-bookmarks.component';
-import { MobileFeedViewComponent } from './components/listing-tables/mobile-feed-view/mobile-feed-view.component';
-import { ModParentPanelComponent } from './components/mod-tools/mod-parent-panel/mod-parent-panel.component';
-import { ModIssuesViewComponent } from './components/mod-tools/mod-issues-view/mod-issues-view.component';
 import { ConfirmGenericComponent } from './components/pop-ups/confirm-generic/confirm-generic.component';
 import { ConfirmClearIssueComponent } from './components/pop-ups/confirm-clear-issue/confirm-clear-issue.component';
 import { ModIssueDetailedComponent } from './components/pop-ups/mod-issue-detailed/mod-issue-detailed.component';
+import { ModActionsTableComponent } from './components/mod-tools/mod-actions-table/mod-actions-table.component';
 
 
 @NgModule({
