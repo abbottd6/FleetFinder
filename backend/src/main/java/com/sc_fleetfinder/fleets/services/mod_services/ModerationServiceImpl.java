@@ -8,6 +8,7 @@ import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ModerationIssueRepos
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.UserModerationRecordRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ManualModDeleteDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ModClearIssueDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ModerationIssueResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
@@ -129,6 +130,47 @@ public class ModerationServiceImpl implements ModerationService {
 
     @Override
     @Transactional
+    public ResponseEntity<?> modClearIssue(ModClearIssueDto dto, Users mod) {
+        Map<String, String> response = new HashMap<>();
+
+        try {
+            ModerationIssue issue = mir.findById(dto.getIssueId())
+                    .orElseThrow(() -> new ResourceNotFoundException(dto.getIssueId()));
+
+            modResetReportCounters(issue);
+
+            recordModeratorAction(issue, dto.getNote(), mod);
+
+            response.put("message", "Report counters reset for issue on groupId: "
+                    + issue.getGroupRef().getGroupId());
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        catch (Exception e) {
+            log.error("modClearIssue failed. Reason: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(e.getMessage());
+        }
+    }
+
+    private void modResetReportCounters(ModerationIssue issue) {
+        issue.setReportTotalCount(0);
+        issue.setSpamCount(0);
+        issue.setHateSpeechCount(0);
+        issue.setNsfwCount(0);
+        issue.setScamCount(0);
+        issue.setOffTopicCount(0);
+        issue.setTrollCount(0);
+        issue.setDoxxCount(0);
+        issue.setCheatCount(0);
+        issue.setOtherCount(0);
+        issue.setStatus("Cleared");
+
+        mir.save(issue);
+        mir.flush();
+    }
+
+    @Override
+    @Transactional
     public void prepareManualModRemovalRecords(ManualModDeleteDto dto, Users mod) {
         //verify and get listing
         GroupListing condemned = glr.findById(dto.getGroupId())
@@ -246,7 +288,7 @@ public class ModerationServiceImpl implements ModerationService {
         }
     }
 
-    //for auto mod deletions: uses a different ModListingAction constructor than manual mod actions
+    //for auto mod deletions
     @Transactional
     protected void recordModeratorAction(ModerationIssue issue, String note,
                                          ListingArchive archive) {
@@ -256,7 +298,7 @@ public class ModerationServiceImpl implements ModerationService {
         log.info("Moderator action recorded under actionId: {}", modAction.getActionId());
     }
 
-    //for manual moderator actions: uses a different ModListingAction constructor than automod
+    //for manual moderator actions
     @Transactional
     protected void recordModeratorAction(ModerationIssue issue, String note,
                                          ListingArchive archive, Users mod) {
@@ -264,6 +306,16 @@ public class ModerationServiceImpl implements ModerationService {
         ModListingAction modAction = new ModListingAction(issue, note, archive, mod);
         mlar.save(modAction);
         log.info("Manual moderator action recorded under actionId: {}", modAction.getActionId());
+    }
+
+    //For manual mod clear issue report counts
+    @Transactional
+    protected void recordModeratorAction(ModerationIssue issue, String note,
+                                         Users mod) {
+
+        ModListingAction modAction = new ModListingAction(issue, note, mod);
+        mlar.save(modAction);
+        log.info("Moderator action recorded under actionId: {}", modAction.getActionId());
     }
 
     // maxing out report basis on manual mod deletions to try to use this as a confidence/severity
@@ -328,6 +380,8 @@ public class ModerationServiceImpl implements ModerationService {
         }
 
         issue.setReportTotalCount(AUTO_MOD_REPORT_THRESHOLD);
+
+        issue.setStatus("Actioned");
 
         mir.save(issue);
     }

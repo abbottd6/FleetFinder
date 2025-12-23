@@ -20,6 +20,13 @@
   margin: 1rem 1rem 1rem auto;
 }
 
+.mod-table-wrapper {
+  max-height: 45vh;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(88, 92, 96, .9) transparent !important;
+}
+
 .mat-mdc-header-row {
   position: sticky;
   top: 0;
@@ -43,6 +50,13 @@
 .mat-mdc-row:hover {
   background-color: rgba(255, 131, 7, .07);
   cursor: pointer;
+}
+
+.no-results-container {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.1rem;
+  color: rgba(188, 191, 200, .9);
 }
 
 @media(min-width: 725px) and (max-width: 1529px) {

@@ -1,11 +1,13 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ModClearIssueDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ManualModDeleteDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ModerationIssueResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.mod_services.ModerationService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +24,9 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -70,15 +74,26 @@ public class ModerationController {
     }
 
     // ##TODO: Change the frontend delete flow to include confirmation and a deletion/report basis.
-    @DeleteMapping("/mod_delete_listing/{groupId}")
+    @PostMapping("/mod_delete_listing")
     @PreAuthorize("isAuthenticated() and hasRole('mod')")
     public ResponseEntity<?> modDeleteListing(@Valid @RequestBody ManualModDeleteDto dto,
                                               @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
 
         Users requestingMod = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new RuntimeException("User with Keycloak ID: " + keycloakId + " not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("User with Keycloak ID: " + keycloakId + " not found."));
 
         return mods.modDeleteListing(dto, requestingMod);
+    }
+
+    @PutMapping("/mod_clear_issue")
+    @PreAuthorize("isAuthenticated() and hasRole('mod')")
+    public ResponseEntity<?> modClearIssue(@AuthenticationPrincipal Jwt jwt, @RequestBody ModClearIssueDto dto) {
+        String keycloakId = jwt.getSubject();
+
+        Users requestingMod = userRepository.findByKeycloakId(keycloakId)
+                .orElseThrow(() -> new ResourceNotFoundException("User with Keycloak ID: " + keycloakId + " not found."));
+
+        return mods.modClearIssue(dto, requestingMod);
     }
 }

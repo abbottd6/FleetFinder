@@ -89,12 +89,13 @@ CREATE TABLE user_moderation_record
 CREATE TABLE mod_listing_action
 (
     id_action   BIGINT PRIMARY KEY AUTO_INCREMENT,
-    id_archive  BIGINT                  NOT NULL,
+    id_archive  BIGINT,
+    id_group    BIGINT,
     id_user     BIGINT                  NOT NULL,
     username    VARCHAR(32)             NOT NULL,
     id_mod      BIGINT,
     mod_name    VARCHAR(32),
-    action_type ENUM ('AutoMod', 'Manual') NOT NULL DEFAULT 'Manual',
+    action_type ENUM ('AutoMod', 'Manual', 'Cleared') NOT NULL DEFAULT 'Manual',
     action_note VARCHAR(255),
     action_ts   TIMESTAMP               NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

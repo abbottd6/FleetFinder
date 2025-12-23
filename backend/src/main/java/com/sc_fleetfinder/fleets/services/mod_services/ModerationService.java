@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.services.mod_services;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ManualModDeleteDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.ModClearIssueDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ModerationIssueResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
@@ -17,6 +18,7 @@ public interface ModerationService {
 
     List<GroupListingResponseDto> modGetAllGroupListings();
     Page<ModerationIssueResponseDto> modGetAllIssues(Pageable pageable);
+    ResponseEntity<?> modClearIssue(ModClearIssueDto dto, Users requestingMod);
     ResponseEntity<?> modDeleteListing(@Valid ManualModDeleteDto dto, Users mod);
     void prepareManualModRemovalRecords(ManualModDeleteDto dto, Users mod);
     void prepareAutoModRemovalRecords(ModerationIssue issue);

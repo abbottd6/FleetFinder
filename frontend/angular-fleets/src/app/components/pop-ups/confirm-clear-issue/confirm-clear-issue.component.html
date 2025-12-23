@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>Confirm report counter clear for:</h2>
+<mat-dialog-content>
+  <span>{{ data.title }}</span>
+  <div class="mod-note-input">
+    <mat-form-field>
+      <mat-label>Note: Optional</mat-label>
+      <textarea
+        matInput
+        [formControl]="modNote"
+        rows="2"
+        maxlength="255"
+        placeholder="Optional: enter moderation note"
+        (input)="updateCharacterCount()"
+        [attr.aria-labelledby]="'mod-note-input'">
+    </textarea>
+      <mat-hint align="start">{{ characterCount }} /255</mat-hint>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button class="action-buttons" (click)="onCancel()">Cancel</button>
+  <button class="action-buttons" (click)="onConfirm()">Submit</button>
+</mat-dialog-actions>

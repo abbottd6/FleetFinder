@@ -48,14 +48,29 @@ public class ModListingAction {
         this.actionNote = modNote;
     }
 
+    // for manual mod clear issue report counts
+    public ModListingAction(ModerationIssue issue, String modNote, Users mod) {
+        this.archive = null;
+        this.groupId = issue.getGroupRef().getGroupId();
+        this.userId = issue.getUserRef().getUserId();
+        this.username = issue.getUserRef().getUsername();
+        this.modId = mod.getUserId();
+        this.modName = mod.getUsername();
+        this.actionType = "Cleared";
+        this.actionNote = modNote;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_action")
     private Long actionId;
 
     @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="id_archive")
+    @JoinColumn(name="id_archive", nullable = true)
     private ListingArchive archive;
+
+    @Column(name="id_group", nullable = true)
+    private Long groupId;
 
     @Column(name="id_user", nullable = false)
     @NotNull(message="ModListingAction entity field 'userId' cannot be null.")

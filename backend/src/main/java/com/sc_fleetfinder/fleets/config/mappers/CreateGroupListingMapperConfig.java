@@ -49,8 +49,8 @@ public class CreateGroupListingMapperConfig {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        Converter<UpdateGroupListingDto, Instant> dateTimeAndZoneToInstantConverter = ctx -> {
-            UpdateGroupListingDto src = ctx.getSource();
+        Converter<CreateGroupListingDto, Instant> dateTimeAndZoneToInstantConverter = ctx -> {
+            CreateGroupListingDto src = ctx.getSource();
             if(src == null) return null;
 
             String dateStr = src.getEventDate();

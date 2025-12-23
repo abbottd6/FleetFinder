@@ -36,7 +36,7 @@ export class ListingViewInteractionsService {
   readonly refresh$ = this.refreshSubject.asObservable();
 
   constructor(private bmService: BookmarkApiService,
-              private reportService: ListingReportApiService,
+              private reportApiService: ListingReportApiService,
               private hideService: HiddenListingsApiService,
               protected uiPrefService: UiPrefsService,
               private userSrv: UserService,
@@ -224,6 +224,8 @@ export class ListingViewInteractionsService {
   }
 
   openConfirmReport(listing: GroupListingViewModel): void {
+    const action: string = 'report';
+
     if(!this.isLoggedIn) {
       this.snackBar.open("You must log in to submit reports.", 'OK', {
         duration: 5000,
@@ -233,11 +235,12 @@ export class ListingViewInteractionsService {
       return;
     }
 
-    this.reportService.reportOptions$
+    this.reportApiService.reportOptions$
       .pipe(take(1))
       .subscribe(options => {
         const dialogRef = this.dialog.open(ConfirmReportComponent, {
           data: {
+            action,
             listing,
             options
           }
@@ -254,7 +257,7 @@ export class ListingViewInteractionsService {
   submitReport(listingId: number, basisId: number) {
     const lr = new SubmitListingReport(listingId, basisId)
 
-    this.reportService.submitReport(lr).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+    this.reportApiService.submitReport(lr).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response: { reportId: string; }) => {
         this.snackBar.open(`Report submitted. Thank you.`, 'OK', {
           duration: 5000,

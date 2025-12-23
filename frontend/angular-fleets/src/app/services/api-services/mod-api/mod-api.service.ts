@@ -19,6 +19,7 @@ interface GetResponse {
 export class ModApiService implements OnDestroy {
   private destroy$ = new Subject<void>();
   private baseUrl = `${environment.apiBaseUrl}/modctrl`;
+  private clearIssueUrl = `${environment.apiBaseUrl}/modctrl/mod_clear_issue`;
   private getIssuesUrl = `${environment.apiBaseUrl}/modctrl/get_issues_page`
   private modDeleteListingUrl = `${environment.apiBaseUrl}/modctrl/mod_delete_listing`;
   private refreshTrigger$ = new BehaviorSubject<void>(undefined);
@@ -26,8 +27,22 @@ export class ModApiService implements OnDestroy {
   constructor(private httpClient: HttpClient) {}
 
   //TODO change this to use a dto matching backend 'ManualModDeleteDto': Long groupId, Integer reportBasis, String modNote
-  modDeleteListing(listingId: number) {
-    return this.httpClient.delete<any>(`${this.modDeleteListingUrl}/${listingId}`);
+  modDeleteListing(listingId: number, basis: number) {
+    const requestBody = {
+      groupId: listingId,
+      reportBasis: basis
+    }
+
+    return this.httpClient.post<any>(`${this.modDeleteListingUrl}`, requestBody);
+  }
+
+  modClearIssue(issueId: number, note: string) {
+    const requestBody = {
+      issueId: issueId,
+      note: note
+    }
+
+    return this.httpClient.put<any>(this.clearIssueUrl, requestBody);
   }
 
   modGetGroupListings(): Observable<GroupListingViewModel[]> {

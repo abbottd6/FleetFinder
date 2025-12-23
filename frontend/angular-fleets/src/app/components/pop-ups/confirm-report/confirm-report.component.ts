@@ -20,6 +20,7 @@ export class ConfirmReportComponent {
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
+      action: string,
       listing: GroupListingViewModel,
       options: reportOption[]
     },

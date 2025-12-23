@@ -143,5 +143,6 @@
   *ngIf="listingInteract.isModalVisible"
   [isVisible]="listingInteract.isModalVisible"
   [selectedListing]="selectedListing"
+  [isBookmarked$]="listingInteract.selectedIsBookmarked$"
   (close)="listingInteract.onModalClose($event)"
 ></app-group-listing-modal>

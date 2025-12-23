@@ -31,7 +31,8 @@ import {ModParentPanelComponent} from "../mod-tools/mod-parent-panel/mod-parent-
       './user.component.css',
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
-    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent, ModListingsTableComponent, UserProfileBookmarksComponent, ModParentPanelComponent],
+    UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent,
+    UserProfileBookmarksComponent, ModParentPanelComponent],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {

@@ -72,6 +72,9 @@ import { UserProfileBookmarksComponent } from './components/user-profile-bookmar
 import { MobileFeedViewComponent } from './components/listing-tables/mobile-feed-view/mobile-feed-view.component';
 import { ModParentPanelComponent } from './components/mod-tools/mod-parent-panel/mod-parent-panel.component';
 import { ModIssuesViewComponent } from './components/mod-tools/mod-issues-view/mod-issues-view.component';
+import { ConfirmGenericComponent } from './components/pop-ups/confirm-generic/confirm-generic.component';
+import { ConfirmClearIssueComponent } from './components/pop-ups/confirm-clear-issue/confirm-clear-issue.component';
+import { ModIssueDetailedComponent } from './components/pop-ups/mod-issue-detailed/mod-issue-detailed.component';
 
 
 @NgModule({
@@ -89,6 +92,9 @@ import { ModIssuesViewComponent } from './components/mod-tools/mod-issues-view/m
     MobileFiltersPopupComponent,
     FilterDropdownsComponent,
     DontShowMeAgainPopup,
+    ConfirmGenericComponent,
+    ConfirmClearIssueComponent,
+    ModIssueDetailedComponent,
   ],
   imports: [
     BrowserModule,

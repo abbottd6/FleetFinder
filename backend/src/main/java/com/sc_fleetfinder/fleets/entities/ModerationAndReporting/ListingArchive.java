@@ -143,7 +143,7 @@ public class ListingArchive {
     private String listingTitle;
 
     @NotNull(message="ListingArchive field 'listingDescription' cannot be null.")
-    @Column(name="listing_description")
+    @Column(name="listing_description", length=550, nullable = false)
     private String listingDescription;
 
     @Column(name="listing_roles")

@@ -109,21 +109,21 @@ export class ModListingsTableComponent implements OnInit {
 
   modDeleteListing() {
     const selectedCount = this.selection.selected.length;
-    for (let i = 0; i < this.selection.selected.length; i++) {
-      this.modService.modDeleteListing(this.selection.selected[i].groupId).subscribe({
-        next: response => {
-          if(!environment.production) {
-            console.log(response.listingTitle)
-          }
-          this.tableActionReset()
-        },
-        error: err => {
-          alert(`There was an error deleting this listing: ${err.message}`);
-        }
-      });
-    }
-    this.snackBar.open(`You successfully deleted [${selectedCount}] listing(s).`, 'OK',
-      {duration: 6000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['my-snackbar']});
+    // for (let i = 0; i < this.selection.selected.length; i++) {
+    //   this.modService.modDeleteListing(this.selection.selected[i].groupId).subscribe({
+    //     next: response => {
+    //       if(!environment.production) {
+    //         console.log(response.listingTitle)
+    //       }
+    //       this.tableActionReset()
+    //     },
+    //     error: err => {
+    //       alert(`There was an error deleting this listing: ${err.message}`);
+    //     }
+    //   });
+    // }
+    // this.snackBar.open(`You successfully deleted [${selectedCount}] listing(s).`, 'OK',
+    //   {duration: 6000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['my-snackbar']});
   }
 
   loadGroupListings() {
