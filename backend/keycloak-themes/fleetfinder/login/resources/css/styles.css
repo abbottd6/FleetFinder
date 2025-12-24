@@ -81,6 +81,7 @@ body#keycloak-bg::after {
     font-family: Orbitron, sans-serif;
     text-align: center;
     margin-bottom: 0;
+    color: rgba(188, 191, 200, 0.85);
 }
 
 #kc-header-wrapper {
@@ -94,6 +95,20 @@ body#keycloak-bg::after {
     color: rgba(188, 191, 200, 1);
 }
 
+
+
+.pf-v5-c-form-control > input {
+    outline: 1px solid transparent;
+    transition: outline 0.25s ease;
+    caret-color: rgba(255, 131, 7, 0.75);
+}
+
+.pf-v5-c-form-control > input:focus {
+    color: transparent !important;
+    outline: 1px solid rgba(188, 191, 200, 0.5);
+
+}
+
  .pf-v5-c-button.pf-m-primary {
     /*background-color: rgba(33, 37, 41, .4);*/
     color: rgba(255, 131, 7, .75);
@@ -105,14 +120,17 @@ body#keycloak-bg::after {
 }
 
 .pf-v5-c-form-control:hover::after {
-    border-block-end-color: rgba(255, 131, 7, .75);
+    border-block-end-width: 1px;
+    border-block-end-color:rgba(255, 131, 7, .5);
 }
 
 .pf-v5-c-form-control:focus-within:after {
-    border-block-end-color: rgba(255, 131, 7, .75);
+    border-block-end-width: 2px;
+    border-block-end-color: rgba(188, 191, 200, 0.5);
 }
 
 .pf-v5-c-button.pf-m-control:hover::after {
+
     border-bottom-color: rgba(255, 131, 7, .75);
 }
 
@@ -152,7 +170,6 @@ body#keycloak-bg::after {
 
     .pf-v5-c-login__main {
         margin-inline: auto;
-
     }
 
     #kc-header {
