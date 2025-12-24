@@ -51,7 +51,7 @@ export class ModActionsTableComponent implements OnDestroy, AfterViewInit{
   fullColumns: string[] = ['actionId', 'recordId', 'userId', 'username', 'modId', 'modName',
     'actionType', 'actionNote', 'actionTs']
 
-  mobileColumns: string[] = ['archiveId', 'recordId', 'modName', 'actionType', 'actionTs']
+  mobileColumns: string[] = ['actionId', 'modName', 'actionType', 'actionTs']
   readonly displayedColumns$!: Observable<string[]>;
 
   dataSource = new MatTableDataSource<ModListingActionViewModel>();

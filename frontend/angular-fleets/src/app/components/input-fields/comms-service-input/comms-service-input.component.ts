@@ -24,7 +24,7 @@ export class CommsServiceInputComponent implements AfterViewInit{
     this.commsOptionControl?.valueChanges.subscribe(value => {
 
       //clearing comms service input if value changes to null or no comms
-      if (value == null || value.option == 'No Comms') {
+      if (value == null || value == 'No Comms') {
         this.commsServiceControl?.reset();
         this.commsServiceControl?.disable();
         this.characterCount = 0;

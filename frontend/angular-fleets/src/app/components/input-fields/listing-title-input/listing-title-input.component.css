@@ -12,7 +12,7 @@
     min-width: 75%;
     font-family: 'Orbitron', sans-serif;
     transition: color 0.5s ease, font-size 0.5s ease;
-    color: rgba(33, 37, 41, .75);
+    /*color: rgba(33, 37, 41, .75);*/
     font-size: clamp(0.8rem, 1vw, 1rem);
   }
 }
@@ -22,7 +22,7 @@
     min-width: 95%;
     font-family: 'Orbitron', sans-serif;
     transition: color 0.5s ease, font-size 0.5s ease;
-    color: rgba(33, 37, 41, .75);
+    /*color: rgba(33, 37, 41, .75);*/
     font-size: 0.8rem;
   }
 }

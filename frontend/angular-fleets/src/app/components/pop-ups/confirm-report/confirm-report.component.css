@@ -30,7 +30,7 @@
     font-size: .9rem;
   }
   :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   :host ::ng-deep .ng-select .ng-select-container .ng-value-container {

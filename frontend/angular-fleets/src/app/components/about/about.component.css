@@ -4,7 +4,7 @@ html {
 
 #about-container {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 131, 7, .2) transparent;
+  scrollbar-color: rgba(88, 92, 96, .9) transparent;
 }
 
 p, ul, h1, h2, h3, h4 {
