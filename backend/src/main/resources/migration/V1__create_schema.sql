@@ -5,7 +5,7 @@ id_user BIGINT NOT NULL AUTO_INCREMENT,
 keycloak_id CHAR(36) NOT NULL,
 user_name VARCHAR(32) NOT NULL,
 email VARCHAR(45) NOT NULL,
-org VARCHAR(25),
+org VARCHAR(32),
 about_user VARCHAR(255),
 server_id INT,
 acct_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -33,6 +33,7 @@ FOREIGN KEY(category_id) REFERENCES gameplay_category(category_id)
 
 CREATE TABLE IF NOT EXISTS planetary_system (
 system_id INT NOT NULL AUTO_INCREMENT,
+sort_order INT NOT NULL DEFAULT 0,
 system_name VARCHAR(25) NOT NULL,
 PRIMARY KEY(system_id)
 );
@@ -41,50 +42,49 @@ CREATE TABLE IF NOT EXISTS planet_moon_system (
 planet_id INT NOT NULL AUTO_INCREMENT,
 planet_name VARCHAR(25) NOT NULL,
 system_id INT NOT NULL,
-sort_order INT NOT NULL DEFAULT 0,
 PRIMARY KEY(planet_id),
 FOREIGN KEY(system_id) REFERENCES planetary_system(system_id)
 );
 
 CREATE TABLE IF NOT EXISTS server_region (
 server_id INT NOT NULL AUTO_INCREMENT,
-server_name VARCHAR(12) NOT NULL,
+server_name VARCHAR(20) NOT NULL,
 PRIMARY KEY(server_id)
 );
 
 CREATE TABLE IF NOT EXISTS game_environment (
 environment_id INT NOT NULL AUTO_INCREMENT,
-environment_type VARCHAR(16) NOT NULL,
+environment_type VARCHAR(25) NOT NULL,
 PRIMARY KEY(environment_id)
 );
 
 CREATE TABLE IF NOT EXISTS game_experience (
 experience_id INT NOT NULL AUTO_INCREMENT,
-experience_type VARCHAR(20) NOT NULL,
+experience_type VARCHAR(25) NOT NULL,
 PRIMARY KEY(experience_id)
 );
 
 CREATE TABLE IF NOT EXISTS play_style (
 style_id INT NOT NULL AUTO_INCREMENT,
-play_style VARCHAR(17),
+play_style VARCHAR(25),
 PRIMARY KEY(style_id)
 );
 
 CREATE TABLE IF NOT EXISTS group_status (
 group_status_id INT NOT NULL AUTO_INCREMENT,
-group_status VARCHAR(16),
+group_status VARCHAR(25),
 PRIMARY KEY(group_status_id)
 );
 
 CREATE TABLE IF NOT EXISTS legality (
 legality_id INT NOT NULL AUTO_INCREMENT,
-legality VARCHAR(9) NOT NULL,
+legality VARCHAR(20) NOT NULL,
 PRIMARY KEY(legality_id)
 );
 
 CREATE TABLE IF NOT EXISTS pvp_status (
 pvp_status_id INT NOT NULL AUTO_INCREMENT,
-pvp_status VARCHAR(3) NOT NULL,
+pvp_status VARCHAR(10) NOT NULL,
 PRIMARY KEY(pvp_status_id)
 );
 

@@ -1,10 +1,11 @@
 body#keycloak-bg {
     display: flex;
+    position: relative;
     flex-direction: column;
     flex: 1;
     background-color: rgb(33, 37, 41);
     max-height: 90vh;
-    min-height: 35vh;
+    min-height: fit-content;
     margin-inline: auto;
     min-width: 80vw;
     max-width: 95vw;
@@ -21,6 +22,13 @@ body#keycloak-bg {
     );
 }
 
+#username,
+#password,
+#password-confirm,
+#email {
+    color: rgba(255, 255, 255, 0.75) !important;
+}
+
 body#keycloak-bg::before {
     content: "";
     position: absolute;
@@ -28,7 +36,7 @@ body#keycloak-bg::before {
     pointer-events: none;
     opacity: 0.2;
     filter: blur(4px);
-    mix-blend-mode: screen;
+    mix-blend-mode: overlay;
 
     background-image: repeating-linear-gradient(
             to bottom,
@@ -81,6 +89,7 @@ body#keycloak-bg::after {
     font-family: Orbitron, sans-serif;
     text-align: center;
     margin-bottom: 0;
+    margin-block-start: 5vh;
     color: rgba(188, 191, 200, 0.85);
 }
 
@@ -95,7 +104,16 @@ body#keycloak-bg::after {
     color: rgba(188, 191, 200, 1);
 }
 
+@media(min-width: 1800px) {
+    .pf-v5-c-login__main {
+        min-width: 20vw !important;
+    }
+}
 
+.pf-v5-c-login__main {
+    min-width: 25vw;
+    margin-inline: auto;
+}
 
 .pf-v5-c-form-control > input {
     outline: 1px solid transparent;
@@ -109,9 +127,17 @@ body#keycloak-bg::after {
 
 }
 
- .pf-v5-c-button.pf-m-primary {
-    /*background-color: rgba(33, 37, 41, .4);*/
+.pf-v5-c-button.pf-m-primary {
+    background-color: rgba(33, 37, 41, .4);
+    border: 1px solid rgba(255, 131, 7, .75);
     color: rgba(255, 131, 7, .75);
+    transition: color 0.25s ease, background-color 0.25s ease;
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+    background-color: rgba(255, 131, 7, .25);
+    color: rgba(33, 37, 41, .9);
+    cursor: pointer
 }
 
 #kc-login.pf-v5-c-button:hover {
@@ -168,13 +194,13 @@ body#keycloak-bg::after {
         min-width: 95vw;
     }
 
-    .pf-v5-c-login__main {
-        margin-inline: auto;
-    }
-
     #kc-header {
         font-size: 1.75rem;
         margin-top: 0;
+    }
+    .pf-v5-c-login__main {
+        min-width: 90vw;
+        margin-inline: auto;
     }
 }
 
