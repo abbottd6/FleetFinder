@@ -7,10 +7,12 @@ import { UserComponent} from "./components/user/user.component";
 import { AboutComponent } from "./components/about/about.component";
 import {AuthGuard} from "./services/auth/auth_guards/auth.guard";
 import {UpdateListingComponent} from "./components/update-listing/update-listing.component";
+import {LoginModalComponent} from "./components/login-modal/login-modal.component";
 
 
 const routes: Routes = [
   { path: '', component: WelcomeScreenComponent },
+  { path: 'login', component: LoginModalComponent },
   { path: 'group-listings', component: GroupListingsComponent },
   { path: 'create-listing', component: CreateListingComponent, canActivate: [ AuthGuard ] },
   { path: 'user-account', component: UserComponent, canActivate: [ AuthGuard ] },

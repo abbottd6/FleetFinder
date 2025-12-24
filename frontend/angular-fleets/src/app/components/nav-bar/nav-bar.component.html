@@ -11,7 +11,7 @@
           <a class="nav-link"
              aria-current="page"
              data-bs-toggle="collapse"
-             [routerLink]="['user-account']"
+             [routerLink]="['/user-account']"
              (click)="closeDropdown()"
           >Profile</a>
         </li>
@@ -25,7 +25,7 @@
         </li>
         <li class="nav-item">
           <a class="nav-link"
-             [routerLink]="['about']"
+             [routerLink]="['/about']"
              (click)="closeDropdown()"
           >About</a>
         </li>
@@ -35,21 +35,21 @@
             Listings
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" [routerLink]="['group-listings']">Search Listings</a></li>
-            <li><a class="dropdown-item" [routerLink]="['user-account']">My Listings</a></li>
-            <li><a class="dropdown-item" [routerLink]="['create-listing']">Create Listing</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/group-listings']">Search Listings</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/user-account']">My Listings</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/create-listing']">Create Listing</a></li>
           </ul>
         </li>
         <li class="nav-item toggle-listings-nav">
           <a class="nav-link"
-             [routerLink]="['group-listings']"
+             [routerLink]="['/group-listings']"
              (click)="closeDropdown()">
             Search Listings
           </a>
         </li>
         <li class="nav-item toggle-listings-nav">
           <a class="nav-link"
-             [routerLink]="['create-listing']"
+             [routerLink]="['/create-listing']"
              (click)="closeDropdown()">
             Create Listing
           </a>
@@ -91,13 +91,13 @@
           </button>
           <ul ngbDropdownMenu class="dropdown-menu dropdown-menu-end">
             <ng-container *ngIf="auth.isLoggedIn$ | async; else loggedOut">
-              <li><button class="dropdown-item" [routerLink]="['user-account']">Profile</button></li>
+              <li><button class="dropdown-item" [routerLink]="['/user-account']">Profile</button></li>
               <li><button class="dropdown-item" (click)="auth.logout()">Logout</button></li>
             </ng-container>
             <ng-template #loggedOut>
-              <li><button class="dropdown-item" (click)="auth.loginWithPopup(); closeDropdown()">Login</button></li>
+              <li><button class="dropdown-item" (click)="auth.login(); closeDropdown()">Login</button></li>
               <li><button class="dropdown-item"
-                          (click)="auth.registerWithPopup(); closeDropdown()">Sign Up</button></li>
+                          (click)="auth.register(); closeDropdown()">Sign Up</button></li>
             </ng-template>
           </ul>
           </div>
