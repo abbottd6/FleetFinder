@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS planet_moon_system (
 planet_id INT NOT NULL AUTO_INCREMENT,
 planet_name VARCHAR(25) NOT NULL,
 system_id INT NOT NULL,
+sort_order INT NOT NULL DEFAULT 0,
 PRIMARY KEY(planet_id),
 FOREIGN KEY(system_id) REFERENCES planetary_system(system_id)
 );
