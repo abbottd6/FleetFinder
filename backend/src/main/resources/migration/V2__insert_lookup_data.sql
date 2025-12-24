@@ -139,8 +139,8 @@ VALUES
     ('Competitive'),
     ('Learning'),
     ('Feature Testing'),
-    ('Stream (Watchable)'),
-    ('Stream (Joinable)');
+    ('Stream - Watchable'),
+    ('Stream - Joinable');
     
 -- Inserting group status options
 INSERT INTO group_status (group_status)
