@@ -1,9 +1,8 @@
-import {inject, Injectable} from "@angular/core";
+import {Injectable} from "@angular/core";
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from "@angular/router";
-import {filter, from, Observable, of, switchMap, take} from "rxjs";
+import {Observable, take} from "rxjs";
 import { map, tap } from "rxjs/operators";
 import {AuthService} from "../auth-services/auth.service";
-import {OidcSecurityService} from "angular-auth-oidc-client";
 
 @Injectable({providedIn: 'root'})
 export class AuthGuard implements CanActivate {
@@ -25,11 +24,6 @@ export class AuthGuard implements CanActivate {
         }
       }),
       map(isAuth => isAuth)
-
-        // return this.router.createUrlTree(['/login'], {
-        //   queryParams: { returnUrl: state.url }
-        // });
-
     );
   }
 }
