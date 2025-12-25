@@ -1,5 +1,11 @@
 <div class="dropdown-component">
-  <label id="planetMoon-dropdown">Planet/moon system:</label>
+  <label id="planetMoon-dropdown">
+    Planet/moon system:
+    <mat-icon class="tooltip-icon"
+      matTooltip="Optional">
+      help_outline
+    </mat-icon>
+  </label>
   <ng-select
     [items]="filteredPlanetMoons"
     bindLabel="planetName"

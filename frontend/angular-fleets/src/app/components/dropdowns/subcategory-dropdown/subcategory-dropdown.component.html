@@ -1,5 +1,11 @@
 <div class="dropdown-component">
-  <label id="subcategories-dropdown">Subcategory:</label>
+  <label id="subcategories-dropdown">
+    Subcategory:
+    <mat-icon class="tooltip-icon"
+              matTooltip="Optional">
+      help_outline
+    </mat-icon>
+  </label>
   <ng-select
     [items]="filteredSubcategories"
     bindLabel="subcategoryName"

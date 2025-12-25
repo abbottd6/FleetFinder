@@ -17,7 +17,6 @@
   .mat-mdc-form-field {
     min-width: 40%;
     font-family: 'Orbitron', sans-serif;
-    color: rgba(33, 37, 41, .7);
     font-size: clamp(0.8rem, 1vw, 1rem);
   }
 }
@@ -116,7 +115,6 @@
 
 /* character counter */
 .mat-mdc-form-field-hint {
-  color: rgba(33, 37, 41, .75);
   font-size: clamp(0.8rem, 1vw, 1rem);
 }
 

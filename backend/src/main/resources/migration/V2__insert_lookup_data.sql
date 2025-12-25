@@ -53,6 +53,7 @@ VALUES
     ('Commodity Trading', @commerce_id),
     ('Market Runs/Arbitrage', @commerce_id),
     ('Interstellar Commerce', @commerce_id),
+    ('Other - Commerce', @commerce_id),
     ('Ship Mining', @mining_id),
     ('Ground Vehicle Mining', @mining_id),
     ('FPS Mining', @mining_id),

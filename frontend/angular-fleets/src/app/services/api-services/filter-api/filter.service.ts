@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {LookupService} from "../reference-data-api/lookup.service";
-import {BehaviorSubject, map, Observable, of, Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, map, Observable, of, Subject} from "rxjs";
 
 export interface filterOptions {
   id: number,

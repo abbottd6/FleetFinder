@@ -1,5 +1,11 @@
 <div class="dropdown-component">
-  <label id="playstyle-dropdown">Play-style:</label>
+  <label id="playstyle-dropdown">
+    Play-style:
+    <mat-icon class="tooltip-icon"
+              matTooltip="Optional">
+      help_outline
+    </mat-icon>
+  </label>
   <ng-select
     [items]="playStyles"
     bindLabel="playStyle"
