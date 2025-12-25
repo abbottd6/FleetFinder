@@ -15,9 +15,9 @@
         Update Listing
       </button>
       <button class="action-buttons"
-              [disabled]="!(selection.hasValue()) || !singleSelected()">
+              [disabled]="!(selection.hasValue()) || !singleSelected()"
+              (click)="createTemplateFromListing()">
         Save Template
-                                          <!-- TODO user save template -->
       </button>
     </div>
   </ng-container>

@@ -1,8 +1,6 @@
 package com.sc_fleetfinder.fleets.config.mappers;
 
-
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplaySubcategory;
@@ -17,7 +15,6 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerReg
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
-import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;

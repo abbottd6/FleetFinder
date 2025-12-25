@@ -33,6 +33,9 @@ import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 import {
   ListingOwnerActionsService
 } from "../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
+import {ListingTemplatesApiService} from "../../services/api-services/listing-templates-api.service";
+import {CreateTemplateRequest} from "../../models/listing-templates/create-template-request";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-user-acct-listings-table',
@@ -58,6 +61,7 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   constructor(private listingOwnerSrv: ListingOwnerActionsService,
               private userService: UserService,
               protected listingInteract: ListingViewInteractionsService,
+              private templatesApi: ListingTemplatesApiService,
               private snackBar: MatSnackBar) {}
 
   ngOnInit() {
@@ -91,7 +95,7 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   }
 
   tableActionReset() {
-    this.userService.refreshUser()
+    this.userService.refreshUser();
     this.selection.clear()
   }
 
@@ -110,6 +114,30 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   deleteListings() {
     this.listingOwnerSrv.openConfirmDelete(this.selection.selected);
     this.tableActionReset();
+  }
+
+  createTemplateFromListing() {
+    if(!this.singleSelected()) return;
+
+    const selected = this.selection.selected[0];
+
+    const request = new CreateTemplateRequest(selected);
+
+    this.templatesApi.createTemplate(request).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response: { message: string; }) => {
+        this.snackBar.open(`${response.message}`, 'OK', {
+          duration: 4000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+          panelClass: ['mobile-snackbar']
+        });
+
+        this.tableActionReset();
+      },
+      error: (err => {
+        console.error(err);
+      })
+    })
   }
 
   layoutMode$: Observable<LayoutMode> = this.breakpointObserver

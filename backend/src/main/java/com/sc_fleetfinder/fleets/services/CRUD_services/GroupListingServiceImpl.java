@@ -119,6 +119,8 @@ public class GroupListingServiceImpl implements GroupListingService {
             try {
                 GroupListing groupListing = groupListingConversionService.convertToEntity(dto);
 
+                groupListing.setUsers(requestingUser);
+
                 groupListingRepository.save(groupListing);
 
                 Map<String, String> response = new HashMap<>();

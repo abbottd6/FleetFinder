@@ -1,20 +1,27 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.AddHiddenRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.SubmitListingReportDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.HiddenListingService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingBookmarkService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingTemplateService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.reporting_services.ListingReportingService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -36,21 +43,23 @@ import java.util.Set;
 @Slf4j
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final HiddenListingService hls;
+    private final ListingReportingService lrs;
+    private final ListingBookmarkService bms;
+    private final UserService userService;
+    private final ListingTemplateService lts;
 
-    @Autowired
-    private ListingBookmarkService bms;
-
-    @Autowired
-    private ListingReportingService lrs;
-
-    @Autowired
-    private HiddenListingService hls;
-
-    //##TODO make sure that all secure endpoints derive identity from the token and that the authorized user for...
-    //##TODO any requests to access or modify a resource match the resource owner
-    public UserController() {};
+    public UserController(HiddenListingService hls,
+                          ListingReportingService lrs,
+                          ListingBookmarkService bms,
+                          UserService userService,
+                          ListingTemplateService lts) {
+        this.hls = hls;
+        this.lrs = lrs;
+        this.bms = bms;
+        this.userService = userService;
+        this.lts = lts;
+    };
 
     @GetMapping
     @PreAuthorize("isAuthenticated() and hasRole('mod')")
@@ -152,14 +161,46 @@ public class UserController {
         return bms.deleteMultipleBookmarks(user, groupIds);
     }
 
-    //TODO this probably isnt necessary, filtering with the hidden listings on the backend
-//    @GetMapping("/my/hidden")
-//    @PreAuthorize("isAuthenticated() and hasRole('user')")
-//    public ResponseEntity<?> getHidden(@AuthenticationPrincipal Jwt jwt) {
-//        String kcId = jwt.getSubject();
-//        Users user = userService.verifyUser(kcId);
-//        return hls.getMyHiddenListingsBrief(user);
-//    }
+    @PostMapping("/my/templates/get")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public Page<ListingTemplateResponseDto> getTemplates(@AuthenticationPrincipal Jwt jwt,
+                                                         SortablePageRequestDto pageDto) {
+
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        Sort sort = Sort.unsorted();
+
+        if(pageDto.getSortField() != null && !pageDto.getSortField().isBlank()) {
+            Sort.Direction direction = "desc".equalsIgnoreCase(pageDto.getSortDirection())
+                    ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, pageDto.getSortField());
+        }
+
+        Pageable pageable = PageRequest.of(pageDto.getPage(), pageDto.getSize(), sort);
+
+        return lts.getMyTemplates(user, pageable);
+    }
+
+    @PostMapping("/my/templates/save")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> createTemplate(@AuthenticationPrincipal Jwt jwt,
+                                          @RequestBody CreateGroupListingDto dto) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        return lts.createTemplate(user, dto);
+    }
+
+    @DeleteMapping("/my/templates/delete/{templateId}")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> deleteTemplate(@AuthenticationPrincipal Jwt jwt,
+                                            @PathVariable Long templateId) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        return lts.removeTemplate(user, templateId);
+    }
 
     @PostMapping("/my/hidden:add")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
