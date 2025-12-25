@@ -95,8 +95,8 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   }
 
   tableActionReset() {
-    this.userService.refreshUser();
     this.selection.clear()
+    this.userService.refreshUser();
   }
 
   updateListing() {
@@ -116,6 +116,8 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
     this.tableActionReset();
   }
 
+
+  //TODO put a unique constraint on title/user in the db and check for templates with the same title
   createTemplateFromListing() {
     if(!this.singleSelected()) return;
 

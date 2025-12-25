@@ -6,6 +6,7 @@ import {UserListingManagementService} from "../../user-services/user-listing-man
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
 import {Router} from "@angular/router";
+import {UserService} from "../../user-services/user.service";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ import {Router} from "@angular/router";
 export class ListingOwnerActionsService {
 
   constructor(private userListingService: UserListingManagementService,
+              private userService: UserService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog,
               private router: Router) { }
@@ -31,6 +33,8 @@ export class ListingOwnerActionsService {
       this.userListingService.deleteListing(selection[i].groupId)
         .subscribe({
           next: response => {
+            this.userService.refreshUser();
+
             if(!environment.production) {
               console.log(response.listingTitle)
             }
@@ -51,6 +55,8 @@ export class ListingOwnerActionsService {
   userDeleteSingle(row : GroupListingViewModel) {
     this.userListingService.deleteListing(row.groupId).subscribe({
       next: response => {
+
+        this.userService.refreshUser();
 
         const title = row.listingTitle.length > 30
           ? row.listingTitle.slice(0,30) + '...' : row.listingTitle;
