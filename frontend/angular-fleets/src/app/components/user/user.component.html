@@ -77,7 +77,8 @@
 
           <!-- LISTING TEMPLATES TAB -->
           <ng-container *ngIf="selectedTab === 'templates'">
-            <app-user-profile-templates>
+            <app-user-profile-templates
+              (templateForModal)="onTemplateSelected($event)">
             </app-user-profile-templates>
           </ng-container>
 
@@ -142,3 +143,10 @@
   [isBookmarked$]="listingInteract.selectedIsBookmarked$"
   (close)="listingInteract.onModalClose($event)"
 ></app-group-listing-modal>
+
+<app-listing-template-modal
+  *ngIf="templatesModal.templateModalIsVisible"
+  [templateModalIsVisible]="templatesModal.templateModalIsVisible"
+  [selectedTemplate]="selectedTemplate"
+  (close)="listingInteract.onModalClose($event)">
+</app-listing-template-modal>

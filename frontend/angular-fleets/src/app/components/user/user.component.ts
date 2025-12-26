@@ -15,9 +15,8 @@ import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButtonModule} from "@angular/material/button";
 import {UserService} from "../../services/user-services/user.service";
-import {CloseValue, GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
+import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
-import {ModListingsTableComponent} from "../mod-tools/mod-listings-table/mod-listings-table.component";
 import {UserProfileBookmarksComponent} from "../user-profile-bookmarks/user-profile-bookmarks.component";
 import {
   ListingViewInteractionsService
@@ -25,7 +24,14 @@ import {
 import {ModParentPanelComponent} from "../mod-tools/mod-parent-panel/mod-parent-panel.component";
 import {
   UserProfileTemplatesComponent
-} from "../user-profile-templates/user-profile-templates/user-profile-templates.component";
+} from "../user-profile-templates/user-profile-templates.component";
+import {
+  TemplatesModalService
+} from "../../services/component-services/templates-modal-service/templates-modal.service";
+import {ListingTemplateViewModel} from "../../models/listing-templates/listing-template-view-model";
+import {
+  ListingTemplateModalComponent
+} from "../group-listing-modal/listing-template-modal/listing-template-modal.component";
 
 @Component({
     selector: 'app-user',
@@ -35,7 +41,7 @@ import {
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
     UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent,
-    UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent],
+    UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent, ListingTemplateModalComponent],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {
@@ -46,21 +52,23 @@ export class UserComponent implements OnInit, OnDestroy {
 
   //modal popup vars
   selectedListing: GroupListingViewModel | null = null;
+  selectedTemplate: ListingTemplateViewModel | null = null;
 
   groupListings: GroupListingViewModel[] = []
   localUser$: Observable<PrivateUser>;
   selectedTab: 'listings'|'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
   shouldDisplayMod$: boolean = false;
 
-  constructor(public userService: UserService, protected auth: AuthService,
-              protected listingInteract: ListingViewInteractionsService) {
+  constructor(public userService: UserService,
+              protected auth: AuthService,
+              protected listingInteract: ListingViewInteractionsService,
+              protected templatesModal: TemplatesModalService) {
     this.localUser$ = this.userService.localUser$;
 
     this.localUser$.pipe(
       map(user => user.groupListingsDto ?? []),
       takeUntil(this.destroy$)
-    )
-      .subscribe(listings => this.groupListings = listings);
+    ).subscribe(listings => this.groupListings = listings);
   }
 
   ngOnInit() {
@@ -85,10 +93,14 @@ export class UserComponent implements OnInit, OnDestroy {
   onListingSelected(listing: GroupListingViewModel) {
     this.selectedListing = listing;
     this.listingInteract.isModalVisible = true;
-    console.log("Role:", this.userService.getRole());
     if(!environment.production) {
       console.log("Parent modal visibility: ", this.listingInteract.isModalVisible);
     }
+  }
+
+  onTemplateSelected(template: ListingTemplateViewModel) {
+    this.selectedTemplate = template;
+    this.templatesModal.templateModalIsVisible = true;
   }
 
   isMobile$ = this.breakpointObserver

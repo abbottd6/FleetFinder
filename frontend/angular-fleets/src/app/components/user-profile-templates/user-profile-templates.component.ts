@@ -1,43 +1,40 @@
-import {
-  AfterViewInit,
-  Component,
-  ElementRef,
-  EventEmitter,
-  inject,
-  OnDestroy,
-  Output,
-  ViewChild
-} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, inject, OnDestroy, Output, ViewChild} from '@angular/core';
 import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 import {
   MatCell,
   MatCellDef,
   MatColumnDef,
-  MatHeaderCell, MatHeaderCellDef,
-  MatHeaderRow, MatHeaderRowDef, MatRow, MatRowDef, MatTable,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef,
+  MatTable,
   MatTableDataSource
 } from "@angular/material/table";
 import {SelectionModel} from "@angular/cdk/collections";
-import {ListingTemplatesApiService} from "../../../services/api-services/listing-templates-api/listing-templates-api.service";
+import {
+  ListingTemplatesApiService
+} from "../../services/api-services/listing-templates-api/listing-templates-api.service";
 import {
   ListingViewInteractionsService
-} from "../../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
+} from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {LayoutMode} from "../../input-fields/search-bar/search-bar.component";
+import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 import {MatCheckbox} from "@angular/material/checkbox";
-import {ListingTemplateViewModel} from "../../../models/listing-templates/listing-template-view-model";
+import {ListingTemplateViewModel} from "../../models/listing-templates/listing-template-view-model";
 import {MatSort, Sort} from "@angular/material/sort";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
-import {Page} from "../../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
+import {Page} from "../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {ConfirmDeleteComponent} from "../../pop-ups/confirm-delete/confirm-delete.component";
 import {MatDialog} from "@angular/material/dialog";
-import {ConfirmGenericComponent} from "../../pop-ups/confirm-generic/confirm-generic.component";
+import {ConfirmGenericComponent} from "../pop-ups/confirm-generic/confirm-generic.component";
+import {TemplatesModalService} from "../../services/component-services/templates-modal-service/templates-modal.service";
 
 @Component({
   selector: 'app-user-profile-templates',
@@ -81,9 +78,9 @@ export class UserProfileTemplatesComponent implements AfterViewInit, OnDestroy {
   private readonly LONG_PRESS_MS = 500;
   public longPressTriggered = false;
 
-  @Output() listingForModal = new EventEmitter<GroupListingViewModel>();
+  @Output() templateForModal = new EventEmitter<ListingTemplateViewModel>();
 
-  fullColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ];
+  fullColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'created' ];
   mobileColumns = ['select', 'details'];
   readonly displayedColumns$!: Observable<string[]>;
 
@@ -100,11 +97,19 @@ export class UserProfileTemplatesComponent implements AfterViewInit, OnDestroy {
 
   constructor(private templatesApi: ListingTemplatesApiService,
               protected listingInteract: ListingViewInteractionsService,
+              private templatesModalSrv: TemplatesModalService,
               private router: Router,
               private snackBar: MatSnackBar,
               private dialog: MatDialog) {
 
     this.loadTemplates();
+
+    this.templatesModalSrv.refresh$.pipe(takeUntil(this.templatesPanelDestroy$))
+      .subscribe(reason => {
+      if(reason === 'delete') {
+        this.loadTemplates();
+      }
+    })
 
     this.displayedColumns$ = this.layoutMode$.pipe(takeUntil(this.templatesPanelDestroy$)).pipe(
       map(mode => mode === 'handheld' ? this.mobileColumns : this.fullColumns)
@@ -156,12 +161,10 @@ export class UserProfileTemplatesComponent implements AfterViewInit, OnDestroy {
   openConfirmDelete() {
     const template = this.clickedTemplate ?? this.selection.selected[0];
     const message: string = "Please confirm deletion of:"
-    const title: string = template.listingTitle;
-
     const dialogRef = this.dialog.open(ConfirmGenericComponent, {
       data: {
         message: message,
-        title: title
+        title: template.listingTitle
       }
     });
 
@@ -220,8 +223,8 @@ export class UserProfileTemplatesComponent implements AfterViewInit, OnDestroy {
       shareReplay(1)
     );
 
-  listingSelected(listing: GroupListingViewModel) {
-    this.listingForModal.emit(listing)
+  onRowClick(template: ListingTemplateViewModel) {
+    this.templateForModal.emit(template)
   }
 
   /* ----------------------------------- CONTEXT MENU ----------------------------------------------------------------*/

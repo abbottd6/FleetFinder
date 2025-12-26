@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { UserTemplatesComponentService } from './user-templates-component.service';
+import { TemplatesModalService } from './templates-modal.service';
 
 describe('UserTemplatesComponentService', () => {
-  let service: UserTemplatesComponentService;
+  let service: TemplatesModalService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(UserTemplatesComponentService);
+    service = TestBed.inject(TemplatesModalService);
   });
 
   it('should be created', () => {

@@ -72,7 +72,6 @@ import { ConfirmGenericComponent } from './components/pop-ups/confirm-generic/co
 import { ConfirmClearIssueComponent } from './components/pop-ups/confirm-clear-issue/confirm-clear-issue.component';
 import { ModIssueDetailedComponent } from './components/pop-ups/mod-issue-detailed/mod-issue-detailed.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
@@ -91,6 +90,7 @@ import { ModIssueDetailedComponent } from './components/pop-ups/mod-issue-detail
     ConfirmGenericComponent,
     ConfirmClearIssueComponent,
     ModIssueDetailedComponent,
+
   ],
   imports: [
     BrowserModule,

@@ -15,6 +15,7 @@ import {SubmitListingReport} from "../../../models/report-requests/submit-listin
 import {UiPrefsService} from "../ui-prefs/ui-prefs.service";
 import {CloseValue} from "../../../components/group-listing-modal/group-listing-modal.component";
 import {UserService} from "../../user-services/user.service";
+import {TemplatesModalService} from "../../component-services/templates-modal-service/templates-modal.service";
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,7 @@ export class ListingViewInteractionsService {
   public longPressTriggered = false;
 
   isModalVisible: boolean = false;
-  refreshSubject = new Subject<'hide' | 'bookmark' | 'unbookmark' | 'report' | null>();
+  refreshSubject = new Subject<'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | null>();
   readonly refresh$ = this.refreshSubject.asObservable();
 
   constructor(private bmService: BookmarkApiService,
@@ -40,6 +41,7 @@ export class ListingViewInteractionsService {
               private hideService: HiddenListingsApiService,
               protected uiPrefService: UiPrefsService,
               private userSrv: UserService,
+              private templatesModal: TemplatesModalService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog) {
 
@@ -276,7 +278,7 @@ export class ListingViewInteractionsService {
     });
   }
 
-  private emitRefresh(reason: 'hide' | 'bookmark' | 'unbookmark' | 'report') {
+  private emitRefresh(reason: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete') {
     this.refreshSubject.next(reason);
   }
 
@@ -286,6 +288,7 @@ export class ListingViewInteractionsService {
       console.log("Modal closed");
     }
     this.isModalVisible = false;
+
     this.setSelectedListing(null);
 
     if(!action.value) return;

@@ -10,7 +10,7 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {ListingTemplateViewModel} from "../../models/listing-templates/listing-template-view-model";
 
 export interface CloseValue {
-  value: 'hide' | 'bookmark' | 'unbookmark' | 'report' | null,
+  value: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | null,
   group: GroupListingViewModel | null
 }
 
@@ -38,9 +38,8 @@ export class GroupListingModalComponent implements OnInit {
   @Output() close = new EventEmitter<CloseValue>
   localUser$: Observable<PrivateUser>;
   userListings: GroupListingViewModel[] = [];
-  userService = new UserService();
 
-  constructor(userService: UserService) {
+  constructor(private userService: UserService) {
     this.userService = userService;
     this.localUser$ = this.userService.localUser$;
 
