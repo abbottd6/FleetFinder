@@ -110,6 +110,52 @@
   cursor: pointer;
 }
 
+.feed-element {
+  display: flex;
+  flex-direction: column;
+  min-height: 15vh;
+}
+
+.feed-data-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  padding-top: 0.1rem;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.title-row {
+  padding-top: 0.25rem;
+  font-size: 1rem;
+}
+
+.feed-label-value-pair {
+  display: flex;
+  flex-direction: row;
+  gap: 0.2rem;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.field-label {
+  color: rgba(255, 131, 7, .6);
+  padding: 0;
+  margin: 0;
+}
+
+.description-row {
+  text-wrap: wrap;
+  padding-bottom: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.select-column {
+  padding: 0 !important;
+}
+
+
 @media(min-width: 725px) and (max-width: 1529px) {
   .mat-mdc-header-row {
     font-size: 1rem;
@@ -141,3 +187,5 @@
     font-size: .7rem;
   }
 }
+
+

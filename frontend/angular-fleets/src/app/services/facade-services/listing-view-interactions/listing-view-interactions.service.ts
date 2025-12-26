@@ -278,7 +278,8 @@ export class ListingViewInteractionsService {
     });
   }
 
-  private emitRefresh(reason: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete') {
+  public emitRefresh(reason: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete') {
+    console.log("reason: ", reason);
     this.refreshSubject.next(reason);
   }
 

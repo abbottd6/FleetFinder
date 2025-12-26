@@ -84,6 +84,12 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
               private userService: UserService,
               protected ownerService: ListingOwnerActionsService) {
 
+    this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
+      if(reason === 'hide' || reason === 'report' || reason === 'delete') {
+        this.reloadListings();
+      }
+    })
+
     afterNextRender(() => {
       this.uiPrefService.clickedCleanupCheck();
     })
@@ -102,12 +108,6 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
 
     this.auth.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(
       val => this.listingInteract.isLoggedIn = val);
-
-    this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
-      if(reason === 'hide' || reason === 'report') {
-        this.reloadListings();
-      }
-    })
   }
 
   ngAfterViewInit() {
@@ -176,7 +176,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     this.groupListingService.searchGroupListings(dto, idx, sz, sortA, sortD)
       .subscribe({
         next: (page) => {
-          if(!environment.production) {
+          if (!environment.production) {
             console.log('Data received in component:', page);
           }
           this.dataSource.data = page.content;
@@ -190,7 +190,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
         complete: () => {
           this.noResults = (this.dataSource.data.length === 0);
         }
-    });
+      });
   }
 
   isReported(id: number, reportIds: Set<number> | null): boolean {

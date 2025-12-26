@@ -1,22 +1,22 @@
 <div class="title-container">
   <h5>Templates:</h5>
 </div>
-<div class="button-row">
-  <div class="action-buttons-container">
-    <button type="submit" class="action-buttons"
-            [disabled]="!(selection.hasValue()) || !singleSelected()"
-            (click)="createFromTemplate()">
-      Create From
-    </button>
-    <button class="action-buttons"
-            [disabled]="!(selection.hasValue())"
-            (click)="openConfirmDelete()">
-      Delete
-    </button>
+<ng-container *ngIf="(layoutMode$ | async) !== 'handheld'; else feedview">
+  <div class="button-row">
+    <div class="action-buttons-container">
+      <button type="submit" class="action-buttons"
+              [disabled]="!(selection.hasValue()) || !singleSelected()"
+              (click)="createFromTemplate()">
+        Create From
+      </button>
+      <button class="action-buttons"
+              [disabled]="!(selection.hasValue())"
+              (click)="openConfirmDelete()">
+        Delete
+      </button>
+    </div>
   </div>
-</div>
-<div class="user-table">
-  <ng-container *ngIf="(layoutMode$ | async) !== 'handheld'; else feedview">
+  <div class="user-table">
     <table mat-table
             [dataSource]="dataSource"
             matSort
@@ -93,10 +93,73 @@
             (touchend)="onTouchEnd($event)"></tr>
       </ng-container>
     </table>
-  </ng-container>
-
+  </div>
+</ng-container>
+<div class="user-table">
   <ng-template #feedview>
+    <table mat-table
+           [dataSource]="dataSource">
 
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef='select'>
+        <th mat-header-cell *matHeaderCellDef>
+          <!--          <mat-checkbox (change)="$event ? toggleAllRows() : null"-->
+          <!--                        [checked]="selection.hasValue() && isAllSelected()"-->
+          <!--                        [indeterminate]="selection.hasValue() && !isAllSelected()"-->
+          <!--                        [aria-label]="checkboxLabel()">-->
+          <!--          </mat-checkbox>-->
+        </th>
+        <td mat-cell *matCellDef="let row; let i = index">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef='details'>
+        <th mat-header-cell *matHeaderCellDef>
+          Template Details
+        </th>
+        <td class="feed-element"
+            mat-cell *matCellDef="let row"
+            (click)="onRowClick(row)"
+            (contextmenu)="openContextMenu($event, row)"
+            (touchstart)="onTouchStart($event, row)"
+            (touchend)="onTouchEnd($event)">
+          <div class="feed-data-row title-row">
+            <span>{{ row.listingTitle }}</span>
+          </div>
+          <div class="feed-data-row">
+            <span>{{ row.creationTimestamp | date: 'MM/d, h:mm a' }}</span>
+            <span>|</span>
+            <span class="feed-label-value-pair"><p class="field-label">Category:</p> {{ row.category }}</span>
+          </div>
+          <div class="feed-data-row">
+            <span class="feed-label-value-pair"><p class="field-label">Legality:</p> {{ row.legality }}</span>
+            <span>|</span>
+            <span class="feed-label-value-pair"><p class="field-label">Pv?:</p> {{ row.pvpStatus }}</span>
+            <span>|</span>
+            <span class="feed-label-value-pair"><p class="field-label">System:</p> {{ row.system }}</span>
+          </div>
+          <div class="feed-data-row description-row">
+            <span> {{
+                row.listingDescription.length > 110 ?
+                  (row.listingDescription|slice: 0:110) + '...' : row.listingDescription
+              }}
+            </span>
+          </div>
+
+        </td>
+      </ng-container>
+
+      <!-- header declarations -->
+      <ng-container *ngIf="displayedColumns$ | async as columns">
+        <tr mat-header-row class="header-row" *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"></tr>
+      </ng-container>
+    </table>
   </ng-template>
 </div>
 

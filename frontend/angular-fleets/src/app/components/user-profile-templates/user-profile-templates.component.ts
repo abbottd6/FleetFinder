@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, inject, OnDestroy, Output, ViewChild} from '@angular/core';
-import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
+import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
 import {BreakpointObserver} from "@angular/cdk/layout";
@@ -60,6 +60,7 @@ import {TemplatesModalService} from "../../services/component-services/templates
     MatTable,
     MatHeaderCellDef,
     MatSort,
+    SlicePipe,
   ],
   styleUrl: './user-profile-templates.component.css'
 })
@@ -81,7 +82,7 @@ export class UserProfileTemplatesComponent implements AfterViewInit, OnDestroy {
   @Output() templateForModal = new EventEmitter<ListingTemplateViewModel>();
 
   fullColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'created' ];
-  mobileColumns = ['select', 'details'];
+  mobileColumns = ['details'];
   readonly displayedColumns$!: Observable<string[]>;
 
   dataSource = new MatTableDataSource<ListingTemplateViewModel>();

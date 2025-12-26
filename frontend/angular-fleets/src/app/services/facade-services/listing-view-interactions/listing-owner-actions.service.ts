@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {DestroyRef, inject, Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 import {ConfirmDeleteComponent} from "../../../components/pop-ups/confirm-delete/confirm-delete.component";
@@ -9,15 +9,19 @@ import {Router} from "@angular/router";
 import {UserService} from "../../user-services/user.service";
 import {CreateTemplateRequest} from "../../../models/listing-templates/create-template-request";
 import {ListingTemplatesApiService} from "../../api-services/listing-templates-api/listing-templates-api.service";
+import {ListingViewInteractionsService} from "./listing-view-interactions.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ListingOwnerActionsService {
+  private ownerSrvDestroyRef = inject(DestroyRef);
+
   constructor(private userListingService: UserListingManagementService,
               private userService: UserService,
               private templatesApi: ListingTemplatesApiService,
+              private listingInteract: ListingViewInteractionsService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog,
               private router: Router) { }
@@ -33,20 +37,23 @@ export class ListingOwnerActionsService {
   userDeleteListings(selection: GroupListingViewModel[]){
     const selectedCount = selection.length;
     for (let i = 0; i < selection.length; i++) {
-      this.userListingService.deleteListing(selection[i].groupId)
+      this.userListingService.deleteListing(selection[i].groupId).pipe(takeUntilDestroyed(this.ownerSrvDestroyRef))
         .subscribe({
           next: response => {
-            this.userService.refreshUser();
-
             if(!environment.production) {
               console.log(response.listingTitle)
             }
+
+            this.userService.refreshUser();
+
             this.snackBar.open(`You successfully deleted [${selectedCount}] listing(s).`, 'OK', {
               duration: 6000,
               verticalPosition: 'top',
               horizontalPosition: 'center',
               panelClass: ['my-snackbar']
             });
+
+            this.listingInteract.emitRefresh('delete');
           },
           error: err => {
             alert(`There was an error deleting this listing: ${err.message}`);
@@ -56,8 +63,9 @@ export class ListingOwnerActionsService {
   }
 
   userDeleteSingle(row : GroupListingViewModel) {
-    this.userListingService.deleteListing(row.groupId).subscribe({
-      next: response => {
+    this.userListingService.deleteListing(row.groupId).pipe(takeUntilDestroyed(this.ownerSrvDestroyRef))
+      .subscribe({
+        next: response => {
 
         this.userService.refreshUser();
 
@@ -68,7 +76,10 @@ export class ListingOwnerActionsService {
           duration: 6000,
           verticalPosition: 'top',
           horizontalPosition: 'center',
-          panelClass: ['mobile-snackbar']});
+          panelClass: ['mobile-snackbar']
+        });
+
+        this.listingInteract.emitRefresh('delete');
       },
       error: err => {
         alert(`There was an error deleting this listing: ${err.message}`);
