@@ -1,0 +1,143 @@
+<div class="title-container">
+  <h5>Templates:</h5>
+</div>
+<div class="button-row">
+  <div class="action-buttons-container">
+    <button type="submit" class="action-buttons"
+            [disabled]="!(selection.hasValue()) || !singleSelected()"
+            (click)="createFromTemplate()">
+      Create From
+    </button>
+    <button class="action-buttons"
+            [disabled]="!(selection.hasValue())"
+            (click)="openConfirmDelete()">
+      Delete
+    </button>
+  </div>
+</div>
+<div class="user-table">
+  <ng-container *ngIf="(layoutMode$ | async) !== 'handheld'; else feedview">
+    <table mat-table
+            [dataSource]="dataSource"
+            matSort
+            (matSortChange)="announceSortChange($event)">
+
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef='select'>
+        <th mat-header-cell *matHeaderCellDef>
+<!--          <mat-checkbox (change)="$event ? toggleAllRows() : null"-->
+<!--                        [checked]="selection.hasValue() && isAllSelected()"-->
+<!--                        [indeterminate]="selection.hasValue() && !isAllSelected()"-->
+<!--                        [aria-label]="checkboxLabel()">-->
+<!--          </mat-checkbox>-->
+        </th>
+        <td mat-cell *matCellDef="let row; let i = index">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)"
+                        [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+
+      <!-- Title Column -->
+      <ng-container matColumnDef='title'>
+        <th mat-header-cell *matHeaderCellDef> Title</th>
+        <td mat-cell *matCellDef="let row" (click)="listingSelected(row)"> {{ row.listingTitle }}</td>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef='status'>
+        <th mat-header-cell *matHeaderCellDef> Group Status</th>
+        <td mat-cell *matCellDef="let row" (click)="listingSelected(row)"> {{ row.groupStatus }}</td>
+      </ng-container>
+
+      <!-- Category Column -->
+      <ng-container matColumnDef='category'>
+        <th mat-header-cell *matHeaderCellDef> Category</th>
+        <td mat-cell *matCellDef="let row" (click)="listingSelected(row)"> {{ row.category }}</td>
+      </ng-container>
+
+      <!-- PvP Status Column -->
+      <ng-container matColumnDef='pvp'>
+        <th mat-header-cell *matHeaderCellDef> PvP Status</th>
+        <td mat-cell *matCellDef="let row" (click)="listingSelected(row)"> {{ row.pvpStatus }}</td>
+      </ng-container>
+
+      <!-- Planetary System Column -->
+      <ng-container matColumnDef='system'>
+        <th mat-header-cell *matHeaderCellDef>System</th>
+        <td mat-cell *matCellDef="let row" (click)="listingSelected(row)"> {{ row.system }}</td>
+      </ng-container>
+
+      <!-- Available Roles Column -->
+      <ng-container matColumnDef='roles'>
+        <th mat-header-cell *matHeaderCellDef>Avail. Roles</th>
+        <td mat-cell *matCellDef="let row" (click)="listingSelected(row)"> {{ row.availableRoles }}</td>
+      </ng-container>
+
+      <!-- CREATED TS Column -->
+      <ng-container matColumnDef='updated'>
+        <th mat-header-cell *matHeaderCellDef>Created</th>
+        <td mat-cell *matCellDef="let row"
+            (click)="listingSelected(row)"> {{ row.creationTimestamp | date: 'MMM d, h:mm a' }}
+        </td>
+      </ng-container>
+
+      <!-- header declarations -->
+      <ng-container *ngIf="displayedColumns$ | async as columns">
+        <tr mat-header-row *matHeaderRowDef="columns"></tr>
+        <tr mat-row *matRowDef="let row; columns: columns"
+            (contextmenu)="openContextMenu($event, row)"
+            (touchstart)="onTouchStart($event, row)"
+            (touchend)="onTouchEnd($event)"></tr>
+      </ng-container>
+    </table>
+  </ng-container>
+
+  <ng-template #feedview>
+
+  </ng-template>
+</div>
+
+
+<div class="no-results-container" *ngIf="noResults">
+  <p>No active listings bookmarked</p>
+</div>
+
+<!-- Paginator -->
+<div class="paginator">
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    [pageIndex]="pageIdx"
+    [pageSize]="pageSize"
+    [length]="totalElements"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>
+
+<!-- Context Menu -->
+<div
+  #templatesMenuAnchor
+  class="context-menu-anchor"
+  [matMenuTriggerFor]="templatesQuickMenu"
+  #templatesMenuTrigger="matMenuTrigger">
+</div>
+
+<mat-menu #templatesQuickMenu="matMenu">
+    <button
+      mat-menu-item
+      class="options-item"
+      (click)="createFromTemplate()">
+      Create From
+    </button>
+    <button
+      mat-menu-item
+      class="options-item"
+      (click)="openConfirmDelete()">
+      Delete
+    </button>
+    <button mat-menu-item class="options-item">
+      Cancel
+    </button>
+</mat-menu>

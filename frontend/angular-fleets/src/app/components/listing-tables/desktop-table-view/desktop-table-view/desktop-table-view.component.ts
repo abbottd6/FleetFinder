@@ -3,7 +3,6 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  inject,
   Input,
   OnDestroy, OnInit,
   Output,
@@ -24,6 +23,7 @@ import {Subject, takeUntil} from "rxjs";
 import {GroupListingViewModel} from "../../../../models/group-listing/group-listing-view-model";
 import {SelectionModel} from "@angular/cdk/collections";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {environment} from "../../../../../environments/environment";
 import {
   ListingViewInteractionsService
 } from "../../../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
@@ -65,6 +65,9 @@ import {
 export class DesktopTableViewComponent implements OnInit, OnDestroy, AfterViewInit {
   private desktopDestroy$ = new Subject<void>();
 
+  @Input() menuTriggerInput?: MatMenuTrigger;
+  @Input() menuAnchorInput?: ElementRef<HTMLElement>;
+
   @Input() dataSource!: MatTableDataSource<GroupListingViewModel>;
   @Input() columns!: string[];
   @Output() listingToEmit = new EventEmitter<GroupListingViewModel>();
@@ -98,7 +101,18 @@ export class DesktopTableViewComponent implements OnInit, OnDestroy, AfterViewIn
   }
 
   ngAfterViewInit() {
-    this.desktopQuickMenu.registerMenu(this.desktopTrigger, this.desktopMenuAnchor)
+
+    const trigger = this.menuTriggerInput ?? this.desktopTrigger;
+    const anchor = this.menuAnchorInput ?? this.desktopMenuAnchor;
+
+    if(!trigger || !anchor) {
+      if(!environment.production) {
+        console.warn('DesktopTableViewComponent: menu trigger/anchor missing');
+      }
+      return
+    }
+
+    this.desktopQuickMenu.registerMenu(trigger, anchor)
   }
 
   ngOnDestroy() {

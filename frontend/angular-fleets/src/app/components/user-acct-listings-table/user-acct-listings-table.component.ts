@@ -33,7 +33,7 @@ import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 import {
   ListingOwnerActionsService
 } from "../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
-import {ListingTemplatesApiService} from "../../services/api-services/listing-templates-api.service";
+import {ListingTemplatesApiService} from "../../services/api-services/listing-templates-api/listing-templates-api.service";
 import {CreateTemplateRequest} from "../../models/listing-templates/create-template-request";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
@@ -123,23 +123,8 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
 
     const selected = this.selection.selected[0];
 
-    const request = new CreateTemplateRequest(selected);
-
-    this.templatesApi.createTemplate(request).pipe(takeUntil(this.destroy$)).subscribe({
-      next: (response: { message: string; }) => {
-        this.snackBar.open(`${response.message}`, 'OK', {
-          duration: 4000,
-          verticalPosition: 'top',
-          horizontalPosition: 'center',
-          panelClass: ['mobile-snackbar']
-        });
-
-        this.tableActionReset();
-      },
-      error: (err => {
-        console.error(err);
-      })
-    })
+    this.listingOwnerSrv.createTemplateFromListing(selected);
+    this.tableActionReset();
   }
 
   layoutMode$: Observable<LayoutMode> = this.breakpointObserver

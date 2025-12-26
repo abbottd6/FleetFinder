@@ -164,7 +164,7 @@ public class UserController {
     @PostMapping("/my/templates/get")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public Page<ListingTemplateResponseDto> getTemplates(@AuthenticationPrincipal Jwt jwt,
-                                                         SortablePageRequestDto pageDto) {
+                                                         @RequestBody SortablePageRequestDto pageDto) {
 
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);

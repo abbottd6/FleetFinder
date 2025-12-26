@@ -322,8 +322,8 @@
             (click)="ownerService.userUpdateSelected(listingInteract.selectedListing!)">
       Update
     </button>
-    <button mat-menu-item class="options-item">
-      <!-- TODO user save template -->
+    <button mat-menu-item class="options-item"
+            (click)="ownerService.createTemplateFromListing(listingInteract.selectedListing!)">
       Template
     </button>
     <button mat-menu-item class="options-item"

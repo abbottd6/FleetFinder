@@ -7,14 +7,17 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
 import {Router} from "@angular/router";
 import {UserService} from "../../user-services/user.service";
+import {CreateTemplateRequest} from "../../../models/listing-templates/create-template-request";
+import {ListingTemplatesApiService} from "../../api-services/listing-templates-api/listing-templates-api.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ListingOwnerActionsService {
-
   constructor(private userListingService: UserListingManagementService,
               private userService: UserService,
+              private templatesApi: ListingTemplatesApiService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog,
               private router: Router) { }
@@ -90,5 +93,23 @@ export class ListingOwnerActionsService {
         this.userDeleteSingle(tempRow);
       }
     });
+  }
+
+  createTemplateFromListing(selected: GroupListingViewModel) {
+    const request = new CreateTemplateRequest(selected);
+
+    this.templatesApi.createTemplate(request).subscribe({
+      next: (response: { message: string; }) => {
+        this.snackBar.open(`${response.message}`, 'OK', {
+          duration: 4000,
+          verticalPosition: 'top',
+          horizontalPosition: 'center',
+          panelClass: ['mobile-snackbar']
+        });
+      },
+      error: (err => {
+        console.error(err);
+      })
+    })
   }
 }

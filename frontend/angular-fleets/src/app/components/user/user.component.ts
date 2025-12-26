@@ -23,6 +23,9 @@ import {
   ListingViewInteractionsService
 } from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 import {ModParentPanelComponent} from "../mod-tools/mod-parent-panel/mod-parent-panel.component";
+import {
+  UserProfileTemplatesComponent
+} from "../user-profile-templates/user-profile-templates/user-profile-templates.component";
 
 @Component({
     selector: 'app-user',
@@ -32,7 +35,7 @@ import {ModParentPanelComponent} from "../mod-tools/mod-parent-panel/mod-parent-
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
     UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent,
-    UserProfileBookmarksComponent, ModParentPanelComponent],
+    UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {

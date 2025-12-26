@@ -26,12 +26,10 @@ import {MatIcon} from "@angular/material/icon";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {SelectionModel} from "@angular/cdk/collections";
 import {MatCheckbox} from "@angular/material/checkbox";
-import {environment} from "../../../../environments/environment";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
 import {ListingReportApiService} from "../../../services/api-services/listing-reports-api/listing-report-api.service";
 import {ConfirmReportComponent} from "../../pop-ups/confirm-report/confirm-report.component";
-import {ConfirmGenericComponent} from "../../pop-ups/confirm-generic/confirm-generic.component";
 import {ConfirmClearIssueComponent} from "../../pop-ups/confirm-clear-issue/confirm-clear-issue.component";
 import {ModIssueDetailedComponent} from "../../pop-ups/mod-issue-detailed/mod-issue-detailed.component";
 import {

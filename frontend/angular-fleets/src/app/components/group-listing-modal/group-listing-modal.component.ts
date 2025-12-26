@@ -7,6 +7,7 @@ import {RouterLink} from "@angular/router";
 import {map, Observable} from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {ListingTemplateViewModel} from "../../models/listing-templates/listing-template-view-model";
 
 export interface CloseValue {
   value: 'hide' | 'bookmark' | 'unbookmark' | 'report' | null,
@@ -56,6 +57,7 @@ export class GroupListingModalComponent implements OnInit {
   }
 
   userIsListingOwner(): boolean {
+
     const selectedId = this.selectedListing?.groupId;
 
     if(!this.localUser$ || !selectedId) return false;

@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef,
   EventEmitter,
   inject,
   OnDestroy,
@@ -90,7 +89,6 @@ export class UserProfileBookmarksComponent implements OnInit, OnDestroy, AfterVi
   }
 
   emitChildClick(listing: GroupListingViewModel) {
-    console.log("listing emitted: ", listing.listingTitle);
     this.listingForModal.emit(listing);
   }
 

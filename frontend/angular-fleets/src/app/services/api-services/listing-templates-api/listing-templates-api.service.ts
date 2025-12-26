@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
-import {environment} from "../../../environments/environment";
+import {environment} from "../../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Page} from "./group-listings-fetch-api/group-listing-fetch.service";
-import {ListingTemplateViewModel} from "../../models/listing-templates/listing-template-view-model";
+import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
+import {ListingTemplateViewModel} from "../../../models/listing-templates/listing-template-view-model";
 import {Observable, tap} from "rxjs";
-import {CreateTemplateRequest} from "../../models/listing-templates/create-template-request";
-
-class Observerable<T> {
-}
+import {CreateTemplateRequest} from "../../../models/listing-templates/create-template-request";
 
 @Injectable({
   providedIn: 'root'
@@ -23,16 +20,23 @@ export class ListingTemplatesApiService {
   getTemplates(
     page: number,
     size: number,
-    sortField: string,
-    sortDirection: string): Observerable<Page<ListingTemplateViewModel>> {
+    sortDirection: string,
+    sortField: string): Observable<Page<ListingTemplateViewModel>> {
+
     const requestBody = {
       page,
       size,
-      sortField,
       sortDirection,
+      sortField,
     };
 
-    return this.httpClient.post<Page<ListingTemplateViewModel>>(`${this.getUrl}`, requestBody)
+    return this.httpClient.post<Page<ListingTemplateViewModel>>(this.getUrl, requestBody).pipe(
+      tap(response => {
+        if(!environment.production) {
+          console.log('Raw API Response: ', response);
+        }
+      })
+    );
   }
 
   createTemplate(request: CreateTemplateRequest): Observable<any> {
@@ -40,7 +44,7 @@ export class ListingTemplatesApiService {
 
     return this.httpClient.post<any>(this.createUrl, request).pipe(
       tap(response => {
-        console.log("Whats goin on here? ", response);
+        console.log("raw ", response);
       })
     );
   }
