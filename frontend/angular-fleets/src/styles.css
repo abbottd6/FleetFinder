@@ -11,6 +11,7 @@
   --clip-t-right-b-left-border: polygon(0% 0%, 95% 0%, 100% 5%, 100% 100%, 5% 100%, 0% 95%);
   --stark-blue: #41678e;
   --button-hover-color: rgba(255, 131, 7, .5);
+  --footer-height: 0px;
 }
 
 body {
@@ -101,7 +102,6 @@ body {
 }
 
 html, body { height: 100%; }
-
 
 app-create-listing {
   max-width: 90vw;
