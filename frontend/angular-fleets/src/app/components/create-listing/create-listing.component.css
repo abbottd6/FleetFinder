@@ -276,7 +276,8 @@ app-comms-service-input {
   padding: 0.75rem;
   display: flex;
   justify-content: center;
-  color: rgba(161, 13, 13, 0.4) !important;
+  font-weight: 600;
+  color: rgba(90, 2, 2, 0.4) !important;
 }
 
 .submit-button-container {
@@ -306,7 +307,8 @@ app-comms-service-input {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  color: rgba(161, 13, 13, 0.5) !important;
+  color: rgba(90, 2, 2, 0.4) !important;
+  font-weight: 600;
   margin: 1rem;
   font-size: clamp(1rem, 1vw, 1.2rem);
 }

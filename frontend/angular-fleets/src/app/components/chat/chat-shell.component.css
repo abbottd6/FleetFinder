@@ -19,7 +19,8 @@
   grid-template-rows: 48px auto;
   height: 400px;
   width: 600px;
-  background-color: rgb(41, 45, 50);
+  /*background-color: rgb(41, 45, 50);*/
+  background-color: var(--bs-dark);
   clip-path: polygon(
     35px 0%,     /* top edge, a bit right from TL */
     100% 0%,   /* full top-right corner */
