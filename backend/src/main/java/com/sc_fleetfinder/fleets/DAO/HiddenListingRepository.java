@@ -4,12 +4,10 @@ import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.HiddenListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 import java.util.Set;
 
-@RepositoryRestResource
 public interface HiddenListingRepository extends JpaRepository<HiddenListing, Integer> {
     Set<HiddenListing> findByUser(Users user);
     Optional<HiddenListing> findByUserAndListing(Users user, GroupListing listing);

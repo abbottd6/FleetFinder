@@ -9,12 +9,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import java.util.Optional;
 import java.util.Set;
 
-@RepositoryRestResource(exported = false)
 public interface ListingBookmarkRepository extends JpaRepository<ListingBookmark, Long> {
 
     @Query("SELECT lb.group FROM ListingBookmark lb WHERE lb.user = :user")
