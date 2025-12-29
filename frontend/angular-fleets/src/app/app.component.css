@@ -19,20 +19,9 @@
 }
 
 app-chat-shell {
-  display: flex;
-  position: fixed;
-  bottom: calc(var(--footer-height) + 4px);
-  right: 0.5%;
-  min-height: 402px;
-  min-width: 602px;
-  color: rgba(223, 241, 255, 0.5) !important;
+  display: inline-block;
+  width: fit-content;
 }
 
-@media(max-width: 620px) {
-  app-chat-shell {
-    min-width: 98%;
-    min-height: 65vh;
-  }
-}
 
 

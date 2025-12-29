@@ -1,10 +1,37 @@
+:host {
+  display: inline-block;
+  position: fixed;
+  right: 16px;
+  bottom: calc(var(--footer-height) + 4px);
+  width: auto;
+  z-index: 9999;
+  color: rgba(223, 241, 255, 0.5) !important;
+}
+
+.chat-panel-wrapper {
+  width: 602px;
+  height: 402px;
+  transform-origin: right bottom;
+  transition: width 300ms ease, height 300ms ease;
+  /*will-change: transform;*/
+}
+
+:host(.is-collapsed) .chat-panel-wrapper {
+  width: 312px;
+  height: 52px;
+  transform: translate(0, 0);
+}
+
 .chat-border {
+  display: block;
+  position: relative;
   background-color: rgba(188, 191, 200, .5);
   padding: 1px;
-  border-radius: 0;
   width: 100%;
   height: 100%;
+  border-radius: 0;
   justify-content: center;
+  overflow: hidden;
   clip-path: polygon(
     5.8% 0%,     /* top edge, a bit right from TL */
     100% 0%,   /* full top-right corner */
@@ -13,56 +40,32 @@
     0% 100%,   /* full bottom-left corner */
     0% 11.2%      /* left edge, a bit down from TL */
   );
+  transition: clip-path 300ms ease;
 }
-.chat-container {
+
+.chat-panel {
+  inset: 1px;
   display: grid;
-  grid-template-rows: 48px auto;
-  height: 400px;
-  width: 600px;
+  grid-template-rows: 48px 1fr;
+  width: 100%;
+  height: 100%;
   /*background-color: rgb(41, 45, 50);*/
   background-color: var(--bs-dark);
   clip-path: polygon(
-    35px 0%,     /* top edge, a bit right from TL */
+    5.8% 0%,     /* top edge, a bit right from TL */
     100% 0%,   /* full top-right corner */
     100% 90%,  /* right edge, a bit up from BR */
     94% 100%,  /* bottom edge, a bit left from BR */
     0% 100%,   /* full bottom-left corner */
-    0% 45px      /* left edge, a bit down from TL */
+    0% 11.2%      /* left edge, a bit down from TL */
   );
-}
-
-@media(max-width: 620px) {
-  .chat-border {
-    background-color: transparent;
-    /*min-height: 68vh;*/
-    /*clip-path: polygon(*/
-    /*  9% 0%,     !* top edge, a bit right from TL *!*/
-    /*  100% 0%,   !* full top-right corner *!*/
-    /*  100% 90%,  !* right edge, a bit up from BR *!*/
-    /*  94% 100%,  !* bottom edge, a bit left from BR *!*/
-    /*  0% 100%,   !* full bottom-left corner *!*/
-    /*  0% 11.2%      !* left edge, a bit down from TL *!*/
-    /*);*/
-  }
-
-  .chat-container {
-    width: 100%;
-    min-height: 68vh;
-  }
-}
-
-.h-left {
-  margin-left: 2.5rem;
-}
-
-.h-end {
-  margin-left: 1rem;
+  transition: clip-path 300ms ease;
 }
 
 .chat-header {
   position: relative;
   height: 40px;
-  padding: 0.5rem 1rem 4px 0;
+  padding: 0.25rem 0.5rem 4px 0;
   inset: 2px;
   min-width: 98%;
   display: grid;
@@ -70,6 +73,7 @@
   margin: 0.3rem 0.5rem 0.25rem auto;
   color: rgba(188, 191, 200, .8);
   overflow: hidden;
+  align-content: center;
 
   clip-path: polygon(
     34px 0,
@@ -135,13 +139,135 @@
     );
 }
 
+/*:host(.is-collapsed) .chat-border {*/
+/*  height: 52px;*/
+/*  width: 312px;*/
+/*}*/
+
+:host(.is-collapsed) .chat-panel,
+:host(.is-collapsed) .chat-border {
+  margin-right: 0;
+
+  clip-path: polygon(
+    4.8% 0%,     /* top edge, a bit right from TL */
+    100% 0%,   /* full top-right corner */
+    100% 100%,  /* right edge, a bit up from BR */
+    94% 100%,  /* bottom edge, a bit left from BR */
+    0% 100%,   /* full bottom-left corner */
+    0% 28.8%      /* left edge, a bit down from TL */
+  );
+}
+
+:host(.is-collapsed) .chat-header {
+  padding-left: 4px;
+  padding-right: 4px;
+
+  clip-path: polygon(
+    12px 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 12px
+  );
+}
+
+:host(.is-collapsed) .chat-header:before,
+:host(.is-collapsed) .chat-header:after {
+  margin-left: 4px;
+}
+
+.h-left {
+  margin-left: 2.5rem;
+}
+
+:host(.is-collapsed) .h-left {
+  margin-left: 0.5rem;
+}
+
+.h-end {
+  margin-left: 1rem;
+  margin-right: 0.5rem;
+}
+
+:host(.is-collapsed) .h-end {
+  margin-right: 0;
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  border: solid 1px rgba(255, 131, 7, .7);
+  margin-bottom: 4px;
+  border-radius: .25rem;
+  padding: 9px;
+  background-color: transparent;
+  line-height: 1;
+  align-self: center;
+  color: rgba(255, 131, 7, .7);
+  opacity: .75;
+  scale: 0.9;
+  transition: background-color 0.15s ease;
+}
+
+.close:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+}
+
+.close-icon {
+  line-height: 0.35;
+  display: block;
+  scale: 1.35;
+}
+
+.window-state-toggle {
+  background-color: transparent;
+  border: none;
+  color: rgba(188, 191, 200, .8);
+  transition: background-color 0.15s ease;
+  border-radius: 0.25rem;
+}
+
+.window-state-toggle:hover {
+  color: rgba(33, 37, 41, 0.75);
+  background-color: rgba(255, 131, 7, .25);
+}
+
+.dropdown-arrow {
+  padding-top: 2px;
+  transition: color 0.15s ease;
+}
+
+.dropdown-arrow:hover {
+  cursor: pointer;
+}
+
+:host(.is-collapsed) .dropdown-arrow {
+  rotate: 180deg;
+  padding-top: 0;
+  line-height: 0.75;
+}
+
 .chat-columns {
   display: grid;
   grid-template-columns: 1fr 2fr;
   margin: 0 4px 4px 4px;
   border-top: 1px solid rgba(188, 191, 200, .25);
-  /*border: 1px solid rgba(188, 191, 200, .75);*/
   min-height: 95%;
+  max-height: 100%;
+  min-width: 95%;
+  opacity: 1;
+  transition: max-height 300ms ease, opacity 300ms ease, margin 300ms ease;
+}
+
+:host(.is-collapsed) .chat-columns {
+  max-height: 0;
+  min-height: 0;
+  min-width: 0;
+  opacity: 0;
+  margin: 0;
+  overflow: hidden;
 }
 
 #messages_column {
@@ -152,4 +278,32 @@
 
 #conversations_column {
   padding: 4px;
+}
+
+
+/* -------------------------------- MAX WIDTH 620px -----------------------------------------------*/
+
+@media(max-width: 620px) {
+  :host {
+    min-width: 98%;
+    min-height: 65vh;
+  }
+
+  .chat-border {
+    background-color: transparent;
+    /*min-height: 68vh;*/
+    /*clip-path: polygon(*/
+    /*  9% 0%,     !* top edge, a bit right from TL *!*/
+    /*  100% 0%,   !* full top-right corner *!*/
+    /*  100% 90%,  !* right edge, a bit up from BR *!*/
+    /*  94% 100%,  !* bottom edge, a bit left from BR *!*/
+    /*  0% 100%,   !* full bottom-left corner *!*/
+    /*  0% 11.2%      !* left edge, a bit down from TL *!*/
+    /*);*/
+  }
+
+  .chat-panel {
+    width: 100%;
+    min-height: 68vh;
+  }
 }

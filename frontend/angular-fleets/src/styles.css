@@ -36,8 +36,9 @@ body {
   padding: 0.5rem;
   overflow-y: scroll;
 
-  border-left: 1px solid rgba(255, 131, 7, .25);
-  border-right: 1px solid rgba(255, 131, 7, .25);
+/*rgba(255, 131, 7, .25)*/
+  border-left: 1px solid rgba(188, 191, 200, .5);
+  border-right: 1px solid rgba(188, 191, 200, .5);
   color: rgba(223, 241, 255, 0.5) !important;
   clip-path: polygon(
     4% 0%,     /* top edge, a bit right from TL */

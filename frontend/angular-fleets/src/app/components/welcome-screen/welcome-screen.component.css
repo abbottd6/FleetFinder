@@ -18,7 +18,7 @@
   max-width: clamp(300px, 100%, 700px);
   height: auto;
   padding: .2rem;
-  background: rgba(159, 182, 200, 0.6);
+  background: rgba(188, 191, 200, .5);
   clip-path: polygon(0% 0%, 88% 0%, 100% 12%, 100% 100%, 100% 100%, 12% 100%, 0% 88%, 0% 0%);
 }
 
@@ -35,7 +35,7 @@
   h1 {
     padding: 2rem 4rem 2rem 4rem;
     margin-left: 5rem;
-    border-bottom: 1px solid rgba(255, 131, 7, .4);
+    border-bottom: 1px solid rgba(188, 191, 200, .5);
   }
 }
 

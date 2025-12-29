@@ -287,6 +287,17 @@ input::placeholder {
   margin: .5rem .5rem .5rem 1rem;
 }
 
+
+.nav-link {
+  display: inline-block;
+  transition: transform 120ms ease, padding-bottom 120ms ease;
+}
+
+.nav-link:active {
+  padding-bottom: 0.1rem;
+  transform: scale(1.1);
+}
+
 @media(max-width: 1301px) {
   .navbar-icons {
     margin-left: 0;

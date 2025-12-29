@@ -71,7 +71,7 @@ import {MatBadge} from "@angular/material/badge";
 import { ConfirmGenericComponent } from './components/pop-ups/confirm-generic/confirm-generic.component';
 import { ConfirmClearIssueComponent } from './components/pop-ups/confirm-clear-issue/confirm-clear-issue.component';
 import { ModIssueDetailedComponent } from './components/pop-ups/mod-issue-detailed/mod-issue-detailed.component';
-import {ChatShellComponent} from "./components/chat/chat-shell.component";
+import {ChatShellComponent} from "./components/chat/shell-component/chat-shell.component";
 import {MeasureFooterHeightDirective} from "./utils/measure-footer-height-directive";
 import { ChatPanelComponent } from './components/chat/chat-panel/chat-panel.component';
 

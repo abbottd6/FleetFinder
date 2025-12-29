@@ -2,6 +2,7 @@ import {inject, DestroyRef, Injectable} from '@angular/core';
 import {BehaviorSubject, distinctUntilChanged, filter, take} from "rxjs";
 import {AuthService} from "../../auth/auth-services/auth.service";
 import {Router} from "@angular/router";
+import {ChatWindowState, collapsed, expanded} from "../../../components/chat/shell-component/chat-shell.component";
 
 @Injectable({
   providedIn: 'root'
@@ -14,6 +15,9 @@ export class ChatHostService {
 
   private openSubject = new BehaviorSubject<boolean>(false);
   open$ = this.openSubject.asObservable();
+
+  private windowStateSubject = new BehaviorSubject<ChatWindowState>(expanded);
+  public windowState$ = this.windowStateSubject.asObservable();
 
   private initialized = false;
 
@@ -60,5 +64,11 @@ export class ChatHostService {
       this.mountedSubject.next(false);
     }
     else this.openChat();
+  }
+
+  toggleWindowState() {
+    const next = this.windowStateSubject.value === expanded ? collapsed : expanded;
+
+    this.windowStateSubject.next(next);
   }
 }

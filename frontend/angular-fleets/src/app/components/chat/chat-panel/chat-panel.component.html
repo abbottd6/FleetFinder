@@ -1,27 +1,36 @@
-<div class="chat-border">
-  <div class="chat-container">
-    <div class="chat-header">
-      <div class="h-left">
-        ^
-      </div>
-      <div class="h-right">
-        <span>Unread: 12</span>
-      </div>
-      <div class="h-end">
-        X
-      </div>
-    </div>
-    <div class="chat-columns">
+<div class="chat-panel-wrapper">
+  <div class="chat-border">
+    <div class="chat-panel">
 
-      <div id="conversations_column">
-        some stuff
+      <div class="chat-header">
+        <div class="h-left">
+          <button type="button"
+                  class="window-state-toggle"
+                  (click)="toggleWindowState()">
+            <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
+          </button>
+        </div>
+        <div class="h-right">
+          <span>Unread: 12</span>
+        </div>
+        <div class="h-end">
+          <button type="button" class="close" (click)="terminateChat()" aria-label="Close chat">
+            <span aria-hidden="true" class="close-icon">&times;</span>
+          </button>
+        </div>
       </div>
+      <div class="chat-columns">
+
+        <div id="conversations_column">
+          some stuff
+        </div>
 
 
-      <div id="messages_column">
-        some other stuff
+        <div id="messages_column">
+          some other stuff
+        </div>
+
       </div>
-
     </div>
   </div>
 </div>
