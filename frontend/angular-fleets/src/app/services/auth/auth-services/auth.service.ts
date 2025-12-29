@@ -1,6 +1,6 @@
 import {inject, Injectable} from '@angular/core';
 import {OidcSecurityService} from "angular-auth-oidc-client";
-import {map, take} from "rxjs";
+import {firstValueFrom, map, take} from "rxjs";
 import {Router} from "@angular/router";
 
 @Injectable({
@@ -13,6 +13,7 @@ export class AuthService {
   // read only
   // use for username, email, roles straight from kc
   public authClaims$ = this.oidc.userData$;
+  private authenticated!: boolean;
 
   // isAuthenticated is an object with a boolean for authState and userData<any>
   // extract just the authState for isLoggedIn$ boolean

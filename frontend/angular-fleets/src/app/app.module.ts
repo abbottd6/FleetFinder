@@ -73,6 +73,7 @@ import { ConfirmClearIssueComponent } from './components/pop-ups/confirm-clear-i
 import { ModIssueDetailedComponent } from './components/pop-ups/mod-issue-detailed/mod-issue-detailed.component';
 import {ChatShellComponent} from "./components/chat/chat-shell.component";
 import {MeasureFooterHeightDirective} from "./utils/measure-footer-height-directive";
+import { ChatPanelComponent } from './components/chat/chat-panel/chat-panel.component';
 
 @NgModule({
   declarations: [
@@ -159,6 +160,7 @@ import {MeasureFooterHeightDirective} from "./utils/measure-footer-height-direct
     MatMenuItem,
     MatBadge,
     ChatShellComponent,
+    ChatPanelComponent,
     MeasureFooterHeightDirective,
   ],
   providers: [

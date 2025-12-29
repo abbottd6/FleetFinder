@@ -1,7 +1,7 @@
-import {Component, EventEmitter, inject, Input, Output} from '@angular/core';
-import { OidcSecurityService } from 'angular-auth-oidc-client';
+import {AfterViewInit, Component} from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {UserService} from "../../services/user-services/user.service";
+import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 
 @Component({
     selector: 'app-nav-bar',
@@ -11,7 +11,9 @@ import {UserService} from "../../services/user-services/user.service";
 })
 export class NavBarComponent {
 
-  constructor(public userService: UserService, protected auth: AuthService) {}
+  constructor(public userService: UserService,
+              protected auth: AuthService,
+              private chatHostSrv: ChatHostService) {}
 
   closeDropdown() {
     const dropdown = document.getElementById('navbarNavDropdown');
@@ -23,5 +25,11 @@ export class NavBarComponent {
         menu.classList.remove('show');
       }
     }
+  }
+
+
+
+  toggleChat() {
+    this.chatHostSrv.toggleChat();
   }
 }

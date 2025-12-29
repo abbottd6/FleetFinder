@@ -1,27 +1,5 @@
-<div class="chat-border">
-  <div class="chat-container">
-    <div class="chat-header">
-      <div class="h-left">
-        ^
-      </div>
-      <div class="h-right">
-        <span>Unread: 12</span>
-      </div>
-      <div class="h-end">
-        X
-      </div>
-    </div>
-    <div class="chat-columns">
-
-      <div id="conversations_column">
-        some stuff
-      </div>
-
-
-      <div id="messages_column">
-        some other stuff
-      </div>
-
-    </div>
-  </div>
-</div>
+<app-chat-panel
+  *ngIf="(chatHostSrv.mounted$ | async)"
+  [open]="(chatHostSrv.open$ | async)!"
+  (close)="chatHostSrv.closeChat()"
+></app-chat-panel>

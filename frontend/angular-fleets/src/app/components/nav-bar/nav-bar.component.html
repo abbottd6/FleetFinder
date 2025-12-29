@@ -74,9 +74,11 @@
       </ng-template>
       <div class="navbar-icons">
         <span class="navbar-text">
-          <a href="#">
+          <button
+            class="nav-link"
+            (click)="toggleChat()">
             <i class="bi bi-chat-fill"></i>
-          </a>
+          </button>
           <a href="#">
             <i class="bi bi-bell-fill"></i>
           </a>
