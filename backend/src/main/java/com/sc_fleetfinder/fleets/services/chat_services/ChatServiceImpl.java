@@ -4,30 +4,31 @@ import com.sc_fleetfinder.fleets.DAO.chat.ConversationRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.MessageRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.ParticipantRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.FindOrStartNewConversationDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.SendMessageDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetConversationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetMessageDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
+import com.sc_fleetfinder.fleets.entities.chat.Message;
 import com.sc_fleetfinder.fleets.entities.chat.Participant;
 import com.sc_fleetfinder.fleets.exceptions.ConfirmationRequiredException;
+import com.sc_fleetfinder.fleets.exceptions.ConversationIntegrityException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.ChatDataConversions.ConversationConversionService;
 import com.sc_fleetfinder.fleets.services.conversion_services.ChatDataConversions.MessageConversionService;
 import com.sc_fleetfinder.fleets.utils.ConversationParticipantRole;
-import com.sc_fleetfinder.fleets.utils.ConversationType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static com.sc_fleetfinder.fleets.utils.DmKeyUtil.sha256DmKey;
 
@@ -40,17 +41,19 @@ public class ChatServiceImpl implements ChatService {
     private final MessageRepository msgRepo;
     private final MessageConversionService msgConvSrv;
     private final ConversationRepository convRepo;
+    private final MessageRepository messageRepository;
 
     ChatServiceImpl(ConversationConversionService ccs,
                     ParticipantRepository participantRepo,
                     MessageRepository msgRepo,
                     MessageConversionService msgConvSrv,
-                    ConversationRepository convRepo) {
+                    ConversationRepository convRepo, MessageRepository messageRepository) {
         this.ccs = ccs;
         this.msgRepo = msgRepo;
         this.msgConvSrv = msgConvSrv;
         this.participantRepo = participantRepo;
         this.convRepo = convRepo;
+        this.messageRepository = messageRepository;
     }
 
     @Override
@@ -63,7 +66,7 @@ public class ChatServiceImpl implements ChatService {
     @Transactional(readOnly = true)
     public Page<GetMessageDto> findConvMessages(Users user, Long convId, Pageable pageable) {
         try {
-            if(participantRepo.findByConversationAndUser(user.getUserId(), convId).isPresent()) {
+            if(participantRepo.findByConversationAndUser(convId, user.getUserId()).isPresent()) {
                 return msgRepo.findMessagesByConversationId(convId, pageable).map(msgConvSrv::convertToDto);
             } else {
                 throw (new AccessDeniedException("You are not a participant of this conversation."));
@@ -77,7 +80,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ResponseEntity<GetConversationDto> findOrStartNew(Users user, FindOrStartNewConversationDto dto) {
+    public GetConversationDto findOrStartNew(Users user, FindOrStartNewConversationDto dto) {
         String dmKey = sha256DmKey(user.getUserId(), dto.getRecipientId());
 
         Conversation conv = convRepo.findByDmKey(dmKey)
@@ -90,7 +93,48 @@ public class ChatServiceImpl implements ChatService {
 
         convRepo.save(conv);
 
-        return ResponseEntity.ok(ccs.convertToDto(conv));
+        return ccs.convertToDto(conv);
+    }
+
+    @Override
+    @Transactional
+    public GetMessageDto sendNewMessage(Users user, SendMessageDto dto) {
+        Conversation currentConv = convRepo.findById(dto.getConversationId())
+                .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
+
+        Participant sender = currentConv.getParticipants().stream()
+                .filter(part -> Objects.equals(part.getUser().getUserId(), user.getUserId()))
+                .findFirst()
+                .orElseThrow(() -> new ConversationIntegrityException(
+                        "Conversation with ID: " + currentConv.getConversationId() +
+                                " is missing a purported sender participant with ID: " + user.getUserId()));
+
+        if(sender.isArchived() || sender.isMuting()) {
+            throw new ConfirmationRequiredException(
+                    "You muted or archived this conversation. Undo to resume?");
+        }
+
+        for( Participant part : currentConv.getParticipants()) {
+            part.setArchived(false);
+        }
+
+        Message repliedToMessage = null;
+        Long repliedToId = dto.getRepliedToMsgId();
+
+        if(repliedToId != null) {
+            repliedToMessage = messageRepository.findMessageByConversationIdAndMessageId(
+                    currentConv.getConversationId(), repliedToId).orElseThrow(() -> new ResourceNotFoundException(
+                            "repliedToMessage not found in this conversation."));
+        }
+
+        Message newMsg = new Message(currentConv, sender, repliedToMessage, dto);
+
+        messageRepository.save(newMsg);
+
+        currentConv.setLastMsg(newMsg);
+        convRepo.save(currentConv);
+
+        return msgConvSrv.convertToDto(newMsg);
     }
 
     private Conversation generateNewConversation(Users user,
@@ -107,19 +151,37 @@ public class ChatServiceImpl implements ChatService {
         return convRepo.save(newConv);
     }
 
-    private void verifyParticipantsOrThrow(Long userAId, Long userBId, Conversation conv) {
-        Participant sender = participantRepo.findByConversationAndUser(userAId, conv.getConversationId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "ConversationParticipant", userAId, conv.getConversationId()));
+    private void verifyParticipantsOrThrow(Long senderId, Long recipientId, Conversation conv) {
+        List<Long> requestedIds = List.of(senderId, recipientId);
 
-        participantRepo.findByConversationAndUser(userBId, conv.getConversationId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "ConversationParticipant", userBId, conv.getConversationId()));
+        List<Participant> participants = participantRepo.findParticipants(
+                conv.getConversationId(), requestedIds
+        );
+
+        Set<Long> existingUserParticipantIds = participants.stream()
+                .map(part -> part.getUser().getUserId())
+                .collect(Collectors.toSet());
+
+        List<Long> missing = requestedIds.stream()
+                .filter(id -> !existingUserParticipantIds.contains(id))
+                .toList();
+
+        if (!missing.isEmpty()) {
+            throw new ConversationIntegrityException(
+                    "Conversation with ID: " + conv.getConversationId() +
+                            "is missing the following purported participants: " + missing);
+        }
+
+        Participant sender = participants.stream()
+                .filter(part -> Objects.equals(part.getUser().getUserId(), senderId))
+                .findFirst()
+                .orElseThrow(() -> new ConversationIntegrityException(
+                        "Conversation " + conv.getConversationId() +
+                                " is missing the sender participant " + senderId));
 
         if (sender.isMuting() || sender.isArchived()) {
             throw new ConfirmationRequiredException(
                     "You muted or archived this conversation. Undo to resume?");
-
         }
 
         sender.setLastActiveAt(Instant.now());

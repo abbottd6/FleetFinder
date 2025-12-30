@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.controllers;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.GetConvMessagesRqstDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.FindOrStartNewConversationDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.SendMessageDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetConversationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetMessageDto;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
@@ -56,13 +57,22 @@ public class ChatController {
         return chatService.findConvMessages(user, convId, pageable);
     }
 
-    @PostMapping("/send_message")
-    public ResponseEntity<?> findOrStartNewConversation(@AuthenticationPrincipal Jwt jwt,
+    @PostMapping("/conv_provision")
+    public ResponseEntity<?> provisionConversation(@AuthenticationPrincipal Jwt jwt,
                                              @RequestBody FindOrStartNewConversationDto dto) {
 
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 
-        return chatService.findOrStartNew(user, dto);
+        return ResponseEntity.ok(chatService.findOrStartNew(user, dto));
+    }
+
+    @PostMapping("/send_message")
+    public ResponseEntity<?> sendMessage(@AuthenticationPrincipal Jwt jwt,
+                                         @RequestBody SendMessageDto dto) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        return chatService.sendNewMessage(user, dto);
     }
 }

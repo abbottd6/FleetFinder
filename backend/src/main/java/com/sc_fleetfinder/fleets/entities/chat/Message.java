@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities.chat;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.SendMessageDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.MessageType;
 import jakarta.persistence.Column;
@@ -29,6 +30,17 @@ import java.time.Instant;
 @AllArgsConstructor
 public class Message {
 
+    public Message(Conversation conv, Participant sender, Message repliedTo,
+                   SendMessageDto dto) {
+
+        this.conversation = conv;
+        this.sender = sender;
+        this.messageType = MessageType.fromString(dto.getMessageType());
+        this.msgBody = dto.getMsgBody();
+        this.repliedToMessage = repliedTo;
+        this.clientMessageId = dto.getClientMessageId();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_msg")
@@ -40,7 +52,7 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name="id_sender", nullable = false)
-    private Users sender;
+    private Participant sender;
 
     @Column(name="message_type", nullable = false)
     private MessageType messageType = MessageType.TEXT;
@@ -70,7 +82,7 @@ public class Message {
     @JoinColumn(name="replied_to_message_id")
     private Message repliedToMessage;
 
-    @Column(name="client_message_id", unique = true)
+    @Column(name="client_message_id")
     private String clientMessageId;
 
     @Column(name="metadata")

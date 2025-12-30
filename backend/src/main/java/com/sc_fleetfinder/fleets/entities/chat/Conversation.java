@@ -44,7 +44,7 @@ public class Conversation {
         this.convType = dto.getConvType();
         this.title = dto.getTitle();
         this.initUser = user;
-        this.lastMsgId = null;
+        this.lastMsg = null;
         this.dmKey = dmKey;
     }
 
@@ -76,7 +76,7 @@ public class Conversation {
 
     @OneToOne
     @JoinColumn(name="last_msg_id")
-    private Message lastMsgId;
+    private Message lastMsg;
 
     // hash of minUserId:maxUserId. null for group chats.
     @Column(name="dm_key", length = 64, unique = true, nullable = true)

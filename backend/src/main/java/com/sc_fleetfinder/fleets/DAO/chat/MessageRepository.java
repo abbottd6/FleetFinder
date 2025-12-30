@@ -7,8 +7,16 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query("SELECT msg FROM Message msg WHERE msg.conversation.conversationId = :convId order by msg.createdAt asc")
     Page<Message> findMessagesByConversationId(@Param("convId") Long convId, Pageable pageable);
+
+    @Query("""
+            SELECT msg FROM Message msg
+            WHERE msg.conversation.conversationId = :convId AND msg.msgId = :msgId
+            """)
+    Optional<Message> findMessageByConversationIdAndMessageId(@Param("convId") Long conversationId, @Param("msgId") Long messageId);
 }
