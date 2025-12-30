@@ -1,4 +1,4 @@
-package com.sc_fleetfinder.fleets.DTO.responseDTOs.Messaging;
+package com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat;
 
 import lombok.Data;
 

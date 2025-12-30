@@ -1,6 +1,7 @@
-package com.sc_fleetfinder.fleets.entities.Chat;
+package com.sc_fleetfinder.fleets.entities.chat;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.FindOrStartNewConversationDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.ConversationType;
 import jakarta.persistence.CascadeType;
@@ -37,6 +38,16 @@ import java.util.Set;
 @NoArgsConstructor
 public class Conversation {
 
+    public Conversation(Users user,
+                 FindOrStartNewConversationDto dto,
+                 String dmKey) {
+        this.convType = dto.getConvType();
+        this.title = dto.getTitle();
+        this.initUser = user;
+        this.lastMsgId = null;
+        this.dmKey = dmKey;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_conversation")
@@ -51,7 +62,7 @@ public class Conversation {
 
     @ManyToOne
     @JoinColumn(name="id_user", nullable = false)
-    private Users initatingUser;
+    private Users initUser;
 
     @CreationTimestamp
     @Column(name="created_at", nullable = false)

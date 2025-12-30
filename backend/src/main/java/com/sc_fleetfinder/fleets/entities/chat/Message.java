@@ -1,4 +1,4 @@
-package com.sc_fleetfinder.fleets.entities.Chat;
+package com.sc_fleetfinder.fleets.entities.chat;
 
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.MessageType;

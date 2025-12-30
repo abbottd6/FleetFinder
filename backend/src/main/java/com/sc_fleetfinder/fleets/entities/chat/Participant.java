@@ -1,7 +1,9 @@
-package com.sc_fleetfinder.fleets.entities.Chat;
+package com.sc_fleetfinder.fleets.entities.chat;
 
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.ConversationParticipantId;
+import com.sc_fleetfinder.fleets.utils.ConversationParticipantRole;
+import com.sc_fleetfinder.fleets.utils.ConversationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -28,6 +30,13 @@ import java.time.Instant;
 @NoArgsConstructor
 public class Participant {
 
+    public Participant(Users user, Conversation conv, ConversationParticipantRole role) {
+        this.conversation = conv;
+        this.user = user;
+        this.role = role;
+        this.lastActiveAt = Instant.now();
+    }
+
     @EmbeddedId
     private ConversationParticipantId participantId;
 
@@ -42,7 +51,7 @@ public class Participant {
     private Users user;
 
     @Column(name="role", nullable = false)
-    private String role;
+    private ConversationParticipantRole role;
 
     @CreationTimestamp
     @Column(name="joined_at", nullable = false)

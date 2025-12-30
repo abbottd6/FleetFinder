@@ -1,0 +1,14 @@
+package com.sc_fleetfinder.fleets.DAO.chat;
+
+import com.sc_fleetfinder.fleets.entities.chat.Message;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface MessageRepository extends JpaRepository<Message, Long> {
+
+    @Query("SELECT msg FROM Message msg WHERE msg.conversation.conversationId = :convId order by msg.createdAt asc")
+    Page<Message> findMessagesByConversationId(@Param("convId") Long convId, Pageable pageable);
+}
