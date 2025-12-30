@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -72,7 +73,8 @@ public class ChatController {
                                          @RequestBody SendMessageDto dto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
+        GetMessageDto created = chatService.sendNewMessage(user, dto);
 
-        return chatService.sendNewMessage(user, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 }
