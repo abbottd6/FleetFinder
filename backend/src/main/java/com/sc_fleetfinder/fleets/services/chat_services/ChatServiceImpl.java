@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.services.chat_services;
 
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.ConversationRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.MessageRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.ParticipantRepository;
@@ -21,10 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -42,24 +45,27 @@ public class ChatServiceImpl implements ChatService {
     private final MessageConversionService msgConvSrv;
     private final ConversationRepository convRepo;
     private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
 
     ChatServiceImpl(ConversationConversionService ccs,
                     ParticipantRepository participantRepo,
                     MessageRepository msgRepo,
                     MessageConversionService msgConvSrv,
-                    ConversationRepository convRepo, MessageRepository messageRepository) {
+                    ConversationRepository convRepo, MessageRepository messageRepository, UserRepository userRepository) {
         this.ccs = ccs;
         this.msgRepo = msgRepo;
         this.msgConvSrv = msgConvSrv;
         this.participantRepo = participantRepo;
         this.convRepo = convRepo;
         this.messageRepository = messageRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<GetConversationDto> findMyConversations(Users user, Pageable pageable) {
-        return participantRepo.findConversationsByUserParticipant(user, pageable).map(ccs::convertToDto);
+        return participantRepo.findConversationsByUserParticipant(user, pageable)
+                .map(conv -> ccs.convertToDto(conv, user.getUserId()));
     }
 
     @Override
@@ -79,7 +85,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public GetConversationDto findOrStartNew(Users user, FindOrStartNewConversationDto dto) {
         String dmKey = sha256DmKey(user.getUserId(), dto.getRecipientId());
 
@@ -93,7 +99,7 @@ public class ChatServiceImpl implements ChatService {
 
         convRepo.save(conv);
 
-        return ccs.convertToDto(conv);
+        return ccs.convertToDto(conv, user.getUserId());
     }
 
     @Override
@@ -102,17 +108,19 @@ public class ChatServiceImpl implements ChatService {
         Conversation currentConv = convRepo.findById(dto.getConversationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
 
-        Participant sender = currentConv.getParticipants().stream()
+        Participant senderPart = currentConv.getParticipants().stream()
                 .filter(part -> Objects.equals(part.getUser().getUserId(), user.getUserId()))
                 .findFirst()
                 .orElseThrow(() -> new ConversationIntegrityException(
                         "Conversation with ID: " + currentConv.getConversationId() +
                                 " is missing a purported sender participant with ID: " + user.getUserId()));
 
-        if(sender.isArchived() || sender.isMuting()) {
+        if(senderPart.isArchived() || senderPart.isMuting()) {
             throw new ConfirmationRequiredException(
                     "You muted or archived this conversation. Undo to resume?");
         }
+
+        Users senderUser = senderPart.getUser();
 
         for( Participant part : currentConv.getParticipants()) {
             part.setArchived(false);
@@ -127,7 +135,7 @@ public class ChatServiceImpl implements ChatService {
                             "repliedToMessage not found in this conversation."));
         }
 
-        Message newMsg = new Message(currentConv, sender, repliedToMessage, dto);
+        Message newMsg = new Message(currentConv, senderUser, repliedToMessage, dto);
 
         messageRepository.save(newMsg);
 
@@ -137,18 +145,40 @@ public class ChatServiceImpl implements ChatService {
         return msgConvSrv.convertToDto(newMsg);
     }
 
-    private Conversation generateNewConversation(Users user,
-                                                 FindOrStartNewConversationDto dto,
-                                                 String dmKey) {
+    @Override
+    @Transactional
+    public Conversation generateNewConversation(Users user,
+                                                FindOrStartNewConversationDto dto,
+                                                String dmKey) {
+
+        log.info("Generating new conversation");
+        log.info("userId: {}", user.getUserId());
         Conversation newConv = new Conversation(user, dto, dmKey);
 
+        convRepo.save(newConv);
+
+        log.info("conversation created");
+
+        Users recipientUser = userRepository.findById(dto.getRecipientId())
+                .orElseThrow(() -> new ResourceNotFoundException("Recipient not found"));
+
         Participant sender = new Participant(user, newConv, ConversationParticipantRole.MEMBER);
-        Participant recipient = new Participant(user, newConv, ConversationParticipantRole.MEMBER);
+        Participant recipient = new Participant(recipientUser, newConv, ConversationParticipantRole.MEMBER);
 
         participantRepo.save(sender);
         participantRepo.save(recipient);
 
-        return convRepo.save(newConv);
+        newConv.getParticipants().add(sender);
+        newConv.getParticipants().add(recipient);
+        convRepo.save(newConv);
+
+        log.info("sender participant ID: {}", sender.getUser().getUserId());
+        log.info("recipient participant ID: {}", recipient.getUser().getUserId());
+
+        convRepo.flush();
+        participantRepo.flush();
+
+        return newConv;
     }
 
     private void verifyParticipantsOrThrow(Long senderId, Long recipientId, Conversation conv) {

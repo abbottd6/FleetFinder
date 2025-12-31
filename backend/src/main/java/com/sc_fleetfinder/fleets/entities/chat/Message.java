@@ -30,7 +30,7 @@ import java.time.Instant;
 @AllArgsConstructor
 public class Message {
 
-    public Message(Conversation conv, Participant sender, Message repliedTo,
+    public Message(Conversation conv, Users sender, Message repliedTo,
                    SendMessageDto dto) {
 
         this.conversation = conv;
@@ -52,7 +52,7 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name="id_sender", nullable = false)
-    private Participant sender;
+    private Users sender;
 
     @Column(name="message_type", nullable = false)
     private MessageType messageType = MessageType.TEXT;

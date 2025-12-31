@@ -26,6 +26,8 @@
   display: block;
   position: relative;
   background-color: rgba(188, 191, 200, .5);
+  /*background-color: rgba(65, 103, 142, 1);*/
+  /*background-color: rgba(255, 131, 7, 0.75);*/
   padding: 1px;
   width: 100%;
   height: 100%;
@@ -40,7 +42,7 @@
     0% 100%,   /* full bottom-left corner */
     0% 11.2%      /* left edge, a bit down from TL */
   );
-  transition: clip-path 300ms ease;
+  transition: clip-path 300ms ease, background-color 300ms ease;
 }
 
 .chat-panel {
@@ -156,6 +158,12 @@
     0% 100%,   /* full bottom-left corner */
     0% 28.8%      /* left edge, a bit down from TL */
   );
+}
+
+:host(.is-collapsed) .chat-border {
+  /*background-color: rgba(255, 131, 7, .25);*/
+  background-color: rgba(188, 191, 200, .5);
+  /*background-color: rgba(65, 103, 142, 1);*/
 }
 
 :host(.is-collapsed) .chat-header {
@@ -280,6 +288,75 @@
   padding: 4px;
 }
 
+/*--------------------------------------- CONVERSATIONS TABLE ---------------------------------------*/
+.conv-table .mat-mdc-header-cell {
+  padding: 2px 0 2px 2px;
+  margin-bottom: 0;
+  margin-top: 0;
+  vertical-align: top;
+  line-height: normal;
+  height: 15px;
+}
+
+.conv-table .mat-mdc-header-row {
+  position: sticky;
+  padding-top: 0;
+  margin-top: 0;
+  top: 0;
+  z-index: 1;
+  color: rgba(150, 168, 183, 1);
+  font-family: Orbitron, sans-serif;
+  font-weight: 500;
+  height: fit-content;
+}
+
+.conv-header {
+  color: rgba(188, 191, 200, .8);
+  /*border-bottom: 1px solid rgba(150, 168, 183, 0.25);*/
+  border-bottom: none;
+  padding: 0;
+}
+
+.conversation-row {
+  display: grid;
+  row-gap: 0;
+  font-family: "exo 2", sans-serif;
+  color: rgba(188, 191, 200, .8);
+}
+
+.conv-table .mdc-data-table__cell {
+  padding-left: 0;
+  padding-right: 0;
+  background-color: rgba(44, 44, 44, .75);
+  border-radius: 2px;
+}
+
+.conv-user-row{
+  color: rgba(255, 131, 7, .5);
+  font-size: 0.9rem;
+}
+
+.conv-date-row {
+  font-size: 0.75rem;
+}
+
+.conv-title-row {
+  font-size: 0.75rem;
+}
+
+.no-convs-message {
+  display: flex !important;
+  padding: 5px 20px 5px 20px;
+  border-radius: 5px;
+  flex-direction: row;
+  margin-top: 5px;
+  text-align: center;
+  font-size: 1rem;
+  justify-self: center;
+  font-family: "Exo 2", sans-serif;
+  color: rgba(150, 168, 183, 0.5);
+  background-color: #2c2c2c;
+}
 
 /* -------------------------------- MAX WIDTH 620px -----------------------------------------------*/
 

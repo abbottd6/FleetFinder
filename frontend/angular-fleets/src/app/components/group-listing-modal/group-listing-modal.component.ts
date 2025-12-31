@@ -7,7 +7,7 @@ import {RouterLink} from "@angular/router";
 import {map, Observable} from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {ListingTemplateViewModel} from "../../models/listing-templates/listing-template-view-model";
+import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 
 export interface CloseValue {
   value: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | null,
@@ -39,7 +39,7 @@ export class GroupListingModalComponent implements OnInit {
   localUser$: Observable<PrivateUser>;
   userListings: GroupListingViewModel[] = [];
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, protected chatHostSrv: ChatHostService) {
     this.userService = userService;
     this.localUser$ = this.userService.localUser$;
 

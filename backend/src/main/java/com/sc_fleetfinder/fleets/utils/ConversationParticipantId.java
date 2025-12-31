@@ -12,12 +12,16 @@ import java.util.Objects;
 @Embeddable
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 public class ConversationParticipantId implements Serializable {
 
-    private Long conversationId;
     private Long userId;
+    private Long conversationId;
+
+    public ConversationParticipantId(Long userId, Long conversationId){
+        this.userId = userId;
+        this.conversationId = conversationId;
+    }
 
     @Override
     public boolean equals(Object obj) {

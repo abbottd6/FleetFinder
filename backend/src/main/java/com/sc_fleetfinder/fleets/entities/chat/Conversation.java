@@ -61,7 +61,7 @@ public class Conversation {
     private String title;
 
     @ManyToOne
-    @JoinColumn(name="id_user", nullable = false)
+    @JoinColumn(name="initiated_by_user_id", nullable = false)
     private Users initUser;
 
     @CreationTimestamp

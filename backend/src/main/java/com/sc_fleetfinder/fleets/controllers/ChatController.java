@@ -59,8 +59,8 @@ public class ChatController {
     }
 
     @PostMapping("/conv_provision")
-    public ResponseEntity<?> provisionConversation(@AuthenticationPrincipal Jwt jwt,
-                                             @RequestBody FindOrStartNewConversationDto dto) {
+    public ResponseEntity<?> conversationProvision(@AuthenticationPrincipal Jwt jwt,
+                                                   @RequestBody FindOrStartNewConversationDto dto) {
 
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);

@@ -31,6 +31,9 @@ import java.time.Instant;
 public class Participant {
 
     public Participant(Users user, Conversation conv, ConversationParticipantRole role) {
+        this.participantId = new ConversationParticipantId(
+                user.getUserId(), conv.getConversationId());
+
         this.conversation = conv;
         this.user = user;
         this.role = role;

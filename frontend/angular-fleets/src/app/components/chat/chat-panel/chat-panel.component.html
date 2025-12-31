@@ -22,7 +22,48 @@
       <div class="chat-columns">
 
         <div id="conversations_column">
-          some stuff
+          <table class="conv-table" mat-table [dataSource]="convDataSource">
+            <ng-container matColumnDef='convDetails'>
+              <th mat-header-cell *matHeaderCellDef class="conv-header">
+                Conversations
+              </th>
+              <td mat-cell *matCellDef="let conv">
+                <div class="conversation-row">
+                  <div class="conv-user-row">
+                    <span id="other-username">
+                      {{ conv.otherUserName.length >= 20 ?
+                          (conv.otherUserName|slice: 0:20) + '...' : conv.otherUserName }}
+                    </span>
+                  </div>
+                  <div class="conv-date-row">
+                    <span id="updated-at">
+                      Latest: {{ conv.updatedAt | date: 'MMM d, h:mm a'}}
+                    </span>
+                  </div>
+                  <div class="conv-title-row">
+                    <span id="conv-title">
+                      {{ conv.conversationTitle.length >= 30 ?
+                          (conv.conversationTitle|slice: 0:30) + '...' : conv.conversationTitle }}
+                    </span>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+
+
+            <ng-container>
+              <tr mat-header-row *matHeaderRowDef="convColumns"></tr>
+              <tr mat-row *matRowDef="let conv; columns: convColumns">
+                <!-- TODO on click -->
+              </tr>
+            </ng-container>
+          </table>
+
+          <ng-container *ngIf="noConvs">
+            <div class="no-convs-message">
+              <div>No Active <br> Conversations</div>
+            </div>
+          </ng-container>
         </div>
 
 

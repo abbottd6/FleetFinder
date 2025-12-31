@@ -35,7 +35,11 @@ export class UpdateListingRequest {
     })
   }
 
-  private toDateOnlyString(date: Date): String {
+  private toDateOnlyString(date: Date): String | null {
+    if(date == null) {
+      return null;
+    }
+
     const year = date.getFullYear()
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');

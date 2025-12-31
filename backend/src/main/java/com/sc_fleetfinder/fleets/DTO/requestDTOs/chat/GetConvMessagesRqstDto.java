@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class GetConvMessagesRqstDto {
 
-    private Long conversationId;
     private int pageIdx;
     private int pageSize;
+    private Long conversationId;
 }

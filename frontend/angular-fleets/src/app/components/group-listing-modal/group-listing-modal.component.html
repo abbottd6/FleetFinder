@@ -207,7 +207,9 @@
                 </a>
               </ng-container>
               <ng-template #notOwner>
-                <button type="button" class="modal-button-with-icon">
+                <button type="button"
+                        class="modal-button-with-icon"
+                        (click)="chatHostSrv.provisionConversation(selectedListing!)">
                   <mat-icon class="msg-icon">rss_feed</mat-icon>
                   Message
                 </button>
