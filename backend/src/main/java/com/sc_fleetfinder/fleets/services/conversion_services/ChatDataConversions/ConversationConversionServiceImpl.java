@@ -3,22 +3,24 @@ package com.sc_fleetfinder.fleets.services.conversion_services.ChatDataConversio
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetConversationDto;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ConversationConversionServiceImpl implements ConversationConversionService {
 
-    @Autowired
-    private ModelMapper modelMapper;
+    private final ModelMapper conversationMapper;
+
+    ConversationConversionServiceImpl(ModelMapper conversationMapper) {
+        this.conversationMapper = conversationMapper;
+    }
 
     @Override
     public GetConversationDto convertToDto(Conversation entity) {
-        return modelMapper.map(entity, GetConversationDto.class);
+        return conversationMapper.map(entity, GetConversationDto.class);
     }
 
     @Override
     public Conversation convertToEntity(GetConversationDto dto) {
-        return modelMapper.map(dto, Conversation.class);
+        return conversationMapper.map(dto, Conversation.class);
     }
 }
