@@ -74,9 +74,6 @@ export class UserService {
           map(([kcClaims, ffPrivate]) => {
             const primaryRole = this.extractRole(kcClaims.userData.roles) ?? UserRole.user;
             const email = kcClaims.userData.email;
-            console.info("user primary role: ", primaryRole);
-            console.info("user email: ", email);
-            console.info("ffPrivate: ", ffPrivate);
             return {
               ...ffPrivate,
               primaryRole,

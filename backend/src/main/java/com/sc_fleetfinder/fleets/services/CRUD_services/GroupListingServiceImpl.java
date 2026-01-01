@@ -113,7 +113,7 @@ public class GroupListingServiceImpl implements GroupListingService {
             Map<String, String> response = new HashMap<>();
             response.put("response", "Listing creation unsuccesful. Limit of " + USER_MAX_LISTING_COUNT + " reached.");
 
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(response);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 
         } else {
             try {
@@ -253,7 +253,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     private Specification<GroupListing> buildListingFilterSpec(SearchListingsDto dto) {
-        Specification<GroupListing> spec = Specification.where(null);
+        Specification<GroupListing> spec = (root, query, cb) -> cb.conjunction();
 
         String search = dto.getSearch();
 
@@ -283,7 +283,6 @@ public class GroupListingServiceImpl implements GroupListingService {
 
                     for (String token : tokens) {
                         String like = "%" + token + "%";
-                        System.out.println(token);
                         Predicate perToken = criteriaBuilder.or(
                                 criteriaBuilder.like(criteriaBuilder.lower(root.get("listingTitle")), like),
                                 criteriaBuilder.like(criteriaBuilder.lower(root.get("listingDescription")), like),
