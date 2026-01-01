@@ -1,21 +1,25 @@
 import {inject, Injectable, OnDestroy} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {PublicUser} from "../../models/public-user/public-user";
 import {
   BehaviorSubject,
-  combineLatest,
+  combineLatest, distinctUntilChanged,
   filter,
   map,
-  Observable,
+  Observable, of,
   shareReplay, Subject,
   switchMap, takeUntil,
   withLatestFrom
 } from "rxjs";
-import {environment} from '../../../environments/environment';
 import {PrivateUser} from "../../models/private-user/private-user";
 import {AuthService} from "../auth/auth-services/auth.service";
 import {UserApiService} from "./userApi.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
+import {PublicUser} from "../../models/public-user/public-user";
+
+export enum UserRole {
+  admin = 'admin',
+  mod = 'mod',
+  user = 'user'
+}
 
 @Injectable({
   providedIn: 'root'
@@ -23,84 +27,84 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 
 export class UserService implements OnDestroy {
   private destroy$ = new Subject<void>();
-  public role: 'admin' | 'mod' | 'user' = 'user';
-  protected userId!: number;
-  private readonly http = inject(HttpClient);
-  private auth = inject(AuthService);
-  private api = inject(UserApiService);
-  private baseUrl = `${environment.apiBaseUrl}/users`;
+  protected auth = inject(AuthService);
+  private userApi = inject(UserApiService);
 
-  constructor() {
-    combineLatest([this.auth.isLoggedIn$, this.auth.authClaims$])
-      .pipe(
-        shareReplay(1),
-        takeUntil(this.destroy$),
-        filter(([loggedIn, claims]) => loggedIn && !!claims && !! claims.userData),
-      )
-      .subscribe();
-  }
-
-  getUserById(userId: number): Observable<PublicUser> {
-    const url = `${this.baseUrl}/${userId}`;
-    return this.http.get<PublicUser>(url);
-  }
-
-  // Reactive provisioning
+  private readonly userSubject = new BehaviorSubject<PublicUser | null>(null);
+  readonly sessionUser$ = this.userSubject.asObservable();
   private refreshTrigger$ = new BehaviorSubject<void>(undefined);
-  private profile$ = this.auth.authClaims$.pipe(
+
+  private kcProfile$ = this.auth.authClaims$.pipe(
     filter(data => !!data && !!data.userData)
   );
 
-  getUserId(): number {
-    this.profile$.pipe(
-      map(data => data ? data?.userData?.id : null))
-      .subscribe((id: number) => {
-        this.userId = id;
-      }
-    )
-    return this.userId;
-  }
-
-  getRole(): string {
-    this.profile$.pipe(
-      map(data => data?.userData?.roles ?? []))
-      .subscribe((roles: string[]) => {
-        if (!Array.isArray(roles)) {
-          this.role = 'user';
-          return;
-        }
-
-        if (roles.includes('admin')) {
-          this.role = 'admin';
-        } else if (roles.includes('mod')) {
-          this.role = 'mod';
-        } else {
-          this.role = 'user';
-        }
-      });
-    return this.role;
-  }
-
-  // local version of keycloak's user
+  // PRIVATE USER
   public localUser$: Observable<PrivateUser> = this.refreshTrigger$.pipe(
-    // pair with latest profile
-    withLatestFrom(this.profile$),
-    // extract the profile
+    withLatestFrom(this.kcProfile$),
     switchMap(([, profile]) =>
-      this.api.getMe(profile)
+      this.userApi.getMe(profile)
     ),
     shareReplay({bufferSize: 1, refCount: true})
   );
+
+  constructor() {
+    this.auth.isLoggedIn$
+      .pipe(
+        distinctUntilChanged(),
+        switchMap(loggedIn => {
+          if(!loggedIn) return of<PublicUser | null>(null);
+
+          return combineLatest([this.auth.authClaims$, this.kcProfile$]).pipe(
+              filter(([claims, profile]) => !!claims && !!profile),
+                switchMap(([claims, profile]) =>
+                  this.userApi.getMe(profile).pipe(
+                    map(privateProfile => {
+                      const role = this.defineRole(claims.userData.roles) ?? UserRole.user;
+                      return {
+                        ...privateProfile,
+                        role,
+                      } satisfies PublicUser;
+                    })
+                  )
+                )
+              )
+          }),
+          distinctUntilChanged((a, b) =>
+              a?.userId === b?.userId &&
+              a?.role === b?.role),
+      )
+      .subscribe(user => this.userSubject.next(user));
+
+    this.auth.isLoggedIn$
+      .pipe(filter(value => !value))
+      .subscribe(() => this.userSubject.next(null));
+  }
+
+  defineRole(roles: string[]) {
+    let role: UserRole = UserRole.user;
+
+    if (!roles) return UserRole.user;
+    if (roles.includes('admin')) {
+      role = UserRole.admin;
+    } else if (roles.includes('mod')) {
+      role = UserRole.mod;
+    } else {
+      role = UserRole.user
+    }
+    return role;
+  }
+
+  get userId(): number | null { return this.userSubject.value?.userId ?? null; }
+  get username(): string | null { return this.userSubject.value?.username ?? null; }
+  get role(): UserRole | null { return this.userSubject.value?.role ?? null; }
+
+
 
   public userListings$: Observable<GroupListingViewModel[]> = this.localUser$.pipe(takeUntil(this.destroy$)).pipe(
     map(user => user.groupListingsDto ?? [])
   )
 
-  public localUsername$ = this.localUser$.pipe(map(userObj => userObj.username));
-
-  public refreshUser() {
-    this.refreshTrigger$.next();
-  }
+  public refreshUser() { this.refreshTrigger$.next(); }
 
   ngOnDestroy() {
     this.destroy$.next();

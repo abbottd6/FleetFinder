@@ -21,6 +21,7 @@ public class PrivateUserResponseDto {
     @Size(min = 1, max = 32, message = "Username must be between 1 and 32 characters")
     private String username;
 
+    //TODO remove email from this and all the other places it gets sent back to the frontend
     @NotBlank(message = "Users email cannot be blank")
     @Email(message = "Users email must be a valid email format")
     private String email;

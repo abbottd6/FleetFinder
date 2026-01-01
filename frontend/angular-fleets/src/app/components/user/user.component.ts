@@ -14,7 +14,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButtonModule} from "@angular/material/button";
-import {UserService} from "../../services/user-services/user.service";
+import {UserRole, UserService} from "../../services/user-services/user.service";
 import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
 import {UserProfileBookmarksComponent} from "../user-profile-bookmarks/user-profile-bookmarks.component";
@@ -82,8 +82,8 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   askShouldDisplayMod(): boolean {
-    console.log("Role: ", this.userService.getRole())
-    return this.userService.getRole() == 'mod';
+    console.log("Role: ", this.userService.role)
+    return this.userService.role == UserRole.mod;
   }
 
   selectTab(tab: typeof this.selectedTab){

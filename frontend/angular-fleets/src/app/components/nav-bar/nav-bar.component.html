@@ -66,8 +66,8 @@
 <!--    </div>-->
 <!--  </div>-->
   <div class="container-fluid collapse navbar-collapse navbar-text">
-      <ng-container *ngIf="auth.isLoggedIn$ | async; else blankWelcome">
-        <span class="navbar-icons navbar-welcome-msg">Welcome, {{ userService.localUsername$ | async }}</span>
+      <ng-container *ngIf="userService.sessionUser$ | async as sessionUser; else blankWelcome">
+        <span class="navbar-icons navbar-welcome-msg">Welcome, {{ sessionUser.username }}</span>
       </ng-container>
       <ng-template #blankWelcome>
         <span class="blank-welcome"></span>

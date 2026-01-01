@@ -1,21 +1,23 @@
 <ng-container *ngIf="!isExpanding">
   <mat-form-field id="message-input">
-    <textarea
-      matInput
-      [formControl]="inputCtrl"
-      cdkTextareaAutosize
-      cdkAutosizeMinRows="1"
-      cdkAutosizeMaxRows="5"
-      maxlength="255"
-      type="text"
-      (input)="updateCharacterCount()"
-      placeholder="Enter message..."
-      [attr.aria-labelledby]="'message-input'"
-      (keydown.enter)="inputEnter($event)">
+    <div class="text-area-wrapper">
+      <textarea
+        matInput
+        [formControl]="inputCtrl"
+        cdkTextareaAutosize
+        cdkAutosizeMinRows="1"
+        cdkAutosizeMaxRows="5"
+        maxlength="255"
+        type="text"
+        (input)="updateCharacterCount()"
+        placeholder="Enter message..."
+        [attr.aria-labelledby]="'message-input'"
+        (keydown.enter)="inputEnter($event)">
       </textarea>
+    </div>
     <button mat-button id="send-button"
       (click)="emitMessage(inputCtrl.value)">
-      <mat-icon>send</mat-icon>
+      <mat-icon id="send-icon">arrow_upwards</mat-icon>
     </button>
     <mat-hint align="start">{{ characterCount }}/255</mat-hint>
   </mat-form-field>

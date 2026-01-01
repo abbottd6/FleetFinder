@@ -98,7 +98,6 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(mode => {
         if(mode === 'handheld') this.drawer.close();
         else this.drawer.open();
-        console.log("chatLayoutMode:", mode);
       })
   }
 
@@ -128,9 +127,11 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
 
   sendDmMessage(input: string) {
     this.chatHostSrv.authCheckOrRedirect();
-    const userId = this.userSrv.getUserId()
+
+    const userId = this.userSrv.userId;
     const type: string = 'TEXT';
-    console.log("DID WE GET HERE?", input);
+
+    if(!userId) return;
 
     const msg = new SendMessageRequest(this.selectedConv.selected[0], userId, type, input);
 
@@ -169,6 +170,11 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
           this.noMsgs = page.content.length === 0;
         }
       })
+  }
+
+  isSelected(conv: ConversationViewModel): boolean {
+    if(!this.selectedConv.selected[0]) return false;
+      return (conv.conversationId === this.selectedConv.selected[0].conversationId);
   }
 
   chatLayoutMode$: Observable<LayoutMode> = this.breakpointObserver

@@ -63,7 +63,8 @@
 
                 <tr mat-header-row *matHeaderRowDef="convColumns"></tr>
                 <tr mat-row *matRowDef="let conv; columns: convColumns"
-                    (click)="onConvClick(conv)">
+                    (click)="onConvClick(conv)"
+                    [class.selected]="isSelected(conv)">
                 </tr>
               </table>
 
@@ -75,7 +76,7 @@
             </div>
           </mat-sidenav>
 
-          <mat-sidenav-content>
+          <mat-sidenav-content style="overflow: hidden">
 
             <div id="messages-column" [class.collapsing]="isCollapsing">
               <ng-container *ngIf="(chatLayoutMode$ | async) === 'handheld'">
@@ -91,12 +92,14 @@
                   </button>
                 </div>
               </ng-container>
-              @if (messages$ | async; as messages) {
-                @for (msg of messages; track msg.msgId ?? msg.clientMessageId) {
-                  <app-message [msg]="msg">
-                  </app-message>
+              <div class="messages">
+                @if (messages$ | async; as messages) {
+                  @for (msg of messages; track msg.msgId ?? msg.clientMessageId) {
+                    <app-message [msg]="msg">
+                    </app-message>
+                  }
                 }
-              }
+              </div>
               <ng-container *ngIf="this.selectedConv.selected[0]">
                 <app-message-input
                   [class.collapsing]="isCollapsing"

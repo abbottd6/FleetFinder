@@ -37,8 +37,8 @@
           Update
         </button>
         <button mat-menu-item class="options-item"
-                [disabled]="!(selection.hasValue()) || !singleSelected()">
-          <!-- TODO user save template -->
+                [disabled]="!(selection.hasValue()) || !singleSelected()"
+                (click)="createTemplateFromListing()">
           Template
         </button>
         <button mat-menu-item class="options-item"
