@@ -5,7 +5,6 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerReg
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +24,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.sql.Types;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -73,7 +73,7 @@ public class Users {
     @Column(name="last_login")
     @UpdateTimestamp
     @DateTimeFormat(pattern = "MM/dd/yyyy")
-    private LocalDateTime lastLogin;
+    private Instant lastAccess;
 
     @Column(name="is_deleted")
     private Boolean isDeleted;

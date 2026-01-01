@@ -1,7 +1,8 @@
 import {inject, Injectable} from '@angular/core';
 import {OidcSecurityService} from "angular-auth-oidc-client";
-import {firstValueFrom, map, take} from "rxjs";
+import {map, take, tap} from "rxjs";
 import {Router} from "@angular/router";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: 'root'
@@ -9,21 +10,16 @@ import {Router} from "@angular/router";
 export class AuthService {
   private readonly oidc = inject(OidcSecurityService);
 
-  // Raw profile/claims OIDC Observable
-  // read only
-  // use for username, email, roles straight from kc
   public authClaims$ = this.oidc.userData$;
   private authenticated!: boolean;
 
-  // isAuthenticated is an object with a boolean for authState and userData<any>
-  // extract just the authState for isLoggedIn$ boolean
   public isLoggedIn$ = this.oidc.isAuthenticated$
     .pipe(map(oidcAuthObj => oidcAuthObj.isAuthenticated))
 
   // OIDC client metadata/settings (auth URL, clientID, redirect URIs, scopes, etc.)
-  configuration$ = this.oidc.getConfiguration();
+  // configuration$ = this.oidc.getConfiguration();
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private snackBar: MatSnackBar) {
     this.oidc.checkAuth().pipe(take(1)).subscribe(({ isAuthenticated }) => {
       if (isAuthenticated) {
         const url = sessionStorage.getItem('post_login_url') ?? '/';
@@ -34,9 +30,11 @@ export class AuthService {
   }
 
   logout() {
-    return this.oidc
-      .logoff()
-      .subscribe((result) => console.log(result));
+    sessionStorage.setItem('post_logout_msg', 'true');
+
+    return this.oidc.logoff().pipe(
+      map(() => void 0)
+    );
   }
 
   login() {

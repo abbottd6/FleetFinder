@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {AsyncPipe, DatePipe, NgClass, NgIf} from "@angular/common";
 import {UserService} from "../../services/user-services/user.service";
@@ -8,6 +8,7 @@ import {map, Observable} from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 export interface CloseValue {
   value: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | null,
@@ -32,21 +33,19 @@ export interface CloseValue {
   styleUrl: './group-listing-modal.component.css'
 })
 export class GroupListingModalComponent implements OnInit {
+  private modalDestroyRef = inject(DestroyRef)
   @Input() isVisible!: boolean;
   @Input() selectedListing: GroupListingViewModel | null = null;
   @Input() isBookmarked$!: Observable<boolean>;
   @Output() close = new EventEmitter<CloseValue>
-  localUser$: Observable<PrivateUser>;
   userListings: GroupListingViewModel[] = [];
 
   constructor(private userService: UserService, protected chatHostSrv: ChatHostService) {
     this.userService = userService;
-    this.localUser$ = this.userService.localUser$;
 
-    this.localUser$.pipe(
-      map(user => user.groupListingsDto ?? [])
-    )
-      .subscribe(listings => this.userListings = listings);
+    this.userService.sessionUser$.pipe(takeUntilDestroyed(this.modalDestroyRef)).pipe(
+      map(user => user?.groupListingsDto ?? [])
+    ).subscribe(listings => this.userListings = listings);
 
   }
 
@@ -59,7 +58,7 @@ export class GroupListingModalComponent implements OnInit {
 
     const selectedId = this.selectedListing?.groupId;
 
-    if(!this.localUser$ || !selectedId) return false;
+    if(!this.userService.sessionUser$ || !selectedId) return false;
 
     return this.userListings.some(
       gl => gl.groupId === selectedId

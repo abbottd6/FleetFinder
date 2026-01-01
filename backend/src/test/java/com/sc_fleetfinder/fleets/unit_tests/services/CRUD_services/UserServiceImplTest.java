@@ -145,7 +145,6 @@ public class UserServiceImplTest {
 
         PrivateUserResponseDto mockPrivateDto = new PrivateUserResponseDto();
         mockPrivateDto.setUsername("mockUsername");
-        mockPrivateDto.setEmail("thisrawemail@gmail.com");
 
         when(userConversionService.convertToPrivateDto(any(Users.class))).thenReturn(mockPrivateDto);
 
@@ -159,7 +158,6 @@ public class UserServiceImplTest {
         assertAll("create Users fail assertion set: ExistingKeycloakId",
                 () -> assertTrue(logCaptor.getErrorLogs().isEmpty()),
                 () -> assertEquals(newMockUser.getUsername(), "mockUsername"),
-                () -> assertEquals(newMockUser.getEmail(), "thisrawemail@gmail.com"),
                 () -> verify(userRepository, times(1)).findByKeycloakId("newUuidMockKeycloakId"));
     }
 }

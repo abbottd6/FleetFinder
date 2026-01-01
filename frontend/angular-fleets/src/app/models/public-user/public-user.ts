@@ -6,6 +6,5 @@ export class PublicUser {
               public username: string,
               public server: string,
               public org: string,
-              public about: string,
-              public role: UserRole) {}
+              public about: string) {}
 }

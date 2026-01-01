@@ -1,5 +1,5 @@
 <div class="body-container">
-  <ng-container *ngIf="localUser$ | async as user; else notLoggedIn">
+  <ng-container *ngIf="userService.sessionUser$ | async as user; else notLoggedIn">
     <div class="page-title"><h2>User Profile:</h2></div>
     <div class="header-line"></div>
     <mat-sidenav-container class="account-sidenav-container">
@@ -36,7 +36,7 @@
             </a>
           </ng-container>
           <a mat-list-item class="mat-nav-list-item"
-             (click)="auth.logout()">Logout</a>
+             (click)="userComponentLogout()">Logout</a>
         </mat-nav-list>
 
       </mat-sidenav>

@@ -38,6 +38,7 @@
               <button mat-icon-button *ngIf="listingInteract.isBookmarked(row.groupId, bookmarkIds) ; else notBookmarked"
                       matTooltip="Remove Bookmark"
                       [matTooltipPosition]="positionOptions[0]"
+                      [disabled]="listingInteract.userIsListingOwner(row.groupId) | async"
                       (click)="listingInteract.unmarkWrapper($event, row.groupId)">
                 <mat-icon class="indicators-column-icon">bookmark</mat-icon>
               </button>
@@ -45,6 +46,7 @@
               <button mat-icon-button
                       matTooltip="Bookmark"
                       [matTooltipPosition]="positionOptions[0]"
+                      [disabled]="listingInteract.userIsListingOwner(row.groupId) | async"
                       (click)="listingInteract.bookmarkWrapper($event, row.groupId)">
                 <mat-icon class="null-circle-icon">circle</mat-icon>
               </button>
@@ -280,7 +282,7 @@
 </div>
 
 <mat-menu #listingOptionsMenu="matMenu">
-  <ng-container *ngIf="!(listingInteract.userIsListingOwner() | async); else ownerMenu">
+  <ng-container *ngIf="!(listingInteract.userIsListingOwner(listingInteract.selectedListing?.groupId) | async); else ownerMenu">
     <button
       mat-menu-item
       class="options-item">

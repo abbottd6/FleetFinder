@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -165,15 +166,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PrivateUserResponseDto getUserByKeycloakId(String kcId) {
-        return userRepository
-                .findByKeycloakId(kcId)
-                .filter(u -> !u.getIsDeleted())
-                .map(userConversionService::convertToPrivateDto)
-                .orElseThrow(() -> {
-                    log.info("Attempt to access user data by keycloakId failed due to nonexistent keycloakId: " +
-                            "{}", kcId);
-                    return new ResourceNotFoundException("Users with keycloakId " + kcId + " not found");
-                });
+        Users user = userRepository.findByKeycloakId(kcId).filter(u -> !u.getIsDeleted())
+                .orElseThrow(() -> new ResourceNotFoundException("Users with id " + kcId + " not found"));
+
+        user.setLastAccess(Instant.now());
+        userRepository.save(user);
+
+
+        return userConversionService.convertToPrivateDto(user);
     }
 
     @Override

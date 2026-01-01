@@ -32,6 +32,7 @@ import {ListingTemplateViewModel} from "../../models/listing-templates/listing-t
 import {
   ListingTemplateModalComponent
 } from "../group-listing-modal/listing-template-modal/listing-template-modal.component";
+import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 
 @Component({
     selector: 'app-user',
@@ -55,18 +56,17 @@ export class UserComponent implements OnInit, OnDestroy {
   selectedTemplate: ListingTemplateViewModel | null = null;
 
   groupListings: GroupListingViewModel[] = []
-  localUser$: Observable<PrivateUser>;
   selectedTab: 'listings'|'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
   shouldDisplayMod$: boolean = false;
 
   constructor(public userService: UserService,
               protected auth: AuthService,
               protected listingInteract: ListingViewInteractionsService,
-              protected templatesModal: TemplatesModalService) {
-    this.localUser$ = this.userService.localUser$;
+              protected templatesModal: TemplatesModalService,
+              private chatHostSrv: ChatHostService) {
 
-    this.localUser$.pipe(
-      map(user => user.groupListingsDto ?? []),
+    this.userService.sessionUser$.pipe(
+      map(user => user?.groupListingsDto ?? []),
       takeUntil(this.destroy$)
     ).subscribe(listings => this.groupListings = listings);
   }
@@ -82,8 +82,7 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   askShouldDisplayMod(): boolean {
-    console.log("Role: ", this.userService.role)
-    return this.userService.role == UserRole.mod;
+    return this.userService.primaryRole == UserRole.mod;
   }
 
   selectTab(tab: typeof this.selectedTab){
@@ -101,6 +100,11 @@ export class UserComponent implements OnInit, OnDestroy {
   onTemplateSelected(template: ListingTemplateViewModel) {
     this.selectedTemplate = template;
     this.templatesModal.templateModalIsVisible = true;
+  }
+
+  userComponentLogout() {
+    this.chatHostSrv.closeChat()
+    this.auth.logout().subscribe();
   }
 
   isMobile$ = this.breakpointObserver

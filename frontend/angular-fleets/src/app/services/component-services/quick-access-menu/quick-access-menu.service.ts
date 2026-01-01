@@ -39,7 +39,10 @@ export class QuickAccessMenuService {
 
     el.style.left = `${x}px`;
     el.style.top = `${y}px`;
-    queueMicrotask(() => this.trigger?.openMenu());
+    queueMicrotask(() => {
+      if(!this.anchorEl || !this.trigger) return;
+      this.trigger?.openMenu()
+    });
   }
 
   onTouchStart(event: TouchEvent, row: GroupListingViewModel) {

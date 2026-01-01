@@ -58,7 +58,6 @@ public class UserConversionServiceImplTest {
         PrivateUserResponseDto mockDto = new PrivateUserResponseDto();
         mockDto.setUserId(1L);
         mockDto.setUsername("mockUsername");
-        mockDto.setEmail("thisrawemail@gmail.com");
 
         when(modelMapper.map(mockUser, PrivateUserResponseDto.class)).thenReturn(mockDto);
 
@@ -75,7 +74,6 @@ public class UserConversionServiceImplTest {
                 () -> assertThat(dto).hasFieldOrProperty("acctCreated"),
                 () -> assertThat(dto).hasFieldOrProperty("groupListingsDto"),
                 () -> assertEquals(dto.getUsername(), mockUser.getUsername()),
-                () -> assertEquals(dto.getEmail(), mockUser.getEmail()),
                 () -> assertTrue(dtoConstraintViolations.isEmpty(),
                         () -> "Expected no validation errors, but got: " + dtoConstraintViolations));
     }
@@ -133,9 +131,7 @@ public class UserConversionServiceImplTest {
 
         PrivateUserResponseDto mockDto = new PrivateUserResponseDto();
         mockDto.setUserId(null);
-//        mockDto.setKeycloakId("");
         mockDto.setUsername("");
-        mockDto.setEmail("not a real email");
 
         when(modelMapper.map(mockUser, PrivateUserResponseDto.class)).thenReturn(mockDto);
 
@@ -144,13 +140,11 @@ public class UserConversionServiceImplTest {
 
         List<String> violationsList = dtoConstraintViolations.stream()
                         .map(violation -> violation.getPropertyPath().toString())
-                                .distinct()
-                                        .collect(Collectors.toList());
+                                .distinct().toList();
 
         assertAll("users convertToDto assertion set: Failure",
                 () -> assertFalse(dtoConstraintViolations.isEmpty(), "expected constraint violations"),
                 () -> assertTrue(violationsList.contains("userId"), "null userId should be a violation"),
-                () -> assertTrue(violationsList.contains("username"), "empty userName should be a violation"),
-                () -> assertTrue(violationsList.contains("email"), "invalid email format should be a violation"));
+                () -> assertTrue(violationsList.contains("username"), "empty userName should be a violation"));
     }
 }

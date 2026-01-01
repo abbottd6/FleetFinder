@@ -94,7 +94,7 @@
           <ul ngbDropdownMenu class="dropdown-menu dropdown-menu-end">
             <ng-container *ngIf="auth.isLoggedIn$ | async; else loggedOut">
               <li><button class="dropdown-item" [routerLink]="['/user-account']">Profile</button></li>
-              <li><button class="dropdown-item" (click)="auth.logout()">Logout</button></li>
+              <li><button class="dropdown-item" (click)="navbarLogOut()">Logout</button></li>
             </ng-container>
             <ng-template #loggedOut>
               <li><button class="dropdown-item" (click)="auth.login(); closeDropdown()">Login</button></li>

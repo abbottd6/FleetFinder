@@ -94,7 +94,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngAfterViewInit() {
     this.chatLayoutMode$
-      .pipe(distinctUntilChanged())
+      .pipe(distinctUntilChanged()).pipe(takeUntil(this.chatPanelDestroy$))
       .subscribe(mode => {
         if(mode === 'handheld') this.drawer.close();
         else this.drawer.open();
@@ -149,11 +149,6 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onConvClick(conv: ConversationViewModel) {
     this.selectedConv.select(conv);
-
-    // const msg = new MessageViewModel(7, 1, 1, 'marydoe',
-    //   'DIRECT', 'wow a message for me', new Date(), new Date(), null, null,
-    //   'clientmsgid');
-    // this.appendMsg(msg);
 
     this.loadConvMessages(this.selectedConv);
   }

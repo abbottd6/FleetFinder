@@ -68,14 +68,14 @@ export class ListingViewInteractionsService {
     return this.selectedListingSubject.value;
   }
 
-  userIsListingOwner(): Observable<boolean> {
-    const selectedId = this.selectedListing?.groupId;
+  userIsListingOwner(gId: number | undefined): Observable<boolean> {
 
-    if(!this.userSrv.localUser$ || !selectedId) return of(false);
+    if(!this.userSrv.sessionUser || !gId) return of(false);
 
-    return this.userSrv.userListings$.pipe(
-      map(listings =>
-        listings.some(group => group.groupId === selectedId))
+    return this.userSrv.sessionUser$.pipe(
+      map(user =>
+        user?.groupListingsDto?.some(
+          group => group.groupId === gId) ?? false)
     );
   }
 

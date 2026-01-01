@@ -74,7 +74,7 @@
 </div>
 
 <mat-menu #listingOptionsMenu="matMenu">
-  <ng-container *ngIf="!(listingInteract.userIsListingOwner() | async); else ownerMenu">
+  <ng-container *ngIf="!(listingInteract.userIsListingOwner(listingInteract.selectedListing?.groupId) | async); else ownerMenu">
     <button
       mat-menu-item
       class="options-item">

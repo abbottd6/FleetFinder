@@ -173,7 +173,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   loadGroupListings(dto: ListingFilterRequest, idx: number, sz: number, sortA: string, sortD: string) {
-    this.groupListingService.searchGroupListings(dto, idx, sz, sortA, sortD)
+    this.groupListingService.searchGroupListings(dto, idx, sz, sortA, sortD).pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (page) => {
           if (!environment.production) {
