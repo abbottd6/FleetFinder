@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.config.mappers.chatMappers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetMessageDto;
+import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
 import com.sc_fleetfinder.fleets.entities.chat.Participant;
 import com.sc_fleetfinder.fleets.utils.MessageType;
@@ -33,13 +34,13 @@ public class MessageMapperConfig {
                     }).map(Message::getConversation, GetMessageDto::setConversationId);
 
                     mapper.using(ctx -> {
-                        Participant sender = (Participant) ctx.getSource();
-                        return sender != null ? sender.getUser().getUserId() : null;
+                        Users sender = (Users) ctx.getSource();
+                        return sender != null ? sender.getUserId() : null;
                     }).map(Message::getSender, GetMessageDto::setSenderId);
 
                     mapper.using(ctx -> {
-                        Participant sender = (Participant) ctx.getSource();
-                        return sender != null ? sender.getUser().getUsername() : null;
+                        Users sender = (Users) ctx.getSource();
+                        return sender != null ? sender.getUsername() : null;
                     }).map(Message::getSender, GetMessageDto::setSenderName);
 
                     mapper.using(ctx -> {

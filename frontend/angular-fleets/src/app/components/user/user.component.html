@@ -6,8 +6,7 @@
       <mat-sidenav #drawer
                    [mode]="(isMobile$ | async) ? 'over' : 'side'"
                    [opened]="!(isMobile$ | async)"
-                   class="side-nav-the-side-nav"
-                   >
+                   class="side-nav-the-side-nav">
         <mat-nav-list class="side-nav-list">
           <a mat-list-item class="mat-nav-list-item"
              [class.active]="selectedTab==='listings'"

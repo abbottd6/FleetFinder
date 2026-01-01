@@ -1,0 +1,87 @@
+:host {
+  display: inline-block;
+  align-self: flex-end;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.mat-mdc-form-field {
+  padding-left: 4px;
+  width: 95%;
+  font-size: 1rem;
+  font-family: "Exo 2", sans-serif;
+}
+
+#message-input textarea[matInput] {
+  overflow-x: hidden;
+  resize: none;
+  word-break: break-word;
+  white-space: pre-wrap;
+  scrollbar-color: rgba(188, 191, 200, .1) transparent;
+  scrollbar-arrow-color: transparent !important;
+  scrollbar-width: thin;
+  padding-right: 44px;
+  overflow-y: auto;
+}
+
+.expanding {
+  scrollbar-width: none !important;
+}
+
+.mdc-text-field-input {
+  overflow-x: hidden !important;
+}
+
+#send-button {
+  position: absolute;
+  z-index: 2;
+  align-self: center;
+  min-width: 0;
+  padding: 4px 2px 2px 20px;
+  right: 14px;
+  bottom: 0;
+  transition: color 0.15s ease;
+}
+
+#send-button:hover {
+  color: rgba(255, 131, 7, 0.75);
+}
+
+:host ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined {
+  color: rgba(188, 191, 200, .8) !important;
+  /*background-color: hotpink;*/
+}
+
+:host ::ng-deep #message-input .mat-mdc-form-field-infix {
+  padding-top: 5px;
+  padding-bottom: 5px;
+  min-height: 0;
+}
+
+/* input text/placeholder text */
+:host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
+  padding-left: 6px;
+  wrap-option: wrap;
+  caret-color: rgba(255, 131, 7, 0.5) !important;
+}
+/* character counter */
+.mat-mdc-form-field-hint {
+  /*color: rgba(33, 37, 41, .75);*/
+  font-size: 0.8rem;
+}
+
+/* outline while focused */
+:host ::ng-deep .mdc-text-field--outlined:focus-within .mat-mdc-notch-piece {
+  color: rgba(65, 103, 142, 1);
+  transition: color 0.15s ease;
+}
+
+/* outline transition */
+:host ::ng-deep .mdc-text-field--outlined .mat-mdc-notch-piece {
+  color: rgba(188, 191, 200, .5);
+}
+
+:host ::ng-deep .mdc-text-field--outlined:hover .mat-mdc-notch-piece {
+  color: rgba(65, 103, 142, 1);
+}

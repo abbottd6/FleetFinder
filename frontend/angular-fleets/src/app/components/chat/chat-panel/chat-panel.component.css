@@ -257,38 +257,86 @@
   line-height: 0.75;
 }
 
-.chat-columns {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+.chat-sidenav-container {
   margin: 0 4px 4px 4px;
   border-top: 1px solid rgba(188, 191, 200, .25);
-  min-height: 95%;
-  max-height: 100%;
+  height: 100%;
   min-width: 95%;
   opacity: 1;
   transition: max-height 300ms ease, opacity 300ms ease, margin 300ms ease;
+
+  color: rgba(150, 168, 183, 1);
+  overflow-y: scroll;
+  scrollbar-width: none;
+  /*scrollbar-color: #2c2c2c transparent;*/
+  /*scrollbar-arrow-color: transparent !important;*/
 }
 
-:host(.is-collapsed) .chat-columns {
-  max-height: 0;
-  min-height: 0;
-  min-width: 0;
-  opacity: 0;
-  margin: 0;
-  overflow: hidden;
-}
-
-#messages_column {
-  border-left: 1px solid rgba(188, 191, 200, .25);
-  justify-content: end;
-  padding: 4px;
+.conversations-nav {
+  width: 204px;
+  background-color: var(--bs-dark);
+  border-right: 1px solid rgba(188, 191, 200, .25);
+  padding-right: 4px;
 }
 
 #conversations_column {
+  overflow-y: auto;
+  height: 100%;
+  min-height: 0;
   padding: 4px;
 }
 
+.collapsing {
+  scrollbar-width: none !important;
+}
+
+#messages-column {
+  display: flex;
+  flex-direction: column;
+  padding: 4px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.conversation-tab-icon {
+  display: inline-block;
+  min-width: 0;
+  border-radius: 3rem;
+  font-size: clamp(0.8rem, 1.1rem, 1.8rem);
+  color: rgba(255, 131, 7, .5) !important;
+  line-height: 1;
+  transition: transform 200ms ease;
+  transform-origin: center;
+  position: relative;
+  top: 0;
+}
+
+.mat-mdc-button {
+  pointer-events: auto !important;
+}
+
+.tabs-button-rotated {
+  transform: rotate(180deg);
+}
+
+.tabs-button-container {
+  align-self: flex-end;
+  align-content: center;
+  margin-right: 4px;
+}
+
+#tabs-label {
+  align-self: center;
+  font-size: 0.9rem;
+  padding-left: 8px;
+  color: rgba(150, 168, 183, 1);
+}
+
 /*--------------------------------------- CONVERSATIONS TABLE ---------------------------------------*/
+.conv-table.mat-mdc-table {
+  border-collapse: separate;
+  border-spacing: 0 2px;
+}
 .conv-table .mat-mdc-header-cell {
   padding: 2px 0 2px 2px;
   margin-bottom: 0;
@@ -322,18 +370,39 @@
   row-gap: 0;
   font-family: "exo 2", sans-serif;
   color: rgba(188, 191, 200, .8);
+  padding-left: 4px;
 }
 
 .conv-table .mdc-data-table__cell {
   padding-left: 0;
   padding-right: 0;
-  background-color: rgba(44, 44, 44, .75);
-  border-radius: 2px;
+  padding-top: 0;
+  background-color: rgba(188, 191, 200, .05);
+  border-radius: 4px;
+  transition: background-color 0.15s ease, scale 0.15s ease;
+  box-shadow: 0 0 1px transparent;
+}
+
+.conv-table .mdc-data-table__cell:hover {
+  background-color: rgba(255, 131, 7, .03);
+  cursor: pointer;
+}
+
+.conv-table .mat-mdc-row {
+  height: 25px;
+  padding-bottom: 2px;
 }
 
 .conv-user-row{
-  color: rgba(255, 131, 7, .5);
+  display: flex;
+  flex-direction: row;
+  /*color: rgba(255, 131, 7, .5);*/
   font-size: 0.9rem;
+  padding-top: 0;
+}
+
+#other-username {
+  color: rgba(65, 103, 142, 1);
 }
 
 .conv-date-row {
@@ -341,6 +410,14 @@
 }
 
 .conv-title-row {
+  font-size: 0.75rem;
+  color: rgba(188, 191, 200, .5);
+}
+
+.updated-at {
+  margin-left: auto;
+  margin-right: 4px;
+  color: rgba(188, 191, 200, .5);
   font-size: 0.75rem;
 }
 
@@ -360,27 +437,43 @@
 
 /* -------------------------------- MAX WIDTH 620px -----------------------------------------------*/
 
-@media(max-width: 620px) {
+@media(max-width: 620px) and (min-width: 411px) {
   :host {
-    min-width: 98%;
-    min-height: 65vh;
+    right: 1vw;
   }
 
-  .chat-border {
-    background-color: transparent;
-    /*min-height: 68vh;*/
-    /*clip-path: polygon(*/
-    /*  9% 0%,     !* top edge, a bit right from TL *!*/
-    /*  100% 0%,   !* full top-right corner *!*/
-    /*  100% 90%,  !* right edge, a bit up from BR *!*/
-    /*  94% 100%,  !* bottom edge, a bit left from BR *!*/
-    /*  0% 100%,   !* full bottom-left corner *!*/
-    /*  0% 11.2%      !* left edge, a bit down from TL *!*/
-    /*);*/
+  .chat-panel-wrapper {
+    width: 402px;
+    /*min-width: 98vw;*/
+    /*min-height: 65vh;*/
+    margin-inline: auto;
   }
 
-  .chat-panel {
-    width: 100%;
-    min-height: 68vh;
+  #messages-column {
+    width: 400px;
+    overflow-x: hidden;
+  }
+
+  #messages-column,
+  .mat-drawer-content {
+    overflow-x: hidden;
+    min-width: 0;
   }
 }
+
+@media(max-width: 410px) {
+  :host {
+    right: 1vw;
+  }
+
+  .chat-panel-wrapper {
+    width: 98vw;
+  }
+
+  #messages-column,
+  .mat-drawer-content {
+    overflow-x: hidden;
+    min-width: 0;
+  }
+}
+

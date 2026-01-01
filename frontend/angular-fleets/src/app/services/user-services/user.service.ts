@@ -24,6 +24,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 export class UserService implements OnDestroy {
   private destroy$ = new Subject<void>();
   public role: 'admin' | 'mod' | 'user' = 'user';
+  protected userId!: number;
   private readonly http = inject(HttpClient);
   private auth = inject(AuthService);
   private api = inject(UserApiService);
@@ -49,6 +50,16 @@ export class UserService implements OnDestroy {
   private profile$ = this.auth.authClaims$.pipe(
     filter(data => !!data && !!data.userData)
   );
+
+  getUserId(): number {
+    this.profile$.pipe(
+      map(data => data ? data?.userData?.id : null))
+      .subscribe((id: number) => {
+        this.userId = id;
+      }
+    )
+    return this.userId;
+  }
 
   getRole(): string {
     this.profile$.pipe(

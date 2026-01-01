@@ -9,8 +9,8 @@ export class MessageViewModel {
     public msgBody: string,
     public createdAt: Date,
     public updatedAt: Date,
-    public deletedAt: Date,
-    public repliedToMessageId: number,
+    public deletedAt: Date | null,
+    public repliedToMessageId: number | null,
     public clientMessageId: string
   ){}
 }

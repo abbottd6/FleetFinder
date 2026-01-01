@@ -102,4 +102,14 @@ export class ChatHostService {
 
     this.windowStateSubject.next(next);
   }
+
+  authCheckOrRedirect() {
+    this.auth.isLoggedIn$.pipe(take(1)).subscribe(isAuth => {
+      if (!isAuth) {
+        sessionStorage.setItem('post_login_url', this.router.url);
+        this.auth.login();
+        return;
+      }
+    });
+  }
 }
