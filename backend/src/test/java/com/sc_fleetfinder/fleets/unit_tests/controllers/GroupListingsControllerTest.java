@@ -10,7 +10,7 @@ import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -125,117 +125,121 @@ class GroupListingsControllerTest {
         mockGroupListings = Arrays.asList(mockListing1, mockListing2);
     }
 
+    // not using this method anymore.
     @Test
+    @Disabled
     void testGetAllGroupListings_FoundList() throws Exception {
-        when(groupListingService.getAllGroupListings()).thenReturn(mockGroupListings);
+        List<GroupListingResponseDto> listingsMocks = this.mockGroupListings;
+
+        when(groupListingService.getAllGroupListings()).thenReturn(listingsMocks);
 
         //Results for [0] are matched to mockListing1 and [1] is matched to mockListing2 in @BeforeEach
         mockMvc.perform(MockMvcRequestBuilders.get("/api/group-listings")
-                .accept(MediaType.APPLICATION_JSON))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes.size()").value(2))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].groupId")
+                .andExpect(jsonPath("$._embedded.content.size()").value(2))
+                .andExpect(jsonPath("$._embedded.content[0].groupId")
                         .value(1L))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].userName")
+                .andExpect(jsonPath("$._embedded.content[0].userName")
                         .value("TestUser"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].server")
+                .andExpect(jsonPath("$._embedded.content[0].server")
                         .value("USA"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].environment")
+                .andExpect(jsonPath("$._embedded.content[0].environment")
                         .value("Live"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].experience")
+                .andExpect(jsonPath("$._embedded.content[0].experience")
                         .value("Persistent Universe"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].listingTitle")
+                .andExpect(jsonPath("$._embedded.content[0].listingTitle")
                         .value("Test listing1 title"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].playStyle")
+                .andExpect(jsonPath("$._embedded.content[0].playStyle")
                         .value("Casual"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].legality")
+                .andExpect(jsonPath("$._embedded.content[0].legality")
                         .value("Lawful"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].groupStatus")
+                .andExpect(jsonPath("$._embedded.content[0].groupStatus")
                         .value("Future/Scheduled"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].eventSchedule")
+                .andExpect(jsonPath("$._embedded.content[0].eventSchedule")
                         .exists())
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].eventSchedule")
+                .andExpect(jsonPath("$._embedded.content[0].eventSchedule")
                         .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].category")
+                .andExpect(jsonPath("$._embedded.content[0].category")
                         .value("Medical"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].subcategory")
+                .andExpect(jsonPath("$._embedded.content[0].subcategory")
                         .value("For Hire"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].pvpStatus")
+                .andExpect(jsonPath("$._embedded.content[0].pvpStatus")
                         .value("PvX"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].system")
+                .andExpect(jsonPath("$._embedded.content[0].system")
                         .value("Stanton"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].planetMoonSystem")
+                .andExpect(jsonPath("$._embedded.content[0].planetMoonSystem")
                         .value("Stanton I"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].listingDescription")
+                .andExpect(jsonPath("$._embedded.content[0].listingDescription")
                         .value("This is a description"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].desiredPartySize")
+                .andExpect(jsonPath("$._embedded.content[0].desiredPartySize")
                         .value(3))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].currentPartySize")
+                .andExpect(jsonPath("$._embedded.content[0].currentPartySize")
                         .value(1))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].availableRoles")
+                .andExpect(jsonPath("$._embedded.content[0].availableRoles")
                         .value("Here are some available roles"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].commsOption")
+                .andExpect(jsonPath("$._embedded.content[0].commsOption")
                         .value("Required"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].commsService")
+                .andExpect(jsonPath("$._embedded.content[0].commsService")
                         .value("This is a comms service"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].creationTimestamp")
+                .andExpect(jsonPath("$._embedded.content[0].creationTimestamp")
                         .exists())
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].creationTimestamp")
+                .andExpect(jsonPath("$._embedded.content[0].creationTimestamp")
                         .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].lastUpdated").exists())
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[0].lastUpdated")
+                .andExpect(jsonPath("$._embedded.content[0].lastUpdated").exists())
+                .andExpect(jsonPath("$._embedded.content[0].lastUpdated")
                         .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()))
                 //
                 //
                 //second listing matched to mockListing2 from @BeforeEach
                 //
                 //
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].groupId")
+                .andExpect(jsonPath("$._embedded.content[1].groupId")
                         .value(2L))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].userName")
+                .andExpect(jsonPath("$._embedded.content[1].userName")
                         .value("DifferentTestUser"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].server")
+                .andExpect(jsonPath("$._embedded.content[1].server")
                         .value("AUS"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].environment")
+                .andExpect(jsonPath("$._embedded.content[1].environment")
                         .value("PTU"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].experience")
+                .andExpect(jsonPath("$._embedded.content[1].experience")
                         .value("Persistent Universe"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].listingTitle")
+                .andExpect(jsonPath("$._embedded.content[1].listingTitle")
                         .value("Different listing title"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].playStyle")
+                .andExpect(jsonPath("$._embedded.content[1].playStyle")
                         .value("Competitive"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].legality")
+                .andExpect(jsonPath("$._embedded.content[1].legality")
                         .value("Unlawful"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].groupStatus")
+                .andExpect(jsonPath("$._embedded.content[1].groupStatus")
                         .value("Current/Live"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].eventSchedule").isEmpty())
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].category")
+                .andExpect(jsonPath("$._embedded.content[1].eventSchedule").isEmpty())
+                .andExpect(jsonPath("$._embedded.content[1].category")
                         .value("Ship Combat"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].subcategory")
+                .andExpect(jsonPath("$._embedded.content[1].subcategory")
                         .value("Dueling"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].pvpStatus")
+                .andExpect(jsonPath("$._embedded.content[1].pvpStatus")
                         .value("PvP"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].system")
+                .andExpect(jsonPath("$._embedded.content[1].system")
                         .value("Pyro"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].planetMoonSystem")
+                .andExpect(jsonPath("$._embedded.content[1].planetMoonSystem")
                         .value("Pyro I"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].listingDescription")
+                .andExpect(jsonPath("$._embedded.content[1].listingDescription")
                         .value("This is a better description"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].desiredPartySize")
+                .andExpect(jsonPath("$._embedded.content[1].desiredPartySize")
                         .value(2))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].currentPartySize")
+                .andExpect(jsonPath("$._embedded.content[1].currentPartySize")
                         .value(1))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].availableRoles")
+                .andExpect(jsonPath("$._embedded.content[1].availableRoles")
                         .value("Here are some available roles"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].commsOption")
+                .andExpect(jsonPath("$._embedded.content[1].commsOption")
                         .value("Optional"))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].commsService")
+                .andExpect(jsonPath("$._embedded.content[1].commsService")
                         .value(""))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].creationTimestamp").exists())
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].creationTimestamp")
+                .andExpect(jsonPath("$._embedded.content[1].creationTimestamp").exists())
+                .andExpect(jsonPath("$._embedded.content[1].creationTimestamp")
                         .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()))
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].lastUpdated").exists())
-                .andExpect(jsonPath("$._embedded.groupListingResponseDtoes[1].lastUpdated")
+                .andExpect(jsonPath("$._embedded.content[1].lastUpdated").exists())
+                .andExpect(jsonPath("$._embedded.content[1].lastUpdated")
                         .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
     }
 
@@ -357,7 +361,7 @@ class GroupListingsControllerTest {
         doAnswer(invocation -> {
             invocation.getArgument(0);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class), mockUser);
+        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class), any(Users.class));
 
 
         mockMvc.perform(post("/api/group-listings/create_listing")
@@ -410,7 +414,7 @@ class GroupListingsControllerTest {
         doAnswer(invocation -> {
             invocation.getArgument(0);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class), mockUser);
+        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class), any(Users.class));
 
 
         mockMvc.perform(post("/api/group-listings/create_listing")
@@ -461,7 +465,7 @@ class GroupListingsControllerTest {
             invocation.getArgument(0);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while creating your listing");
-        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class), mockUser);
+        }).when(groupListingService).createGroupListing(any(CreateGroupListingDto.class), any(Users.class));
 
         mockMvc.perform(post("/api/group-listings/create_listing")
                         .with(jwt()

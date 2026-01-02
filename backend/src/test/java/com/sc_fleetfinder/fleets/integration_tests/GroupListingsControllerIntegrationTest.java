@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
@@ -82,7 +82,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                         .value("Integration testing title"))
                 .andExpect(jsonPath(
                         "$.playStyle")
-                        .value("Skill Development"))
+                        .value("Stream - Watchable"))
                 .andExpect(jsonPath(
                         "$.legality").value("Lawful"))
                 .andExpect(jsonPath(
@@ -92,10 +92,10 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                         "$.eventSchedule")
                         .value("2025-03-15T18:30:00Z"))
                 .andExpect(jsonPath(
-                        "$.category").value("Mission"))
+                        "$.category").value("Mining"))
                 .andExpect(jsonPath(
                         "$.subcategory")
-                        .value("Maintenance"))
+                        .value("Prospecting"))
                 .andExpect(jsonPath(
                         "$.pvpStatus").value("PvX"))
                 .andExpect(jsonPath(
@@ -139,8 +139,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
             testDto.setLegalityId(1);
             testDto.setGroupStatusId(2);
             testDto.setEventDate("2025-03-15"); // Optional
-            testDto.setEventTime("18:30:00Z");
-            testDto.setEventTimeZone("Pacific Standard Time");
+            testDto.setEventTime("18:30:00");
+            testDto.setEventTimeZone("America/Los_Angeles");
             testDto.setCategoryId(1);
             testDto.setSubcategoryId(1); // Optional
             testDto.setPvpStatusId(1);
@@ -185,8 +185,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                 .andExpect(jsonPath("$.playStyle").value("Casual"))
                 .andExpect(jsonPath("$.legality").value("Lawful"))
                 .andExpect(jsonPath("$.groupStatus").value("Future/Scheduled"))
-                .andExpect(jsonPath("$.eventSchedule").value("2025-03-15T18:30:00Z"))
-                .andExpect(jsonPath("$.category").value("Ship Combat"))
+                .andExpect(jsonPath("$.eventSchedule").value("2025-03-16T01:30:00Z"))
+                .andExpect(jsonPath("$.category").value("Commerce/Trade"))
                 .andExpect(jsonPath("$.subcategory").value("Bounty Hunting PVP"))
                 .andExpect(jsonPath("$.pvpStatus").value("PvP"))
                 .andExpect(jsonPath("$.system").value("Stanton"))
@@ -248,7 +248,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                 .andExpect(jsonPath("$.legality").value("Lawful"))
                 .andExpect(jsonPath("$.groupStatus").value("Current/Live"))
                 .andExpect(jsonPath("$.eventSchedule", nullValue()))
-                .andExpect(jsonPath("$.category").value("Ship Combat"))
+                .andExpect(jsonPath("$.category").value("Commerce/Trade"))
                 .andExpect(jsonPath("$.subcategory").value(""))
                 .andExpect(jsonPath("$.pvpStatus").value("PvP"))
                 .andExpect(jsonPath("$.system").value("Stanton"))

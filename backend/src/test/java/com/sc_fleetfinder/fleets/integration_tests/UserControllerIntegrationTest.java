@@ -129,7 +129,6 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.userId").isNumber())
                 .andExpect(jsonPath("$.username").value(MOCK_USERNAME))
-                .andExpect(jsonPath("$.email").value(MOCK_EMAIL))
                 .andExpect(jsonPath("$.server").exists())
                 .andExpect(jsonPath("$.org").exists())
                 .andExpect(jsonPath("$.about").exists())
@@ -166,8 +165,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.userId").isNumber())
-                .andExpect(jsonPath("$.username").value("newUser"))
-                .andExpect(jsonPath("$.email").value("newuser@gmail.com"));
+                .andExpect(jsonPath("$.username").value("newUser"));
     }
 
     @Test

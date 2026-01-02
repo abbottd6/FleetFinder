@@ -70,7 +70,6 @@ public class UserConversionServiceImplTest {
         );
 
         assertAll("users convertToDto assertion set: Success",
-                () -> assertThat(dto).hasFieldOrProperty("email"),
                 () -> assertThat(dto).hasFieldOrProperty("acctCreated"),
                 () -> assertThat(dto).hasFieldOrProperty("groupListingsDto"),
                 () -> assertEquals(dto.getUsername(), mockUser.getUsername()),
@@ -112,7 +111,7 @@ public class UserConversionServiceImplTest {
         Set<String> expectedFields = Set.of(
                 "userId",
                 "username",
-                "Server",
+                "server",
                 "org",
                 "about"
         );

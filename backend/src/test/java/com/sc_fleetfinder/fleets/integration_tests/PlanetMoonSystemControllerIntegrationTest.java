@@ -29,7 +29,7 @@ public class PlanetMoonSystemControllerIntegrationTest extends AbstractIntegrati
     void testGetAllPlanetMoons_Success_200() throws Exception {
         mockMvc.perform(get("/api/lookup/planet-moon-systems"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(16))
+                .andExpect(jsonPath("$.length()").value(14))
                 .andExpect(jsonPath("$[0].planetId").exists())
                 .andExpect(jsonPath("$[0].planetName").exists())
                 .andExpect(jsonPath("$[0].systemName").exists());

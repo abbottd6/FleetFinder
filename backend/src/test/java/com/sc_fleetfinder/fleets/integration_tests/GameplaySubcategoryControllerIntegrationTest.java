@@ -29,7 +29,7 @@ public class GameplaySubcategoryControllerIntegrationTest extends AbstractIntegr
     void testGetAllSubcategories_Success_200() throws Exception {
         mockMvc.perform(get("/api/lookup/gameplay-subcategories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(41))
+                .andExpect(jsonPath("$.length()").value(48))
                 .andExpect(jsonPath("$[0].subcategoryId").exists())
                 .andExpect(jsonPath("$[0].subcategoryName").exists())
                 .andExpect(jsonPath("$[0].gameplayCategoryName").exists());

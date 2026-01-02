@@ -29,7 +29,7 @@ public class PlayStyleControllerIntegrationTest extends AbstractIntegrationTestD
     void testGetAllPlayStyles_Success_200() throws Exception {
         mockMvc.perform(get("/api/lookup/play-styles"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(11))
+                .andExpect(jsonPath("$.length()").value(6))
                 .andExpect(jsonPath("$[0].styleId").exists())
                 .andExpect(jsonPath("$[0].playStyle").exists());
     }

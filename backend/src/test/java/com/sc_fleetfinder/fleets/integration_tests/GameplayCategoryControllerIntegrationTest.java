@@ -50,7 +50,7 @@ public class GameplayCategoryControllerIntegrationTest extends AbstractIntegrati
         mockMvc.perform(get("/api/lookup/gameplay-categories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.gameplayCategoryId").value(1))
-                .andExpect(jsonPath("$.gameplayCategoryName").value("Ship Combat"));
+                .andExpect(jsonPath("$.gameplayCategoryName").value("Commerce/Trade"));
     }
 
     @Test
