@@ -55,7 +55,7 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
 
   fullColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
   mobileColumns = ['select', 'details']
-  dataSource = new MatTableDataSource(this.userListings);
+  dataSource = new MatTableDataSource<GroupListingViewModel>();
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 
   constructor(private listingOwnerSrv: ListingOwnerActionsService,
@@ -65,11 +65,7 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
               private snackBar: MatSnackBar) {}
 
   ngOnInit() {
-    this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
-      if(reason != null) {
-        this.selection.clear();
-      }
-    })
+    this.dataSource.data = this.userListings;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -97,6 +93,7 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   tableActionReset() {
     this.selection.clear()
     this.userService.refreshUser();
+    this.dataSource.data = this.userListings
   }
 
   updateListing() {

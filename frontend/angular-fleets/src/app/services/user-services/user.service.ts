@@ -71,6 +71,7 @@ export class UserService {
         if(!loggedIn) return of<SessionUser | null>(null);
 
         return combineLatest([this.kcProfile$, this.ffPrivateUser$]).pipe(
+          filter(([, ffPrivate]) => !!ffPrivate),
           map(([kcClaims, ffPrivate]) => {
             const primaryRole = this.extractRole(kcClaims.userData.roles) ?? UserRole.user;
             const email = kcClaims.userData.email;
@@ -83,6 +84,7 @@ export class UserService {
           distinctUntilChanged((a, b) =>
             a?.userId === b?.userId &&
             a?.primaryRole === b?.primaryRole &&
+            a?.groupListingsDto === b?.groupListingsDto &&
             a?.lastAccess === b?.lastAccess
           )
         );

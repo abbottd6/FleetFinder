@@ -62,7 +62,7 @@
           <!-- MY LISTINGS TAB -->
           <ng-container *ngIf="selectedTab === 'listings'">
             <app-user-acct-listings-table
-              [userListings]="(user.groupListingsDto)" class="user-table"
+              [userListings]="(groupListings)" class="user-table"
               (listingForModal)="onListingSelected($event)">
             </app-user-acct-listings-table>
           </ng-container>

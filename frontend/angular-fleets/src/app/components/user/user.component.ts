@@ -65,15 +65,21 @@ export class UserComponent implements OnInit, OnDestroy {
               protected templatesModal: TemplatesModalService,
               private chatHostSrv: ChatHostService) {
 
-    this.userService.sessionUser$.pipe(
-      map(user => user?.groupListingsDto ?? []),
-      takeUntil(this.destroy$)
-    ).subscribe(listings => this.groupListings = listings);
+    this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
+      if(reason != null) {
+        this.userService.refreshUser();
+      }
+    })
   }
 
   ngOnInit() {
     this.userService.refreshUser();
     this.shouldDisplayMod$ = this.askShouldDisplayMod();
+
+    this.userService.sessionUser$.pipe(
+      map(user => user?.groupListingsDto ?? []),
+      takeUntil(this.destroy$)
+    ).subscribe(listings => this.groupListings = listings);
   }
 
   ngOnDestroy() {

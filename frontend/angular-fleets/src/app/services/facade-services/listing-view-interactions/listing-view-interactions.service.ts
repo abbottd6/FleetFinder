@@ -33,7 +33,7 @@ export class ListingViewInteractionsService {
   public longPressTriggered = false;
 
   isModalVisible: boolean = false;
-  refreshSubject = new Subject<'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | null>();
+  refreshSubject = new Subject<'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | 'created' | null>();
   readonly refresh$ = this.refreshSubject.asObservable();
 
   constructor(private bmService: BookmarkApiService,
@@ -278,7 +278,7 @@ export class ListingViewInteractionsService {
     });
   }
 
-  public emitRefresh(reason: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete') {
+  public emitRefresh(reason: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | 'created') {
     console.log("reason: ", reason);
     this.refreshSubject.next(reason);
   }

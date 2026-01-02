@@ -103,6 +103,8 @@ export class ListingOwnerActionsService {
         const tempRow: GroupListingViewModel = rows[0];
         this.userDeleteSingle(tempRow);
       }
+
+      this.listingInteract.emitRefresh('delete');
     });
   }
 
