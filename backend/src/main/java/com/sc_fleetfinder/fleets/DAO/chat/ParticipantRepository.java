@@ -32,7 +32,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Conver
     @Query("""
             SELECT p.conversation FROM Participant p
             WHERE p.user = :user AND p.isMuting = false AND p.isArchived = false
-            ORDER BY p.conversation.updatedAt asc
+            ORDER BY p.conversation.updatedAt desc
             """)
     Page<Conversation> findConversationsByUserParticipant(@Param("user") Users user, Pageable pageable);
 }

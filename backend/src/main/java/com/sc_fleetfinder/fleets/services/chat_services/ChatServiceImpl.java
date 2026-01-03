@@ -18,17 +18,23 @@ import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.ChatDataConversions.ConversationConversionService;
 import com.sc_fleetfinder.fleets.services.conversion_services.ChatDataConversions.MessageConversionService;
 import com.sc_fleetfinder.fleets.utils.ConversationParticipantRole;
+import com.sc_fleetfinder.fleets.utils.MessageUserRoles;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.user.SimpUser;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.file.AccessDeniedException;
 import java.time.Instant;
-import java.util.HashSet;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,12 +52,17 @@ public class ChatServiceImpl implements ChatService {
     private final ConversationRepository convRepo;
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final SimpUserRegistry userRegistry;
 
     ChatServiceImpl(ConversationConversionService ccs,
                     ParticipantRepository participantRepo,
                     MessageRepository msgRepo,
                     MessageConversionService msgConvSrv,
-                    ConversationRepository convRepo, MessageRepository messageRepository, UserRepository userRepository) {
+                    ConversationRepository convRepo,
+                    MessageRepository messageRepository,
+                    UserRepository userRepository,
+                    SimpMessagingTemplate messagingTemplate, SimpUserRegistry userRegistry) {
         this.ccs = ccs;
         this.msgRepo = msgRepo;
         this.msgConvSrv = msgConvSrv;
@@ -59,6 +70,8 @@ public class ChatServiceImpl implements ChatService {
         this.convRepo = convRepo;
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
+        this.messagingTemplate = messagingTemplate;
+        this.userRegistry = userRegistry;
     }
 
     @Override
@@ -108,19 +121,18 @@ public class ChatServiceImpl implements ChatService {
         Conversation currentConv = convRepo.findById(dto.getConversationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
 
-        Participant senderPart = currentConv.getParticipants().stream()
-                .filter(part -> Objects.equals(part.getUser().getUserId(), user.getUserId()))
-                .findFirst()
-                .orElseThrow(() -> new ConversationIntegrityException(
-                        "Conversation with ID: " + currentConv.getConversationId() +
-                                " is missing a purported sender participant with ID: " + user.getUserId()));
+        boolean isFirstMsg = (messageRepository.countMessagesByConversation_ConversationId(
+                currentConv.getConversationId()) == 0);
+
+        Map<MessageUserRoles, Participant> inferredParts = this.defineSenderAndRecipient(currentConv, user.getUserId());
+
+        Participant senderPart = inferredParts.get(MessageUserRoles.SENDER);
+        Participant recipientPart = inferredParts.get(MessageUserRoles.RECIPIENT);
 
         if(senderPart.isArchived() || senderPart.isMuting()) {
             throw new ConfirmationRequiredException(
                     "You muted or archived this conversation. Undo to resume?");
         }
-
-        Users senderUser = senderPart.getUser();
 
         for( Participant part : currentConv.getParticipants()) {
             part.setArchived(false);
@@ -135,14 +147,38 @@ public class ChatServiceImpl implements ChatService {
                             "repliedToMessage not found in this conversation."));
         }
 
-        Message newMsg = new Message(currentConv, senderUser, repliedToMessage, dto);
+        Message newMsg = new Message(currentConv, senderPart.getUser(), repliedToMessage, dto);
 
         messageRepository.save(newMsg);
 
         currentConv.setLastMsg(newMsg);
         convRepo.save(currentConv);
 
-        return msgConvSrv.convertToDto(newMsg);
+        GetMessageDto msgDto = msgConvSrv.convertToDto(newMsg);
+
+        if(isFirstMsg) {
+            GetConversationDto recipientConvDto = this.ccs.convertToDto(currentConv, recipientPart.getUser().getUserId());
+
+            messagingTemplate.convertAndSendToUser(
+                    recipientPart.getUser().getKeycloakId(),
+                    "/queue/chat.conversation",
+                    recipientConvDto
+            );
+        }
+
+        messagingTemplate.convertAndSendToUser(
+                recipientPart.getUser().getKeycloakId(),
+                "/queue/chat.message",
+                msgDto
+        );
+
+        messagingTemplate.convertAndSendToUser(
+                senderPart.getUser().getKeycloakId(),
+                "/queue/chat.message",
+                msgDto
+        );
+
+        return msgDto;
     }
 
     @Override
@@ -216,5 +252,28 @@ public class ChatServiceImpl implements ChatService {
 
         sender.setLastActiveAt(Instant.now());
         participantRepo.save(sender);
+    }
+
+    private Map<MessageUserRoles, Participant> defineSenderAndRecipient(Conversation conv, Long currentUserId) {
+        Participant recipient = conv.getParticipants().stream()
+                .filter(participant -> !Objects.equals(
+                        participant.getUser().getUserId(), currentUserId))
+                .findFirst()
+                .orElseThrow(() -> new ConversationIntegrityException("Conversation with ID: " +
+                        conv.getConversationId() + " is missing the other participant."));
+
+        Participant sender = conv.getParticipants().stream()
+                .filter(participant -> Objects.equals(
+                        participant.getUser().getUserId(), currentUserId))
+                .findFirst()
+                .orElseThrow(() -> new ConversationIntegrityException("Conversation with ID: " +
+                        conv.getConversationId() + " is missing the current participant."));
+
+        Map<MessageUserRoles, Participant> inferredParts = new HashMap<>();
+
+        inferredParts.put(MessageUserRoles.SENDER, sender);
+        inferredParts.put(MessageUserRoles.RECIPIENT, recipient);
+
+        return inferredParts;
     }
 }

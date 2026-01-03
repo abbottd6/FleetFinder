@@ -1,21 +1,32 @@
 package com.sc_fleetfinder.fleets.config;
 
+import com.sc_fleetfinder.fleets.messaging.websocket.JwtQueryParamHandshakeInterceptor;
+import com.sc_fleetfinder.fleets.messaging.websocket.JwtSubHandshakeHandler;
 import com.sc_fleetfinder.fleets.messaging.websocket.StompJwtChannelInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final StompJwtChannelInterceptor stompJwtChannelInterceptor;
+    private final JwtDecoder jwtDecoder;
 
-    public WebSocketConfig(StompJwtChannelInterceptor stompJwtChannelInterceptor) {
+    public WebSocketConfig(StompJwtChannelInterceptor stompJwtChannelInterceptor, JwtDecoder jwtDecoder) {
         this.stompJwtChannelInterceptor = stompJwtChannelInterceptor;
+        this.jwtDecoder = jwtDecoder;
+    }
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registry) {
+        registry.setMessageSizeLimit(256 * 1024);
     }
 
     @Override
@@ -27,6 +38,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
                 .addEndpoint("/websocket")
+                .setHandshakeHandler(new JwtSubHandshakeHandler(jwtDecoder))
+                .addInterceptors(new JwtQueryParamHandshakeInterceptor())
                 .setAllowedOriginPatterns(
                         "http://localhost:4200",
                         "https://scfleetfinder.com"

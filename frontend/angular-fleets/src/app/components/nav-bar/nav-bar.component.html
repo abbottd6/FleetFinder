@@ -79,9 +79,11 @@
             (click)="toggleChat()">
             <i class="bi bi-chat-fill chat-icon"></i>
           </button>
-          <a href="#">
+          <button
+            class="nav-link"
+            (click)="testUnreadPush()">
             <i class="bi bi-bell-fill"></i>
-          </a>
+          </button>
           <div class="nav-item dropdown" ngbDropdown>
           <button
             ngbDropdownToggle

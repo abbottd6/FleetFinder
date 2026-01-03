@@ -3,6 +3,8 @@ import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {UserService} from "../../services/user-services/user.service";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 import {Subject, takeUntil} from "rxjs";
+import {HttpClient} from "@angular/common/http";
+import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.service";
 
 @Component({
     selector: 'app-nav-bar',
@@ -10,13 +12,16 @@ import {Subject, takeUntil} from "rxjs";
     styleUrl: './nav-bar.component.css',
     standalone: false
 })
-export class NavBarComponent implements OnDestroy {
+export class NavBarComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   constructor(public userService: UserService,
               protected auth: AuthService,
-              private chatHostSrv: ChatHostService) {
+              private chatHostSrv: ChatHostService,
+              private http: HttpClient) {
+  }
 
+  ngOnInit() {
     this.auth.isLoggedIn$.pipe(takeUntil(this.destroy$))
       .subscribe(isLoggedIn => {
         if(isLoggedIn && (this.userService.sessionUser === null)) {
@@ -35,6 +40,10 @@ export class NavBarComponent implements OnDestroy {
         menu.classList.remove('show');
       }
     }
+  }
+
+  testUnreadPush() {
+    this.http.post('/api/ws-test/unread', {}).subscribe();
   }
 
   navbarLogOut(){

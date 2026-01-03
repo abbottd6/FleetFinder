@@ -5,6 +5,7 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -26,27 +27,34 @@ public class StompJwtChannelInterceptor implements ChannelInterceptor {
     public Message<?> preSend(final Message<?> message, final MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        if(StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String authHeader = firstNativeHeader(accessor, "Authorization");
+        try {
+            if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+                String authHeader = firstNativeHeader(accessor, "X-Authorization");
 
-            if(authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring("Bearer ".length());
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    String token = authHeader.substring("Bearer ".length());
 
-                Jwt jwt = jwtDecoder.decode(token);
+                    Jwt jwt = jwtDecoder.decode(token);
 
-                String principalName = jwt.getClaimAsString("preferred_username");
+                    String principalName = jwt.getSubject();
 
-                AbstractAuthenticationToken authToken = new JwtAuthenticationToken(jwt, List.of(), principalName);
+                    AbstractAuthenticationToken authToken = new JwtAuthenticationToken(jwt, List.of(), principalName);
 
-                accessor.setUser(authToken);
+                    accessor.setUser(authToken);
+                }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        return message;
+        return MessageBuilder.createMessage(message.getPayload(), accessor.getMessageHeaders());
     }
 
     private static String firstNativeHeader(StompHeaderAccessor accessor, String headerName) {
         List<String> values = accessor.getNativeHeader(headerName);
-        return (values != null && !values.isEmpty()) ? null : values.get(0);
+        if ((values != null && !values.isEmpty())) {
+            return values.getFirst();
+        } else {
+            return null;
+        }
     }
 }

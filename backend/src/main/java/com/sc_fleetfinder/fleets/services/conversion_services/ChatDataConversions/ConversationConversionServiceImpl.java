@@ -18,10 +18,6 @@ public class ConversationConversionServiceImpl implements ConversationConversion
 
     @Override
     public GetConversationDto convertToDto(Conversation conv, Long currentUserId) {
-        log.info("current user id: {}, convID: {}, participantIDs: {}", currentUserId,
-                conv.getConversationId(), conv.getParticipants().stream()
-                        .map(p -> p.getUser().getUserId())
-                        .toList());
 
         Users otherUser = conv.getParticipants().stream()
                 .filter(participant -> !Objects.equals(

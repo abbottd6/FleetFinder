@@ -7,6 +7,7 @@ import {GroupListingViewModel} from "../../../models/group-listing/group-listing
 import {ConversationProvisionRequest} from "../../../models/chat/conversation-provision-request";
 import {ChatApiService} from "../../api-services/chat-api/chat-api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {WsGatewayService} from "../../websocket-messaging/ws-gateway.service";
 
 export interface convRequest {
   convType: string,
@@ -32,7 +33,10 @@ export class ChatHostService {
   private initialized = false;
 
 
-  constructor(private auth: AuthService, private router: Router, private chatApi: ChatApiService) {
+  constructor(private auth: AuthService,
+              private router: Router,
+              private chatApi: ChatApiService,
+              private wsChat: WsGatewayService) {
     this.auth.isLoggedIn$
       .pipe(distinctUntilChanged(), filter(Boolean))
       .subscribe(() => {
@@ -74,6 +78,7 @@ export class ChatHostService {
         return;
       }
 
+      this.wsChat.connect();
       this.mountedSubject.next(true);
       this.openSubject.next(true);
       if(!this.initialized) {

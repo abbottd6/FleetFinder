@@ -14,6 +14,8 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query("SELECT msg FROM Message msg WHERE msg.conversation.conversationId = :convId order by msg.createdAt asc")
     Page<Message> findMessagesByConversationId(@Param("convId") Long convId, Pageable pageable);
 
+    Integer countMessagesByConversation_ConversationId(Long conversationId);
+
     @Query("""
             SELECT msg FROM Message msg
             WHERE msg.conversation.conversationId = :convId AND msg.msgId = :msgId

@@ -38,7 +38,7 @@ public class SecurityConfig {
                 roles.forEach(r -> authorities.add(new SimpleGrantedAuthority("ROLE_" + r)));
             }
 
-            return new JwtAuthenticationToken(jwt, authorities, jwt.getClaimAsString("preferred_username"));
+            return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
         };
 
         http

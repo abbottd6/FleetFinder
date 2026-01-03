@@ -29,6 +29,8 @@ import {SendMessageRequest} from "../../../models/chat/send-message-request";
 import {UserService} from "../../../services/user-services/user.service";
 import {MessageComponent} from "../message/message.component";
 import {MessageInputComponent} from "../message-input/message-input.component";
+import {ChatStoreService} from "../../../services/facade-services/chat/chat-store.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-chat-panel',
@@ -70,10 +72,6 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   convPageIdx: number = 0;
   convPageSize: number = 10;
   convTotalElements: number = 0;
-
-  convColumns: string[] = ['convDetails'];
-  convDataSource = new MatTableDataSource<ConversationViewModel>();
-  selectedConv =  new SelectionModel<ConversationViewModel>(false, []);
   noConvs: boolean = true;
 
   msgPageIdx: number = 0;
@@ -81,15 +79,35 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   msgTotalElements: number = 0;
   noMsgs: boolean = true;
 
-  private messagesSubject = new BehaviorSubject<MessageViewModel[]>([]);
-  protected messages$ = this.messagesSubject.asObservable();
+  convColumns: string[] = ['convDetails'];
+  convDataSource = new MatTableDataSource<ConversationViewModel>();
+  selectedConv =  new SelectionModel<ConversationViewModel>(false, []);
+
+  protected messages$!: Observable<MessageViewModel[]>;
 
   constructor(protected chatHostSrv: ChatHostService,
               private chatApi: ChatApiService,
-              private userSrv: UserService) {}
+              private userSrv: UserService,
+              protected chatStoreSrv: ChatStoreService) {}
 
   ngOnInit() {
     this.getMyConversations(this.convPageIdx, this.convPageSize);
+
+    this.chatStoreSrv.conversations$.pipe(takeUntil(this.chatPanelDestroy$))
+      .subscribe(convs => {
+        this.convDataSource.data = convs;
+
+        const selectedId = this.selectedConv.selected[0]?.conversationId;
+        if(selectedId) {
+          const newRef = convs.find(
+            con => con.conversationId === selectedId);
+          if(newRef) {
+            this.selectedConv.select(newRef);
+          }
+        }
+      });
+
+    this.messages$ = this.chatStoreSrv.messages$;
   }
 
   ngAfterViewInit() {
@@ -99,6 +117,56 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
         if(mode === 'handheld') this.drawer.close();
         else this.drawer.open();
       })
+  }
+
+  getMyConversations(idx: number, size: number) {
+    this.chatApi.getMyConversations(idx, size)
+      .pipe(takeUntil(this.chatPanelDestroy$))
+      .subscribe(page => {
+        this.convTotalElements = page.totalElements;
+        this.convPageSize = page.size;
+        this.convPageIdx = page.number;
+        this.noConvs = (page.content.length === 0);
+
+        this.chatStoreSrv.setConversationsArr(page.content);
+
+        // MOVED THIS TO THE SUBSCRIPTION IN ON INIT
+        // const selected = this.selectedConv.selected[0];
+        // if (selected) {
+        //   const stillThere = page.content.find(
+        //     conv => conv.conversationId === selected.conversationId);
+        //   if (!stillThere) this.selectedConv.clear();
+        // }
+      });
+  }
+
+  loadSelectedConversationMessages() {
+    const conv = this.selectedConv.selected[0];
+    this.chatApi.getConversationMessages(this.msgPageIdx, this.msgPageSize, conv.conversationId)
+      .pipe(takeUntil(this.chatPanelDestroy$))
+      .subscribe(page => {
+        this.msgTotalElements = page.totalElements;
+        this.msgPageSize = page.size;
+        this.msgPageIdx = page.number;
+        this.noMsgs = page.content.length === 0;
+
+        this.chatStoreSrv.setActiveMessagesArr(page.content);
+      });
+  }
+
+  sendDmMessage(input: string) {
+    const conv = this.selectedConv.selected[0];
+    this.chatStoreSrv.selectConversation(conv.conversationId);
+    const userId = this.userSrv.userId;
+
+    if(!userId) return;
+
+    const msg = new SendMessageRequest(this.selectedConv.selected[0], userId, 'TEXT', input);
+
+    this.chatApi.sendMessage(msg).pipe(takeUntil(this.chatPanelDestroy$))
+      .subscribe(sent => {
+        this.chatStoreSrv.upsertMessage(sent);
+      });
   }
 
   terminateChat(){
@@ -111,66 +179,18 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => this.isCollapsing = false, 300);
   }
 
-  getMyConversations(idx: number, size: number) {
-    this.chatApi.getMyConversations(idx, size)
-      .pipe(takeUntil(this.chatPanelDestroy$))
-      .subscribe({
-        next: (page) => {
-          this.convDataSource.data = page.content;
-          this.convTotalElements = page.totalElements;
-          this.convPageSize = page.size;
-          this.convPageIdx = page.number;
-          this.noConvs = (this.convDataSource.data.length === 0);
-        }
-      })
-  }
-
-  sendDmMessage(input: string) {
-    this.chatHostSrv.authCheckOrRedirect();
-
-    const userId = this.userSrv.userId;
-    const type: string = 'TEXT';
-
-    if(!userId) return;
-
-    const msg = new SendMessageRequest(this.selectedConv.selected[0], userId, type, input);
-
-    this.chatApi.sendMessage(msg).pipe(takeUntil(this.chatPanelDestroy$))
-      .subscribe({
-        next: (msg) => {
-          this.appendMsg(msg)
-        }
-      })
-  }
-
-  appendMsg(msg: MessageViewModel) {
-    this.messagesSubject.next([...this.messagesSubject.value, msg]);
-  }
-
   onConvClick(conv: ConversationViewModel) {
     this.selectedConv.select(conv);
+    this.chatStoreSrv.selectConversation(conv.conversationId);
 
-    this.loadConvMessages(this.selectedConv);
-  }
-
-  loadConvMessages(selectionConv: SelectionModel<ConversationViewModel>) {
-    this.chatApi.getConversationMessages(this.msgPageIdx, this.msgPageSize, selectionConv.selected[0].conversationId)
-      .pipe(takeUntil(this.chatPanelDestroy$))
-      .subscribe({
-        next: (page) => {
-          this.messagesSubject.next(page.content);
-          this.msgTotalElements = page.totalElements;
-          this.msgPageSize = page.size;
-          this.msgPageIdx = page.number;
-          this.noMsgs = page.content.length === 0;
-        }
-      })
+    this.loadSelectedConversationMessages();
   }
 
   isSelected(conv: ConversationViewModel): boolean {
-    if(!this.selectedConv.selected[0]) return false;
-      return (conv.conversationId === this.selectedConv.selected[0].conversationId);
+    const selected = this.selectedConv.selected[0];
+    return !!selected && conv.conversationId === selected.conversationId;
   }
+
 
   chatLayoutMode$: Observable<LayoutMode> = this.breakpointObserver
     .observe([
