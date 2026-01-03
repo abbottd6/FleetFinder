@@ -24,23 +24,32 @@ export class ChatStoreService {
   private messagesSubject = new BehaviorSubject<MessageViewModel[]>([]);
   public messages$ = this.messagesSubject.asObservable();
 
+  private wsConnectSub: Subscription | null = null;
+
   constructor(private userSrv: UserService,
               private ws: WsGatewayService) {}
 
   start(): void {
     if(this.msgSub || this.convSub) return;
+    if(this.wsConnectSub) return;
 
    this.ws.isConnected$.pipe(
-     filter(Boolean),
-     take(1),
-     )
-     .subscribe(() => this.initSubscriptions());
+     filter(Boolean), take(1))
+     .subscribe(() => {
+       this.wsConnectSub?.unsubscribe();
+       this.wsConnectSub = null;
+       this.initSubscriptions();
+     });
   }
 
   stop(): void {
+    this.wsConnectSub?.unsubscribe();
+    this.wsConnectSub = null;
+
     this.msgSub?.unsubscribe();
-    this.convSub?.unsubscribe();
     this.msgSub = null;
+
+    this.convSub?.unsubscribe();
     this.convSub = null;
 
     this.conversationsSubject.next([]);
@@ -103,7 +112,6 @@ export class ChatStoreService {
     this.conversationsSubject.next(next);
   }
 
-
   private onIncomingWsMessage(msg: MessageViewModel) {
 
     //update active messages if the message belongs to selected conversation
@@ -142,7 +150,8 @@ export class ChatStoreService {
       msg => msg.senderId !== this.userSrv.userId);
     if(lastIncoming) {
       this.ws.publish('/app/chat.read', {
-        conversationId: lastIncoming.conversationId, lastReadMsgId: lastIncoming.msgId });
+        conversationId: lastIncoming.conversationId,
+        lastReadMsgId: lastIncoming.msgId });
     }
   }
 }
