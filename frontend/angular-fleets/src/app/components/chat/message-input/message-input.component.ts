@@ -10,7 +10,6 @@ import {ChatHostService} from "../../../services/facade-services/chat/chat-host.
 import {distinctUntilChanged, filter} from "rxjs";
 import {ChatWindowState} from "../shell-component/chat-shell.component";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {MessageViewModel} from "../../../models/chat/message-view-model";
 
 @Component({
   selector: 'app-message-input',
@@ -51,7 +50,7 @@ export class MessageInputComponent {
       takeUntilDestroyed(this.inputDestroyRef))
       .subscribe((state) => {
         this.isExpanding = true;
-        setTimeout(() => this.isExpanding = false, 320);
+        setTimeout(() => this.isExpanding = false, 220);
       })
   }
 

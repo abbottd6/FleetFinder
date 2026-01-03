@@ -8,6 +8,7 @@ import {ConversationProvisionRequest} from "../../../models/chat/conversation-pr
 import {ChatApiService} from "../../api-services/chat-api/chat-api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {WsGatewayService} from "../../websocket-messaging/ws-gateway.service";
+import {ChatStoreService} from "./chat-store.service";
 
 export interface convRequest {
   convType: string,
@@ -36,7 +37,8 @@ export class ChatHostService {
   constructor(private auth: AuthService,
               private router: Router,
               private chatApi: ChatApiService,
-              private wsChat: WsGatewayService) {
+              private wsChat: WsGatewayService,
+              private chatStoreSrv: ChatStoreService) {
     this.auth.isLoggedIn$
       .pipe(distinctUntilChanged(), filter(Boolean))
       .subscribe(() => {
@@ -85,12 +87,14 @@ export class ChatHostService {
         // this.initialized = true;
         // this.chatData.init();
       }
+      this.chatStoreSrv.start();
     });
   }
 
   closeChat() {
     this.openSubject.next(false);
     this.mountedSubject.next(false);
+    this.chatStoreSrv.stop();
   }
 
   toggleChat() {

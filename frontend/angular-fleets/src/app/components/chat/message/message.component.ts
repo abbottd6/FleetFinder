@@ -1,14 +1,16 @@
 import {Component, Input} from '@angular/core';
 import {MessageViewModel} from "../../../models/chat/message-view-model";
 import {UserService} from "../../../services/user-services/user.service";
-import {NgClass} from "@angular/common";
+import {DatePipe, NgClass} from "@angular/common";
+import {MatHint} from "@angular/material/form-field";
 
 @Component({
   selector: 'app-message',
   standalone: true,
   templateUrl: './message.component.html',
   imports: [
-    NgClass
+    NgClass,
+    DatePipe,
   ],
   styleUrl: './message.component.css'
 })

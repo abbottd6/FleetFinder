@@ -279,11 +279,14 @@
   padding-right: 4px;
 }
 
-#conversations_column {
-  overflow-y: auto;
+#conversations-column {
   height: 100%;
   min-height: 0;
-  padding: 4px;
+  padding: 0;
+  overflow-y: auto;
+  scrollbar-color: rgba(188, 191, 200, .1) transparent;
+  scrollbar-arrow-color: transparent !important;
+  scrollbar-width: thin;
 }
 
 .collapsing {
@@ -329,13 +332,16 @@
   border-collapse: separate;
   border-spacing: 0 2px;
 }
+
 .conv-table .mat-mdc-header-cell {
-  padding: 2px 0 2px 2px;
+  position: sticky;
+  padding: 5px 0 3px 0;
   margin-bottom: 0;
   margin-top: 0;
   vertical-align: top;
   line-height: normal;
-  height: 15px;
+  height: 20px;
+  top: 0;
 }
 
 .conv-table .mat-mdc-header-row {
@@ -343,7 +349,8 @@
   padding-top: 0;
   margin-top: 0;
   top: 0;
-  z-index: 1;
+  z-index: 10;
+  background-color: var(--bs-dark);
   color: rgba(150, 168, 183, 1);
   font-family: Orbitron, sans-serif;
   font-weight: 500;
@@ -352,9 +359,8 @@
 
 .conv-header {
   color: rgba(188, 191, 200, .8);
-  /*border-bottom: 1px solid rgba(150, 168, 183, 0.25);*/
   border-bottom: none;
-  padding: 0;
+  padding-left: 5px !important;
 }
 
 .conversation-row {
@@ -447,6 +453,14 @@
   scrollbar-color: rgba(188, 191, 200, .1) transparent;
   scrollbar-arrow-color: transparent !important;
   scrollbar-width: thin;
+}
+
+.no-messages-messages {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-top: 15px;
+  color: rgba(150, 168, 183, 0.5);
 }
 
 /* -------------------------------- MAX WIDTH 620px -----------------------------------------------*/

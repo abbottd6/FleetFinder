@@ -36,15 +36,20 @@ export class WsGatewayService {
   constructor(private oidc: OidcSecurityService) {
   }
 
+  subscribe<T>(destination: string, handler: (body: T) => void): StompSubscription {
+    if(!this.client || !this.connectedSubject.value) {
+      throw new Error('WS not connected, cannot subscribe.');
+    }
+    return this.client.subscribe(destination, (msg) => handler(JSON.parse(msg.body) as T));
+  }
+
   connect(): void {
     if (this.client?.active) return;
 
     this.oidc.getAccessToken().pipe(take(1)).subscribe(token => {
       if(!token) return;
 
-      const sub = this.jwtSub(token);
-      console.warn('frontend token sub should match: ', sub);
-
+      //todo make this url not use the access token
       const wsUrl = `${environment.backendApiUrl}/websocket?access_token=${encodeURIComponent(token)}`;
       console.warn('wsUrl:', wsUrl);
       this.client = new Client({
@@ -110,6 +115,11 @@ export class WsGatewayService {
       destination,
       body: JSON.stringify(body),
     })
+  }
+
+  isConnectedSnapshot(): boolean {
+    console.log(this.connectedSubject.value)
+    return this.connectedSubject.value;
   }
 
   jwtSub(token: string): string | null {

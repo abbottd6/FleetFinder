@@ -1,21 +1,19 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
-import {BehaviorSubject, takeUntil} from "rxjs";
+import {BehaviorSubject, filter, Subscription, take, takeUntil, tap} from "rxjs";
 import {ConversationViewModel} from "../../../models/chat/conversation-view-model";
-import {SelectionModel} from "@angular/cdk/collections";
 import {MessageViewModel} from "../../../models/chat/message-view-model";
-import {ChatApiService} from "../../api-services/chat-api/chat-api.service";
+
 import {UserService} from "../../user-services/user.service";
 import {WsGatewayService} from "../../websocket-messaging/ws-gateway.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {SendMessageRequest} from "../../../models/chat/send-message-request";
+import {StompSubscription} from "@stomp/stompjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ChatStoreService {
   private destroyRef = inject(DestroyRef);
-
-
+  private msgSub: StompSubscription | null = null;
+  private convSub: StompSubscription | null = null;
 
   private conversationsSubject = new BehaviorSubject<ConversationViewModel[]>([]);
   public conversations$ = this.conversationsSubject.asObservable();
@@ -26,19 +24,40 @@ export class ChatStoreService {
   private messagesSubject = new BehaviorSubject<MessageViewModel[]>([]);
   public messages$ = this.messagesSubject.asObservable();
 
-  constructor(private chatApi: ChatApiService,
-              private userSrv: UserService,
-              private ws: WsGatewayService) {
+  constructor(private userSrv: UserService,
+              private ws: WsGatewayService) {}
 
-    this.ws.chatMessage$.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(msgDto => {
-        this.onIncomingWsMessage(msgDto as MessageViewModel);
-      });
+  start(): void {
+    if(this.msgSub || this.convSub) return;
 
-    this.ws.chatConversation$.pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(convDto => {
-        this.upsertConversation(convDto as ConversationViewModel);
-      })
+   this.ws.isConnected$.pipe(
+     filter(Boolean),
+     take(1),
+     )
+     .subscribe(() => this.initSubscriptions());
+  }
+
+  stop(): void {
+    this.msgSub?.unsubscribe();
+    this.convSub?.unsubscribe();
+    this.msgSub = null;
+    this.convSub = null;
+
+    this.conversationsSubject.next([]);
+    this.messagesSubject.next([]);
+    this.selectedConvIdSubject.next(null);
+  }
+
+  initSubscriptions() {
+    if(this.msgSub || this.convSub) return;
+
+    this.msgSub = this.ws.subscribe('/user/queue/chat.message', (msgDto) => {
+      this.onIncomingWsMessage(msgDto as MessageViewModel);
+    });
+
+    this.convSub = this.ws.subscribe('/user/queue/chat.conversation', (convDto) => {
+      this.upsertConversation(convDto as ConversationViewModel);
+    })
   }
 
   setConversationsArr(convs: ConversationViewModel[]) {
@@ -51,6 +70,7 @@ export class ChatStoreService {
 
   setActiveMessagesArr(msgs: MessageViewModel[]) {
     this.messagesSubject.next(msgs);
+    this.afterLoadMessages(msgs);
   }
 
   upsertMessage(msg: MessageViewModel) {
@@ -117,5 +137,12 @@ export class ChatStoreService {
     }
   }
 
-
+  afterLoadMessages(msgs: MessageViewModel[]) {
+    const lastIncoming = [...msgs].reverse().find(
+      msg => msg.senderId !== this.userSrv.userId);
+    if(lastIncoming) {
+      this.ws.publish('/app/chat.read', {
+        conversationId: lastIncoming.conversationId, lastReadMsgId: lastIncoming.msgId });
+    }
+  }
 }

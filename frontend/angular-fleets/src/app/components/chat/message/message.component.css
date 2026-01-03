@@ -2,10 +2,8 @@
   font-family: "Exo 2", sans-serif;
 }
 
-.each-message {
-  font-size: 16px;
-  padding: 4px 8px 4px 8px;
-  border-radius: 6px;
+.msg-wrapper {
+  font-size: 15px;
   width: fit-content;
   margin-top: 8px;
   margin-bottom: 8px;
@@ -15,11 +13,30 @@
 .thisUser {
   margin-left: auto;
   margin-right: 10px;
+}
+
+.thisUser .msg-body {
   background-color: rgba(188, 191, 200, .1);
+  padding: 4px 8px 4px 8px;
+  border-radius: 6px;
 }
 
 .otherUser {
+  margin-left: 10px;
+}
+.otherUser .msg-body {
   /*background-color: rgba(65, 103, 142, 0.75);*/
   background-color: rgba(56, 89, 124, 0.35);
-  margin-left: 10px;
+  padding: 4px 8px 4px 8px;
+  border-radius: 6px;
+}
+
+.thisUser label {
+  width: 100%;
+  text-align: end;
+}
+
+label {
+  font-size: 12px;
+  color: rgba(150, 168, 183, 0.5);
 }

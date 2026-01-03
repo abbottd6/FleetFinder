@@ -26,7 +26,7 @@
                        [mode]="(chatLayoutMode$ | async) === 'handheld' ? 'over' : 'side'"
                        [opened]="(chatLayoutMode$ | async) !== 'handheld'"
                        class="conversations-nav">
-            <div id="conversations_column" [class.collapsing]="isCollapsing">
+            <div id="conversations-column" [class.collapsing]="isCollapsing">
               <table class="conv-table" mat-table [dataSource]="convDataSource">
                 <ng-container matColumnDef='convDetails'>
                   <th mat-header-cell *matHeaderCellDef class="conv-header">
@@ -92,11 +92,17 @@
                   </button>
                 </div>
               </ng-container>
-              <div class="messages">
+              <div class="messages" #msgScroll>
                 @if (messages$ | async; as messages) {
-                  @for (msg of messages; track msg.msgId ?? msg.clientMessageId) {
-                    <app-message [msg]="msg">
-                    </app-message>
+                  @if (messages.length > 0) {
+                    @for (msg of messages; track msg.msgId ?? msg.clientMessageId) {
+                      <app-message [msg]="msg">
+                      </app-message>
+                    }
+                  } @else if ((chatStoreSrv.selectedConvId$ | async)) {
+                      <span class="no-messages-messages">This conversation has no messages</span>
+                  } @else {
+                    <span class="no-messages-messages">Select or start a conversation to send and view messages</span>
                   }
                 }
               </div>

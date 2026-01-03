@@ -1,8 +1,8 @@
-import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
 import {MatIcon} from "@angular/material/icon";
 import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
-import {BehaviorSubject, distinctUntilChanged, map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, distinctUntilChanged, map, Observable, shareReplay, Subject, take, takeUntil, tap} from "rxjs";
 import {ChatApiService} from "../../../services/api-services/chat-api/chat-api.service";
 import {ConversationViewModel} from "../../../models/chat/conversation-view-model";
 import {
@@ -68,6 +68,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   ChatWindowState = ChatWindowState;
   @Input() open!: boolean;
   @ViewChild('drawer') drawer!: MatSidenav;
+  @ViewChild('msgScroll') msgScroll!: ElementRef<HTMLElement>;
 
   convPageIdx: number = 0;
   convPageSize: number = 10;
@@ -111,11 +112,17 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.chatLayoutMode$
-      .pipe(distinctUntilChanged()).pipe(takeUntil(this.chatPanelDestroy$))
+    this.chatLayoutMode$.pipe(
+      distinctUntilChanged(),
+      takeUntil(this.chatPanelDestroy$))
       .subscribe(mode => {
         if(mode === 'handheld') this.drawer.close();
         else this.drawer.open();
+      })
+
+    this.messages$.pipe(takeUntil(this.chatPanelDestroy$))
+      .subscribe(() => {
+        setTimeout(() => this.scrollMsgsToBottom(), 300);
       })
   }
 
@@ -151,7 +158,17 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
         this.noMsgs = page.content.length === 0;
 
         this.chatStoreSrv.setActiveMessagesArr(page.content);
-      });
+      })
+  }
+
+  scrollMsgsToBottom(smooth = false) {
+    const element = this.msgScroll?.nativeElement;
+    if(!element) return;
+
+    element.scrollTo({
+      top: element.scrollHeight,
+      behavior: 'smooth',
+    });
   }
 
   sendDmMessage(input: string) {
@@ -176,7 +193,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   toggleWindowState() {
     this.isCollapsing = true;
     this.chatHostSrv.toggleWindowState();
-    setTimeout(() => this.isCollapsing = false, 300);
+    setTimeout(() => this.isCollapsing = false, 220);
   }
 
   onConvClick(conv: ConversationViewModel) {
@@ -222,6 +239,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy() {
+    this.selectedConv.clear();
     this.chatPanelDestroy$.next();
     this.chatPanelDestroy$.complete();
   }
