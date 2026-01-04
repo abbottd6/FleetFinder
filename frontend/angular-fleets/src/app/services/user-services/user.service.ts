@@ -6,14 +6,15 @@ import {
   map,
   Observable, of,
   shareReplay,
-  switchMap,
-  withLatestFrom
+  switchMap, take
 } from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {AuthService} from "../auth/auth-services/auth.service";
 import {UserApiService} from "./userApi.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {WsGatewayService} from "../websocket-messaging/ws-gateway.service";
+import {OidcSecurityService} from "angular-auth-oidc-client";
 
 export enum UserRole {
   admin = 'admin',
@@ -39,28 +40,27 @@ export interface SessionUser {
 })
 
 export class UserService {
-  private destroyRef = inject(DestroyRef)
+  private destroyRef = inject(DestroyRef);
   protected auth = inject(AuthService);
   private userApi = inject(UserApiService);
+  private ws = inject(WsGatewayService);
 
   private readonly userSubject = new BehaviorSubject<SessionUser | null>(null);
   readonly sessionUser$ = this.userSubject.asObservable();
-  private refreshTrigger$ = new BehaviorSubject<void>(undefined);
 
   private kcProfile$ = this.auth.authClaims$.pipe(
     filter(data => !!data && !!data.userData)
   );
 
-  // PRIVATE USER
-  public ffPrivateUser$: Observable<PrivateUser> = combineLatest([
-    this.refreshTrigger$,
-    this.kcProfile$
-  ]).pipe(
-    takeUntilDestroyed(this.destroyRef),
-    switchMap(([, profile]) =>
-      this.userApi.getMe(profile)
-    ),
-    shareReplay({bufferSize: 1, refCount: true})
+  private refreshTrigger$ = new BehaviorSubject<void>(undefined);
+  public refreshUser() { this.refreshTrigger$.next() };
+
+  public ffPrivateUser$: Observable<PrivateUser> =
+      combineLatest([this.refreshTrigger$, this.kcProfile$]).pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(([, profile]) => this.userApi.getMe(profile)
+      ),
+      shareReplay({bufferSize: 1, refCount: true})
   );
 
   constructor() {
@@ -68,33 +68,37 @@ export class UserService {
       takeUntilDestroyed(this.destroyRef),
 
       switchMap(loggedIn => {
-        if(!loggedIn) return of<SessionUser | null>(null);
+        if (!loggedIn) { return of<SessionUser | null>(null);}
 
         return combineLatest([this.kcProfile$, this.ffPrivateUser$]).pipe(
           filter(([, ffPrivate]) => !!ffPrivate),
           map(([kcClaims, ffPrivate]) => {
             const primaryRole = this.extractRole(kcClaims.userData.roles) ?? UserRole.user;
             const email = kcClaims.userData.email;
-            return {
-              ...ffPrivate,
-              primaryRole,
-              email,
-            } satisfies SessionUser;
+            return {...ffPrivate, primaryRole, email} satisfies SessionUser;
           }),
           distinctUntilChanged((a, b) =>
             a?.userId === b?.userId &&
             a?.primaryRole === b?.primaryRole &&
             a?.groupListingsDto === b?.groupListingsDto &&
             a?.lastAccess === b?.lastAccess
-          )
+          ),
         );
       })
-    ).subscribe(user => this.userSubject.next(user));
+    ).subscribe(user => {
+      if(user === null || user === undefined) return;
+      else {
+        this.userSubject.next(user);
+      }
+    });
 
-
-    this.auth.isLoggedIn$.pipe(takeUntilDestroyed(this.destroyRef))
-      .pipe(filter(value => !value))
-      .subscribe(() => this.userSubject.next(null));
+    this.auth.tokenReady$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(token => {
+        if(token && !this.ws.isConnected()) {
+          this.ws.connect(token);
+        }
+    });
   }
 
   extractRole(roles: string[]) {
@@ -121,6 +125,4 @@ export class UserService {
   get lastAccess(): Date | null { return this.userSubject.value?.lastAccess ?? null; }
   get primaryRole(): UserRole | null { return this.userSubject.value?.primaryRole ?? null; }
   get userListings(): GroupListingViewModel[] { return this.userSubject.value?.groupListingsDto ?? []}
-
-  public refreshUser() { this.refreshTrigger$.next(); }
 }

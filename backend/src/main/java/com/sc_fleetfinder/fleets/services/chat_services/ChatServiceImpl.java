@@ -8,6 +8,8 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.FindOrStartNewConversation
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.SendMessageDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetConversationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetMessageDto;
+import com.sc_fleetfinder.fleets.DTO.websocketDTOs.UserUnreadPerConvDto;
+import com.sc_fleetfinder.fleets.DTO.websocketDTOs.UserUnreadTotalDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
 import com.sc_fleetfinder.fleets.entities.chat.Message;
@@ -17,13 +19,12 @@ import com.sc_fleetfinder.fleets.exceptions.ConversationIntegrityException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.ChatDataConversions.ConversationConversionService;
 import com.sc_fleetfinder.fleets.services.conversion_services.ChatDataConversions.MessageConversionService;
+import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ConvUnreadMap;
 import com.sc_fleetfinder.fleets.utils.ConversationParticipantRole;
 import com.sc_fleetfinder.fleets.utils.MessageUserRoles;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.messaging.simp.user.SimpUser;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,10 +34,12 @@ import java.time.Instant;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.sc_fleetfinder.fleets.utils.DmKeyUtil.sha256DmKey;
@@ -53,7 +56,6 @@ public class ChatServiceImpl implements ChatService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    private final SimpUserRegistry userRegistry;
 
     ChatServiceImpl(ConversationConversionService ccs,
                     ParticipantRepository participantRepo,
@@ -62,7 +64,7 @@ public class ChatServiceImpl implements ChatService {
                     ConversationRepository convRepo,
                     MessageRepository messageRepository,
                     UserRepository userRepository,
-                    SimpMessagingTemplate messagingTemplate, SimpUserRegistry userRegistry) {
+                    SimpMessagingTemplate messagingTemplate) {
         this.ccs = ccs;
         this.msgRepo = msgRepo;
         this.msgConvSrv = msgConvSrv;
@@ -71,13 +73,12 @@ public class ChatServiceImpl implements ChatService {
         this.messageRepository = messageRepository;
         this.userRepository = userRepository;
         this.messagingTemplate = messagingTemplate;
-        this.userRegistry = userRegistry;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<GetConversationDto> findMyConversations(Users user, Pageable pageable) {
-        return participantRepo.findConversationsByUserParticipant(user, pageable)
+        return participantRepo.pageConversationsByUserParticipant(user, pageable)
                 .map(conv -> ccs.convertToDto(conv, user.getUserId()));
     }
 
@@ -156,6 +157,9 @@ public class ChatServiceImpl implements ChatService {
 
         GetMessageDto msgDto = msgConvSrv.convertToDto(newMsg);
 
+        UserUnreadPerConvDto perConvDto = this.getUserUnreadCountPerConversation(recipientPart.getUser().getUserId());
+        UserUnreadTotalDto recipientUnreadDto = this.updateUserUnreadTotal(perConvDto);
+
         if(isFirstMsg) {
             GetConversationDto recipientConvDto = this.ccs.convertToDto(currentConv, recipientPart.getUser().getUserId());
 
@@ -165,6 +169,12 @@ public class ChatServiceImpl implements ChatService {
                     recipientConvDto
             );
         }
+
+        messagingTemplate.convertAndSendToUser(
+                recipientPart.getUser().getKeycloakId(),
+                "/queue/chat.unread",
+                recipientUnreadDto
+        );
 
         messagingTemplate.convertAndSendToUser(
                 recipientPart.getUser().getKeycloakId(),
@@ -186,20 +196,26 @@ public class ChatServiceImpl implements ChatService {
     public Conversation generateNewConversation(Users user,
                                                 FindOrStartNewConversationDto dto,
                                                 String dmKey) {
-
-        log.info("Generating new conversation");
-        log.info("userId: {}", user.getUserId());
         Conversation newConv = new Conversation(user, dto, dmKey);
 
         convRepo.save(newConv);
 
-        log.info("conversation created");
-
         Users recipientUser = userRepository.findById(dto.getRecipientId())
                 .orElseThrow(() -> new ResourceNotFoundException("Recipient not found"));
 
-        Participant sender = new Participant(user, newConv, ConversationParticipantRole.MEMBER);
-        Participant recipient = new Participant(recipientUser, newConv, ConversationParticipantRole.MEMBER);
+        Participant sender = new Participant(
+                user,
+                newConv,
+                ConversationParticipantRole.MEMBER
+        );
+
+        // recipient set to archived, so it does not show up until initiator
+        // sends a message
+        Participant recipient = new Participant(
+                recipientUser,
+                newConv,
+                ConversationParticipantRole.MEMBER,
+                true);
 
         participantRepo.save(sender);
         participantRepo.save(recipient);
@@ -208,13 +224,30 @@ public class ChatServiceImpl implements ChatService {
         newConv.getParticipants().add(recipient);
         convRepo.save(newConv);
 
-        log.info("sender participant ID: {}", sender.getUser().getUserId());
-        log.info("recipient participant ID: {}", recipient.getUser().getUserId());
-
         convRepo.flush();
         participantRepo.flush();
 
         return newConv;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public UserUnreadPerConvDto getUserUnreadCountPerConversation(Long userId) {
+
+        Set<ConvUnreadMap> perConvUnread =
+                new HashSet<>(participantRepo.userUnreadCountByUserId(userId));
+
+        return new UserUnreadPerConvDto(userId, perConvUnread);
+    }
+
+    private UserUnreadTotalDto updateUserUnreadTotal(UserUnreadPerConvDto dto) {
+        long totalUnread = 0L;
+
+        for(ConvUnreadMap conv : dto.convIdAndUnread()) {
+            totalUnread += conv.unreadCount();
+        }
+
+        return new UserUnreadTotalDto(dto.userId(), totalUnread);
     }
 
     private void verifyParticipantsOrThrow(Long senderId, Long recipientId, Conversation conv) {
@@ -245,9 +278,9 @@ public class ChatServiceImpl implements ChatService {
                         "Conversation " + conv.getConversationId() +
                                 " is missing the sender participant " + senderId));
 
-        if (sender.isMuting() || sender.isArchived()) {
+        if (sender.isMuting()) {
             throw new ConfirmationRequiredException(
-                    "You muted or archived this conversation. Undo to resume?");
+                    "You muted this conversation. Undo to resume?");
         }
 
         sender.setLastActiveAt(Instant.now());

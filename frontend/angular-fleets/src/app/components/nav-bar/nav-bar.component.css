@@ -1,6 +1,6 @@
 .navbar.bg-primary {
   background-color: var(--stark-blue) !important;
-  border: 1px groove rgba(13, 47, 67, 1);
+  /*border: 1px groove rgba(13, 47, 67, 1);*/
   border-radius: .75rem;
   font-weight: 600;
   position: sticky;
@@ -177,7 +177,7 @@
   }
 
   .navbar-nav .nav-link:hover {
-    background-color: rgba(52, 135, 168, 0.25);
+    color: rgba(52, 135, 168, 0.25);
     font-size: 105%;
     cursor: pointer;
   }
@@ -268,7 +268,7 @@ input::placeholder {
 }
 
 .bi-person-fill:hover {
-  color: rgba(255, 131, 7, .5);
+  color: rgba(25, 40, 44, .8);
 }
 
 .bi-bell-fill {
@@ -278,7 +278,7 @@ input::placeholder {
 }
 
 .bi-bell-fill:hover {
-  color: rgba(255, 131, 7, .5);
+  color: rgba(25, 40, 44, .8);
 }
 
 .bi-chat-fill {
@@ -311,6 +311,17 @@ input::placeholder {
 }
 
 .bi-chat-fill:hover {
-  color: rgba(255, 131, 7, .5);
+  /*color: rgba(188, 191, 200, .8);*/
+  color: rgba(25, 40, 44, .8);
+}
+
+.mat-badge-content {
+  color: rgba(25, 40, 44, .85);
+  font-family: "Exo 2", sans-serif;
+  background-color: rgba(255, 131, 7, .6);
+  /*background-color: rgba(188, 191, 200, .75);*/
+  border-radius: 99px;
+  font-size: 0.9rem;
+  transform: translate(-4px, 2px) !important;
 }
 

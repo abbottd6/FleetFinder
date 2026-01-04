@@ -11,7 +11,12 @@
           </button>
         </div>
         <div class="h-right">
-          <span>Unread: 12</span>
+          <ng-container *ngIf="((ws.totalUnread$ | async) ?? 0) > 0; else waiting">
+            <span>Unread: {{ (ws.totalUnread$ | async) ?? 0 }}</span>
+          </ng-container>
+          <ng-template #waiting>
+            <span>Waiting...</span>
+          </ng-template>
         </div>
         <div class="h-end">
           <button type="button" class="close" (click)="terminateChat()" aria-label="Close chat">
@@ -93,7 +98,7 @@
                 </div>
               </ng-container>
               <div class="messages" #msgScroll>
-                @if (messages$ | async; as messages) {
+                @if (chatStoreSrv.messages$ | async; as messages) {
                   @if (messages.length > 0) {
                     @for (msg of messages; track msg.msgId ?? msg.clientMessageId) {
                       <app-message [msg]="msg">

@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DAO.chat;
 
+import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ConvUnreadMap;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
 import com.sc_fleetfinder.fleets.entities.chat.Participant;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -13,6 +14,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface ParticipantRepository extends JpaRepository<Participant, ConversationParticipantId> {
 
@@ -34,5 +36,28 @@ public interface ParticipantRepository extends JpaRepository<Participant, Conver
             WHERE p.user = :user AND p.isMuting = false AND p.isArchived = false
             ORDER BY p.conversation.updatedAt desc
             """)
-    Page<Conversation> findConversationsByUserParticipant(@Param("user") Users user, Pageable pageable);
+    Page<Conversation> pageConversationsByUserParticipant(@Param("user") Users user, Pageable pageable);
+
+    @Query("""
+            SELECT p FROM Participant p
+            WHERE p.user.userId = :userId AND p.isArchived = false AND p.isMuting = false
+            """)
+    Set<Participant> findParticipantRecordsByUserId(@Param("userId") Long userId);
+
+
+    @Query("""
+            SELECT new com.sc_fleetfinder.fleets.DTO.websocketDTOs.ConvUnreadMap(
+                p.conversation.conversationId,
+                COUNT(m)
+            )
+            FROM Participant p
+                LEFT JOIN p.lastReadMessage lastRead
+                LEFT JOIN Message m
+                    ON m.conversation = p.conversation
+                    AND m.sender.userId <> :userId
+                    AND (lastRead IS NULL OR m.msgId > lastRead.msgId)
+            WHERE p.user.userId = :userId
+            GROUP BY p.conversation.conversationId
+            """)
+    List<ConvUnreadMap> userUnreadCountByUserId(@Param("userId") Long userId);
 }

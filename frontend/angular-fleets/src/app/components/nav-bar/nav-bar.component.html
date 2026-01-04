@@ -76,7 +76,11 @@
         <span class="navbar-text">
           <button
             class="nav-link"
-            (click)="toggleChat()">
+            (click)="toggleChat()"
+            [matBadge]="(ws.totalUnread$ | async)"
+            [matBadgeHidden]="((ws.totalUnread$ | async) ?? 0) === 0"
+            [matBadgeOverlap]="true"
+            [matBadgePosition]="badgePosition">
             <i class="bi bi-chat-fill chat-icon"></i>
           </button>
           <button

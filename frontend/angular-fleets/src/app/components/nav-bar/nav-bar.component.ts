@@ -5,6 +5,7 @@ import {ChatHostService} from "../../services/facade-services/chat/chat-host.ser
 import {Subject, takeUntil} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.service";
+import {MatBadgePosition} from "@angular/material/badge";
 
 @Component({
     selector: 'app-nav-bar',
@@ -14,10 +15,12 @@ import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.se
 })
 export class NavBarComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  badgePosition: MatBadgePosition = "above after";
 
   constructor(public userService: UserService,
               protected auth: AuthService,
               private chatHostSrv: ChatHostService,
+              protected ws: WsGatewayService,
               private http: HttpClient) {
   }
 

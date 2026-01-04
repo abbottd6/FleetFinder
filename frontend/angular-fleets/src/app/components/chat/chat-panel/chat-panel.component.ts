@@ -2,7 +2,18 @@ import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChil
 import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
 import {MatIcon} from "@angular/material/icon";
 import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
-import {BehaviorSubject, distinctUntilChanged, map, Observable, shareReplay, Subject, take, takeUntil, tap} from "rxjs";
+import {
+  BehaviorSubject,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  shareReplay,
+  Subject,
+  take,
+  takeUntil,
+  tap
+} from "rxjs";
 import {ChatApiService} from "../../../services/api-services/chat-api/chat-api.service";
 import {ConversationViewModel} from "../../../models/chat/conversation-view-model";
 import {
@@ -23,14 +34,13 @@ import {MatSidenav, MatSidenavContainer, MatSidenavContent} from "@angular/mater
 import {LayoutMode} from "../../input-fields/search-bar/search-bar.component";
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {MatButton} from "@angular/material/button";
-import {ChatWindowState} from "../shell-component/chat-shell.component";
-import {MessageViewModel} from "../../../models/chat/message-view-model";
+import {ChatWindowState, collapsed, expanded} from "../shell-component/chat-shell.component";
 import {SendMessageRequest} from "../../../models/chat/send-message-request";
 import {UserService} from "../../../services/user-services/user.service";
 import {MessageComponent} from "../message/message.component";
 import {MessageInputComponent} from "../message-input/message-input.component";
 import {ChatStoreService} from "../../../services/facade-services/chat/chat-store.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {WsGatewayService} from "../../../services/websocket-messaging/ws-gateway.service";
 
 @Component({
   selector: 'app-chat-panel',
@@ -84,12 +94,11 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   convDataSource = new MatTableDataSource<ConversationViewModel>();
   selectedConv =  new SelectionModel<ConversationViewModel>(false, []);
 
-  protected messages$!: Observable<MessageViewModel[]>;
-
   constructor(protected chatHostSrv: ChatHostService,
               private chatApi: ChatApiService,
               private userSrv: UserService,
-              protected chatStoreSrv: ChatStoreService) {}
+              protected chatStoreSrv: ChatStoreService,
+              protected ws: WsGatewayService) {}
 
   ngOnInit() {
     this.getMyConversations(this.convPageIdx, this.convPageSize);
@@ -107,8 +116,6 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
           }
         }
       });
-
-    this.messages$ = this.chatStoreSrv.messages$;
   }
 
   ngAfterViewInit() {
@@ -120,7 +127,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
         else this.drawer.open();
       })
 
-    this.messages$.pipe(takeUntil(this.chatPanelDestroy$))
+    this.chatStoreSrv.messages$.pipe(takeUntil(this.chatPanelDestroy$))
       .subscribe(() => {
         setTimeout(() => this.scrollMsgsToBottom(), 300);
       })
@@ -136,14 +143,6 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
         this.noConvs = (page.content.length === 0);
 
         this.chatStoreSrv.setConversationsArr(page.content);
-
-        // MOVED THIS TO THE SUBSCRIPTION IN ON INIT
-        // const selected = this.selectedConv.selected[0];
-        // if (selected) {
-        //   const stillThere = page.content.find(
-        //     conv => conv.conversationId === selected.conversationId);
-        //   if (!stillThere) this.selectedConv.clear();
-        // }
       });
   }
 
@@ -192,8 +191,32 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
 
   toggleWindowState() {
     this.isCollapsing = true;
-    this.chatHostSrv.toggleWindowState();
+    const newState = this.chatHostSrv.toggleWindowState();
     setTimeout(() => this.isCollapsing = false, 220);
+
+    if(newState === collapsed) {
+      this.chatStoreSrv.selectedConvId$.pipe(
+        filter((id): id is number => id != null),
+        take(1)).subscribe(
+        id => sessionStorage.setItem('return_to_selected', id.toString()));
+    }
+
+    if(newState === expanded) {
+      const id = Number(sessionStorage.getItem('return_to_selected'));
+      sessionStorage.removeItem('return_to_selected');
+      if(id) {
+        const select = this.convDataSource.data.find(
+          conv => conv.conversationId === id);
+        if(select) {
+          setTimeout(() => this.onConvClick(select), 200);
+        }
+      }
+    }
+
+    this.selectedConv.clear();
+    this.chatStoreSrv.clearSelectedConv();
+    this.chatStoreSrv.clearActiveMessagesArr();
+
   }
 
   onConvClick(conv: ConversationViewModel) {

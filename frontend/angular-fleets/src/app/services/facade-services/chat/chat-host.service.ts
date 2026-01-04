@@ -31,13 +31,10 @@ export class ChatHostService {
   private windowStateSubject = new BehaviorSubject<ChatWindowState>(expanded);
   public windowState$ = this.windowStateSubject.asObservable();
 
-  private initialized = false;
-
-
   constructor(private auth: AuthService,
               private router: Router,
               private chatApi: ChatApiService,
-              private wsChat: WsGatewayService,
+              private ws: WsGatewayService,
               private chatStoreSrv: ChatStoreService) {
     this.auth.isLoggedIn$
       .pipe(distinctUntilChanged(), filter(Boolean))
@@ -80,19 +77,12 @@ export class ChatHostService {
         return;
       }
 
-      this.wsChat.connect();
       this.mountedSubject.next(true);
-      this.openSubject.next(true);
-      if(!this.initialized) {
-        // this.initialized = true;
-        // this.chatData.init();
-      }
       this.chatStoreSrv.start();
     });
   }
 
   closeChat() {
-    this.openSubject.next(false);
     this.mountedSubject.next(false);
     this.chatStoreSrv.stop();
   }
@@ -100,7 +90,6 @@ export class ChatHostService {
   toggleChat() {
     const isOpen = this.openSubject.value;
     if (isOpen) {
-      this.openSubject.next(false);
       this.mountedSubject.next(false);
     }
     else this.openChat();
@@ -110,6 +99,7 @@ export class ChatHostService {
     const next = this.windowStateSubject.value === expanded ? collapsed : expanded;
 
     this.windowStateSubject.next(next);
+    return next;
   }
 
   authCheckOrRedirect() {

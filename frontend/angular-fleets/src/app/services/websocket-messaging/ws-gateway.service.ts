@@ -1,15 +1,14 @@
 import { Injectable } from '@angular/core';
 import {Client, IMessage, StompSubscription} from "@stomp/stompjs";
-import {BehaviorSubject, Observable, Subject, take} from "rxjs";
-import {OidcSecurityService} from "angular-auth-oidc-client";
+import {BehaviorSubject, Observable, Subject} from "rxjs";
 import SockJS from "sockjs-client";
 import {environment} from "../../../environments/environment";
 import {MessageViewModel} from "../../models/chat/message-view-model";
 import {ConversationViewModel} from "../../models/chat/conversation-view-model";
 
-export type UnreadCountsPayload = {
-  totalUnread: number;
-  perConversation: Record<number, number>;
+export interface TotalUnreadDto {
+  userId: number,
+  unreadCount: number,
 }
 
 @Injectable({
@@ -22,8 +21,8 @@ export class WsGatewayService {
   private connectedSubject = new BehaviorSubject<boolean>(false);
   public isConnected$: Observable<boolean> = this.connectedSubject.asObservable();
 
-  private unreadCountSubject = new BehaviorSubject<UnreadCountsPayload | null>(null);
-  public unreadCounts$ = this.unreadCountSubject.asObservable();
+  private totalUnreadSubject = new BehaviorSubject<number | null>(null);
+  public totalUnread$ = this.totalUnreadSubject.asObservable();
 
   private chatMessageSubject = new Subject<MessageViewModel>();
   public chatMessage$ = this.chatMessageSubject.asObservable();
@@ -33,7 +32,7 @@ export class WsGatewayService {
 
   private unreadStompSubscription: StompSubscription | null = null;
 
-  constructor(private oidc: OidcSecurityService) {
+  constructor() {
   }
 
   subscribe<T>(destination: string, handler: (body: T) => void): StompSubscription {
@@ -43,70 +42,74 @@ export class WsGatewayService {
     return this.client.subscribe(destination, (msg) => handler(JSON.parse(msg.body) as T));
   }
 
-  connect(): void {
-    if (this.client?.active) return;
+  connect(token: string): void {
+    if(this.client?.active) return;
+    if(!token) return;
 
-    this.oidc.getAccessToken().pipe(take(1)).subscribe(token => {
-      if(!token) return;
+    //todo make this url not use the access token
+    const wsUrl = `${environment.backendApiUrl}/websocket?access_token=${encodeURIComponent(token)}`;
+    console.warn('wsUrl:', wsUrl);
 
-      //todo make this url not use the access token
-      const wsUrl = `${environment.backendApiUrl}/websocket?access_token=${encodeURIComponent(token)}`;
-      console.warn('wsUrl:', wsUrl);
-      this.client = new Client({
-        webSocketFactory: () => new SockJS(wsUrl),
-        connectHeaders: {},
-        reconnectDelay: 3000,
-        heartbeatIncoming: 10000,
-        heartbeatOutgoing: 10000,
-        onConnect: () => {
-          this.connectedSubject.next(true);
-          console.log("STOMP connected");
+    this.client = new Client({
+      webSocketFactory: () => new SockJS(wsUrl),
+      connectHeaders: {},
+      reconnectDelay: 3000,
+      heartbeatIncoming: 10000,
+      heartbeatOutgoing: 10000,
 
-          this.unreadStompSubscription = this.client!.subscribe(
-            '/user/queue/chat.unread',
-            (msg: IMessage) => {
-              console.warn('WS unread payload:', msg.body);
-              try {
-                this.unreadCountSubject.next(JSON.parse(msg.body));
-              } catch {
-                console.warn('Malformed ws payload', msg.body);
-                //todo handle malformed payloads
-              }
+
+      onConnect: () => {
+        this.connectedSubject.next(true);
+        console.log("STOMP connected");
+
+        this.unreadStompSubscription = this.client!.subscribe(
+          '/user/queue/chat.unread',
+          (msg) => {
+            try {
+              this.totalUnreadSubject.next((JSON.parse(msg.body) as TotalUnreadDto).unreadCount)
+
+            } catch {
+              console.warn('Malformed ws payload', msg.body);
             }
-          );
-          this.client!.subscribe('/user/queue/chat.message', (msg) => {
-            const dto = JSON.parse(msg.body) as MessageViewModel;
-            this.chatMessageSubject.next(dto);
-          })
+          }
+        );
 
-          this.client!.subscribe('/user/queue/chat.conversation', (conv) => {
-            const dto = JSON.parse(conv.body) as ConversationViewModel;
-            this.chatConversationSubject.next(dto);
-          })
-        },
-        onStompError: () => {
-          console.error("STOMP ERROR");
-          //todo handle broker-level errors
-        },
-        debug: (s) => console.log(['stomp'], s),
-        onWebSocketError: (ev) => console.log('WS error', ev),
-        onWebSocketClose: () => {
-          this.connectedSubject.next(false);
-        }
-      });
-      this.client.activate();
-    })
+        setTimeout(() => this.publish('/app/chat.total_unread', {}), 500);
+
+        //
+        // this.client!.subscribe('/user/queue/chat.message', (msg) => {
+        //   const dto = JSON.parse(msg.body) as MessageViewModel;
+        //   this.chatMessageSubject.next(dto);
+        // });
+        //
+        // this.client!.subscribe('/user/queue/chat.conversation', (conv) => {
+        //   const dto = JSON.parse(conv.body) as ConversationViewModel;
+        //   this.chatConversationSubject.next(dto);
+        // });
+
+      },
+
+      onStompError: () => { console.error("STOMP ERROR") },
+      debug: (s) => console.log(['stomp'], s),
+      onWebSocketClose: () => {
+        this.connectedSubject.next(false);
+        this.unreadStompSubscription?.unsubscribe();
+        this.unreadStompSubscription = null;
+      }
+    });
+
+    this.client.activate();
   }
 
   disconnect(): void {
     this.unreadStompSubscription?.unsubscribe();
     this.unreadStompSubscription = null;
 
-    this.client?.deactivate();
-    this.client = null;
+    if(this.client?.active) { this.client.deactivate() }
+
+    this.client = null as any;
 
     this.connectedSubject.next(false);
-    this.unreadCountSubject.next(null);
   }
 
   publish(destination: string, body: unknown): void {
@@ -117,9 +120,12 @@ export class WsGatewayService {
     })
   }
 
-  isConnectedSnapshot(): boolean {
-    console.log(this.connectedSubject.value)
+  isConnected() {
     return this.connectedSubject.value;
+  }
+
+  updateTotalUnread(dto: TotalUnreadDto) {
+      this.totalUnreadSubject.next(dto.unreadCount)
   }
 
   jwtSub(token: string): string | null {

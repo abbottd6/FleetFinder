@@ -1,8 +1,18 @@
 import {inject, Injectable} from '@angular/core';
-import {OidcSecurityService} from "angular-auth-oidc-client";
-import {map, take, tap} from "rxjs";
+import {OidcSecurityService, UserDataResult} from "angular-auth-oidc-client";
+import {
+  combineLatest,
+  distinctUntilChanged,
+  EMPTY,
+  filter,
+  map,
+  Observable,
+  shareReplay,
+  switchMap,
+  take,
+  timer
+} from "rxjs";
 import {Router} from "@angular/router";
-import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: 'root'
@@ -11,16 +21,36 @@ export class AuthService {
   private readonly oidc = inject(OidcSecurityService);
 
   public authClaims$ = this.oidc.userData$;
-  private authenticated!: boolean;
 
-  public isLoggedIn$ = this.oidc.isAuthenticated$
-    .pipe(map(oidcAuthObj => oidcAuthObj.isAuthenticated))
+  public isLoggedIn$ = this.oidc.isAuthenticated$.pipe(
+    map(oidcAuthObj => oidcAuthObj.isAuthenticated),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true }),
+);
 
-  // OIDC client metadata/settings (auth URL, clientID, redirect URIs, scopes, etc.)
-  // configuration$ = this.oidc.getConfiguration();
+  public readonly accessToken$ = this.oidc.getAccessToken().pipe(
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true })
+  )
 
-  constructor(private router: Router, private snackBar: MatSnackBar) {
-    this.oidc.checkAuth().pipe(take(1)).subscribe(({ isAuthenticated }) => {
+
+  public readonly tokenReady$: Observable<string> = this.isLoggedIn$.pipe(
+    switchMap(loggedIn => {
+      if (!loggedIn) return EMPTY;
+
+      // poll getAccessToken until it becomes non-empty
+      return timer(0, 100).pipe(
+        switchMap(() => this.oidc.getAccessToken().pipe(take(1))),
+        filter(token => !!token),
+        take(1),
+      );
+    }),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  constructor(private router: Router) {
+    this.oidc.checkAuth().pipe().subscribe(({ isAuthenticated }) => {
       if (isAuthenticated) {
         const url = sessionStorage.getItem('post_login_url') ?? '/';
         sessionStorage.removeItem('post_login_url');

@@ -3,7 +3,6 @@ package com.sc_fleetfinder.fleets.entities.chat;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.ConversationParticipantId;
 import com.sc_fleetfinder.fleets.utils.ConversationParticipantRole;
-import com.sc_fleetfinder.fleets.utils.ConversationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -30,6 +29,7 @@ import java.time.Instant;
 @NoArgsConstructor
 public class Participant {
 
+    //sender
     public Participant(Users user, Conversation conv, ConversationParticipantRole role) {
         this.participantId = new ConversationParticipantId(
                 user.getUserId(), conv.getConversationId());
@@ -38,6 +38,17 @@ public class Participant {
         this.user = user;
         this.role = role;
         this.lastActiveAt = Instant.now();
+    }
+
+    //recipient
+    public Participant(Users user, Conversation conv,
+                       ConversationParticipantRole role,
+                       boolean isArchived) {
+        this.conversation = conv;
+        this.user = user;
+        this.role = role;
+        this.lastActiveAt = Instant.now();
+        this.isArchived = isArchived;
     }
 
     @EmbeddedId

@@ -1,5 +1,5 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
-import {BehaviorSubject, filter, Subscription, take, takeUntil, tap} from "rxjs";
+import {BehaviorSubject, filter, shareReplay, Subscription, take, takeUntil, tap} from "rxjs";
 import {ConversationViewModel} from "../../../models/chat/conversation-view-model";
 import {MessageViewModel} from "../../../models/chat/message-view-model";
 
@@ -30,10 +30,9 @@ export class ChatStoreService {
               private ws: WsGatewayService) {}
 
   start(): void {
-    if(this.msgSub || this.convSub) return;
-    if(this.wsConnectSub) return;
+    if(this.msgSub || this.convSub || this.wsConnectSub) return;
 
-   this.ws.isConnected$.pipe(
+   this.wsConnectSub = this.ws.isConnected$.pipe(
      filter(Boolean), take(1))
      .subscribe(() => {
        this.wsConnectSub?.unsubscribe();
@@ -77,9 +76,17 @@ export class ChatStoreService {
     this.selectedConvIdSubject.next(convId);
   }
 
+  clearSelectedConv() {
+    this.selectedConvIdSubject.next(null);
+  }
+
   setActiveMessagesArr(msgs: MessageViewModel[]) {
-    this.messagesSubject.next(msgs);
+    this.messagesSubject.next(msgs.reverse());
     this.afterLoadMessages(msgs);
+  }
+
+  clearActiveMessagesArr() {
+    this.messagesSubject.next([]);
   }
 
   upsertMessage(msg: MessageViewModel) {
@@ -92,6 +99,10 @@ export class ChatStoreService {
     if(exists) return;
 
     this.messagesSubject.next([...current, msg]);
+    setTimeout(() =>
+      (this.ws.publish('/app/chat.read', {
+        conversationId: msg.conversationId,
+        lastReadMsgId: msg.msgId })), 1000);
   }
 
   upsertConversation(conv: ConversationViewModel) {
@@ -145,9 +156,12 @@ export class ChatStoreService {
     }
   }
 
+  //todo this is breaking because it auto sets the last read message to the last msg that wasnt
+  //todo from this user. so when pagination kicks in it starts like decrementing the lastReadId
   afterLoadMessages(msgs: MessageViewModel[]) {
     const lastIncoming = [...msgs].reverse().find(
       msg => msg.senderId !== this.userSrv.userId);
+    console.log("this message", lastIncoming?.msgId);
     if(lastIncoming) {
       this.ws.publish('/app/chat.read', {
         conversationId: lastIncoming.conversationId,
