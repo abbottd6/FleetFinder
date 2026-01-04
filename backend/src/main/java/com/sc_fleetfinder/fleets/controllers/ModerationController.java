@@ -17,9 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -70,15 +67,17 @@ public class ModerationController {
 
     @GetMapping
     @PreAuthorize("isAuthenticated() and hasRole('mod')")
-    public CollectionModel<EntityModel<GroupListingResponseDto>> modGetAllGroupListings() {
-        List<GroupListingResponseDto> groupListingResponseDto = mods.modGetAllGroupListings();
+    public Page<GroupListingResponseDto> modGetAllGroupListings(SortablePageRequestDto pageDto) {
+        Sort sort = Sort.unsorted();
+        if (pageDto.getSortField() != null && !pageDto.getSortField().isBlank()) {
+            Sort.Direction direction = "desc".equalsIgnoreCase(pageDto.getSortDirection())
+                    ? Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, pageDto.getSortField());
+        }
 
-        List<EntityModel<GroupListingResponseDto>> groupListingModels = groupListingResponseDto.stream()
-                .map(groupListing -> EntityModel.of(groupListing,
-                        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupListingsController.class)
-                                .getAllGroupListings()).withSelfRel()))
-                .toList();
-        return CollectionModel.of(groupListingModels);
+        Pageable pageable = PageRequest.of(pageDto.getPage(), pageDto.getSize(), sort);
+
+        return mods.modGetAllGroupListings(pageable);
     }
 
     @PostMapping("/get_issues_page")

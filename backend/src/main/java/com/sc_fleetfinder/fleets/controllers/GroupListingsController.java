@@ -16,9 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,8 +44,6 @@ public class GroupListingsController {
     @Autowired
     private UserRepository userRepository;
 
-    //##TODO make sure that all secure endpoints derive identity from the token and that the authorized user for...
-    //##TODO any requests to access or modify a resource match the resource owner
 
     @PostMapping("/search")
     public Page<GroupListingResponseDto> searchGroupListings(@AuthenticationPrincipal Jwt jwt,
@@ -65,18 +60,6 @@ public class GroupListingsController {
                 .flatMap(auth -> userRepository.findByKeycloakId(auth.getSubject()));
 
         return groupListingService.searchGroupListings(request, pageable, userOpt);
-    }
-
-    //TODO this is probably not necessary anymore since adding the search listings endpoint
-    @GetMapping
-    public CollectionModel<EntityModel<GroupListingResponseDto>> getAllGroupListings() {
-        List<GroupListingResponseDto> groupListingResponseDto = groupListingService.getAllGroupListings();
-
-        List<EntityModel<GroupListingResponseDto>> groupListingModels = groupListingResponseDto.stream()
-                .map(groupListing -> EntityModel.of(groupListing,
-                        WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(GroupListingsController.class).getAllGroupListings()).withSelfRel()))
-                .toList();
-        return CollectionModel.of(groupListingModels);
     }
 
     @GetMapping("/{id}")

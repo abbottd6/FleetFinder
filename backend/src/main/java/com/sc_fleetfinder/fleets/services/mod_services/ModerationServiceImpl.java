@@ -93,16 +93,14 @@ public class ModerationServiceImpl implements ModerationService {
     }
 
     @Override
-    public List<GroupListingResponseDto> modGetAllGroupListings() {
-        List<GroupListing> groupListings = glr.findAll();
+    public Page<GroupListingResponseDto> modGetAllGroupListings(Pageable pageable) {
+        Page<GroupListing> groupListings = glr.findAll(pageable);
 
         if(groupListings.isEmpty()) {
             log.info("No group listings found.");
         }
 
-        return groupListings.stream()
-                .map(glcs::convertListingToResponseDto)
-                .collect(Collectors.toList());
+        return groupListings.map(glcs::convertListingToResponseDto);
     }
 
     @Override

@@ -17,7 +17,7 @@ import java.util.List;
 
 public interface ModerationService {
 
-    List<GroupListingResponseDto> modGetAllGroupListings();
+    Page<GroupListingResponseDto> modGetAllGroupListings(Pageable pageable);
     Page<ModerationIssueResponseDto> modGetAllIssues(Pageable pageable);
     Page<ModListingActionDto> getThisWeeksModListingActions(Pageable pageable);
     ResponseEntity<?> modClearIssue(ModClearIssueDto dto, Users requestingMod);

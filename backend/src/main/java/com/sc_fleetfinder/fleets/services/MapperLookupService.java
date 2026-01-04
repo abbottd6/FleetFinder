@@ -110,7 +110,7 @@ public class MapperLookupService {
 
     public GameplayCategory findCategoryByName(String categoryName) {
         return gameplayCategoryRepository.findByCategoryName(categoryName)
-                .orElseThrow(org.springframework.data.rest.webmvc.ResourceNotFoundException::new);
+                .orElseThrow(() -> new ResourceNotFoundException("GameplayCategory: " + categoryName));
     }
 
     public GameplaySubcategory findSubcategoryById(Integer id) {
