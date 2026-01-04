@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.config;
 import com.sc_fleetfinder.fleets.messaging.websocket.JwtQueryParamHandshakeInterceptor;
 import com.sc_fleetfinder.fleets.messaging.websocket.JwtSubHandshakeHandler;
 import com.sc_fleetfinder.fleets.messaging.websocket.StompJwtChannelInterceptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -15,6 +16,9 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @Configuration
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    @Value("${app.ws.allowed-origins}")
+    private String wsAppUrl;
 
     private final StompJwtChannelInterceptor stompJwtChannelInterceptor;
     private final JwtDecoder jwtDecoder;
@@ -41,8 +45,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setHandshakeHandler(new JwtSubHandshakeHandler(jwtDecoder))
                 .addInterceptors(new JwtQueryParamHandshakeInterceptor())
                 .setAllowedOriginPatterns(
-                        "http://localhost:4200",
-                        "https://scfleetfinder.com"
+                        wsAppUrl
                 )
                 .withSockJS();
     }
