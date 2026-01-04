@@ -34,6 +34,7 @@ import {QuickAccessMenuService} from "../../../services/component-services/quick
 import {
   ListingOwnerActionsService
 } from "../../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
+import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
 
 @Component({
   selector: 'app-mobile-feed-view',
@@ -81,7 +82,8 @@ export class MobileFeedViewComponent implements OnInit, OnDestroy, AfterViewInit
               protected uiPrefService: UiPrefsService,
               protected auth: AuthService,
               protected quickMenu: QuickAccessMenuService,
-              protected ownerService: ListingOwnerActionsService) {}
+              protected ownerService: ListingOwnerActionsService,
+              protected chatHostSrv: ChatHostService) {}
 
   ngOnInit(): void {
     this.uiPrefService.uiPrefs = this.uiPrefService.loadUiPrefs();

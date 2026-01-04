@@ -49,15 +49,15 @@ public class ChatWsServiceImpl implements ChatWsService {
                         dto.lastReadMsgId() + " and conversation Id" +
                         dto.conversationId() + " could not be found."));
 
-        log.info("what happened to lastRead? {}", lastRead.getMsgId());
-
         Participant part = this.participantRepo.findByConversationAndUser(dto.conversationId(), userAnalog.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Participant of " +
                         "conversation " + dto.conversationId() + ", with " +
                         "userId " + userAnalog.getUserId() + " not found."));
 
-        if(part.getLastReadMessage().getMsgId() >= lastRead.getMsgId()) {
-            return;
+        if(part.getLastReadMessage() != null) {
+            if(part.getLastReadMessage().getMsgId() >= lastRead.getMsgId()) {
+                return;
+            }
         }
 
         part.setLastReadMessage(lastRead);

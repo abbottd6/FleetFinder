@@ -131,18 +131,33 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
       .subscribe(() => {
         setTimeout(() => this.scrollMsgsToBottom(), 300);
       })
+
   }
 
   getMyConversations(idx: number, size: number) {
     this.chatApi.getMyConversations(idx, size)
       .pipe(takeUntil(this.chatPanelDestroy$))
       .subscribe(page => {
-        this.convTotalElements = page.totalElements;
-        this.convPageSize = page.size;
-        this.convPageIdx = page.number;
+        this.convTotalElements = page.page.totalElements;
+        this.convPageSize = page.page.size;
+        this.convPageIdx = page.page.number;
         this.noConvs = (page.content.length === 0);
 
         this.chatStoreSrv.setConversationsArr(page.content);
+
+        if(this.chatHostSrv.convOnHold) {
+          const id = this.chatHostSrv.convOnHold
+
+          if (id) {
+            const select = this.convDataSource.data.find(
+              conv => conv.conversationId === id);
+            if (select) {
+              console.log("Conv title found: ", select.conversationTitle)
+              setTimeout(() => this.onConvClick(select), 200);
+            }
+          }
+          this.chatHostSrv.convOnHold = null;
+        }
       });
   }
 
@@ -151,9 +166,9 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
     this.chatApi.getConversationMessages(this.msgPageIdx, this.msgPageSize, conv.conversationId)
       .pipe(takeUntil(this.chatPanelDestroy$))
       .subscribe(page => {
-        this.msgTotalElements = page.totalElements;
-        this.msgPageSize = page.size;
-        this.msgPageIdx = page.number;
+        this.msgTotalElements = page.page.totalElements;
+        this.msgPageSize = page.page.size;
+        this.msgPageIdx = page.page.number;
         this.noMsgs = page.content.length === 0;
 
         this.chatStoreSrv.setActiveMessagesArr(page.content);
@@ -198,12 +213,16 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
       this.chatStoreSrv.selectedConvId$.pipe(
         filter((id): id is number => id != null),
         take(1)).subscribe(
-        id => sessionStorage.setItem('return_to_selected', id.toString()));
+        id => this.chatHostSrv.convOnHold = id);
+
+      this.selectedConv.clear();
+      this.chatStoreSrv.clearSelectedConv();
+      this.chatStoreSrv.clearActiveMessagesArr();
     }
 
     if(newState === expanded) {
-      const id = Number(sessionStorage.getItem('return_to_selected'));
-      sessionStorage.removeItem('return_to_selected');
+      const id = this.chatHostSrv.convOnHold
+
       if(id) {
         const select = this.convDataSource.data.find(
           conv => conv.conversationId === id);
@@ -211,15 +230,12 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
           setTimeout(() => this.onConvClick(select), 200);
         }
       }
+      this.chatHostSrv.convOnHold = null;
     }
-
-    this.selectedConv.clear();
-    this.chatStoreSrv.clearSelectedConv();
-    this.chatStoreSrv.clearActiveMessagesArr();
-
   }
 
   onConvClick(conv: ConversationViewModel) {
+    this.resetMsgPage();
     this.selectedConv.select(conv);
     this.chatStoreSrv.selectConversation(conv.conversationId);
 
@@ -251,6 +267,20 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
       }),
       shareReplay(1)
     );
+
+  resetConvPage() {
+    this.convPageIdx = 0;
+    this.convPageSize = 10;
+    this.convTotalElements = 0;
+    this.noConvs = true;
+  }
+
+  resetMsgPage() {
+    this.msgPageIdx = 0;
+    this.msgPageSize = 25;
+    this.msgTotalElements = 0;
+    this.noMsgs = true;
+  }
 
   isSameDay(compareTs: string | Date | number | null) {
     if(compareTs == null) return null;

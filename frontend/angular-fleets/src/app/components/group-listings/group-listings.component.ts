@@ -37,6 +37,7 @@ import {QuickAccessMenuService} from "../../services/component-services/quick-ac
 import {
   ListingOwnerActionsService
 } from "../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
+import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -82,7 +83,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
               protected quickMenu: QuickAccessMenuService,
               private auth: AuthService,
               private userService: UserService,
-              protected ownerService: ListingOwnerActionsService) {
+              protected ownerService: ListingOwnerActionsService,
+              protected chatHostSrv: ChatHostService) {
 
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
       if(reason === 'hide' || reason === 'report' || reason === 'delete') {
@@ -180,9 +182,9 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
             console.log('Data received in component:', page);
           }
           this.dataSource.data = page.content;
-          this.totalElements = page.totalElements;
-          this.pageSize = page.size;
-          this.pageIndex = page.number;
+          this.totalElements = page.page.totalElements;
+          this.pageSize = page.page.size;
+          this.pageIndex = page.page.number;
         },
         error: (error) => {
           console.error('Error fetching group listings from component:', error);

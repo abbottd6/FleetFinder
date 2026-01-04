@@ -143,9 +143,9 @@ export class UserProfileTemplatesComponent implements AfterViewInit, OnDestroy {
       .subscribe({
         next: (page: Page<ListingTemplateViewModel>) => {
           this.dataSource.data = page.content;
-          this.totalElements = page.totalElements;
-          this.pageSize = page.size;
-          this.pageIdx = page.number;
+          this.totalElements = page.page.totalElements;
+          this.pageSize = page.page.size;
+          this.pageIdx = page.page.number;
           this.noResults = (this.dataSource.data.length === 0);
         }
       });

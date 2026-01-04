@@ -92,9 +92,9 @@ export class ModActionsTableComponent implements OnDestroy, AfterViewInit{
       .subscribe({
         next: (page: Page<ModListingActionViewModel>) => {
           this.dataSource.data = page.content;
-          this.totalElements = page.totalElements;
-          this.pageSz = page.size;
-          this.pageIdx = page.number;
+          this.totalElements = page.page.totalElements;
+          this.pageSz = page.page.size;
+          this.pageIdx = page.page.number;
           this.noResults = (this.dataSource.data.length === 0);
         }
       })

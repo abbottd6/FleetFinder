@@ -28,13 +28,14 @@ export class ChatHostService {
   private openSubject = new BehaviorSubject<boolean>(false);
   open$ = this.openSubject.asObservable();
 
+  public convOnHold: number | null = null;
+
   private windowStateSubject = new BehaviorSubject<ChatWindowState>(expanded);
   public windowState$ = this.windowStateSubject.asObservable();
 
   constructor(private auth: AuthService,
               private router: Router,
               private chatApi: ChatApiService,
-              private ws: WsGatewayService,
               private chatStoreSrv: ChatStoreService) {
     this.auth.isLoggedIn$
       .pipe(distinctUntilChanged(), filter(Boolean))
@@ -63,6 +64,8 @@ export class ChatHostService {
     this.chatApi.conversationProvision(request).pipe(takeUntilDestroyed(this.chatSrvDestroyRef))
       .subscribe({
         next: (response) => {
+          console.log("Response convID: ", response.conversationId)
+          this.convOnHold = response.conversationId;
           this.openChat();
         }
       })

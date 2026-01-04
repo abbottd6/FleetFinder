@@ -7,10 +7,12 @@ import {ListingFilterRequest} from "../../../models/listing-filter/listing-filte
 
 export interface Page<T> {
   content: T[];
-  totalElements: number;
-  totalPages: number;
-  size: number;
-  number: number;
+  page: {
+    size: number;
+    number: number;
+    totalElements: number;
+    totalPages: number;
+  }
   sort: {
     empty: boolean;
     sorted: boolean;

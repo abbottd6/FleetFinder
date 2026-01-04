@@ -36,6 +36,7 @@ import {TooltipPosition} from "@angular/material/tooltip";
 import {
   ListingOwnerActionsService
 } from "../../../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
+import {ChatHostService} from "../../../../services/facade-services/chat/chat-host.service";
 
 @Component({
   selector: 'app-desktop-table-view',
@@ -81,7 +82,8 @@ export class DesktopTableViewComponent implements OnInit, OnDestroy, AfterViewIn
               protected uiPrefService: UiPrefsService,
               protected auth: AuthService,
               protected desktopQuickMenu: QuickAccessMenuService,
-              protected ownerService: ListingOwnerActionsService) {}
+              protected ownerService: ListingOwnerActionsService,
+              protected chatHostSrv: ChatHostService) {}
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
 

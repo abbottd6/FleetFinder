@@ -102,9 +102,9 @@ export class UserProfileBookmarksComponent implements OnInit, OnDestroy, AfterVi
       .subscribe({
         next: (page) => {
           this.dataSource.data = page.content;
-          this.totalElements = page.totalElements;
-          this.pageSize = page.size;
-          this.pageIndex = page.number;
+          this.totalElements = page.page.totalElements;
+          this.pageSize = page.page.size;
+          this.pageIndex = page.page.number;
           this.noResults = (this.dataSource.data.length === 0);
         }
       })

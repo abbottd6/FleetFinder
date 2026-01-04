@@ -285,7 +285,8 @@
   <ng-container *ngIf="!(listingInteract.userIsListingOwner(listingInteract.selectedListing?.groupId) | async); else ownerMenu">
     <button
       mat-menu-item
-      class="options-item">
+      class="options-item"
+      (click)="chatHostSrv.provisionConversation(listingInteract.selectedListing!)">
       Message
     </button>
     <button
