@@ -3,7 +3,7 @@ import {LogLevel} from "angular-auth-oidc-client";
 export const environment = {
   production: false,
   apiBaseUrl: '/api',
-  backendApiUrl: "http://localhost:8080",
+  wsBaseUrl: "http://localhost:8080",
   oidc: {
     authority: 'http://localhost:8180/realms/oauthrealm',
     redirectUrl: window.location.origin,

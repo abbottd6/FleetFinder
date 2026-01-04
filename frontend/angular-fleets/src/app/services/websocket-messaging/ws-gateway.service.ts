@@ -47,12 +47,14 @@ export class WsGatewayService {
     if(!token) return;
 
     //todo make this url not use the access token
-    const wsUrl = `${environment.backendApiUrl}/websocket?access_token=${encodeURIComponent(token)}`;
+    const wsUrl = `${environment.wsBaseUrl}/websocket`;
     console.warn('wsUrl:', wsUrl);
 
     this.client = new Client({
-      webSocketFactory: () => new SockJS(wsUrl),
-      connectHeaders: {},
+      webSocketFactory: () => new WebSocket(wsUrl),
+      connectHeaders: {
+        Authorization: `Bearer ${token}`,
+      },
       reconnectDelay: 3000,
       heartbeatIncoming: 10000,
       heartbeatOutgoing: 10000,

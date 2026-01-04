@@ -44,10 +44,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .addEndpoint("/websocket")
                 .setHandshakeHandler(new JwtSubHandshakeHandler(jwtDecoder))
                 .addInterceptors(new JwtQueryParamHandshakeInterceptor())
-                .setAllowedOriginPatterns(
-                        wsAppUrl
-                )
-                .withSockJS();
+                .setAllowedOriginPatterns(wsAppUrl);
     }
 
     @Override
