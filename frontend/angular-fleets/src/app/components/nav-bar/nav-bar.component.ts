@@ -2,10 +2,12 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {UserService} from "../../services/user-services/user.service";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
-import {Subject, takeUntil} from "rxjs";
+import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.service";
 import {MatBadgePosition} from "@angular/material/badge";
+import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
+import {BreakpointObserver} from "@angular/cdk/layout";
 
 @Component({
     selector: 'app-nav-bar',
@@ -16,6 +18,7 @@ import {MatBadgePosition} from "@angular/material/badge";
 export class NavBarComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   badgePosition: MatBadgePosition = "above after";
+  private breakpointObserver = new BreakpointObserver();
 
   constructor(public userService: UserService,
               protected auth: AuthService,
@@ -62,4 +65,20 @@ export class NavBarComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  navbarLayoutMode$: Observable<LayoutMode> = this.breakpointObserver
+    .observe([
+      '(max-width: 1200px)',
+      '(min-width: 1251px)'
+    ])
+    .pipe(
+      map(state => {
+        if (state.breakpoints['(max-width: 1200px)']) {
+          return 'handheld';
+        }
+
+        return 'full';
+      }),
+      shareReplay(1)
+    );
 }

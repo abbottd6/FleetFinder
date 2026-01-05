@@ -327,3 +327,16 @@ input::placeholder {
   transform: translate(-4px, 2px) !important;
 }
 
+.mobile-nav-buttons {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+
+.mobile-nav-icons {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  padding: 6px 15px 0 0;
+}
+
