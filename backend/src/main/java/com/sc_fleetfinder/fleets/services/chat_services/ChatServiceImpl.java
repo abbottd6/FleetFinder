@@ -8,8 +8,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.FindOrStartNewConversation
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.SendMessageDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetConversationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetMessageDto;
-import com.sc_fleetfinder.fleets.DTO.websocketDTOs.UserUnreadPerConvDto;
-import com.sc_fleetfinder.fleets.DTO.websocketDTOs.UserUnreadTotalDto;
+import com.sc_fleetfinder.fleets.DTO.websocketDTOs.UserUnreadResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
 import com.sc_fleetfinder.fleets.entities.chat.Message;
@@ -39,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static com.sc_fleetfinder.fleets.utils.DmKeyUtil.sha256DmKey;
@@ -157,8 +155,11 @@ public class ChatServiceImpl implements ChatService {
 
         GetMessageDto msgDto = msgConvSrv.convertToDto(newMsg);
 
-        UserUnreadPerConvDto perConvDto = this.getUserUnreadCountPerConversation(recipientPart.getUser().getUserId());
-        UserUnreadTotalDto recipientUnreadDto = this.updateUserUnreadTotal(perConvDto);
+        UserUnreadResponseDto recipientUnreadDto = this.getUserUnreadCounts(recipientPart.getUser().getUserId());
+
+        for(ConvUnreadMap conv : recipientUnreadDto.unreadByConv()){
+            log.info("ConvId: {}, Unread: {}", conv.conversationId(), conv.unreadCount());
+        }
 
         if(isFirstMsg) {
             GetConversationDto recipientConvDto = this.ccs.convertToDto(currentConv, recipientPart.getUser().getUserId());
@@ -232,22 +233,26 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional(readOnly = true)
-    public UserUnreadPerConvDto getUserUnreadCountPerConversation(Long userId) {
+    public UserUnreadResponseDto getUserUnreadCounts(Long userId) {
 
         Set<ConvUnreadMap> perConvUnread =
                 new HashSet<>(participantRepo.userUnreadCountByUserId(userId));
 
-        return new UserUnreadPerConvDto(userId, perConvUnread);
+        return updateUserUnreadTotal(perConvUnread);
     }
 
-    private UserUnreadTotalDto updateUserUnreadTotal(UserUnreadPerConvDto dto) {
+    private UserUnreadResponseDto updateUserUnreadTotal(Set<ConvUnreadMap> perConvUnread) {
         long totalUnread = 0L;
+        Set<ConvUnreadMap> simplifiedPerConvUnread = new HashSet<>();
 
-        for(ConvUnreadMap conv : dto.convIdAndUnread()) {
-            totalUnread += conv.unreadCount();
+        for(ConvUnreadMap conv : perConvUnread) {
+            if(conv.unreadCount() > 0) {
+                simplifiedPerConvUnread.add(conv);
+                totalUnread += conv.unreadCount();
+            }
         }
 
-        return new UserUnreadTotalDto(dto.userId(), totalUnread);
+        return new UserUnreadResponseDto(totalUnread, simplifiedPerConvUnread);
     }
 
     private void verifyParticipantsOrThrow(Long senderId, Long recipientId, Conversation conv) {

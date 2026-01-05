@@ -156,8 +156,6 @@ export class ChatStoreService {
     }
   }
 
-  //todo this is breaking because it auto sets the last read message to the last msg that wasnt
-  //todo from this user. so when pagination kicks in it starts like decrementing the lastReadId
   afterLoadMessages(msgs: MessageViewModel[]) {
     const lastIncoming = [...msgs].reverse().find(
       msg => msg.senderId !== this.userSrv.userId);

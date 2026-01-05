@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
 import {MatIcon} from "@angular/material/icon";
 import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
@@ -40,7 +40,8 @@ import {UserService} from "../../../services/user-services/user.service";
 import {MessageComponent} from "../message/message.component";
 import {MessageInputComponent} from "../message-input/message-input.component";
 import {ChatStoreService} from "../../../services/facade-services/chat/chat-store.service";
-import {WsGatewayService} from "../../../services/websocket-messaging/ws-gateway.service";
+import {PerConvUnreadDto, WsGatewayService} from "../../../services/websocket-messaging/ws-gateway.service";
+import {MatBadge, MatBadgeSize} from "@angular/material/badge";
 
 @Component({
   selector: 'app-chat-panel',
@@ -67,11 +68,15 @@ import {WsGatewayService} from "../../../services/websocket-messaging/ws-gateway
     MatSidenavContent,
     MatButton,
     MessageComponent,
-    MessageInputComponent
+    MessageInputComponent,
+    MatBadge,
   ],
   styleUrl: './chat-panel.component.css'
 })
 export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
+  protected ws = inject(WsGatewayService);
+  badgeSize: 'small' | 'medium' | 'large' = 'medium';
+
   private chatPanelDestroy$ = new Subject<void>();
   private breakpointObserver = new BreakpointObserver();
   protected isCollapsing: boolean = false;
@@ -94,11 +99,20 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   convDataSource = new MatTableDataSource<ConversationViewModel>();
   selectedConv =  new SelectionModel<ConversationViewModel>(false, []);
 
+  readonly convUnreadMap$ = this.ws.perConvUnread$.pipe(
+    map(dtos=> (dtos ?? [])
+        .reduce<Record<number, number>>((accumulator, dto) => {
+        accumulator[dto.conversationId] = dto.unreadCount;
+        console.log("accumulator", accumulator);
+        return accumulator;
+      }, {})),
+      shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   constructor(protected chatHostSrv: ChatHostService,
               private chatApi: ChatApiService,
               private userSrv: UserService,
-              protected chatStoreSrv: ChatStoreService,
-              protected ws: WsGatewayService) {}
+              protected chatStoreSrv: ChatStoreService) {}
 
   ngOnInit() {
     this.getMyConversations(this.convPageIdx, this.convPageSize);
@@ -281,6 +295,8 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
     this.msgTotalElements = 0;
     this.noMsgs = true;
   }
+
+
 
   isSameDay(compareTs: string | Date | number | null) {
     if(compareTs == null) return null;

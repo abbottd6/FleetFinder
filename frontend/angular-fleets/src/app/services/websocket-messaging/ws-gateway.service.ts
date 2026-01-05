@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
-import {Client, IMessage, StompSubscription} from "@stomp/stompjs";
+import {Client, StompSubscription} from "@stomp/stompjs";
 import {BehaviorSubject, Observable, Subject} from "rxjs";
-import SockJS from "sockjs-client";
 import {environment} from "../../../environments/environment";
 import {MessageViewModel} from "../../models/chat/message-view-model";
 import {ConversationViewModel} from "../../models/chat/conversation-view-model";
 
-export interface TotalUnreadDto {
-  userId: number,
-  unreadCount: number,
+export interface UnreadSummaryDto {
+  totalUnread: number;
+  unreadByConv: PerConvUnreadDto[];
+}
+
+export interface PerConvUnreadDto {
+  conversationId: number;
+  unreadCount: number;
 }
 
 @Injectable({
@@ -23,6 +27,10 @@ export class WsGatewayService {
 
   private totalUnreadSubject = new BehaviorSubject<number | null>(null);
   public totalUnread$ = this.totalUnreadSubject.asObservable();
+
+  private perConvUnreadSubject: BehaviorSubject<PerConvUnreadDto[] | null> =
+    new BehaviorSubject<PerConvUnreadDto[] | null>(null);
+  public perConvUnread$ = this.perConvUnreadSubject.asObservable();
 
   private chatMessageSubject = new Subject<MessageViewModel>();
   public chatMessage$ = this.chatMessageSubject.asObservable();
@@ -46,18 +54,14 @@ export class WsGatewayService {
     if(this.client?.active) return;
     if(!token) return;
 
-    //todo make this url not use the access token
-    const wsUrl = `${environment.wsBaseUrl}/websocket`;
-    console.warn('wsUrl:', wsUrl);
-
     this.client = new Client({
-      webSocketFactory: () => new WebSocket(wsUrl),
+      webSocketFactory: () => new WebSocket(`${environment.wsBaseUrl}/websocket`),
       connectHeaders: {
         Authorization: `Bearer ${token}`,
       },
       reconnectDelay: 3000,
-      heartbeatIncoming: 10000,
-      heartbeatOutgoing: 10000,
+      heartbeatIncoming: 25000,
+      heartbeatOutgoing: 25000,
 
 
       onConnect: () => {
@@ -67,28 +71,15 @@ export class WsGatewayService {
         this.unreadStompSubscription = this.client!.subscribe(
           '/user/queue/chat.unread',
           (msg) => {
-            try {
-              this.totalUnreadSubject.next((JSON.parse(msg.body) as TotalUnreadDto).unreadCount)
-
-            } catch {
-              console.warn('Malformed ws payload', msg.body);
-            }
+              const summary = JSON.parse(msg.body) as UnreadSummaryDto;
+              this.totalUnreadSubject.next(summary.totalUnread);
+              this.perConvUnreadSubject.next(summary.unreadByConv);
+              console.log("Summary: ", summary);
+              console.log("PerConv unread subject: ", this.perConvUnreadSubject.value);
           }
         );
 
         setTimeout(() => this.publish('/app/chat.total_unread', {}), 500);
-
-        //
-        // this.client!.subscribe('/user/queue/chat.message', (msg) => {
-        //   const dto = JSON.parse(msg.body) as MessageViewModel;
-        //   this.chatMessageSubject.next(dto);
-        // });
-        //
-        // this.client!.subscribe('/user/queue/chat.conversation', (conv) => {
-        //   const dto = JSON.parse(conv.body) as ConversationViewModel;
-        //   this.chatConversationSubject.next(dto);
-        // });
-
       },
 
       onStompError: () => { console.error("STOMP ERROR") },
@@ -125,10 +116,10 @@ export class WsGatewayService {
   isConnected() {
     return this.connectedSubject.value;
   }
-
-  updateTotalUnread(dto: TotalUnreadDto) {
-      this.totalUnreadSubject.next(dto.unreadCount)
-  }
+  //
+  // updateTotalUnread(dto: UnreadSummaryDto) {
+  //     this.totalUnreadSubject.next(dto.totalUnread)
+  // }
 
   jwtSub(token: string): string | null {
     try {

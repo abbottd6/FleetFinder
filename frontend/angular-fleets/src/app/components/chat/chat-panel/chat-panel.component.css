@@ -71,7 +71,7 @@
   inset: 2px;
   min-width: 98%;
   display: grid;
-  grid-template-columns: 2fr auto auto;
+  grid-template-columns: 2fr auto auto auto;
   margin: 0.3rem 0.5rem 0.25rem auto;
   color: rgba(188, 191, 200, .8);
   overflow: hidden;
@@ -192,6 +192,22 @@
   margin-left: 0.5rem;
 }
 
+.h-fill {
+  align-content: center;
+  padding-bottom: 3px;
+}
+
+#connected-icon {
+  transform: scale(0.4);
+  align-self: center;
+  margin-right: 10px;
+  margin-bottom: 3px;
+  color: #478028;
+}
+.not-connected {
+  color: #9a1919;
+}
+
 .h-end {
   margin-left: 1rem;
   margin-right: 0.5rem;
@@ -280,7 +296,7 @@
 }
 
 #conversations-column {
-  height: 85%;
+  height: 98%;
   min-height: 0;
   padding: 0;
   overflow-y: auto;
@@ -369,6 +385,22 @@
   font-family: "exo 2", sans-serif;
   color: rgba(188, 191, 200, .8);
   padding-left: 4px;
+}
+
+.has-unread {
+  border: 1px solid rgba(255, 131, 7, .25);
+}
+
+.mat-badge-content {
+  scale: 0.9;
+  border-radius: 4px;
+  background-color: transparent;
+  color: rgba(255, 131, 7, .5);
+  border: 1px solid rgba(255, 131, 7, .5);
+  transform: translate(0, 6px);
+  font-size: 13px;
+  line-height: 1.1;
+  height: 16px;
 }
 
 .conv-table .mdc-data-table__cell {

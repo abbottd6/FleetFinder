@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ChatReadDto;
-import com.sc_fleetfinder.fleets.DTO.websocketDTOs.UserUnreadTotalDto;
+import com.sc_fleetfinder.fleets.DTO.websocketDTOs.UserUnreadResponseDto;
 import com.sc_fleetfinder.fleets.services.chat_services.ChatWsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -30,7 +30,7 @@ public class ChatWebSocketController {
 
         this.chatWsService.updateConversationLastRead(userSub, dto);
 
-        UserUnreadTotalDto response = this.chatWsService.updateUserUnreadTotal(userSub);
+        UserUnreadResponseDto response = this.chatWsService.updateUserUnread(userSub);
 
         messagingTemplate.convertAndSendToUser(
                 userSub,
@@ -43,7 +43,7 @@ public class ChatWebSocketController {
     public void getUnreadTotal(Principal principal) {
         String userSub = principal.getName();
 
-        UserUnreadTotalDto dto = this.chatWsService.updateUserUnreadTotal(userSub);
+        UserUnreadResponseDto dto = this.chatWsService.updateUserUnread(userSub);
 
         messagingTemplate.convertAndSendToUser(
                 userSub,

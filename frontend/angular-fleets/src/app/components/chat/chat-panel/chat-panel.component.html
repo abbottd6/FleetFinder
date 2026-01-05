@@ -10,12 +10,15 @@
             <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
           </button>
         </div>
-        <div class="h-right">
+        <ng-container *ngIf="(ws.isConnected$ | async) as isConnected" class="h-fill">
+          <mat-icon id="connected-icon" class="connected" [class.not-connected]="!isConnected">circle</mat-icon>
+        </ng-container>
+        <div class="h-fill">
           <ng-container *ngIf="((ws.totalUnread$ | async) ?? 0) > 0; else waiting">
-            <span>Unread: {{ (ws.totalUnread$ | async) ?? 0 }}</span>
+            <span>New Messages: {{ (ws.totalUnread$ | async) ?? 0 }}</span>
           </ng-container>
           <ng-template #waiting>
-            <span>Waiting...</span>
+            <span>New Messages: 0</span>
           </ng-template>
         </div>
         <div class="h-end">
@@ -32,46 +35,52 @@
                        [opened]="(chatLayoutMode$ | async) !== 'handheld'"
                        class="conversations-nav">
             <div id="conversations-column" [class.collapsing]="isCollapsing">
-              <table class="conv-table" mat-table [dataSource]="convDataSource">
-                <ng-container matColumnDef='convDetails'>
-                  <th mat-header-cell *matHeaderCellDef class="conv-header">
-                    Conversations
-                  </th>
-                  <td mat-cell *matCellDef="let conv">
-                    <div class="conversation-row">
-                      <div class="conv-user-row">
-                    <span id="other-username">
-                      {{
-                        conv.otherUserName.length >= 15 ?
-                          (conv.otherUserName|slice: 0:15) + '...' : conv.otherUserName
-                      }}
+              <ng-container *ngIf="convUnreadMap$ | async as unread">
+                <table class="conv-table" mat-table [dataSource]="convDataSource">
+                  <ng-container matColumnDef='convDetails'>
+                    <th mat-header-cell *matHeaderCellDef class="conv-header">
+                      Conversations
+                    </th>
+                    <td mat-cell *matCellDef="let conv">
+                      <div class="conversation-row" [class.has-unread]="(unread[conv.conversationId]) > 0">
+                        <div class="conv-user-row">
+                          <span id="other-username"
+                            [matBadge]="unread[conv.conversationId]"
+                            [matBadgeOverlap]="false"
+                            [matBadgeSize]="badgeSize">
+                            {{
+                              conv.otherUserName.length >= 15 ?
+                                (conv.otherUserName|slice: 0:15) + '...' : conv.otherUserName
+                            }}
+                          </span>
+                          <ng-container *ngIf="isSameDay(conv.updatedAt); else older">
+                            <span class="updated-at">{{ conv.updatedAt | date: 'h:mma' }}</span>
+                          </ng-container>
+                          <ng-template #older>
+                            <span class="updated-at">{{ conv.updatedAt | date: 'MMM d' }}</span>
+                          </ng-template>
+                        </div>
+                        <div class="conv-title-row">
+                          <span id="conv-title">
+                            {{
+                              conv.conversationTitle.length >= 32 ?
+                                (conv.conversationTitle|slice: 0:32) + '...' : conv.conversationTitle
+                            }}
                     </span>
-                        <ng-container *ngIf="isSameDay(conv.updatedAt); else older">
-                          <span class="updated-at">{{ conv.updatedAt | date: 'h:mma' }}</span>
-                        </ng-container>
-                        <ng-template #older>
-                          <span class="updated-at">{{ conv.updatedAt | date: 'MMM d' }}</span>
-                        </ng-template>
+                        </div>
                       </div>
-                      <div class="conv-title-row">
-                    <span id="conv-title">
-                      {{
-                        conv.conversationTitle.length >= 32 ?
-                          (conv.conversationTitle|slice: 0:32) + '...' : conv.conversationTitle
-                      }}
-                    </span>
-                      </div>
-                    </div>
-                  </td>
-                </ng-container>
+
+                    </td>
+                  </ng-container>
 
 
-                <tr mat-header-row *matHeaderRowDef="convColumns"></tr>
-                <tr mat-row *matRowDef="let conv; columns: convColumns"
-                    (click)="onConvClick(conv)"
-                    [class.selected]="isSelected(conv)">
-                </tr>
-              </table>
+                  <tr mat-header-row *matHeaderRowDef="convColumns"></tr>
+                  <tr mat-row *matRowDef="let conv; columns: convColumns"
+                      (click)="onConvClick(conv)"
+                      [class.selected]="isSelected(conv)">
+                  </tr>
+                </table>
+              </ng-container>
 
               <ng-container *ngIf="noConvs">
                 <div class="no-convs-message">

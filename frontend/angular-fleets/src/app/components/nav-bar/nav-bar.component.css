@@ -322,6 +322,8 @@ input::placeholder {
   /*background-color: rgba(188, 191, 200, .75);*/
   border-radius: 99px;
   font-size: 0.9rem;
+  justify-content: center;
+  align-items: center;
   transform: translate(-4px, 2px) !important;
 }
 
