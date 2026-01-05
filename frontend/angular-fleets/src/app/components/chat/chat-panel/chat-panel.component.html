@@ -66,10 +66,9 @@
                               conv.conversationTitle.length >= 32 ?
                                 (conv.conversationTitle|slice: 0:32) + '...' : conv.conversationTitle
                             }}
-                    </span>
+                          </span>
                         </div>
                       </div>
-
                     </td>
                   </ng-container>
 
@@ -80,6 +79,13 @@
                       [class.selected]="isSelected(conv)">
                   </tr>
                 </table>
+                <ng-container *ngIf="convPageIdx < (convTotalPages - 1)">
+                  <div class="load-more-buttons">
+                    <button id="load-more-convs"
+                            type="button"
+                            (click)="getNextConvPage()">Load more...</button>
+                  </div>
+                </ng-container>
               </ng-container>
 
               <ng-container *ngIf="noConvs">
@@ -107,6 +113,15 @@
                 </div>
               </ng-container>
               <div class="messages" #msgScroll>
+                <ng-container *ngIf="msgPageIdx < (msgTotalPages - 1)">
+                  <div class="load-more-buttons">
+                    <button id="load-more-msgs"
+                            type="button"
+                            (click)="getNextMessagePage()">
+                      Load more...
+                    </button>
+                  </div>
+                </ng-container>
                 @if (chatStoreSrv.messages$ | async; as messages) {
                   @if (messages.length > 0) {
                     @for (msg of messages; track msg.msgId ?? msg.clientMessageId) {

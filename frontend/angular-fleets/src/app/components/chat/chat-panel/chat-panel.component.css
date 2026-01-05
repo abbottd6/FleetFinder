@@ -8,6 +8,10 @@
   color: rgba(223, 241, 255, 0.5) !important;
 }
 
+:host(.is-collapsed) {
+  z-index: 0 !important;
+}
+
 .chat-panel-wrapper {
   width: 602px;
   height: 402px;
@@ -296,7 +300,7 @@
 }
 
 #conversations-column {
-  height: 98%;
+  height: 96%;
   min-height: 0;
   padding: 0;
   overflow-y: auto;
@@ -455,6 +459,27 @@
   background-color: rgba(255, 131, 7, .05);
 }
 
+.load-more-buttons {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-inline: auto;
+}
+
+#load-more-convs {
+  background: transparent;
+  border: none;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  color: rgba(188, 191, 200, .3);
+  font-size: 14px;
+  transition: color 0.25s ease;
+}
+
+#load-more-convs:hover {
+  color: rgba(255, 131, 7, .3);
+}
+
 .no-convs-message {
   display: flex !important;
   padding: 5px 20px 5px 20px;
@@ -487,6 +512,20 @@
   scrollbar-width: thin;
 }
 
+#load-more-msgs {
+  background: transparent;
+  border: none;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  color: rgba(188, 191, 200, .3);
+  font-size: 14px;
+  transition: color 0.25s ease;
+}
+
+#load-more-msgs:hover {
+  color: rgba(255, 131, 7, .3);
+}
+
 .no-messages-messages {
   display: block;
   width: 100%;
@@ -500,6 +539,11 @@
 @media(max-width: 620px) and (min-width: 411px) {
   :host {
     right: 1vw;
+
+  }
+
+  :host(.is-collapsed) {
+    z-index: 0;
   }
 
   .chat-panel-wrapper {

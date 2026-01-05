@@ -83,7 +83,7 @@ export class WsGatewayService {
       },
 
       onStompError: () => { console.error("STOMP ERROR") },
-      debug: (s) => console.log(['stomp'], s),
+      // debug: (s) => console.log(['stomp'], s),
       onWebSocketClose: () => {
         this.connectedSubject.next(false);
         this.unreadStompSubscription?.unsubscribe();

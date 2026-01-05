@@ -3,7 +3,7 @@ import {LogLevel} from "angular-auth-oidc-client";
 export const environment = {
   production: true,
   apiBaseUrl: 'https://scfleetfinder.com/api',
-  wsBaseUrl: "http://scfleetfinder.com",
+  wsBaseUrl: "wss://scfleetfinder.com",
   oidc: {
     authority: 'https://scfleetfinder.com/auth/realms/oauthrealm',
     redirectUrl: window.location.origin,

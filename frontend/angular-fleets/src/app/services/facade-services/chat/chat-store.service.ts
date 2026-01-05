@@ -72,6 +72,10 @@ export class ChatStoreService {
     this.conversationsSubject.next(convs);
   }
 
+  getConversationsArr() {
+    return this.conversationsSubject.value;
+  }
+
   selectConversation(convId: number) {
     this.selectedConvIdSubject.next(convId);
   }
@@ -83,6 +87,14 @@ export class ChatStoreService {
   setActiveMessagesArr(msgs: MessageViewModel[]) {
     this.messagesSubject.next(msgs.reverse());
     this.afterLoadMessages(msgs);
+  }
+
+  getActiveMessagesArr() {
+    return this.messagesSubject.value;
+  }
+
+  setActiveMessagesArrNoScroll(msgs: MessageViewModel[]) {
+    this.messagesSubject.next(msgs);
   }
 
   clearActiveMessagesArr() {

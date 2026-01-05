@@ -88,6 +88,9 @@ export class ChatHostService {
   closeChat() {
     this.mountedSubject.next(false);
     this.chatStoreSrv.stop();
+    this.chatStoreSrv.clearSelectedConv();
+    this.chatStoreSrv.clearActiveMessagesArr();
+    this.convOnHold = null;
   }
 
   toggleChat() {

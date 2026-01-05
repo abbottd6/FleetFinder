@@ -3,7 +3,6 @@ import {ChatHostService} from "../../../services/facade-services/chat/chat-host.
 import {MatIcon} from "@angular/material/icon";
 import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
 import {
-  BehaviorSubject,
   distinctUntilChanged,
   filter,
   map,
@@ -12,7 +11,6 @@ import {
   Subject,
   take,
   takeUntil,
-  tap
 } from "rxjs";
 import {ChatApiService} from "../../../services/api-services/chat-api/chat-api.service";
 import {ConversationViewModel} from "../../../models/chat/conversation-view-model";
@@ -40,8 +38,8 @@ import {UserService} from "../../../services/user-services/user.service";
 import {MessageComponent} from "../message/message.component";
 import {MessageInputComponent} from "../message-input/message-input.component";
 import {ChatStoreService} from "../../../services/facade-services/chat/chat-store.service";
-import {PerConvUnreadDto, WsGatewayService} from "../../../services/websocket-messaging/ws-gateway.service";
-import {MatBadge, MatBadgeSize} from "@angular/material/badge";
+import {WsGatewayService} from "../../../services/websocket-messaging/ws-gateway.service";
+import {MatBadge} from "@angular/material/badge";
 
 @Component({
   selector: 'app-chat-panel',
@@ -76,23 +74,28 @@ import {MatBadge, MatBadgeSize} from "@angular/material/badge";
 export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   protected ws = inject(WsGatewayService);
   badgeSize: 'small' | 'medium' | 'large' = 'medium';
+  ChatWindowState = ChatWindowState;
 
   private chatPanelDestroy$ = new Subject<void>();
   private breakpointObserver = new BreakpointObserver();
   protected isCollapsing: boolean = false;
-  ChatWindowState = ChatWindowState;
+
   @Input() open!: boolean;
   @ViewChild('drawer') drawer!: MatSidenav;
+
   @ViewChild('msgScroll') msgScroll!: ElementRef<HTMLElement>;
+  private suppressAutoScrollUntil = 0;
 
   convPageIdx: number = 0;
   convPageSize: number = 10;
   convTotalElements: number = 0;
+  convTotalPages: number = 0;
   noConvs: boolean = true;
 
   msgPageIdx: number = 0;
-  msgPageSize: number = 25;
+  msgPageSize: number = 50;
   msgTotalElements: number = 0;
+  msgTotalPages: number = 0;
   noMsgs: boolean = true;
 
   convColumns: string[] = ['convDetails'];
@@ -112,7 +115,11 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(protected chatHostSrv: ChatHostService,
               private chatApi: ChatApiService,
               private userSrv: UserService,
-              protected chatStoreSrv: ChatStoreService) {}
+              protected chatStoreSrv: ChatStoreService) {
+
+    this.resetConvPage();
+    this.resetMsgPage();
+  }
 
   ngOnInit() {
     this.getMyConversations(this.convPageIdx, this.convPageSize);
@@ -143,9 +150,18 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
 
     this.chatStoreSrv.messages$.pipe(takeUntil(this.chatPanelDestroy$))
       .subscribe(() => {
+        if(!this.shouldAutoScroll()) {
+          this.suppressAutoScrollUntil = 0;
+          return;
+        }
         setTimeout(() => this.scrollMsgsToBottom(), 300);
       })
-
+  }
+  private shouldAutoScroll(): boolean {
+    return Date.now() >= this.suppressAutoScrollUntil
+  }
+  suppressAutoScroll(ms = 5000) {
+    this.suppressAutoScrollUntil = Date.now() + ms;
   }
 
   getMyConversations(idx: number, size: number) {
@@ -155,6 +171,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
         this.convTotalElements = page.page.totalElements;
         this.convPageSize = page.page.size;
         this.convPageIdx = page.page.number;
+        this.convTotalPages = page.page.totalPages;
         this.noConvs = (page.content.length === 0);
 
         this.chatStoreSrv.setConversationsArr(page.content);
@@ -175,6 +192,23 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
+  getNextConvPage() {
+    this.convPageIdx++;
+    this.chatApi.getMyConversations(this.convPageIdx, this.convPageSize)
+      .pipe(takeUntil(this.chatPanelDestroy$))
+      .subscribe(page => {
+        this.convTotalElements = page.page.totalElements;
+        this.convPageSize = page.page.size;
+        this.convPageIdx = page.page.number;
+        this.convTotalPages = page.page.totalPages;
+        this.noConvs = (page.content.length === 0);
+
+        const displayConvs = this.chatStoreSrv.getConversationsArr().concat(page.content);
+
+        this.chatStoreSrv.setConversationsArr(displayConvs);
+      })
+  }
+
   loadSelectedConversationMessages() {
     const conv = this.selectedConv.selected[0];
     this.chatApi.getConversationMessages(this.msgPageIdx, this.msgPageSize, conv.conversationId)
@@ -183,9 +217,29 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
         this.msgTotalElements = page.page.totalElements;
         this.msgPageSize = page.page.size;
         this.msgPageIdx = page.page.number;
+        this.msgTotalPages = page.page.totalPages;
         this.noMsgs = page.content.length === 0;
 
         this.chatStoreSrv.setActiveMessagesArr(page.content);
+      })
+  }
+
+  getNextMessagePage() {
+    const conv = this.selectedConv.selected[0];
+    this.msgPageIdx++;
+    this.chatApi.getConversationMessages(this.msgPageIdx, this.msgPageSize, conv.conversationId)
+      .pipe(takeUntil(this.chatPanelDestroy$))
+      .subscribe(page => {
+        this.msgTotalElements = page.page.totalElements;
+        this.msgPageSize = page.page.size;
+        this.msgPageIdx = page.page.number;
+        this.msgTotalPages = page.page.totalPages;
+        this.noMsgs = page.content.length === 0;
+
+        const displayedMsgs = (page.content.reverse()).concat(this.chatStoreSrv.getActiveMessagesArr());
+
+        this.suppressAutoScroll();
+        this.chatStoreSrv.setActiveMessagesArrNoScroll(displayedMsgs);
       })
   }
 
@@ -215,6 +269,8 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   terminateChat(){
+    this.resetMsgPage();
+    this.resetConvPage();
     this.chatHostSrv.closeChat()
   }
 
@@ -291,12 +347,10 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
 
   resetMsgPage() {
     this.msgPageIdx = 0;
-    this.msgPageSize = 25;
+    this.msgPageSize = 50;
     this.msgTotalElements = 0;
     this.noMsgs = true;
   }
-
-
 
   isSameDay(compareTs: string | Date | number | null) {
     if(compareTs == null) return null;

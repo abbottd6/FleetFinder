@@ -52,7 +52,7 @@
         </li>
         <li class="nav-item toggle-listings-nav" *ngIf="auth.isLoggedIn$ | async">
           <a class="nav-link"
-             (click)="auth.logout()">
+             (click)="navbarLogOut()">
             Logout
           </a>
         </li>
