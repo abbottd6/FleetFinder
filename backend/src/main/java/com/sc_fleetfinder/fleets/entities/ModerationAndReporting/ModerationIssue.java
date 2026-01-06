@@ -24,6 +24,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -119,4 +120,23 @@ public class ModerationIssue {
     @OneToMany(cascade = CascadeType.ALL, mappedBy="modIssueRef", fetch= FetchType.LAZY)
     @JsonManagedReference
     private Set<ListingReport> reports = new HashSet<>();
+
+    public String getMaxReportBasis() {
+        Map<String, Integer> counts = Map.of(
+                "Spam", spamCount,
+                "Hate Speech", hateSpeechCount,
+                "NSFW", nsfwCount,
+                "Scam/Fraud", scamCount,
+                "Off Topic", offTopicCount,
+                "Low Quality/Troll", trollCount,
+                "Doxxing/Personal Info", doxxCount,
+                "Cheating/RMT", cheatCount,
+                "Other", otherCount
+        );
+
+        return counts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
+    }
 }

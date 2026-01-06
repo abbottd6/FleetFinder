@@ -1,0 +1,84 @@
+package com.sc_fleetfinder.fleets.services.CRUD_services;
+
+import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
+import com.sc_fleetfinder.fleets.entities.Notification;
+import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.utils.NotificationType;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Objects;
+
+@Service
+public class NotificationServiceImpl implements NotificationService {
+
+    private final NotificationRepository notificationRepo;
+    private final ModelMapper modelMapper;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    NotificationServiceImpl(NotificationRepository notificationRepo,
+                            ModelMapper modelMapper,
+                            SimpMessagingTemplate messagingTemplate) {
+        this.notificationRepo = notificationRepo;
+        this.modelMapper = modelMapper;
+        this.messagingTemplate = messagingTemplate;
+    }
+
+    @Override
+    public Page<GetNotificationDto> getMyNotifications(Users user, Pageable pageable) {
+        Page<Notification> myNotes = notificationRepo.findAllByUserId(user.getUserId(), pageable);
+
+        return myNotes.map(note -> modelMapper.map(note , GetNotificationDto.class));
+    }
+
+    @Override
+    public void deleteNotification(Users user, Long noteId) {
+        Notification note = notificationRepo.findById(noteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification", noteId));
+
+        if(!Objects.equals(note.getUser().getUserId(), noteId)) {
+            throw new ActionNotAuthorizedException(
+                    user.getUserId(), "deletion", "Notification", note.getNotficationId());
+        }
+
+        notificationRepo.deleteById(noteId);
+    }
+
+    @Override
+    public Integer deleteAllNotifications(Users user) {
+        return notificationRepo.deleteAllByUser_userId(user.getUserId());
+    }
+
+    @Override
+    @Transactional
+    public void createAndSendDeleteNotification(ListingArchive archive,
+                                                ModerationIssue issue,
+                                                NotificationType type,
+                                                ModListingAction action) {
+        String title = archive.getListingTitle();
+        String basis = issue.getMaxReportBasis();
+
+        Notification newNote = new Notification(issue.getUserRef(),
+                NotificationType.MOD_DELETE, title, basis, action);
+
+        newNote = notificationRepo.save(newNote);
+
+        GetNotificationDto noteDto = modelMapper.map(newNote, GetNotificationDto.class);
+
+        messagingTemplate.convertAndSendToUser(
+                issue.getUserRef().getKeycloakId(),
+                "/queue/system.notify",
+                noteDto
+        );
+    }
+}

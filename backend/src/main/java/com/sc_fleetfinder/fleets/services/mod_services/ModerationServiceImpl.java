@@ -19,14 +19,17 @@ import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBa
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.UserModerationRecord;
+import com.sc_fleetfinder.fleets.entities.Notification;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.events.ListingModDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.NotificationService;
 import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import com.sc_fleetfinder.fleets.services.conversion_services.ModerationORMConversions.ModListingActionConversionService;
 import com.sc_fleetfinder.fleets.services.conversion_services.ModerationORMConversions.ModerationIssueConversionService;
+import com.sc_fleetfinder.fleets.utils.NotificationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationConstants.AUTO_MOD_REPORT_THRESHOLD;
 
@@ -67,6 +68,7 @@ public class ModerationServiceImpl implements ModerationService {
     private final ModerationIssueConversionService mics;
     private final ModListingActionConversionService mlacs;
     private final ListingReportBasisRepository lrbr;
+    private final NotificationService noteService;
 
     public ModerationServiceImpl(GroupListingRepository groupListingRepository,
                                  GroupListingConversionService groupListingConversionService,
@@ -78,7 +80,8 @@ public class ModerationServiceImpl implements ModerationService {
                                  ListingReportBasisRepository lrbr,
                                  ModerationIssueConversionService mics,
                                  ModListingActionConversionService mlacs,
-                                 ApplicationEventPublisher eventPublisher) {
+                                 ApplicationEventPublisher eventPublisher,
+                                 NotificationService noteService) {
         this.glr = groupListingRepository;
         this.glcs = groupListingConversionService;
         this.userRepo = userRepo;
@@ -89,6 +92,7 @@ public class ModerationServiceImpl implements ModerationService {
         this.lrbr = lrbr;
         this.mics = mics;
         this.mlacs = mlacs;
+        this.noteService = noteService;
         this.eventPublisher = eventPublisher;
     }
 
@@ -306,6 +310,10 @@ public class ModerationServiceImpl implements ModerationService {
         ModListingAction modAction = new ModListingAction(issue, note, archive);
 
         mlar.save(modAction);
+
+        noteService.createAndSendDeleteNotification(
+                archive, issue, NotificationType.MOD_DELETE, modAction);
+
         log.info("Moderator action recorded under actionId: {}", modAction.getActionId());
     }
 
@@ -317,6 +325,9 @@ public class ModerationServiceImpl implements ModerationService {
         ModListingAction modAction = new ModListingAction(issue, note, archive, mod);
         mlar.save(modAction);
         log.info("Manual moderator action recorded under actionId: {}", modAction.getActionId());
+
+        noteService.createAndSendDeleteNotification(
+                archive, issue, NotificationType.MOD_DELETE, modAction);
     }
 
     //For manual mod clear issue report counts
