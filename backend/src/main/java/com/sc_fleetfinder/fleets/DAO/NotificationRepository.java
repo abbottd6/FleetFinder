@@ -17,4 +17,11 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     Page<Notification> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
 
     Integer deleteAllByUser_userId(Long userId);
+
+    @Query("""
+            SELECT COUNT(n)
+            FROM Notification n
+            WHERE n.user.userId = :userId AND n.readAt IS NULL
+            """)
+    Integer countUnreadByUserId(@Param("userId") Long userId);
 }

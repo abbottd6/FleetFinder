@@ -66,4 +66,8 @@ public class Notification {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name="created_at")
     private Instant createdAt;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @Column(name="read_at", nullable = true)
+    private Instant readAt;
 }

@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.NotificationUnreadCountDto;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
@@ -75,8 +76,22 @@ public class NotificationServiceImpl implements NotificationService {
 
         GetNotificationDto noteDto = modelMapper.map(newNote, GetNotificationDto.class);
 
+        NotificationUnreadCountDto unreadCount = new NotificationUnreadCountDto(
+                notificationRepo.countUnreadByUserId(
+                issue.getUserRef().getUserId()
+                )
+        );
+
+        String recipPrincipal = issue.getUserRef().getKeycloakId();
+
         messagingTemplate.convertAndSendToUser(
-                issue.getUserRef().getKeycloakId(),
+                recipPrincipal,
+                "/queue/system.notify_count",
+                unreadCount
+        );
+
+        messagingTemplate.convertAndSendToUser(
+                recipPrincipal,
                 "/queue/system.notify",
                 noteDto
         );

@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS notification
     message         TEXT(255)                              NOT NULL,
     id_action       BIGINT                                 NULL,
     created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP    NOT NULL,
+    read_at         DATETIME                               NULL,
 
     CONSTRAINT note_fk_ref_user
         FOREIGN KEY (id_user) REFERENCES users (id_user)

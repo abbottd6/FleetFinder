@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable, Subject} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {MessageViewModel} from "../../models/chat/message-view-model";
 import {ConversationViewModel} from "../../models/chat/conversation-view-model";
+import {NotificationViewModel} from "../../models/NotificationViewModel";
 
 export interface UnreadSummaryDto {
   totalUnread: number;
@@ -13,6 +14,10 @@ export interface UnreadSummaryDto {
 export interface PerConvUnreadDto {
   conversationId: number;
   unreadCount: number;
+}
+
+export interface NoteUnreadDto {
+  count: number;
 }
 
 @Injectable({
@@ -32,13 +37,23 @@ export class WsGatewayService {
     new BehaviorSubject<PerConvUnreadDto[] | null>(null);
   public perConvUnread$ = this.perConvUnreadSubject.asObservable();
 
+  private noteUnreadSubject = new BehaviorSubject<number | null>(null);
+  public notificationUnread$ = this.noteUnreadSubject.asObservable();
+
+  private notificationsSubject = new BehaviorSubject<NotificationViewModel[]>([]);
+  public notifications$ = this.notificationsSubject.asObservable();
+
   private chatMessageSubject = new Subject<MessageViewModel>();
   public chatMessage$ = this.chatMessageSubject.asObservable();
 
   private chatConversationSubject = new Subject<ConversationViewModel>();
   public chatConversation$ = this.chatConversationSubject.asObservable();
 
-  private unreadStompSubscription: StompSubscription | null = null;
+  private chatUnreadStompSub: StompSubscription | null = null;
+
+  private noteUnreadStompSub: StompSubscription | null = null;
+
+  private notificationStompSub: StompSubscription | null = null;
 
   constructor() {
   }
@@ -67,7 +82,7 @@ export class WsGatewayService {
       onConnect: () => {
         this.connectedSubject.next(true);
 
-        this.unreadStompSubscription = this.client!.subscribe(
+        this.chatUnreadStompSub = this.client!.subscribe(
           '/user/queue/chat.unread',
           (msg) => {
               const summary = JSON.parse(msg.body) as UnreadSummaryDto;
@@ -76,6 +91,23 @@ export class WsGatewayService {
           }
         );
 
+        this.noteUnreadStompSub = this.client!.subscribe(
+          '/user/queue/system.notify_count',
+          (msg) => {
+            const count = JSON.parse(msg.body) as NoteUnreadDto;
+            this.noteUnreadSubject.next(count.count);
+            console.log("UNREAD NOTE COUNT: ", this.noteUnreadSubject.value);
+          }
+        )
+
+        this.notificationStompSub = this.client!.subscribe(
+          '/user/queue/system.notify',
+          (msg) => {
+            const note = JSON.parse(msg.body) as NotificationViewModel;
+            this.incomingNotification(note);
+          }
+        )
+
         setTimeout(() => this.publish('/app/chat.total_unread', {}), 500);
       },
 
@@ -83,8 +115,8 @@ export class WsGatewayService {
       // debug: (s) => console.log(['stomp'], s),
       onWebSocketClose: () => {
         this.connectedSubject.next(false);
-        this.unreadStompSubscription?.unsubscribe();
-        this.unreadStompSubscription = null;
+        this.chatUnreadStompSub?.unsubscribe();
+        this.chatUnreadStompSub = null;
       }
     });
 
@@ -92,8 +124,14 @@ export class WsGatewayService {
   }
 
   disconnect(): void {
-    this.unreadStompSubscription?.unsubscribe();
-    this.unreadStompSubscription = null;
+    this.chatUnreadStompSub?.unsubscribe();
+    this.chatUnreadStompSub = null;
+
+    this.noteUnreadStompSub?.unsubscribe();
+    this.noteUnreadStompSub = null;
+
+    this.notificationStompSub?.unsubscribe();
+    this.notificationStompSub = null;
 
     if(this.client?.active) { this.client.deactivate() }
 
@@ -113,10 +151,25 @@ export class WsGatewayService {
   isConnected() {
     return this.connectedSubject.value;
   }
-  //
-  // updateTotalUnread(dto: UnreadSummaryDto) {
-  //     this.totalUnreadSubject.next(dto.totalUnread)
-  // }
+
+  incomingNotification(note: NotificationViewModel) {
+    const current = this.notificationsSubject.value;
+     const exists = current.some(n  =>
+       (n.notificationId && n.notificationId === note.notificationId)
+     );
+
+     if(exists) return;
+
+     this.notificationsSubject.next([...current, note]);
+  }
+
+  setNotesArray(notes: NotificationViewModel[]) {
+    this.notificationsSubject.next(notes);
+  }
+
+  getNotesArray() {
+    return this.notificationsSubject.value
+  }
 
   jwtSub(token: string): string | null {
     try {
