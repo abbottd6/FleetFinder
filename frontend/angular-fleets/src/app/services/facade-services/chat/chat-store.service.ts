@@ -80,6 +80,10 @@ export class ChatStoreService {
     this.selectedConvIdSubject.next(convId);
   }
 
+  // getSelectedId() {
+  //   return this.selectedConvIdSubject.value
+  // }
+
   clearSelectedConv() {
     this.selectedConvIdSubject.next(null);
   }
@@ -119,11 +123,10 @@ export class ChatStoreService {
 
   upsertConversation(conv: ConversationViewModel) {
     const convs = this.conversationsSubject.value;
-    const idx = convs.findIndex(conv => conv.conversationId === conv.conversationId);
+    const idx = convs.findIndex(c => c.conversationId === conv.conversationId);
 
-    console.log("IDX", idx);
     let next: ConversationViewModel[];
-    if(idx > 0) {
+    if(idx > -1) {
       next = [...convs];
       next[idx] = {...next[idx], ...conv };
 

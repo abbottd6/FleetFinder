@@ -74,11 +74,13 @@ export class ChatHostService {
       .subscribe({
         next: (response) => {
           this.convOnHold = response.conversationId;
+          this.chatStoreSrv.upsertConversation(response)
           if(this.mountedSubject.value) {
             if(this.windowStateSubject.value === collapsed) {
               this.toggleWindowState();
             }
-            setTimeout(() => this.chatStoreSrv.selectConversation(response.conversationId), 1000);
+
+            setTimeout(() => this.chatStoreSrv.selectConversation(response.conversationId), 350);
           } else {
             this.openChat();
           }
@@ -111,8 +113,8 @@ export class ChatHostService {
                         if(this.windowStateSubject.value === collapsed) {
                           this.toggleWindowState();
                         }
-                        setTimeout(() => this.chatStoreSrv.upsertConversation(newResponse), 200);
-                        setTimeout(() => this.chatStoreSrv.selectConversation(newResponse.conversationId), 500);
+                        setTimeout(() => this.chatStoreSrv.upsertConversation(newResponse), 350);
+                        setTimeout(() => this.chatStoreSrv.selectConversation(newResponse.conversationId), 350);
                       } else {
                         this.openChat();
                       }

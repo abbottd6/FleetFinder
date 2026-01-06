@@ -168,7 +168,7 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
         const conv = this.convDataSource.data.find(
           conv => conv.conversationId === selectedId);
         if(conv) {
-          this.onConvClick(conv);
+          setTimeout(() => this.onConvClick(conv), 200);
         }
       })
 
@@ -332,9 +332,12 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
         this.convTotalPages = page.page.totalPages;
         this.noConvs = (page.content.length === 0);
 
-        const displayConvs = this.chatStoreSrv.getConversationsArr().concat(page.content);
+        const existing = this.chatStoreSrv.getConversationsArr();
+        const merged = [...existing, ...page.content]
+          .reduce((map, conv) => map.set(conv.conversationId, conv),
+            new Map<number, ConversationViewModel>());
 
-        this.chatStoreSrv.setConversationsArr(displayConvs);
+        this.chatStoreSrv.setConversationsArr(Array.from(merged.values()));
       })
   }
 
@@ -379,9 +382,8 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
     setTimeout(() => this.isCollapsing = false, 220);
 
     if(newState === collapsed) {
-      this.chatStoreSrv.selectedConvId$.pipe(
-        filter((id): id is number => id != null),
-        take(1)).subscribe(
+      // this.chatHostSrv.convOnHold = this.chatStoreSrv.getSelectedId();
+      this.chatStoreSrv.selectedConvId$.pipe(take(1)).subscribe(
         id => this.chatHostSrv.convOnHold = id);
 
       this.selectedConv.clear();

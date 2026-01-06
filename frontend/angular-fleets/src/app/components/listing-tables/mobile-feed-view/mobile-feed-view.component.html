@@ -35,7 +35,7 @@
         <span>{{ row.listingTitle }}</span>
       </div>
       <div class="feed-data-row">
-        <span>{{ row.userName }}</span>
+        <span>{{ row.userName.length > 15 ? (row.userName|slice: 0:15) + '...' : row.userName }}</span>
         <span>|</span>
         <span>{{ row.lastUpdated | date: 'MM/d, h:mm a' }}</span>
         <span>|</span>
