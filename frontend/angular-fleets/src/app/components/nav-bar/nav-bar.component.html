@@ -75,6 +75,7 @@
             id="notification-icon"
             class="btn btn-link d-xl-none p-0"
             [matBadge]="(ws.notificationUnread$ | async)"
+            [matBadgeHidden]="((ws.notificationUnread$ | async) ?? 0) == 0"
             [matBadgeOverlap]="true"
             [matBadgePosition]="badgePosition">
             <i class="bi bi-bell-fill"></i>
@@ -110,33 +111,52 @@
             [matBadgePosition]="badgePosition">
             <i class="bi bi-chat-fill chat-icon"></i>
           </button>
-          <button
-            class="nav-link"
-            [matBadge]="(ws.notificationUnread$ | async)"
-            [matBadgeOverlap]="true"
-            [matBadgePosition]="badgePosition">
-            <i class="bi bi-bell-fill"></i>
-          </button>
+          <div class="nav-item" ngbDropdown>
+            <button
+              class="nav-link"
+              id="notes-toggle"
+              ngbDropdownToggle
+              [matBadge]="(ws.notificationUnread$ | async)"
+              [matBadgeHidden]="((ws.notificationUnread$ | async) ?? 0) == 0"
+              [matBadgeOverlap]="true"
+              [matBadgePosition]="badgePosition">
+              <i class="bi bi-bell-fill"></i>
+            </button>
+            <app-notifications-dropdown
+              ngbDropdownMenu
+              id="notifications-panel"
+              class="dropdown-menu-end">
+            </app-notifications-dropdown>
+          </div>
           <div class="nav-item dropdown" ngbDropdown>
-          <button
-            ngbDropdownToggle
-            class="nav-link"
-            type="button"
-            aria-haspopup="true"
-            aria-expanded="false">
-            <i class="bi bi-person-fill"></i>
-          </button>
-          <ul ngbDropdownMenu class="dropdown-menu dropdown-menu-end">
-            <ng-container *ngIf="auth.isLoggedIn$ | async; else loggedOut">
-              <li><button class="dropdown-item" [routerLink]="['/user-account']">Profile</button></li>
-              <li><button class="dropdown-item" (click)="navbarLogOut()">Logout</button></li>
-            </ng-container>
-            <ng-template #loggedOut>
-              <li><button class="dropdown-item" (click)="auth.login(); closeDropdown()">Login</button></li>
-              <li><button class="dropdown-item"
-                          (click)="auth.register(); closeDropdown()">Sign Up</button></li>
-            </ng-template>
-          </ul>
+            <button
+              ngbDropdownToggle
+              class="nav-link"
+              type="button"
+              aria-haspopup="true"
+              aria-expanded="false">
+              <i class="bi bi-person-fill"></i>
+            </button>
+            <ul ngbDropdownMenu class="dropdown-menu dropdown-menu-end">
+              <ng-container *ngIf="auth.isLoggedIn$ | async; else loggedOut">
+                <li>
+                  <button class="dropdown-item" [routerLink]="['/user-account']">Profile</button>
+                </li>
+                <li>
+                  <button class="dropdown-item" (click)="navbarLogOut()">Logout</button>
+                </li>
+              </ng-container>
+              <ng-template #loggedOut>
+                <li>
+                  <button class="dropdown-item" (click)="auth.login(); closeDropdown()">Login</button>
+                </li>
+                <li>
+                  <button class="dropdown-item"
+                          (click)="auth.register(); closeDropdown()">Sign Up
+                  </button>
+                </li>
+              </ng-template>
+            </ul>
           </div>
         </div>
       </div>

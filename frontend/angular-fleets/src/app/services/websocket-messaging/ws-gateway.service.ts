@@ -171,6 +171,10 @@ export class WsGatewayService {
     return this.notificationsSubject.value
   }
 
+  setNotesUnread(count: number): void {
+    this.noteUnreadSubject.next(count);
+  }
+
   jwtSub(token: string): string | null {
     try {
       const payloadPart = token.split('.')[1];

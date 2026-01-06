@@ -47,7 +47,7 @@ public class NotificationServiceImpl implements NotificationService {
         Notification note = notificationRepo.findById(noteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification", noteId));
 
-        if(!Objects.equals(note.getUser().getUserId(), noteId)) {
+        if(!Objects.equals(note.getUser().getUserId(), user.getUserId())) {
             throw new ActionNotAuthorizedException(
                     user.getUserId(), "deletion", "Notification", note.getNotficationId());
         }

@@ -8,12 +8,13 @@ import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.se
 import {MatBadgePosition} from "@angular/material/badge";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 import {BreakpointObserver} from "@angular/cdk/layout";
+import {NotificationService} from "../../services/facade-services/notifications/notification.service";
 
 @Component({
-    selector: 'app-nav-bar',
-    templateUrl: './nav-bar.component.html',
-    styleUrl: './nav-bar.component.css',
-    standalone: false
+  selector: 'app-nav-bar',
+  templateUrl: './nav-bar.component.html',
+  styleUrl: './nav-bar.component.css',
+  standalone: false
 })
 export class NavBarComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -24,7 +25,8 @@ export class NavBarComponent implements OnInit, OnDestroy {
               protected auth: AuthService,
               private chatHostSrv: ChatHostService,
               protected ws: WsGatewayService,
-              private http: HttpClient) {
+              private http: HttpClient,
+              private notificationService: NotificationService) {
   }
 
   ngOnInit() {

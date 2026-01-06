@@ -1,0 +1,12 @@
+<div class="notifications-container">
+  @if (ws.notifications$ | async; as notifications) {
+    @if (notifications.length > 0) {
+      @for (note of notifications; track note.notificationId) {
+        <app-notification [note]="note">
+        </app-notification>
+      }
+    } @else {
+      <h3>No Notifications</h3>
+    }
+  }
+</div>

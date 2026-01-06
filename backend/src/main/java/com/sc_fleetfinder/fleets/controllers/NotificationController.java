@@ -6,6 +6,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.NotificationService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,11 +19,13 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/notify")
 @PreAuthorize("isAuthenticated() and hasRole('user')")
@@ -36,7 +39,7 @@ public class NotificationController {
 
     @PostMapping("/my_notifications")
     public Page<GetNotificationDto> getMyNotifications(@AuthenticationPrincipal Jwt jwt,
-                                                       GenericPageRequestDto pageDto) {
+                                                       @RequestBody GenericPageRequestDto pageDto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 

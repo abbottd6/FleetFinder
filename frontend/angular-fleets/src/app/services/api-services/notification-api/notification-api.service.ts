@@ -17,12 +17,16 @@ export class NotificationApiService {
   constructor(private httpClient: HttpClient) { }
 
   getMyNotifications(pageIdx: number, pageSize: number): Observable<Page<NotificationViewModel>> {
-    const pageRequest = { pageIdx, pageSize};
+    const pageRequest = {
+      pageIdx: pageIdx,
+      pageSize: pageSize
+    };
+
     return this.httpClient.post<Page<NotificationViewModel>>(this.getUrl, pageRequest)
   }
 
   deleteNotification(noteId: number): Observable<any> {
-    return this.httpClient.delete(`${this.deleteUrl}/notify/${noteId}`);
+    return this.httpClient.delete(`${this.deleteUrl}/${noteId}`);
   }
 
   deleteAllMyNotifications() {

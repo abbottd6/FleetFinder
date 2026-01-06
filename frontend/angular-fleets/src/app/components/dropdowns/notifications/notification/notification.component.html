@@ -1,0 +1,14 @@
+<div class="note-container">
+  <div class="note-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
+    <h1>{{ header }}</h1>
+    <p>Title: {{ note.title.length >= 30 ? (note.title|slice: 0: 30) + '...' : note.title }}</p>
+    <p>{{ message }}<span id="note-msg">{{ note.message }}</span></p>
+  </div>
+  <div class="remove-element">
+    <button
+      id="remove-button"
+      (click)="noteService.removeNotification(note.notificationId)">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>

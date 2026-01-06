@@ -6,7 +6,6 @@ import { AppComponent } from './app.component';
 import { GroupListingsComponent } from './components/group-listings/group-listings.component';
 import {HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi} from "@angular/common/http";
 import { GroupListingFetchService } from "./services/api-services/group-listings-fetch-api/group-listing-fetch.service";
-import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { NgOptimizedImage } from "@angular/common";
 import { WelcomeScreenComponent } from './components/welcome-screen/welcome-screen.component';
@@ -74,6 +73,11 @@ import { ModIssueDetailedComponent } from './components/pop-ups/mod-issue-detail
 import {ChatShellComponent} from "./components/chat/shell-component/chat-shell.component";
 import {MeasureFooterHeightDirective} from "./utils/measure-footer-height-directive";
 import { ChatPanelComponent } from './components/chat/chat-panel/chat-panel.component';
+import {NavBarComponent} from "./components/nav-bar/nav-bar.component";
+import {
+  NotificationsDropdownComponent
+} from "./components/dropdowns/notifications/notifications-dropdown/notifications-dropdown.component";
+import {NotificationComponent} from "./components/dropdowns/notifications/notification/notification.component";
 
 @NgModule({
   declarations: [
@@ -162,6 +166,8 @@ import { ChatPanelComponent } from './components/chat/chat-panel/chat-panel.comp
     ChatShellComponent,
     ChatPanelComponent,
     MeasureFooterHeightDirective,
+    NotificationsDropdownComponent,
+    NotificationComponent,
   ],
   providers: [
     provideClientHydration(),
