@@ -18,7 +18,7 @@ import java.util.Map;
 public class ApiExceptionHandler {
 
     @ExceptionHandler(ConversationIntegrityException.class)
-    public ResponseEntity<Map<String, String>> handleIntegrityException(ConversationIntegrityException e) {
+    public ResponseEntity<Map<String, String>> handleConvIntegrity(ConversationIntegrityException e) {
         log.error("Conversation integrity error: {}", e.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -27,22 +27,23 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(ConfirmationRequiredException.class)
-    public ResponseEntity<Map<String, String>> handleConfirmationRequiredException(ConfirmationRequiredException e) {
+    public ResponseEntity<Map<String, Object>> handleConfirmationRequired(ConfirmationRequiredException e) {
         log.error("Confirmation required error: {}", e.getMessage());
+
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("code", "CONFIRMATION_REQUIRED",
-                        "message", e.getMessage()));
+                        "message", e.getMessage(),
+                        "dto", e.getDto()));
     }
 
-//    @ExceptionHandler(ResourceNotFoundException.class)
-//    public ResponseEntity<ProblemDetail> handleResourceNotFoundException(ResourceNotFoundException e) {
-//        log.error("Resource not found error: {}", e.getMessage());
-//
-//        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
-//        pd.setTitle("NOT_FOUND");
-//        pd.setDetail(e.getMessage());
-//
-//        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(pd);
-//    }
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException e) {
+        log.error("Resource not found error: {}", e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                Map.of("error", "NOT_FOUND",
+                        "message", e.getMessage())
+        );
+    }
 }

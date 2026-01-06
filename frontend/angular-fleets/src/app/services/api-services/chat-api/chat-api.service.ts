@@ -7,6 +7,7 @@ import {Observable} from "rxjs";
 import {MessageViewModel} from "../../../models/chat/message-view-model";
 import {ConversationProvisionRequest} from "../../../models/chat/conversation-provision-request";
 import {SendMessageRequest} from "../../../models/chat/send-message-request";
+import {UnmuteAndProvisionRequest} from "../../../models/chat/unmute-and-provision-request";
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +18,9 @@ export class ChatApiService {
   private convMessagesUrl = `${environment.apiBaseUrl}/chat/conv_messages`;
   private convProvisionUrl = `${environment.apiBaseUrl}/chat/conv_provision`;
   private sendMsgUrl = `${environment.apiBaseUrl}/chat/send_message`;
+  private archiveUrl = `${environment.apiBaseUrl}/chat/archive_conv`;
+  private muteUrl = `${environment.apiBaseUrl}/chat/mute_conv`;
+  private unmuteUrl = `${environment.apiBaseUrl}/chat/unmute_conv`;
 
   constructor(private httpClient: HttpClient) { }
 
@@ -46,5 +50,21 @@ export class ChatApiService {
 
   sendMessage(newMessageRq: SendMessageRequest): Observable<MessageViewModel> {
     return this.httpClient.post<MessageViewModel>(this.sendMsgUrl, newMessageRq);
+  }
+
+  archiveConvAndReturnConvs(toArchiveId: number, pageIdx: number, pageSize: number): Observable<Page<ConversationViewModel>> {
+    const pageRequest = { pageIdx, pageSize};
+
+    return this.httpClient.patch<Page<ConversationViewModel>>(`${this.archiveUrl}/${toArchiveId}`, pageRequest);
+  }
+
+  muteConvAndReturnConvs(toMuteId: number, pageIdx: number, pageSize: number): Observable<Page<ConversationViewModel>> {
+    const pageRequest = { pageIdx, pageSize };
+
+    return this.httpClient.patch<Page<ConversationViewModel>>(`${this.muteUrl}/${toMuteId}`, pageRequest);
+  }
+
+  unMuteConvAndReturn(unmute: UnmuteAndProvisionRequest): Observable<ConversationViewModel> {
+    return this.httpClient.patch<ConversationViewModel>(this.unmuteUrl, unmute);
   }
 }

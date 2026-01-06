@@ -66,7 +66,6 @@ export class WsGatewayService {
 
       onConnect: () => {
         this.connectedSubject.next(true);
-        console.log("STOMP connected");
 
         this.unreadStompSubscription = this.client!.subscribe(
           '/user/queue/chat.unread',
@@ -74,8 +73,6 @@ export class WsGatewayService {
               const summary = JSON.parse(msg.body) as UnreadSummaryDto;
               this.totalUnreadSubject.next(summary.totalUnread);
               this.perConvUnreadSubject.next(summary.unreadByConv);
-              console.log("Summary: ", summary);
-              console.log("PerConv unread subject: ", this.perConvUnreadSubject.value);
           }
         );
 

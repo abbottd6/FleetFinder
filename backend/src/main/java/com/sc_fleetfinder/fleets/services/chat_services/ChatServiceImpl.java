@@ -6,6 +6,8 @@ import com.sc_fleetfinder.fleets.DAO.chat.MessageRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.ParticipantRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.FindOrStartNewConversationDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.SendMessageDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.UnMuteAndProvisionRequestDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.ConfirmUnmuteConvDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetConversationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetMessageDto;
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.UserUnreadResponseDto;
@@ -23,6 +25,7 @@ import com.sc_fleetfinder.fleets.utils.ConversationParticipantRole;
 import com.sc_fleetfinder.fleets.utils.MessageUserRoles;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -45,6 +48,8 @@ import static com.sc_fleetfinder.fleets.utils.DmKeyUtil.sha256DmKey;
 @Service
 @Slf4j
 public class ChatServiceImpl implements ChatService {
+
+
 
     private final ConversationConversionService ccs;
     private final ParticipantRepository participantRepo;
@@ -74,7 +79,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     public Page<GetConversationDto> findMyConversations(Users user, Pageable pageable) {
         return participantRepo.pageConversationsByUserParticipant(user, pageable)
                 .map(conv -> ccs.convertToDto(conv, user.getUserId()));
@@ -128,9 +133,14 @@ public class ChatServiceImpl implements ChatService {
         Participant senderPart = inferredParts.get(MessageUserRoles.SENDER);
         Participant recipientPart = inferredParts.get(MessageUserRoles.RECIPIENT);
 
-        if(senderPart.isArchived() || senderPart.isMuting()) {
-            throw new ConfirmationRequiredException(
-                    "You muted or archived this conversation. Undo to resume?");
+        if(senderPart.isMuting()) {
+            ConfirmUnmuteConvDto unmuteDto = buildUnmuteResponse(
+                    inferredParts.values().stream().toList(),
+                    recipientPart.getUser().getUserId(),
+                    currentConv
+            );
+
+            throw new ConfirmationRequiredException("Muting", unmuteDto);
         }
 
         for( Participant part : currentConv.getParticipants()) {
@@ -241,6 +251,35 @@ public class ChatServiceImpl implements ChatService {
         return updateUserUnreadTotal(perConvUnread);
     }
 
+    @Override
+    @Transactional
+    public void archiveConv(Users user, Long convId) {
+        participantRepo.findByConversationAndUser(convId, user.getUserId())
+                .ifPresentOrElse(convPart -> {
+                    convPart.setArchived(true);
+                    participantRepo.save(convPart);
+                }, () -> {
+                    throw new ResourceNotFoundException(
+                            "Conversation Record for user: " + user.getUserId() +
+                            " and conversation: " + convId + " could not be found."
+                    );
+                });
+    }
+
+    @Override
+    public void muteConv(Users user, Long convId) {
+        participantRepo.findByConversationAndUser(convId, user.getUserId())
+                .ifPresentOrElse(convPart -> {
+                    convPart.setMuting(true);
+                    participantRepo.save(convPart);
+                }, () -> {
+                    throw new ResourceNotFoundException(
+                            "Conversation Record for user: " + user.getUserId() +
+                            " and conversation: " + convId + " could not be found."
+                    );
+                });
+    }
+
     private UserUnreadResponseDto updateUserUnreadTotal(Set<ConvUnreadMap> perConvUnread) {
         long totalUnread = 0L;
         Set<ConvUnreadMap> simplifiedPerConvUnread = new HashSet<>();
@@ -284,12 +323,42 @@ public class ChatServiceImpl implements ChatService {
                                 " is missing the sender participant " + senderId));
 
         if (sender.isMuting()) {
-            throw new ConfirmationRequiredException(
-                    "You muted this conversation. Undo to resume?");
+            ConfirmUnmuteConvDto unmuteDto = buildUnmuteResponse(participants, recipientId, conv);
+
+            throw new ConfirmationRequiredException("Muting", unmuteDto);
         }
 
+        sender.setArchived(false);
         sender.setLastActiveAt(Instant.now());
         participantRepo.save(sender);
+    }
+
+    private ConfirmUnmuteConvDto buildUnmuteResponse(List<Participant> parts,
+                                                     Long recipientId,
+                                                     Conversation conv) {
+        Users mutedParticipant = parts.stream()
+                .filter(part -> Objects.equals(recipientId, part.getUser().getUserId()))
+                .findFirst()
+                .map(Participant::getUser)
+                .orElseThrow(() -> new ResourceNotFoundException("Participant", recipientId));
+
+        return new ConfirmUnmuteConvDto(mutedParticipant, conv);
+    }
+
+    @Override
+    public FindOrStartNewConversationDto unMuteConversation(Users user, UnMuteAndProvisionRequestDto dto) {
+        participantRepo.findByConversationAndUser(dto.getConversationId(), user.getUserId())
+                .ifPresentOrElse(sender -> {
+                    sender.setMuting(false);
+                    participantRepo.save(sender);
+                }, () -> {
+                    throw new ResourceNotFoundException(
+                            "Conversation Record for user: " + user.getUserId() +
+                                    " and conversation: " + dto.getConversationId() + " could not be found."
+                    );
+                });
+
+        return new FindOrStartNewConversationDto(dto.getConvType(), dto.getTitle(), dto.getRecipientId());
     }
 
     private Map<MessageUserRoles, Participant> defineSenderAndRecipient(Conversation conv, Long currentUserId) {

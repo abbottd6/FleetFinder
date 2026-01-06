@@ -56,7 +56,7 @@ public interface ParticipantRepository extends JpaRepository<Participant, Conver
                     ON m.conversation = p.conversation
                     AND m.sender.userId <> :userId
                     AND (lastRead IS NULL OR m.msgId > lastRead.msgId)
-            WHERE p.user.userId = :userId
+            WHERE p.user.userId = :userId AND p.isMuting = false
             GROUP BY p.conversation.conversationId
             """)
     List<ConvUnreadMap> userUnreadCountByUserId(@Param("userId") Long userId);

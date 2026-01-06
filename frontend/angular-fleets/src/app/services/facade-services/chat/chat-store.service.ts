@@ -121,6 +121,7 @@ export class ChatStoreService {
     const convs = this.conversationsSubject.value;
     const idx = convs.findIndex(conv => conv.conversationId === conv.conversationId);
 
+    console.log("IDX", idx);
     let next: ConversationViewModel[];
     if(idx > 0) {
       next = [...convs];

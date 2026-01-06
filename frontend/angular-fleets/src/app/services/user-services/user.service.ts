@@ -14,7 +14,6 @@ import {UserApiService} from "./userApi.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {WsGatewayService} from "../websocket-messaging/ws-gateway.service";
-import {OidcSecurityService} from "angular-auth-oidc-client";
 
 export enum UserRole {
   admin = 'admin',

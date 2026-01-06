@@ -6,6 +6,14 @@ import lombok.Data;
 @Data
 public class FindOrStartNewConversationDto {
 
+    public FindOrStartNewConversationDto(ConversationType convType,
+                                  String title,
+                                  Long recipientId) {
+        this.convType = convType;
+        this.title = title;
+        this.recipientId = recipientId;
+    }
+
     private ConversationType convType;
     private String title;
     private Long recipientId;

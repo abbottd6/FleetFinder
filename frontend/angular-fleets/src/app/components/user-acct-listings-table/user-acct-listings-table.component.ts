@@ -15,7 +15,7 @@ import {MatTableDataSource, MatTableModule} from "@angular/material/table";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {SelectionModel} from "@angular/cdk/collections";
 import {AsyncPipe, NgIf} from "@angular/common";
-import {Router, RouterLink} from "@angular/router";
+import {RouterLink} from "@angular/router";
 import {UserService} from "../../services/user-services/user.service";
 import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
 import {BreakpointObserver} from "@angular/cdk/layout";
@@ -34,8 +34,6 @@ import {
   ListingOwnerActionsService
 } from "../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
 import {ListingTemplatesApiService} from "../../services/api-services/listing-templates-api/listing-templates-api.service";
-import {CreateTemplateRequest} from "../../models/listing-templates/create-template-request";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-user-acct-listings-table',

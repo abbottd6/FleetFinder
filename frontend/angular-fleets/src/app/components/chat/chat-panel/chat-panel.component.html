@@ -76,6 +76,9 @@
                   <tr mat-header-row *matHeaderRowDef="convColumns"></tr>
                   <tr mat-row *matRowDef="let conv; columns: convColumns"
                       (click)="onConvClick(conv)"
+                      (contextmenu)="contextMenu($event, conv)"
+                      (touchstart)="touchMenu($event, conv)"
+                      (touchend)="unTouchMenu($event)"
                       [class.selected]="isSelected(conv)">
                   </tr>
                 </table>
@@ -149,3 +152,33 @@
     </div>
   </div>
 </div>
+
+<!-- Context Menu -->
+<div
+  #chatMenuAnchor
+  class="context-menu-anchor"
+  [matMenuTriggerFor]="chatOptionsMenu"
+  #chatMenuTrigger="matMenuTrigger">
+</div>
+
+<mat-menu #chatOptionsMenu="matMenu">
+  <ng-container>
+    <button
+      mat-menu-item
+      class="options-item">
+      Cancel
+    </button>
+    <button
+      mat-menu-item
+      class="options-item"
+      (click)="archiveConversation(selectedConv.selected[0])">
+      Remove
+    </button>
+    <button
+      mat-menu-item
+      class="options-item"
+      (click)="muteConversation(selectedConv.selected[0])">
+      Mute
+    </button>
+  </ng-container>
+</mat-menu>
