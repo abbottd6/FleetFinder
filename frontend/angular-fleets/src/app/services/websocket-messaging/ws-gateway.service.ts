@@ -160,7 +160,7 @@ export class WsGatewayService {
 
      if(exists) return;
 
-     this.notificationsSubject.next([...current, note]);
+     this.notificationsSubject.next([note, ...current]);
   }
 
   setNotesArray(notes: NotificationViewModel[]) {

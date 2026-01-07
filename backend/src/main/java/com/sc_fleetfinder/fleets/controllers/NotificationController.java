@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.controllers;
 
-import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

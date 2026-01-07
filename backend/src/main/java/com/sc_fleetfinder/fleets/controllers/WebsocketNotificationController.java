@@ -13,7 +13,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.security.Principal;
-import java.util.Map;
 
 @Controller
 @Slf4j
@@ -36,11 +35,7 @@ public class WebsocketNotificationController {
         String userSub = principal.getName();
         Users user = userService.verifyUser(userSub);
 
-        log.info("RECIEVED IDS: {}", readDto.readIds());
-
         Integer markedCount = notificationService.updateRead(user, readDto);
-
-        log.info("MARKED COUNT: {}", markedCount);
 
         if(markedCount != null && markedCount > 0) {
             Integer count = notificationService.countUnread(user.getUserId());
@@ -51,7 +46,6 @@ public class WebsocketNotificationController {
                     "/queue/system.notify_count",
                     dto
             );
-            log.info("DTO VAL: {}", dto.getCount());
         }
     }
 

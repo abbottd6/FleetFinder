@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, Input} from '@angular/core';
 import {NotificationViewModel} from "../../../../models/NotificationViewModel";
-import {SlicePipe} from "@angular/common";
+import {DatePipe, SlicePipe} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {NotificationService} from "../../../../services/facade-services/notifications/notification.service";
 
@@ -10,7 +10,8 @@ import {NotificationService} from "../../../../services/facade-services/notifica
   templateUrl: './notification.component.html',
   imports: [
     SlicePipe,
-    MatIcon
+    MatIcon,
+    DatePipe
   ],
   styleUrl: './notification.component.css'
 })

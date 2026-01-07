@@ -63,7 +63,6 @@ export class NotificationService {
             setTimeout(() => {
               this.closingIds.delete(noteId)
               this.ws.setNotesArray(next);
-              this.ws.setNotesUnread(next.length);
             }, 300);
         },
         error: (err: any) => {

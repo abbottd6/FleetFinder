@@ -122,8 +122,16 @@
         </div>
         <div *ngIf="formSubmitted && listingForm.invalid" class="submit-error">Check required fields</div>
         <div class="submit-button-container">
-          <button type="button" [routerLink]="['/user-account']" class="action-buttons">Cancel</button>
-          <button type="submit" class="action-buttons">Update Listing</button>
+          <button type="button"
+                  [routerLink]="['/user-account']"
+                  class="action-buttons">
+            Cancel
+          </button>
+          <button type="submit"
+                  class="action-buttons"
+                  [disabled]="submitting$ | async">
+            Update Listing
+          </button>
         </div>
       </form>
     </div>

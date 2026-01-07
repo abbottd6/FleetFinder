@@ -7,10 +7,10 @@ import {DropdownModule} from "../dropdowns/dropdown-module/dropdown.module";
 import {MatError} from "@angular/material/form-field";
 import {environment} from "../../../environments/environment";
 import {UserListingManagementService} from "../../services/user-services/user-listing-management.service";
-import {NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {UpdateListingRequest} from "../../models/group-listing/update-listing-request";
-import {Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-update-listing',
@@ -23,7 +23,8 @@ import {Subject, takeUntil} from "rxjs";
     DropdownModule,
     MatError,
     NgIf,
-    RouterLink
+    RouterLink,
+    AsyncPipe
   ]
 })
 export class UpdateListingComponent implements OnInit, OnDestroy {
@@ -31,6 +32,9 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
   public formSubmitted: boolean = false;
   listingForm!: FormGroup<ListingFormShape>;
   listingData!: GroupListingViewModel;
+
+  private submitSubject = new BehaviorSubject<boolean>(false);
+  public submitting$ = this.submitSubject.asObservable();
 
   constructor(private userListingService: UserListingManagementService, private router: Router,
               public formService: ListingFormService) {}
@@ -54,6 +58,8 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.submitSubject.next(true);
+    setTimeout(() => this.submitSubject.next(false), 4000);
     if (this.listingForm.invalid) {
       this.listingForm.markAllAsTouched();
       this.formSubmitted = true;

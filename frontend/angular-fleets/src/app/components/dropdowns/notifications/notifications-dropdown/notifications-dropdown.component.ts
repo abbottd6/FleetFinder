@@ -50,12 +50,12 @@ export class NotificationsDropdownComponent implements AfterViewInit, OnDestroy 
 
     // if it IS scrollable, use IntersectionObserver with the container as root
     this.io?.disconnect();
-    if(isScrollable) {
-      this.io = new IntersectionObserver(this.onIntersect, {
-        root: rootEl,
-        threshold: 0.6,
-      });
-    }
+    // if(isScrollable) {
+    //   this.io = new IntersectionObserver(this.onIntersect, {
+    //     root: rootEl,
+    //     threshold: 0.6,
+    //   });
+    // }
     this.noteEls.forEach(r => this.io!.observe(r.nativeElement));
   }
 

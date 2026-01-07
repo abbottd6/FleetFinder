@@ -42,7 +42,8 @@
   border: none;
   color: rgba(150, 168, 183, 0.8);
   border-radius: 4px;
-  transition: color 0.2s ease, background-color 0.2s ease;
+  transition: color 0.2s ease, background-color 0.2s ease, min-height 200ms ease, transform 200ms ease !important;
+  min-height: 20px !important;
 }
 
 #remove-button:hover {
@@ -50,6 +51,10 @@
   background-color: rgba(44, 30, 18, 0.3);
   align-items: center;
   line-height: 1;
+}
+
+.remove-element.closing {
+  display: none !important;
 }
 
 h1 {
@@ -65,4 +70,21 @@ p {
 
 #note-msg {
   color: rgba(52, 135, 168, 0.9);
+}
+
+.data-row {
+  display: grid;
+  grid-template-columns: minmax(140px, max-content) auto;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.ts-container {
+  display: flex;
+  align-items: flex-end;
+}
+
+.ts {
+  width: 100%;
+  text-align: right;
 }
