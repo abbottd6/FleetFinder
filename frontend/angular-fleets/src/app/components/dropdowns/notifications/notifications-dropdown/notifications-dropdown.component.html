@@ -1,9 +1,13 @@
-<div class="notifications-container">
+<div class="notifications-container" #scrollRoot>
   @if (ws.notifications$ | async; as notifications) {
     @if (notifications.length > 0) {
       @for (note of notifications; track note.notificationId) {
-        <app-notification [note]="note">
+        <div  #noteEl
+              [attr.data-note-id]="note.notificationId">
+        <app-notification
+          [note]="note">
         </app-notification>
+        </div>
       }
     } @else {
       <h3>No Notifications</h3>

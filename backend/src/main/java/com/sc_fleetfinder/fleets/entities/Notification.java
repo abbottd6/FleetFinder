@@ -40,7 +40,7 @@ public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_notification")
-    private Long notficationId;
+    private Long notificationId;
 
     @ManyToOne
     @NotNull(message="Notification field 'user' cannot be null.")

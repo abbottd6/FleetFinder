@@ -1,8 +1,10 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.NotificationUnreadCountDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationUnreadCountDto;
+import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
@@ -18,6 +20,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -26,13 +29,15 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepo;
     private final ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
+    private final UserRepository userRepository;
 
     NotificationServiceImpl(NotificationRepository notificationRepo,
                             ModelMapper modelMapper,
-                            SimpMessagingTemplate messagingTemplate) {
+                            SimpMessagingTemplate messagingTemplate, UserRepository userRepository) {
         this.notificationRepo = notificationRepo;
         this.modelMapper = modelMapper;
         this.messagingTemplate = messagingTemplate;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -49,7 +54,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         if(!Objects.equals(note.getUser().getUserId(), user.getUserId())) {
             throw new ActionNotAuthorizedException(
-                    user.getUserId(), "deletion", "Notification", note.getNotficationId());
+                    user.getUserId(), "deletion", "Notification", note.getNotificationId());
         }
 
         notificationRepo.deleteById(noteId);
@@ -95,5 +100,17 @@ public class NotificationServiceImpl implements NotificationService {
                 "/queue/system.notify",
                 noteDto
         );
+    }
+
+    @Override
+    @Transactional
+    public Integer updateRead(Users user, ReceiveReadNotesDto readDto) {
+        return notificationRepo.markAsRead(user.getUserId(), readDto.readIds());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer countUnread(Long userId) {
+        return notificationRepo.countUnreadByUserId(userId);
     }
 }

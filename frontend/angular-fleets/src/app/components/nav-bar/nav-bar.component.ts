@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {UserService} from "../../services/user-services/user.service";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
-import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
+import {filter, map, Observable, shareReplay, Subject, Subscription, take, takeUntil} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.service";
 import {MatBadgePosition} from "@angular/material/badge";
@@ -21,6 +21,8 @@ export class NavBarComponent implements OnInit, OnDestroy {
   badgePosition: MatBadgePosition = "above after";
   private breakpointObserver = new BreakpointObserver();
 
+  private wsConnectSub: Subscription | null = null;
+
   constructor(public userService: UserService,
               protected auth: AuthService,
               private chatHostSrv: ChatHostService,
@@ -34,8 +36,23 @@ export class NavBarComponent implements OnInit, OnDestroy {
       .subscribe(isLoggedIn => {
         if(isLoggedIn && (this.userService.sessionUser === null)) {
           this.userService.refreshUser();
+          this.notificationService.loadNotifications();
         }
-      })
+      });
+
+    this.wsConnectSub = this.ws.isConnected$.pipe(
+      takeUntil(this.destroy$),
+      filter(Boolean)
+      ).subscribe(() => {
+        this.wsConnectSub?.unsubscribe();
+        this.wsConnectSub = null;
+        this.pingForNotificationCount();
+      });
+  }
+
+  pingForNotificationCount() {
+    this.ws.publish('/app/system.notify/get_unread',
+      null)
   }
 
   closeDropdown() {
@@ -48,6 +65,10 @@ export class NavBarComponent implements OnInit, OnDestroy {
         menu.classList.remove('show');
       }
     }
+  }
+
+  onOpenChange(open: boolean) {
+    this.notificationService.setOpenState(open);
   }
 
   testUnreadPush() {

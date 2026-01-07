@@ -1,4 +1,4 @@
-package com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs;
+package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

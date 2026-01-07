@@ -3,12 +3,17 @@ import {WsGatewayService} from "../../websocket-messaging/ws-gateway.service";
 import {NotificationApiService} from "../../api-services/notification-api/notification-api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {NotificationViewModel} from "../../../models/NotificationViewModel";
+import {BehaviorSubject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class NotificationService {
   private notesDestroyRef = inject(DestroyRef)
+
+  private openStateSubject = new BehaviorSubject<boolean>(false);
+  public openState$ = this.openStateSubject.asObservable();
 
   private notePageIdx: number = 0;
   private notePageSize: number = 10;
@@ -20,8 +25,10 @@ export class NotificationService {
 
   constructor(private ws: WsGatewayService,
               private noteApi: NotificationApiService) {
+  }
 
-    this.loadNotifications();
+  setOpenState(open: boolean): void {
+    this.openStateSubject.next(open);
   }
 
   loadNotifications() {
@@ -35,7 +42,6 @@ export class NotificationService {
         this.noNotifications = page.content.length === 0;
 
         this.ws.setNotesArray(page.content)
-        this.ws.setNotesUnread(this.noteTotalElements);
       })
   }
 
@@ -44,7 +50,6 @@ export class NotificationService {
       .subscribe( {
         next: () => {
             this.closingIds.add(noteId);
-            setTimeout(() => { this.closingIds.delete(noteId); }, 1000);
             const notes = this.ws.getNotesArray();
             const idx = notes.findIndex(n => n.notificationId === noteId);
 
@@ -55,12 +60,21 @@ export class NotificationService {
             } else {
               next = [...notes]
             }
-            this.ws.setNotesArray(next);
-            this.ws.setNotesUnread(next.length)
+            setTimeout(() => {
+              this.closingIds.delete(noteId)
+              this.ws.setNotesArray(next);
+              this.ws.setNotesUnread(next.length);
+            }, 300);
         },
         error: (err: any) => {
           alert(err.error.message);
         }
       })
+  }
+
+  setRead(scanned: number[]) {
+    this.ws.publish('/app/system.notify/receive_read', {
+      readIds: scanned
+    })
   }
 }

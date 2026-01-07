@@ -111,7 +111,9 @@
             [matBadgePosition]="badgePosition">
             <i class="bi bi-chat-fill chat-icon"></i>
           </button>
-          <div class="nav-item" ngbDropdown>
+          <div class="nav-item"
+              ngbDropdown
+              (openChange)="onOpenChange($event)">
             <button
               class="nav-link"
               id="notes-toggle"

@@ -4,8 +4,7 @@ import {
   OnInit, ViewChild,
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
-import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
-import {PrivateUser} from "../../models/private-user/private-user";
+import {map, shareReplay, Subject, takeUntil} from "rxjs";
 import {RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {MatSidenavModule} from "@angular/material/sidenav";
