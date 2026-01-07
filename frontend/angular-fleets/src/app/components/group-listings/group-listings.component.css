@@ -77,6 +77,22 @@
   border-radius: 0.25rem;
 }
 
+.status-circle-icon.is-fresh {
+  color: #478028;
+}
+
+.status-circle-icon.is-recent {
+  color: rgba(218, 165, 32, 0.75);
+}
+
+.status-circle-icon.is-stale {
+  color: rgba(255, 131, 7, .4);
+}
+
+.status-circle-icon.is-expired {
+  color: rgba(90, 2, 2, 0.4);
+}
+
 .no-results-container {
   text-align: center;
   padding: 1rem;

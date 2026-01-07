@@ -295,14 +295,6 @@ app-user {
   background: transparent;
 }
 
-.has-response {
-  color: rgba(255, 131, 7, .4);
-}
-
-.response-pending {
-  color: rgba(29, 104, 177, .8);
-}
-
 .status-circle-icon {
   scale: 0.45;
 }

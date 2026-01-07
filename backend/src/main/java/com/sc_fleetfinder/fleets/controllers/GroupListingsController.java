@@ -73,12 +73,8 @@ public class GroupListingsController {
                                                 @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
 
-        log.info(dto.getEventDate());
-        log.info(dto.getEventTime());
-        log.info(dto.getEventTimeZone());
-
         Users requestingUser = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found. Try logging out and logging back in."));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found. Try refreshing the page."));
 
         dto.setUserId(requestingUser.getUserId());
 

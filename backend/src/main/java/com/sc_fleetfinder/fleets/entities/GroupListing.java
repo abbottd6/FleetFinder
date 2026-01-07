@@ -12,6 +12,9 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Planetary
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import com.sc_fleetfinder.fleets.utils.VisStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import org.springframework.lang.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -150,4 +153,8 @@ public class GroupListing {
     @Column(name="last_updated")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant lastUpdated;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="vis_status", nullable = false)
+    private VisStatus visStatus = VisStatus.FRESH;
 }

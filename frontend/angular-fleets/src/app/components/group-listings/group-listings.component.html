@@ -27,8 +27,12 @@
             matTooltip="ToDo: conversation status"
             [matTooltipPosition]="positionOptions[0]"
             class="status-circle-icon"
-            [class.has-response]="row.system === 'Stanton'"
-            [class.response-pending]="row.system === 'Pyro'">circle</mat-icon>
+            [class.is-fresh]="row.visStatus === 'FRESH'"
+            [class.is-recent]="row.visStatus === 'RECENT'"
+            [class.is-stale]="row.visStatus === 'STALE'"
+            [class.is-expired]="row.visStatus === 'EXPIRED'">
+            circle
+          </mat-icon>
         </ng-container>
         <ng-template #noStatus>
           <mat-icon></mat-icon>

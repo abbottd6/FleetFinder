@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
+import com.sc_fleetfinder.fleets.utils.VisStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -112,4 +113,6 @@ public class GroupListingResponseDto {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant lastUpdated;
+
+    private VisStatus visStatus;
 }

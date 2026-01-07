@@ -15,6 +15,7 @@ import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import com.sc_fleetfinder.fleets.utils.SearchStopWords;
+import com.sc_fleetfinder.fleets.utils.VisStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
@@ -147,6 +148,8 @@ public class GroupListingServiceImpl implements GroupListingService {
 
                 BeanUtils.copyProperties(temp, listing,
                         "groupId", "users", "creationTimestamp", "isDeleted", "deletedAt");
+
+                listing.setVisStatus(VisStatus.FRESH);
 
                 groupListingRepository.save(listing);
 
