@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.messaging.websocket.JwtSubHandshakeHandler;
 import com.sc_fleetfinder.fleets.messaging.websocket.StompJwtChannelInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -15,6 +16,7 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 
 @Configuration
 @EnableWebSocketMessageBroker
+@Profile("!test")
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Value("${app.ws.allowed-origins}")

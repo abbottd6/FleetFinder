@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
+import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ContextConfiguration(initializers = TestEnvironmentLoader.class)
+@ContextConfiguration(initializers = TestEnvironmentLoader.class, classes = SimpMessageTestConfig.class)
 public class ExperienceControllerIntegrationTest extends AbstractIntegrationTestDB {
 
     @Autowired

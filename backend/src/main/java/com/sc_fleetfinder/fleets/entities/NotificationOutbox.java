@@ -3,6 +3,8 @@ package com.sc_fleetfinder.fleets.entities;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,6 +33,7 @@ public class NotificationOutbox {
     @Column(name="outbox_id")
     private Long outboxId;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="event_type")
     @NotNull(message="NotificationOutbox field 'eventType' cannot be null.")
     private NotificationType eventType;

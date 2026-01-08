@@ -7,6 +7,7 @@ import com.sc_fleetfinder.fleets.services.CRUD_services.NotificationService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;

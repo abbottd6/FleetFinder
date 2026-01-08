@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.integration_tests;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-@ContextConfiguration(initializers = TestEnvironmentLoader.class)
+@ContextConfiguration(initializers = TestEnvironmentLoader.class, classes = SimpMessageTestConfig.class)
 public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
 
     @Autowired

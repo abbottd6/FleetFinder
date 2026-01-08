@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.messaging.websocket;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 @Component
+@Profile("!test")
 public class StompJwtChannelInterceptor implements ChannelInterceptor {
 
     private final JwtDecoder jwtDecoder;
