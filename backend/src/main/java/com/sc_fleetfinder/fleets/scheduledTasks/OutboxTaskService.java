@@ -25,12 +25,12 @@ public class OutboxTaskService {
     }
 
     @Transactional
-    protected void markSent(long outboxId) {
-        outboxRepo.markSent(outboxId);
+    protected int markSent(long outboxId) {
+        return outboxRepo.markSent(outboxId);
     }
 
     @Transactional
-    protected void markFailed(long outboxId, String msg) {
-        outboxRepo.markFailed(outboxId, msg);
+    protected int markFailed(long outboxId, String msg) {
+        return outboxRepo.markFailed(outboxId, msg);
     }
 }

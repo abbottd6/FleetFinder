@@ -19,17 +19,16 @@ public class OutboxSenderTask {
 
     @Scheduled(fixedDelayString = "PT30S")
     public void sendOutboxNotifications() {
-        final int batchSize = 100;
+        int sentCount = 0;
+        int failedCount = 0;
 
-        log.info("is this running?");
+        final int BATCH_SIZE = 100;
 
-        int claimed = outboxService.claimPendingBatch(batchSize);
+        int claimed = outboxService.claimPendingBatch(BATCH_SIZE);
 
-//        if (claimed == 0) {
-//            return;
-//        }
+        log.info("claimed {} outbox notifications for processing.", claimed);
 
-        List<NotificationOutbox> batch = outboxService.findStatus_Claimed(batchSize);
+        List<NotificationOutbox> batch = outboxService.findStatus_Claimed(BATCH_SIZE);
 
         if(batch.isEmpty()) {
             return;
@@ -38,11 +37,16 @@ public class OutboxSenderTask {
             try {
                 notificationService.sendOutboxNotification(outbox);
                 outboxService.markSent(outbox.getOutboxId());
+                ++sentCount;
             } catch (Exception e) {
                 String msg = e.getMessage();
                 if(msg != null && msg.length() > 900) msg = msg.substring(0,900);
                 outboxService.markFailed(outbox.getOutboxId(), msg);
+                ++failedCount;
             }
         }
+
+        log.info("Sent: {} outbox notifications were sent.", sentCount);
+        log.info("Failed: {} outbox notificatinos failed to send.", failedCount);
     }
 }

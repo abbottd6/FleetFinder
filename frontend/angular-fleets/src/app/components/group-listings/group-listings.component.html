@@ -28,7 +28,7 @@
                         row.visStatus === 'FRESH' ? 'Updated < 3 hours ago' :
                         row.visStatus === 'RECENT' ? 'Updated < 6 hours ago' :
                         row.visStatus === 'STALE' ? 'Updated < 12 hours ago or Future/Scheduled and upcoming' :
-                        row.visStatus === 'EXPIRED' ? 'Updated 12+ hours ago' :
+                        row.visStatus === 'INACTIVE' ? 'Updated 12+ hours ago' :
                         'Unknown status'
                        "
             [matTooltipPosition]="positionOptions[0]"
@@ -36,7 +36,7 @@
             [class.is-fresh]="row.visStatus === 'FRESH'"
             [class.is-recent]="row.visStatus === 'RECENT'"
             [class.is-stale]="row.visStatus === 'STALE'"
-            [class.is-expired]="row.visStatus === 'EXPIRED'">
+            [class.is-inactive]="row.visStatus === 'INACTIVE'">
             circle
           </mat-icon>
         </ng-container>

@@ -36,7 +36,7 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 'PENDING'                               AS status,
                 NOW()                                   AS created_at
             FROM group_listing gl
-            WHERE gl.vis_status = 'EXPIRED'
+            WHERE gl.vis_status = 'ARCHIVED'
               AND gl.last_updated < (NOW() - INTERVAL 14 DAY)
               AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 14 DAY))
             ON DUPLICATE KEY UPDATE outbox_id = outbox_id
@@ -52,6 +52,15 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 14 DAY))
             """, nativeQuery = true)
     int setArchivedStatus();
+
+    @Modifying
+    @Query(value = """
+            DELETE gl FROM group_listing gl
+            WHERE gl.vis_status = 'ARCHIVED'
+                AND gl.last_updated < (NOW() - INTERVAL 14 DAY)
+                AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 14 DAY))
+            """, nativeQuery = true)
+    int scheduledDeleteArchivedListings();
 
     @Modifying
     @Query(value = """

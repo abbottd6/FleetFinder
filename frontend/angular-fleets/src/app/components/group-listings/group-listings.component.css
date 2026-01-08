@@ -89,7 +89,7 @@
   color: rgba(255, 131, 7, .6);
 }
 
-.status-circle-icon.is-expired {
+.status-circle-icon.is-inactive {
   color: rgba(90, 2, 2, 0.6);
 }
 

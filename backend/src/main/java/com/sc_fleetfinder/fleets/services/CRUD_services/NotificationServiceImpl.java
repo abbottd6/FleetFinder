@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingArchiveRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
-import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationUnreadCountDto;
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
@@ -18,7 +18,6 @@ import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -34,17 +33,19 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepo;
     private final ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
-    private final UserRepository userRepository;
+    private final ListingArchiveRepository archiveRepo;
     private final GroupListingRepository groupListingRepository;
 
     NotificationServiceImpl(NotificationRepository notificationRepo,
                             ModelMapper modelMapper,
-                            SimpMessagingTemplate messagingTemplate, UserRepository userRepository, GroupListingRepository groupListingRepository) {
+                            SimpMessagingTemplate messagingTemplate,
+                            GroupListingRepository groupListingRepository,
+                            ListingArchiveRepository archiveRepo) {
         this.notificationRepo = notificationRepo;
         this.modelMapper = modelMapper;
         this.messagingTemplate = messagingTemplate;
-        this.userRepository = userRepository;
         this.groupListingRepository = groupListingRepository;
+        this.archiveRepo = archiveRepo;
     }
 
     @Override
@@ -124,10 +125,19 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void sendOutboxNotification(NotificationOutbox obEntity) {
-        String title = groupListingRepository.findById(obEntity.getEntityId())
+        String title = "";
+
+        if(obEntity.getEventType() == NotificationType.LISTING_VIS_STATUS_CHANGED) {
+            title = groupListingRepository.findById(obEntity.getEntityId())
                     .map(GroupListing::getListingTitle)
                     .orElseThrow(() -> new ResourceNotFoundException(
                             "GroupListing", obEntity.getEntityId()));
+        } else if(obEntity.getEventType() == NotificationType.LISTING_ARCHIVED) {
+            title = archiveRepo.findByGroupId(obEntity.getEntityId())
+                    .map(ListingArchive::getListingTitle)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "ListingArchive", obEntity.getEntityId()));
+        }
 
         Notification newNote = new Notification(
                 obEntity.getEntityOwner(),

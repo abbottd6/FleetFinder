@@ -4,5 +4,6 @@ public enum VisStatus {
     FRESH,
     RECENT,
     STALE,
+    INACTIVE,
     EXPIRED
 }

@@ -42,7 +42,9 @@ CREATE TABLE moderation_issue
     CONSTRAINT mod_issue_fk_ref_user
         FOREIGN KEY (id_user)
             REFERENCES users (id_user)
-            ON DELETE CASCADE
+            ON DELETE CASCADE,
+    CONSTRAINT uq_moderation_issue_per_listing
+        UNIQUE KEY (id_group)
 );
 
 CREATE TABLE listing_report

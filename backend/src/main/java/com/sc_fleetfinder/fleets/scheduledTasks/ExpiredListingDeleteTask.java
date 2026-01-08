@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.scheduledTasks;
 
-import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -12,19 +11,27 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ExpiredListingDeleteTask {
 
-    private final GroupListingRepository listingRepo;
+    private final ScheduledArchiveService scheduledArchiveService;
 
     //TODO ADJUST THIS RATE
     @Scheduled(fixedDelayString= "PT2M")
     @Transactional
-    public void deleteExpiredListing() {
-        int newOutboxEntities = listingRepo.createOutboxEntriesForArchiveNotifications();
+    public void archiveExpiredListing() {
+        int statusChangedCount = scheduledArchiveService.setArchivedStatus();
+
+        log.info("Changed the status of {} listings in preparation for archiving.", statusChangedCount);
+
+        int archivedCount = scheduledArchiveService.generateArchivesForExpired();
+
+        log.info("Archived {} listings for scheduled deletion.", archivedCount);
+
+        int newOutboxEntities = scheduledArchiveService.createOutboxEntriesForArchiveNotifications();
 
         log.info("Added {} outbox entries for expired listings " +
                  "queued for deletion.", newOutboxEntities);
 
-        int statusArchivedCount = listingRepo.setArchivedStatus();
+        int deletedCount = scheduledArchiveService.deleteArchivedListings();
 
-
+        log.info("Deleted {} listings after archival.", deletedCount);
     }
 }

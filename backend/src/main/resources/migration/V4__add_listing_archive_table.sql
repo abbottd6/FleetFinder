@@ -74,5 +74,7 @@ CREATE TABLE listing_archive
             REFERENCES planetary_system(system_id),
     CONSTRAINT archive_fk_ref_planet_moon_system
         FOREIGN KEY (planet_id)
-            REFERENCES planet_moon_system(planet_id)
+            REFERENCES planet_moon_system(planet_id),
+    CONSTRAINT uq_archive_per_listing
+        UNIQUE KEY (id_group)
 );
