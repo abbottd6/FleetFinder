@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlanetMoonSystemDto;
 
 import java.util.List;
 

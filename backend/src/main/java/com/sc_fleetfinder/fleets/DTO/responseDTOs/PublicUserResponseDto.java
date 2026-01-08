@@ -16,7 +16,7 @@ public class PublicUserResponseDto {
             "between 1 and 32 characters")
     private String username;
 
-    private String Server;
+    private String server;
 
     @Size(max = 25, message = "PublicUserResponseDto 'org' cannot exceed 25 characters")
     private String org;

@@ -1,27 +1,43 @@
 import {
+  afterNextRender,
   AfterViewInit,
-  booleanAttribute,
-  Component,
-  EventEmitter, Inject,
+  Component, ElementRef,
+  EventEmitter,
   inject,
-  Input, OnDestroy,
+  OnDestroy,
   OnInit,
   Output,
   ViewChild
 } from '@angular/core';
-import {GroupListingFetchService, Page} from "../../services/group-listing-services/group-listing-fetch.service";
+import {GroupListingFetchService} from "../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {environment} from "../../../environments/environment";
-import {MatSnackBar} from "@angular/material/snack-bar";
 import {TooltipPosition} from "@angular/material/tooltip";
-import {MatSort, MatSortHeader, Sort, SortDirection} from "@angular/material/sort";
+import {MatSort, Sort, SortDirection} from "@angular/material/sort";
 import {MatTableDataSource} from "@angular/material/table";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
 import {MatPaginator, PageEvent} from "@angular/material/paginator";
 import {BreakpointObserver} from "@angular/cdk/layout";
-import {BehaviorSubject, map, shareReplay, Subject, takeUntil} from "rxjs";
-import {FilterService, ListingFilterState} from "../../services/api-lookup-services/filter.service";
+import { map, Observable, shareReplay, Subject, takeUntil } from "rxjs";
+import {
+  FilterService,
+  ListingFilterState
+} from "../../services/api-services/filter-api/filter.service";
 import {ListingFilterRequest} from "../../models/listing-filter/listing-filter-request";
+import {AuthService} from "../../services/auth/auth-services/auth.service";
+import {MatDialog} from "@angular/material/dialog";
+import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
+import {UserService} from "../../services/user-services/user.service";
+import {
+  ListingViewInteractionsService
+} from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
+import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
+import {MatMenuTrigger} from "@angular/material/menu";
+import {QuickAccessMenuService} from "../../services/component-services/quick-access-menu/quick-access-menu.service";
+import {
+  ListingOwnerActionsService
+} from "../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
+import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 
 @Component({
     selector: 'app-group-listings-table',
@@ -34,17 +50,19 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  @ViewChild('contextMenuAnchor', { read: ElementRef })
+  protected contextMenuAnchor!: ElementRef<HTMLElement>;
+
+
   @Output() filtersUpToDate = new EventEmitter<boolean>();
 
   private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
-  private CLICKED_KEY = 'ff_user_clicked_listings';
-  private _liveAnnouncer = inject(LiveAnnouncer)
+  private _liveAnnouncer = inject(LiveAnnouncer);
+  readonly dialog = inject(MatDialog);
 
   positionOptions: TooltipPosition[] = ['after', 'before', 'above', 'below', 'left', 'right'];
-  selectedListing: GroupListingViewModel | null = null;
-  isModalVisible: boolean = false;
-  clickedRows = new Set<number>();
 
   pageIndex = 0;
   pageSize = 25;
@@ -53,24 +71,48 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   sortActive = 'creationTimestamp';
   sortDirection: SortDirection = 'desc';
 
-  /* TO DO: set up bookmarks and change this */
-  userBookmarks: GroupListingViewModel[] = [];
-
-  displayedColumns = ['options', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated'];
+  displayedColumns: string[] = ['indicators', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'group-size', 'updated'];
+  mobileColumns: string[] = ['indicators', 'details']
   dataSource = new MatTableDataSource<GroupListingViewModel>();
+  noResults!: boolean;
 
-  constructor(private groupListingService: GroupListingFetchService, private snackBar: MatSnackBar,
-              private filter: FilterService) {}
+  constructor(private groupListingService: GroupListingFetchService,
+              private filter: FilterService,
+              protected listingInteract: ListingViewInteractionsService,
+              private uiPrefService: UiPrefsService,
+              protected quickMenu: QuickAccessMenuService,
+              private auth: AuthService,
+              private userService: UserService,
+              protected ownerService: ListingOwnerActionsService,
+              protected chatHostSrv: ChatHostService) {
+
+    this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
+      if(reason === 'hide' || reason === 'report' || reason === 'delete') {
+        this.reloadListings();
+      }
+    })
+
+    afterNextRender(() => {
+      this.uiPrefService.clickedCleanupCheck();
+    })
+  }
 
   ngOnInit(): void {
-    this.applyFiltersFromChild(this.filter.pullState())
+    this.uiPrefService.uiPrefs = this.uiPrefService.loadUiPrefs();
+
+    this.filter.pushStoredState(this.uiPrefService.uiPrefs.storedFilters, this.filter.pullState());
+
+    if(this.auth.isLoggedIn$) {
+      this.userService.refreshUser();
+    }
+
+    this.applyFiltersFromChild(this.filter.pullState());
+
+    this.auth.isLoggedIn$.pipe(takeUntil(this.destroy$)).subscribe(
+      val => this.listingInteract.isLoggedIn = val);
   }
 
   ngAfterViewInit() {
-    //just for page styling to show clicked listings
-    this.loadClickedListings();
-
-
     this.paginator.page.pipe(takeUntil(this.destroy$))
       .subscribe((event: PageEvent) => {
       this.pageIndex = event.pageIndex;
@@ -92,6 +134,9 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     })
 
     this.dataSource.sort = this.sort;
+    this.uiPrefService.displayQuickAccessMenuHint();
+
+    this.quickMenu.registerMenu(this.menuTrigger, this.contextMenuAnchor)
   }
 
   ngOnDestroy() {
@@ -117,12 +162,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
     }
 
     this.reloadListings();
-  }
-
-
-
-  isRowClicked(row: GroupListingViewModel): boolean {
-    return this.clickedRows.has(row.groupId);
+    this.uiPrefService.uiPrefs.storedFilters = this.filter.toPersistedState(state);
+    this.uiPrefService.saveUiPrefs(this.uiPrefService.uiPrefs);
   }
 
   announceSortChange(sortState: Sort) {
@@ -134,74 +175,57 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   loadGroupListings(dto: ListingFilterRequest, idx: number, sz: number, sortA: string, sortD: string) {
-    this.groupListingService.searchGroupListings(dto, idx, sz, sortA, sortD)
+    this.groupListingService.searchGroupListings(dto, idx, sz, sortA, sortD).pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (page) => {
-          if(!environment.production) {
+          if (!environment.production) {
             console.log('Data received in component:', page);
           }
           this.dataSource.data = page.content;
-          this.totalElements = page.totalElements;
-          this.pageSize = page.size;
-          this.pageIndex = page.number;
+          this.totalElements = page.page.totalElements;
+          this.pageSize = page.page.size;
+          this.pageIndex = page.page.number;
         },
         error: (error) => {
           console.error('Error fetching group listings from component:', error);
         },
         complete: () => {
-          if(!environment.production) {
-            console.log('Group listings fetching completed.');
-          }
+          this.noResults = (this.dataSource.data.length === 0);
         }
-    });
+      });
   }
 
-  //on-row-click instructions for groupListing modal popup
-  onRowClick(tempListing: GroupListingViewModel) {
-    this.selectedListing = tempListing;
-    // if(!environment.production) {
-    //   console.log("HERE IS THE LISTING DATA: ", tempListing);
-    // }
-    // if(!environment.production) {
-    //   console.log("Logging selected listing ID: ", this.selectedListing.groupId);
-    // }
-    this.isModalVisible = true;
-    // if(!environment.production) {
-    //   console.log("Parent modal visibility: ", this.isModalVisible);
-    // }
-    // console.log("CLICKED ROWS: ", this.clickedRows)
-  }
-
-  saveRowClick(row: number) {
-    this.clickedRows.add(row);
-    const arr = Array.from(this.clickedRows);
-    localStorage.setItem(this.CLICKED_KEY, JSON.stringify(arr));
-    // console.log("clickedRows saved: ", this.clickedRows)
-  }
-
-  private loadClickedListings() {
-    const clickedListings = localStorage.getItem(this.CLICKED_KEY);
-    if (!clickedListings) return;
-
-    try {
-      const arr: number[] = JSON.parse(clickedListings);
-      this.clickedRows = new Set(arr);
-    } catch {
-      //
+  isReported(id: number, reportIds: Set<number> | null): boolean {
+    if(reportIds == undefined) {
+      return false;
     }
+    return !!reportIds && reportIds.has(id);
   }
 
-  //on close instructions for groupListing modal popup
-  onModalClose() {
-    if(!environment.production) {
-      console.log("Modal closed");
-    }
-    this.isModalVisible = false;
-    this.selectedListing = null;
+  layoutMode$: Observable<LayoutMode> = this.breakpointObserver
+    .observe([
+      '(max-width: 900px)',
+      '(min-width: 901px) and (max-width: 1650px)',
+      '(min-width: 1051px)'
+    ])
+    .pipe(
+      map(state => {
+        if (state.breakpoints['(max-width: 900px)']) {
+          return 'handheld';
+        }
+        if (state.breakpoints['(min-width: 901px) and (max-width: 1650px)']) {
+          return 'mobile';
+        }
+
+        return 'full';
+      }),
+      shareReplay(1)
+    );
+
+  /* ------------------------------------ INTERFACE TO UI PREFS SERVICE ----------------------------------------------*/
+
+  isRowClicked(row: GroupListingViewModel): boolean {
+    return this.uiPrefService.uiPrefs.clickedRowIds.has(row.groupId);
   }
 
-  isMobile$ = this.breakpointObserver
-    .observe('(max-width: 1350px)')
-    .pipe(map(result => result.matches),
-      shareReplay());
 }

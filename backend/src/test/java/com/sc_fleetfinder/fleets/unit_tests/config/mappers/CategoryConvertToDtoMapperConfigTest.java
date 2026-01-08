@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.config.mappers;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.config.mappers.CategoryConvertToDtoMapperConfig;
-import com.sc_fleetfinder.fleets.entities.GameplayCategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;

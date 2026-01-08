@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
-import com.sc_fleetfinder.fleets.entities.Users;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +14,7 @@ import java.time.Instant;
 @Data
 public class CreateGroupListingDto {
 
+    // ##TODO should not include a userId here, nor on the front end, it should be derived from token
     private Long userId;
 
     @NotNull(message = "Create group listing DTO field 'serverId' cannot be null")
@@ -40,9 +40,14 @@ public class CreateGroupListingDto {
     @NotNull(message = "Create group listing DTO field 'groupStatusId' cannot be null")
     private Integer groupStatusId;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Nullable
-    private Instant eventSchedule;
+    private String eventDate;
+
+    @Nullable
+    private String eventTime;
+
+    @Nullable
+    private String eventTimeZone;
 
     @NotNull(message = "Create group listing DTO field 'categoryId' cannot be null")
     private Integer categoryId;
@@ -80,7 +85,7 @@ public class CreateGroupListingDto {
     @NotNull(message = "Create listing DTO field 'commsOption' cannot be null")
     private String commsOption;
 
-    @Size(max = 50, message = "Create listing DTO field 'commsService' cannot exceed 50 characters")
+    @Size(max = 50, message = "Create listing DTO field 'listingCommsService' cannot exceed 50 characters")
     @Nullable
     private String commsService;
 }

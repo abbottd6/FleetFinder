@@ -1,13 +1,12 @@
 <div class="body-container">
-  <ng-container *ngIf="localUser$ | async as user; else notLoggedIn">
+  <ng-container *ngIf="userService.sessionUser$ | async as user; else notLoggedIn">
     <div class="page-title"><h2>User Profile:</h2></div>
     <div class="header-line"></div>
     <mat-sidenav-container class="account-sidenav-container">
       <mat-sidenav #drawer
                    [mode]="(isMobile$ | async) ? 'over' : 'side'"
                    [opened]="!(isMobile$ | async)"
-                   class="side-nav-the-side-nav"
-                   >
+                   class="side-nav-the-side-nav">
         <mat-nav-list class="side-nav-list">
           <a mat-list-item class="mat-nav-list-item"
              [class.active]="selectedTab==='listings'"
@@ -37,7 +36,7 @@
             </a>
           </ng-container>
           <a mat-list-item class="mat-nav-list-item"
-             (click)="auth.logout()">Logout</a>
+             (click)="userComponentLogout()">Logout</a>
         </mat-nav-list>
 
       </mat-sidenav>
@@ -63,30 +62,23 @@
           <!-- MY LISTINGS TAB -->
           <ng-container *ngIf="selectedTab === 'listings'">
             <app-user-acct-listings-table
-              [userListings]="(user.groupListingsDto)" class="user-table"
+              [userListings]="(groupListings)" class="user-table"
               (listingForModal)="onListingSelected($event)">
             </app-user-acct-listings-table>
           </ng-container>
 
           <!-- USER BOOKMARKED LISTINGS TAB -->
           <ng-container *ngIf="selectedTab === 'bookmarks'">
-            <div style="margin-left: 3rem">
-              <h4>Coming Soon:</h4>
-              <span>
-                Feature that will allow users to bookmark listings of interest from the search view
-                for easy access.
-              </span>
-            </div>
+            <app-user-bookmarks-table
+              (listingForModal)="onListingSelected($event)">
+            </app-user-bookmarks-table>
           </ng-container>
 
           <!-- LISTING TEMPLATES TAB -->
           <ng-container *ngIf="selectedTab === 'templates'">
-            <div style="margin-left: 3rem;">
-              <h4>Coming Soon:</h4>
-              <span>
-                Feature that will allow users to save group listing form templates for reuse.
-              </span>
-            </div>
+            <app-user-profile-templates
+              (templateForModal)="onTemplateSelected($event)">
+            </app-user-profile-templates>
           </ng-container>
 
           <!-- PROFILE TAB -->
@@ -121,9 +113,12 @@
 
           <!-- MODERATOR TAB -->
           <ng-container *ngIf="selectedTab === 'content_mod'">
-            <app-mod-listings-table
+            <app-mod-parent-panel
               (listingForModal)="onListingSelected($event)">
-            </app-mod-listings-table>
+            </app-mod-parent-panel>
+<!--            <app-mod-listings-table-->
+<!--              (listingForModal)="onListingSelected($event)">-->
+<!--            </app-mod-listings-table>-->
           </ng-container>
         </div>
       </mat-sidenav-content>
@@ -141,8 +136,16 @@
 
 
 <app-group-listing-modal
-  *ngIf="isModalVisible"
-  [isVisible]="isModalVisible"
+  *ngIf="listingInteract.isModalVisible"
+  [isVisible]="listingInteract.isModalVisible"
   [selectedListing]="selectedListing"
-  (close)="onModalClose()"
+  [isBookmarked$]="listingInteract.selectedIsBookmarked$"
+  (close)="listingInteract.onModalClose($event)"
 ></app-group-listing-modal>
+
+<app-listing-template-modal
+  *ngIf="templatesModal.templateModalIsVisible"
+  [templateModalIsVisible]="templatesModal.templateModalIsVisible"
+  [selectedTemplate]="selectedTemplate"
+  (close)="listingInteract.onModalClose($event)">
+</app-listing-template-modal>

@@ -1,11 +1,11 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.PlayStyleRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlayStyleDto;
-import com.sc_fleetfinder.fleets.entities.PlayStyle;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.PlayStyleRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlayStyleDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.caching_services.PlayStyleCachingServiceImpl;
-import com.sc_fleetfinder.fleets.services.conversion_services.PlayStyleConversionServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.PlayStyleConversionServiceImpl;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

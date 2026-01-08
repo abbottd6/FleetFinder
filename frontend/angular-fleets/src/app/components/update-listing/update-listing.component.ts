@@ -6,11 +6,11 @@ import {InputFieldModule} from "../input-fields/input-field/input-field.module";
 import {DropdownModule} from "../dropdowns/dropdown-module/dropdown.module";
 import {MatError} from "@angular/material/form-field";
 import {environment} from "../../../environments/environment";
-import {UserListingService} from "../../services/group-listing-services/user-listing.service";
-import {NgIf} from "@angular/common";
+import {UserListingManagementService} from "../../services/user-services/user-listing-management.service";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {UpdateListingRequest} from "../../models/group-listing/update-listing-request";
-import {Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-update-listing',
@@ -23,7 +23,8 @@ import {Subject, takeUntil} from "rxjs";
     DropdownModule,
     MatError,
     NgIf,
-    RouterLink
+    RouterLink,
+    AsyncPipe
   ]
 })
 export class UpdateListingComponent implements OnInit, OnDestroy {
@@ -32,7 +33,10 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
   listingForm!: FormGroup<ListingFormShape>;
   listingData!: GroupListingViewModel;
 
-  constructor(private userListingService: UserListingService, private router: Router,
+  private submitSubject = new BehaviorSubject<boolean>(false);
+  public submitting$ = this.submitSubject.asObservable();
+
+  constructor(private userListingService: UserListingManagementService, private router: Router,
               public formService: ListingFormService) {}
 
   ngOnInit() {
@@ -40,6 +44,8 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
 
     const draft = history.state?.draft as GroupListingViewModel | undefined;
     this.listingData = draft as GroupListingViewModel;
+
+    console.log(draft);
 
     if (draft){
       this.formService.patchFromDraft(draft);
@@ -52,6 +58,8 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    this.submitSubject.next(true);
+    setTimeout(() => this.submitSubject.next(false), 4000);
     if (this.listingForm.invalid) {
       this.listingForm.markAllAsTouched();
       this.formSubmitted = true;

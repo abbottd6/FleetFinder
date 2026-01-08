@@ -1,5 +1,4 @@
 import {
-  ChangeDetectorRef,
   Component,
   Input, OnInit,
 } from '@angular/core';
@@ -38,6 +37,5 @@ export class ScheduleTimeDropdownComponent implements OnInit{
       this.timeOptions.push(`${paddedHour}:00`);
       this.timeOptions.push(`${paddedHour}:30`);
     }
-    this.timeOptions.push('24:00');
   }
 }

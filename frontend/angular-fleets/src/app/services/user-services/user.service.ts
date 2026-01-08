@@ -1,94 +1,127 @@
-import {inject, Injectable, OnChanges, OnDestroy} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {PublicUser} from "../../models/public-user/public-user";
+import {DestroyRef, inject, Injectable} from '@angular/core';
 import {
   BehaviorSubject,
-  catchError, combineLatest,
+  combineLatest, distinctUntilChanged,
   filter,
   map,
-  Observable,
-  shareReplay, Subject,
-  switchMap, takeUntil,
-  throwError,
-  withLatestFrom
+  Observable, of,
+  shareReplay,
+  switchMap, take
 } from "rxjs";
-import {environment} from '../../../environments/environment';
 import {PrivateUser} from "../../models/private-user/private-user";
 import {AuthService} from "../auth/auth-services/auth.service";
 import {UserApiService} from "./userApi.service";
+import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {WsGatewayService} from "../websocket-messaging/ws-gateway.service";
+
+export enum UserRole {
+  admin = 'admin',
+  mod = 'mod',
+  user = 'user'
+}
+
+export interface SessionUser {
+  userId: number,
+  username: string,
+  email: string,
+  server: string,
+  org: string,
+  about: string,
+  acctCreated: Date,
+  lastAccess: Date,
+  primaryRole: UserRole,
+  groupListingsDto: GroupListingViewModel[]
+}
 
 @Injectable({
   providedIn: 'root'
 })
 
-export class UserService implements OnDestroy {
-  private destroy$ = new Subject<void>();
-  public role: 'admin' | 'mod' | 'user' = 'user';
-  private readonly http = inject(HttpClient);
-  private auth = inject(AuthService);
-  private api = inject(UserApiService);
-  private baseUrl = `${environment.apiBaseUrl}/users`;
+export class UserService {
+  private destroyRef = inject(DestroyRef);
+  protected auth = inject(AuthService);
+  private userApi = inject(UserApiService);
+  private ws = inject(WsGatewayService);
 
-  constructor() {
-    combineLatest([this.auth.isLoggedIn$, this.auth.authClaims$])
-      .pipe(
-        shareReplay(1),
-        takeUntil(this.destroy$),
-        filter(([loggedIn, claims]) => loggedIn && !!claims && !! claims.userData),
-      )
-      .subscribe();
-  }
+  private readonly userSubject = new BehaviorSubject<SessionUser | null>(null);
+  readonly sessionUser$ = this.userSubject.asObservable();
 
-  getUserById(userId: number): Observable<PublicUser> {
-    const url = `${this.baseUrl}/${userId}`;
-    return this.http.get<PublicUser>(url);
-  }
-
-  // Reactive provisioning
-  private refreshTrigger$ = new BehaviorSubject<void>(undefined);
-  private profile$ = this.auth.authClaims$.pipe(
+  private kcProfile$ = this.auth.authClaims$.pipe(
     filter(data => !!data && !!data.userData)
   );
 
-  getRole(): string {
-    this.profile$.pipe(
-      map(data => data?.userData?.roles ?? []))
-      .subscribe((roles: string[]) => {
-        if (!Array.isArray(roles)) {
-          this.role = 'user';
-          return;
-        }
+  private refreshTrigger$ = new BehaviorSubject<void>(undefined);
+  public refreshUser() { this.refreshTrigger$.next() };
 
-        if (roles.includes('admin')) {
-          this.role = 'admin';
-        } else if (roles.includes('mod')) {
-          this.role = 'mod';
-        } else {
-          this.role = 'user';
-        }
-      });
-    return this.role;
-  }
-
-  // local version of keycloak's user
-  public localUser$: Observable<PrivateUser> = this.refreshTrigger$.pipe(
-    // pair with latest profile
-    withLatestFrom(this.profile$),
-    // extract the profile
-    switchMap(([, profile]) =>
-      this.api.getMe(profile)
-    ),
-    shareReplay({bufferSize: 1, refCount: true})
+  public ffPrivateUser$: Observable<PrivateUser> =
+      combineLatest([this.refreshTrigger$, this.kcProfile$]).pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap(([, profile]) => this.userApi.getMe(profile)
+      ),
+      shareReplay({bufferSize: 1, refCount: true})
   );
 
-  public localUsername$ = this.localUser$.pipe(map(userObj => userObj.username));
+  constructor() {
+    this.auth.isLoggedIn$.pipe(
+      takeUntilDestroyed(this.destroyRef),
 
-  public refreshUser() {
-    this.refreshTrigger$.next();
+      switchMap(loggedIn => {
+        if (!loggedIn) { return of<SessionUser | null>(null);}
+
+        return combineLatest([this.kcProfile$, this.ffPrivateUser$]).pipe(
+          filter(([, ffPrivate]) => !!ffPrivate),
+          map(([kcClaims, ffPrivate]) => {
+            const primaryRole = this.extractRole(kcClaims.userData.roles) ?? UserRole.user;
+            const email = kcClaims.userData.email;
+            return {...ffPrivate, primaryRole, email} satisfies SessionUser;
+          }),
+          distinctUntilChanged((a, b) =>
+            a?.userId === b?.userId &&
+            a?.primaryRole === b?.primaryRole &&
+            a?.groupListingsDto === b?.groupListingsDto &&
+            a?.lastAccess === b?.lastAccess
+          ),
+        );
+      })
+    ).subscribe(user => {
+      if(user === null || user === undefined) return;
+      else {
+        this.userSubject.next(user);
+      }
+    });
+
+    this.auth.tokenReady$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(token => {
+        if(token && !this.ws.isConnected()) {
+          this.ws.connect(token);
+        }
+    });
   }
 
-  ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+  extractRole(roles: string[]) {
+    let role: UserRole = UserRole.user;
+
+    if (!roles) return UserRole.user;
+    if (roles.includes('admin')) {
+      role = UserRole.admin;
+    } else if (roles.includes('mod')) {
+      role = UserRole.mod;
+    } else {
+      role = UserRole.user
+    }
+    return role;
   }
+
+  get sessionUser(): SessionUser | null { return this.userSubject.value ?? null; }
+  get userId(): number | null { return this.userSubject.value?.userId ?? null; }
+  get username(): string | null { return this.userSubject.value?.username ?? null; }
+  get server(): string | null { return this.userSubject.value?.server ?? null; }
+  get org(): string | null { return this.userSubject.value?.org ?? null; }
+  get about(): string | null { return this.userSubject.value?.about ?? null; }
+  get acctCreated(): Date | null { return this.userSubject.value?.acctCreated ?? null; }
+  get lastAccess(): Date | null { return this.userSubject.value?.lastAccess ?? null; }
+  get primaryRole(): UserRole | null { return this.userSubject.value?.primaryRole ?? null; }
+  get userListings(): GroupListingViewModel[] { return this.userSubject.value?.groupListingsDto ?? []}
 }

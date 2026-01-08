@@ -12,6 +12,7 @@ import java.sql.Types;
 @Data
 public class CreateOrUpdateUserDto {
 
+    //##TODO should not include a keycloakid nor a userid, should be derived from token
     @NotNull(message= "Create User DTO keycloak_id cannot be null")
     @JdbcTypeCode(Types.VARCHAR)
     private String keycloakId;

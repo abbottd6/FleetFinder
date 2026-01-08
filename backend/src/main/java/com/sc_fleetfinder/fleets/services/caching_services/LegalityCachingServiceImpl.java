@@ -1,10 +1,10 @@
 package com.sc_fleetfinder.fleets.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.LegalityRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.LegalityDto;
-import com.sc_fleetfinder.fleets.entities.Legality;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.LegalityRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.LegalityDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Legality;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.conversion_services.LegalityConversionService;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.LegalityConversionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,10 +1,10 @@
 package com.sc_fleetfinder.fleets.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.PvpStatusRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PvpStatusDto;
-import com.sc_fleetfinder.fleets.entities.PvpStatus;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.PvpStatusRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PvpStatusDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.conversion_services.PvpStatusConversionService;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.PvpStatusConversionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

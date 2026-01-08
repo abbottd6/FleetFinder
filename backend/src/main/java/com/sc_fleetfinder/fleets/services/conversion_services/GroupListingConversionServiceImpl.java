@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.DeleteGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
@@ -15,12 +14,12 @@ public class GroupListingConversionServiceImpl implements GroupListingConversion
     private final ModelMapper createGroupListingModelMapper;
     private final ModelMapper updateGroupListingModelMapper;
 
-    public GroupListingConversionServiceImpl(ModelMapper groupListingResponseDtoMapper,
-                                             ModelMapper createGroupListingModelMapper,
-                                             ModelMapper updateGroupListingModelMapper) {
-        this.groupListingResponseDtoMapper = groupListingResponseDtoMapper;
+    public GroupListingConversionServiceImpl(ModelMapper createGroupListingModelMapper,
+                                             ModelMapper updateGroupListingModelMapper,
+                                             ModelMapper groupListingResponseDtoMapper) {
         this.createGroupListingModelMapper = createGroupListingModelMapper;
         this.updateGroupListingModelMapper = updateGroupListingModelMapper;
+        this.groupListingResponseDtoMapper = groupListingResponseDtoMapper;
     }
 
     @Override

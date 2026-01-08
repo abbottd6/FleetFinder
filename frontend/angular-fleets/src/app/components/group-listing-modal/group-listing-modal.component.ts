@@ -1,12 +1,19 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, DestroyRef, EventEmitter, inject, Input, OnInit, Output} from '@angular/core';
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
-import {DatePipe, NgClass, NgIf} from "@angular/common";
+import {AsyncPipe, DatePipe, NgClass, NgIf} from "@angular/common";
 import {UserService} from "../../services/user-services/user.service";
 import {MatIconModule} from "@angular/material/icon";
 import {RouterLink} from "@angular/router";
 import {map, Observable} from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
+export interface CloseValue {
+  value: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | null,
+  group: GroupListingViewModel | null
+}
 
 @Component({
   selector: 'app-group-listing-modal',
@@ -17,26 +24,28 @@ import {PrivateUser} from "../../models/private-user/private-user";
     DatePipe,
     NgIf,
     MatIconModule,
-    RouterLink
+    RouterLink,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    AsyncPipe
   ],
   styleUrl: './group-listing-modal.component.css'
 })
 export class GroupListingModalComponent implements OnInit {
+  private modalDestroyRef = inject(DestroyRef)
   @Input() isVisible!: boolean;
   @Input() selectedListing: GroupListingViewModel | null = null;
-  @Output() close = new EventEmitter<void>
-  localUser$: Observable<PrivateUser>;
+  @Input() isBookmarked$!: Observable<boolean>;
+  @Output() close = new EventEmitter<CloseValue>
   userListings: GroupListingViewModel[] = [];
-  userService = new UserService();
 
-  constructor(userService: UserService) {
+  constructor(private userService: UserService, protected chatHostSrv: ChatHostService) {
     this.userService = userService;
-    this.localUser$ = this.userService.localUser$;
 
-    this.localUser$.pipe(
-      map(user => user.groupListingsDto ?? [])
-    )
-      .subscribe(listings => this.userListings = listings);
+    this.userService.sessionUser$.pipe(takeUntilDestroyed(this.modalDestroyRef)).pipe(
+      map(user => user?.groupListingsDto ?? [])
+    ).subscribe(listings => this.userListings = listings);
 
   }
 
@@ -46,21 +55,23 @@ export class GroupListingModalComponent implements OnInit {
   }
 
   userIsListingOwner(): boolean {
+
     const selectedId = this.selectedListing?.groupId;
 
-    if(!this.localUser$ || !selectedId) return false;
+    if(!this.userService.sessionUser$ || !selectedId) return false;
 
     return this.userListings.some(
       gl => gl.groupId === selectedId
     );
   }
 
-  closeModal() {
+  closeModal(action: CloseValue['value'], group: GroupListingViewModel | null) {
     this.isVisible = false;
-    this.close.emit();
+    const emitVal: CloseValue = {
+      value: action,
+      group: group
+    };
+    this.close.emit(emitVal);
   }
 
-  closeOnBackdropClick(event: MouseEvent) {
-    this.closeModal();
-  }
 }

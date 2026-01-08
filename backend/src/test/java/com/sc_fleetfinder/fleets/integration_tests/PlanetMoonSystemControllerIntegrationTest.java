@@ -1,10 +1,11 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
+import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -18,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ContextConfiguration(initializers = TestEnvironmentLoader.class)
+@ContextConfiguration(initializers = TestEnvironmentLoader.class, classes = SimpMessageTestConfig.class)
 public class PlanetMoonSystemControllerIntegrationTest extends AbstractIntegrationTestDB {
 
     @Autowired
@@ -29,7 +30,7 @@ public class PlanetMoonSystemControllerIntegrationTest extends AbstractIntegrati
     void testGetAllPlanetMoons_Success_200() throws Exception {
         mockMvc.perform(get("/api/lookup/planet-moon-systems"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(16))
+                .andExpect(jsonPath("$.length()").value(14))
                 .andExpect(jsonPath("$[0].planetId").exists())
                 .andExpect(jsonPath("$[0].planetName").exists())
                 .andExpect(jsonPath("$[0].systemName").exists());

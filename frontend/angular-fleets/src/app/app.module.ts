@@ -5,8 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { GroupListingsComponent } from './components/group-listings/group-listings.component';
 import {HTTP_INTERCEPTORS, provideHttpClient, withFetch, withInterceptorsFromDi} from "@angular/common/http";
-import { GroupListingFetchService } from "./services/group-listing-services/group-listing-fetch.service";
-import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { GroupListingFetchService } from "./services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import { FooterComponent } from './components/footer/footer.component';
 import { NgOptimizedImage } from "@angular/common";
 import { WelcomeScreenComponent } from './components/welcome-screen/welcome-screen.component';
@@ -32,11 +31,10 @@ import {MatSidenav, MatSidenavContainer} from "@angular/material/sidenav";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import { LoginModalComponent } from './components/login-modal/login-modal.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
-import { UpdateListingComponent } from './components/update-listing/update-listing.component';
 import {DropdownModule} from "./components/dropdowns/dropdown-module/dropdown.module";
 import {InputFieldModule} from "./components/input-fields/input-field/input-field.module";
 import {MatButtonModule} from "@angular/material/button";
-import { ModListingsTableComponent } from './components/mod-listings-table/mod-listings-table.component';
+import { ModListingsTableComponent } from './components/mod-tools/mod-listings-table/mod-listings-table.component';
 import {
   MatCell,
   MatCellDef,
@@ -47,9 +45,9 @@ import {
   MatRow, MatRowDef, MatTable
 } from "@angular/material/table";
 import {MatCheckbox} from "@angular/material/checkbox";
-import {MatMenu, MatMenuTrigger} from "@angular/material/menu";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatIcon} from "@angular/material/icon";
-import {TooltipPosition, MatTooltipModule} from "@angular/material/tooltip";
+import {MatTooltipModule} from "@angular/material/tooltip";
 import {MatSort, MatSortHeader} from "@angular/material/sort";
 import {MatPaginator} from "@angular/material/paginator";
 import { SearchBarComponent } from './components/input-fields/search-bar/search-bar.component';
@@ -64,7 +62,22 @@ import {
   MatDateRangeInput, MatDateRangePicker,
   MatEndDate, MatStartDate
 } from "@angular/material/datepicker";
-
+import { ConfirmReportComponent } from './components/pop-ups/confirm-report/confirm-report.component';
+import { MobileFiltersPopupComponent } from './components/pop-ups/mobile-filters-popup/mobile-filters-popup.component';
+import { FilterDropdownsComponent } from './components/dropdowns/filter-dropdowns/filter-dropdowns.component';
+import { DontShowMeAgainPopup } from './components/pop-ups/dont-show-me-again-popup/dont-show-me-again-popup';
+import {MatBadge} from "@angular/material/badge";
+import { ConfirmGenericComponent } from './components/pop-ups/confirm-generic/confirm-generic.component';
+import { ConfirmClearIssueComponent } from './components/pop-ups/confirm-clear-issue/confirm-clear-issue.component';
+import { ModIssueDetailedComponent } from './components/pop-ups/mod-issue-detailed/mod-issue-detailed.component';
+import {ChatShellComponent} from "./components/chat/shell-component/chat-shell.component";
+import {MeasureFooterHeightDirective} from "./utils/measure-footer-height-directive";
+import { ChatPanelComponent } from './components/chat/chat-panel/chat-panel.component';
+import {NavBarComponent} from "./components/nav-bar/nav-bar.component";
+import {
+  NotificationsDropdownComponent
+} from "./components/dropdowns/notifications/notifications-dropdown/notifications-dropdown.component";
+import {NotificationComponent} from "./components/dropdowns/notifications/notification/notification.component";
 
 @NgModule({
   declarations: [
@@ -77,6 +90,13 @@ import {
     LoginModalComponent,
     SearchBarComponent,
     ConfirmDeleteComponent,
+    ConfirmReportComponent,
+    MobileFiltersPopupComponent,
+    FilterDropdownsComponent,
+    DontShowMeAgainPopup,
+    ConfirmGenericComponent,
+    ConfirmClearIssueComponent,
+    ModIssueDetailedComponent,
   ],
   imports: [
     BrowserModule,
@@ -141,6 +161,13 @@ import {
     MatEndDate,
     MatDateRangePicker,
     MatStartDate,
+    MatMenuItem,
+    MatBadge,
+    ChatShellComponent,
+    ChatPanelComponent,
+    MeasureFooterHeightDirective,
+    NotificationsDropdownComponent,
+    NotificationComponent,
   ],
   providers: [
     provideClientHydration(),
@@ -152,7 +179,7 @@ import {
 
   ],
   exports: [
-    ModListingsTableComponent
+    ModListingsTableComponent,
   ],
   bootstrap: [AppComponent]
 })

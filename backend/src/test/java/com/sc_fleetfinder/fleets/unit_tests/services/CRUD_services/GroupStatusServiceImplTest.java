@@ -1,9 +1,9 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
-import com.sc_fleetfinder.fleets.DAO.GroupStatusRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupStatusDto;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.GroupStatusRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GroupStatusDto;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GroupStatusServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GroupStatusServiceImpl;
 import com.sc_fleetfinder.fleets.services.caching_services.GroupStatusCachingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

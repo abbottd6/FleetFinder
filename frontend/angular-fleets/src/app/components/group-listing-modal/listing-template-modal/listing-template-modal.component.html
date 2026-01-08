@@ -1,0 +1,198 @@
+<!-- TABLE ITEM MODAL -->
+<div *ngIf="templateModalIsVisible"
+     class="modal fade"
+     tabindex="-1"
+     [ngClass]="{'show': templateModalIsVisible}"
+     [style.display]="templateModalIsVisible ? 'block' : 'none'"
+     role="dialog"
+     aria-modal="true"
+>
+  <!--  (click)="closeOnBackdropClick($event)"-->
+
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-dash">//</h1><h4 class="modal-title">{{ selectedTemplate?.listingTitle }}</h4>
+        <button type="button" class="close" (click)="templatesModal.closeModal(null)" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="container-fluid">
+
+          <!-- FIRST GRID BLOCK COLUMN LEFT -->
+          <div class="modal-listing-container-grid">
+            <div class="modal-listing-block column-left">
+              <div class="modal-listing-row">
+                <span class="modal-listing-field">Server Region:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.server }}</span>
+              </div>
+              <div class="modal-listing-row">
+                <span class="modal-listing-field">Play Style:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.playStyle }}</span>
+              </div>
+            </div>
+
+            <!-- FIRST GRID BLOCK COLUMN RIGHT -->
+            <div class="modal-listing-block column-right">
+              <div class="modal-listing-row column-right">
+                <span class="modal-listing-field">Last Updated: </span>
+                <span
+                  class="modal-listing-val">{{ selectedTemplate?.creationTimestamp | date:'MMM d, h:mm a' }}</span>
+              </div>
+              <div class="modal-listing-row column-right">
+                <span class="modal-listing-field">Group Status:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.groupStatus }}</span>
+              </div>
+              <div *ngIf="selectedTemplate?.groupStatus === 'Future/Scheduled' && selectedTemplate?.eventSchedule as
+                    eventSchedule" class="modal-listing-row column-right">
+                <span class="modal-listing-field">Event Scheduled: </span>
+                <span class="modal-listing-val">{{ eventSchedule | date: 'MMM d, h:mm a' }}</span>
+              </div>
+            </div>
+          </div>
+          <!-- END OF FIRST GRID BLOCK -->
+
+
+          <!-- SECOND GRID BLOCK COLUMN LEFT -->
+          <div class="modal-listing-container-grid">
+            <div class="modal-listing-block column-left">
+              <div class="modal-listing-row">
+                <span class="modal-listing-field">Environment:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.environment }}</span>
+              </div>
+              <div class="modal-listing-row">
+                <span class="modal-listing-field">Experience:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.experience }}</span>
+              </div>
+
+              <!-- SECOND GRID BLOCK COLUMN RIGHT -->
+            </div>
+            <div class="modal-listing-block column-right">
+              <div class="modal-listing-row column-right">
+                <span class="modal-listing-field">Comms:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.commsOption }}</span>
+              </div>
+              <div class="modal-listing-row column-right">
+                <span class="modal-listing-field">Comms Service:</span>
+                <ng-container *ngIf="selectedTemplate?.commsService; else emptyCommsService">
+                  <span class="modal-listing-val">{{ selectedTemplate?.commsService }}</span>
+                </ng-container>
+              </div>
+              <div>
+                <ng-template #emptyCommsService>
+                  <!--Blank if no comms service -->
+                </ng-template>
+              </div>
+            </div>
+          </div>
+          <!-- END OF SECOND GRID BLOCK -->
+
+
+          <!-- THIRD GRID BLOCK COLUMN LEFT -->
+          <div class="modal-listing-container-grid">
+            <div class="modal-listing-block column-left">
+              <div class="modal-listing-row">
+                <span class="modal-listing-field">System:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.system }}</span>
+              </div>
+              <div class="modal-listing-row column-left-indent">
+                <span class="modal-listing-field">Planet/Moon:</span>
+                <span class="modal-listing-val"> {{ selectedTemplate?.planetMoonSystem }} </span>
+              </div>
+              <div class="modal-listing-row column-left">
+                <span class="modal-listing-field">Gameplay Category:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.category }}</span>
+              </div>
+              <div class="modal-listing-row column-left-indent">
+                <span class="modal-listing-field">Subcategory:</span>
+                <span class="modal-listing-val"> {{ selectedTemplate?.subcategory }} </span>
+              </div>
+            </div>
+
+
+            <!-- THIRD LISTING BLOCK COLUMN RIGHT -->
+            <div class="modal-listing-block column-right">
+              <div class="modal-listing-row column-right">
+                <span class="modal-listing-field">PvP Status:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.pvpStatus }}</span>
+              </div>
+
+              <div class="modal-listing-row column-right">
+                <span class="modal-listing-field">Legality:</span>
+                <span class="modal-listing-val">{{ selectedTemplate?.legality }}</span>
+              </div>
+
+              <div class="modal-listing-row column-right">
+                <span class="modal-listing-field">Group Size:</span>
+                <!-- Group size is fraction: current party size divided by desired party size -->
+                <span class="modal-listing-val">{{ selectedTemplate?.currentPartySize }}
+                  / {{ selectedTemplate?.desiredPartySize }}</span>
+              </div>
+            </div>
+          </div>
+          <!-- END OF THIRD LISTING BLOCK -->
+
+
+          <!-- DESCRIPTION BLOCK -->
+          <div class="modal-listing-block column-left">
+            <div class="modal-listing-row column-left">
+              <span class="modal-listing-field">Description:</span>
+            </div>
+            <div class="modal-listing-block column-left-indent">
+              <span class="modal-listing-val">{{ selectedTemplate?.listingDescription }}</span>
+            </div>
+          </div>
+
+          <!-- AVAILABLE ROLES BLOCK -->
+          <div class="modal-listing-block column-left">
+            <div class="modal-listing-row column-left">
+              <span class="modal-listing-field">Available Roles:</span>
+            </div>
+            <div class="modal-listing-row column-left-indent">
+              <span class="modal-listing-val">{{ selectedTemplate?.availableRoles }}</span>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <div class="footer-buttons-left">
+              <button type="button"
+                      class="modal-button-with-icon"
+                      [matMenuTriggerFor]="templateOptionsMenu">
+                Options
+                <mat-icon>arrow_drop_down</mat-icon>
+              </button>
+            </div>
+            <mat-menu #templateOptionsMenu="matMenu">
+              <button
+                mat-menu-item
+                class="options-item"
+                (click)="createFromTemplate()">
+                  Create From
+              </button>
+              <button
+                mat-menu-item
+                class="options-item"
+                (click)="openConfirmDelete(selectedTemplate!)">
+                Delete
+              </button>
+              <button
+                mat-menu-item
+                class="options-item">
+                Cancel
+              </button>
+            </mat-menu>
+            <div class="footer-buttons-right">
+              <button type="button"
+                      class="modal-buttons"
+                      (click)="templatesModal.closeModal(null)">
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

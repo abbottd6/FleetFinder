@@ -1,0 +1,76 @@
+
+/* outline */
+:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mat-mdc-notch-piece {
+  transition: border-color 0.5s ease !important;
+}
+
+:host ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {
+  transition: font-size 0.25s ease, color 0.25s ease;
+}
+
+/* label hover */
+:host ::ng-deep .mat-mdc-form-field:hover:not(:focus-within) .mat-mdc-floating-label {
+  color: rgba(255, 131, 7, 0.5) !important;
+  font-size: 105% !important;
+}
+
+/* outline hover */
+:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mat-mdc-notch-piece {
+  border-color: rgba(255, 131, 7, 0.5) !important;
+}
+/* outline focused */
+:host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled):focus-within .mat-mdc-notch-piece {
+  border-color: rgba(255, 131, 7, 0.5) !important;
+}
+
+/* input text/placeholder text */
+:host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
+  padding-left: 1rem;
+  wrap-option: wrap;
+  caret-color: rgba(255, 131, 7, 0.5) !important;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(88, 92, 96, .9) transparent !important;
+}
+
+.mat-mdc-dialog-content {
+  margin-top: 1rem;
+  min-width: 30vw;
+}
+
+.mod-note-input {
+  display: flex;
+  flex: 1;
+  padding-top: 1rem;
+  width: 100%;
+  justify-content: center;
+}
+
+@media(min-width: 725px) {
+  .mat-mdc-form-field {
+    min-width: 95%;
+    font-family: 'Orbitron', sans-serif;
+    transition: color 0.5s ease, font-size 0.5s ease;
+    font-size: 1rem;
+    color: rgba(188, 191, 200, .9);
+  }
+}
+
+@media(max-width: 724px) {
+  .mat-mdc-form-field {
+    min-width: 90%;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    color: rgba(188, 191, 200, .9);
+  }
+
+  :host ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined {
+    min-height: 7vh;
+    min-width: 70vw;
+    padding-right: 0.25rem;
+    /*background-color: hotpink;*/
+  }
+
+  :host ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    top: 3.5vh;
+  }
+}

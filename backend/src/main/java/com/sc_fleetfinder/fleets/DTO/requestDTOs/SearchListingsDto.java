@@ -1,11 +1,7 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
 import lombok.Data;
-
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Data
 public class SearchListingsDto {
@@ -28,10 +24,4 @@ public class SearchListingsDto {
     private int size;
     private String sortField;
     private String sortDirection;
-
-    public Map<String, Integer> getFilters() {
-//        Map<String, Integer> filters = new HashMap<>();
-        return new HashMap<>();
-//        filters.put(
-    }
 }

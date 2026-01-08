@@ -1,7 +1,7 @@
 .modal-content {
   background-color: var(--bs-gray-900);
   color: rgba(216, 216, 216, 0.7);
-  font-size: clamp(0.8rem, 1vw, 1.2rem);
+  font-size: 1.1rem;
   margin-inline: auto;
   overflow-y: auto;
   scrollbar-width: none;
@@ -10,31 +10,6 @@
 .modal-header {
   display: flex;
   flex-direction: row;
-}
-
-@media(min-width: 1368px) {
-  .modal-title {
-    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 300;
-  }
-}
-
-@media(min-width: 992px) and (max-width: 1367px) {
-  .modal-title {
-    font-size: clamp(1.2rem, 1.4vw, 2.2rem);
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 300;
-  }
-}
-
-@media(max-width: 991px) {
-  .modal-title {
-    font-size: clamp(1.2rem, 1.2vw, 2rem);
-    padding: clamp(0.25rem, 1vw, 1rem);
-    font-family: 'Exo 2', sans-serif;
-    font-weight: 300;
-  }
 }
 
 .modal-dash {
@@ -55,7 +30,7 @@
   background-color: transparent;
   float: right;
   font-size: 1.5rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1;
   color: rgba(255, 131, 7, .75);
   opacity: .75;
@@ -72,70 +47,63 @@
 
 /*The actual main container for the modal: LARGE VW*/
 @media(min-width: 1368px) {
+  .modal-title {
+    font-size: clamp(1.2rem, 1.4rem, 2.2rem);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
+  }
+
   .modal-dialog.modal-xl.modal-dialog-centered {
     max-width: 50vw;
   }
+
+  /* Grid container for modal listing blocks LARGE VW */
+  .modal-listing-container-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0 1.25rem 0;
+  }
 }
 
-/*The actual main container for the modal: MED VW*/
+
 @media(min-width: 992px) and (max-width: 1367px) {
+  /*The actual main container for the modal: MED VW*/
   .modal-dialog.modal-xl.modal-dialog-centered {
     max-width: 70vw;
+  }
+
+  .modal-title {
+    font-size: clamp(1.2rem, 1.4rem, 2.2rem);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
   }
 }
 
 /*The actual main container for the modal  SMALL VW*/
 @media (max-width: 991px) {
+  .modal-title {
+    font-size: clamp(1.2rem, 1.2rem, 2rem);
+    padding: clamp(0.25rem, 1vw, 1rem);
+    font-family: 'Exo 2', sans-serif;
+    font-weight: 300;
+  }
+
   .modal-dialog.modal-xl.modal-dialog-centered {
     max-width: 95vw;
   }
-}
 
-/* Grid container for modal listing blocks LARGE VW */
-@media(min-width: 1368px) {
-  .modal-listing-container-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin: 1.25rem 0 1.25rem 0;
+  .modal-content {
+    font-size: clamp(0.8rem, 1rem, 1.2rem);
   }
 }
 
 /* Grid container for modal listing blocks: MED VW*/
-@media(min-width: 625px) and (max-width: 1367px) {
+@media(min-width: 624px) and (max-width: 1367px) {
   .modal-listing-container-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
-  }
-}
-
-/* Grid container for modal listing blocks: SMALL VW*/
-@media(max-width: 624px) {
-  .modal-listing-container-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin: 1.25rem 0 1.25rem 0;
-  }
-}
-
-/* sub-container within grid for creating separate columns i.e. R/L */
-@media(min-width: 624px) {
-  .modal-listing-block {
-    display: flex;
-    flex-direction: column;
-    max-width: 90vw;
-    padding: 0.5rem 0 0.5rem 0;
-  }
-}
-
-@media(max-width: 623px) {
-  .modal-listing-block {
-    display: flex;
-    flex-direction: column;
-    max-width: 98vw;
-    padding: 0.5rem 0 0.5rem 0;
   }
 }
 
@@ -152,6 +120,20 @@
 }
 
 @media(min-width: 624px) {
+  /* sub-container within grid for creating separate columns i.e. R/L */
+  .modal-listing-block {
+    display: flex;
+    flex-direction: column;
+    max-width: 90vw;
+    padding: 0.5rem 0 0.5rem 0;
+  }
+
+  .column-right {
+    margin-left: auto;
+    margin-right: 0;
+    text-align: end;
+  }
+
   .column-left-indent {
     margin-right: auto;
     margin-left: 1.25rem;
@@ -159,24 +141,52 @@
 }
 
 @media(max-width: 623px) {
+  /* Grid container for modal listing blocks: SMALL VW*/
+  .modal-listing-container-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin: 1.25rem 0 1.25rem 0;
+  }
+
+  /* reversed to push everything to the left side at this viewport size */
+  .column-right {
+    margin-right: auto;
+  }
+
   .column-left-indent {
     margin-right: auto;
     margin-left: 0.75rem;
   }
-}
 
-@media(min-width: 624px) {
-  .column-right {
-    margin-left: auto;
-    margin-right: 0;
-    text-align: end;
+  .modal-listing-block {
+    display: flex;
+    flex-direction: column;
+    max-width: 98vw;
+    padding: 0.5rem 0 0.5rem 0;
   }
-}
 
-@media(max-width: 623px) {
-  /* reversed to push everything to the left side at this viewport size */
-  .column-right {
-    margin-right: auto;
+  .modal-button-with-icon {
+    font-size: 0.8rem !important;
+  }
+
+  .modal-button-with-icon mat-icon {
+    scale: 0.7;
+  }
+
+  .modal-buttons {
+    font-size: 0.8rem !important;
+  }
+
+  .modal-footer {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    padding-right: 0;
+    margin-right: 0;
+  }
+
+  .footer-buttons-right {
+    gap: 0 !important;
   }
 }
 
@@ -196,18 +206,63 @@
 }
 
 .modal-buttons {
-  border: 2px solid rgba(255, 131, 7, .75);
+  display: inline-flex;
+  border: 1px solid rgba(255, 131, 7, .75);
   padding: .25rem .75rem .25rem .75rem !important;
   background-color: rgba(33, 37, 41, .4);
   color: rgba(255, 131, 7, .75);
-  font-size: clamp(1rem, 1vw, 1.2rem);
-  border-radius: .25rem;
-  transition: background-color 0.15s ease;
+  font-size: clamp(0.9rem, 1.1rem, 1.6rem);
+  border-radius: .2rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  align-items: center;
 }
 
-.modal-buttons .msg-icon {
-  font-weight: 25 !important;
-  line-height: 2rem !important;
+.modal-button-with-icon {
+  display: inline-flex;
+  gap: 0.25rem;
+  border: 1px solid rgba(255, 131, 7, .75);
+  padding: .26rem .56rem .25rem .56rem;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .75);
+  font-size: clamp(0.9rem, 1.1rem, 1.6rem);
+  border-radius: .2rem;
+  transition: 0.2s ease;
+  align-items: center;
+}
+
+.modal-button-with-icon:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+}
+
+.msg-icon {
+  scale: 0.8 !important;
+}
+
+.footer-buttons-right {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.footer-buttons-left {
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.modal-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+}
+
+.options-button {
+  color: rgba(188, 191, 200, .9);
+  border: 1px solid rgba(188, 191, 200, .9);
 }
 
 .modal-buttons:hover {

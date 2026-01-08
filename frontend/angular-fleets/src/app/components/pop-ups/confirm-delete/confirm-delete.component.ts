@@ -10,7 +10,8 @@ import {GroupListingViewModel} from "../../../models/group-listing/group-listing
 })
 export class ConfirmDeleteComponent {
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: {rows: GroupListingViewModel[]},
+    @Inject(MAT_DIALOG_DATA)
+    public data: {rows: GroupListingViewModel[]},
     private dialogRef: MatDialogRef<ConfirmDeleteComponent>,
   ) {}
 

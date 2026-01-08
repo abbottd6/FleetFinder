@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlanetMoonSystemDto;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.CRUD_services.PlanetMoonSystemServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.PlanetMoonSystemServiceImpl;
 import com.sc_fleetfinder.fleets.services.caching_services.PlanetMoonSystemCachingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

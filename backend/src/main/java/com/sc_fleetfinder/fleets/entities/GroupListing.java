@@ -1,10 +1,20 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-import org.hibernate.annotations.Where;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplaySubcategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GroupStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Legality;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetarySystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import com.sc_fleetfinder.fleets.utils.VisStatus;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import org.springframework.lang.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,14 +34,11 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.time.Instant;
 
 @Entity
 @Table(name="group_listing")
-//@SQLDelete(sql = "UPDATE group_listing SET is_deleted = 1, deleted_at = CURRENT_TIMESTAMP(6) WHERE id_group = ?")
-@SQLRestriction("is_deleted = 0")
 @Getter
 @Setter
 public class GroupListing {
@@ -142,17 +149,11 @@ public class GroupListing {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant creationTimestamp;
 
-    @UpdateTimestamp
     @Column(name="last_updated")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant lastUpdated;
 
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
-
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
-
-    @Column(name = "deleted_by")
-    private Long deletedBy;
+    @Enumerated(EnumType.STRING)
+    @Column(name="vis_status", nullable = false)
+    private VisStatus visStatus = VisStatus.FRESH;
 }

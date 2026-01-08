@@ -1,4 +1,4 @@
-import {Inject, Injectable} from "@angular/core";
+import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {catchError, map, Observable, throwError} from "rxjs";
@@ -20,7 +20,6 @@ export class UserApiService {
           return this.http.post<Partial<PrivateUser>>('/api/users/create-user', {
             keycloakId: profile.userData.sub,
             username: profile.userData.preferred_username,
-            email: profile.userData.email,
           });
         }
         return throwError(() => err);
@@ -31,13 +30,12 @@ export class UserApiService {
         return new PrivateUser(
           raw.userId!,
           raw.username!,
-          raw.email!,
           raw.server!,
           raw.org!,
           raw.about!,
           raw.acctCreated!,
-          raw.groupListingsDto!,
-          roles
+          raw.lastAccess!,
+          raw.groupListingsDto!
         );
       })
     );

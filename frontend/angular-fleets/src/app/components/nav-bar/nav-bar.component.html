@@ -1,19 +1,15 @@
-<nav class="navbar navbar-expand-xl bg-primary" data-bs-theme="light" >
+<nav class="navbar navbar-expand-xl bg-primary" data-bs-theme="light">
   <div class="container-fluid">
     <a class="navbar-brand" id="navbar-title" href="#">scFleetFinder</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav me-auto mb-lg-0">
         <li class="nav-item">
           <a class="nav-link"
              aria-current="page"
              data-bs-toggle="collapse"
-             [routerLink]="['user-account']"
+             [routerLink]="['/user-account']"
              (click)="closeDropdown()"
-          >Account</a>
+          >Profile</a>
         </li>
         <li class="nav-item">
           <a class="nav-link"
@@ -21,11 +17,11 @@
              data-bs-toggle="collapse"
              [routerLink]="''"
              (click)="closeDropdown()"
-          >Home</a>
+          >How&nbsp;To</a>
         </li>
         <li class="nav-item">
           <a class="nav-link"
-             [routerLink]="['about']"
+             [routerLink]="['/about']"
              (click)="closeDropdown()"
           >About</a>
         </li>
@@ -35,73 +31,144 @@
             Listings
           </a>
           <ul class="dropdown-menu">
-            <li><a class="dropdown-item" [routerLink]="['group-listings']">Search Listings</a></li>
-            <li><a class="dropdown-item" [routerLink]="['user-account']">My Listings</a></li>
-            <li><a class="dropdown-item" [routerLink]="['create-listing']">Create Listing</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/group-listings']">Search Listings</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/user-account']">My Listings</a></li>
+            <li><a class="dropdown-item" [routerLink]="['/create-listing']">Create Listing</a></li>
           </ul>
         </li>
         <li class="nav-item toggle-listings-nav">
           <a class="nav-link"
-             [routerLink]="['group-listings']"
+             [routerLink]="['/group-listings']"
              (click)="closeDropdown()">
             Search Listings
           </a>
         </li>
         <li class="nav-item toggle-listings-nav">
           <a class="nav-link"
-             [routerLink]="['create-listing']"
+             [routerLink]="['/create-listing']"
              (click)="closeDropdown()">
             Create Listing
           </a>
         </li>
+        <li class="nav-item toggle-listings-nav" *ngIf="auth.isLoggedIn$ | async">
+          <a class="nav-link"
+             (click)="navbarLogOut()">
+            Logout
+          </a>
+        </li>
       </ul>
     </div>
-  </div>
-  <div class="container-fluid">
-    <div class="collapse navbar-collapse navbar-search">
-      <form class="navbar-nav form" role="search">
-        <input class="form-control me-2" type="search" placeholder="Search listings..." aria-label="Search">
-        <button class="btn btn-outline-secondary" id="navbar-search-button" type="submit">Search</button>
-      </form>
+    <div *ngIf="(navbarLayoutMode$ | async) === 'handheld'">
+      <div class="mobile-nav-buttons">
+        <div class="mobile-nav-icons">
+          <button
+            id="chat-icon"
+            class="btn btn-link d-xl-none p-0"
+            (click)="toggleChat()"
+            [matBadge]="(ws.totalUnread$ | async)"
+            [matBadgeHidden]="((ws.totalUnread$ | async) ?? 0) === 0"
+            [matBadgeOverlap]="true"
+            [matBadgePosition]="badgePosition">
+            <i class="bi bi-chat-fill chat-icon"></i>
+          </button>
+          <div class="nav-item"
+               id="mobile-notes-dropdown"
+               ngbDropdown
+               (openChange)="onOpenChange($event)">
+            <button
+              id="notification-icon"
+              class="btn btn-link d-xl-none p-0 notes-toggle"
+              ngbDropdownToggle
+              [matBadge]="(ws.notificationUnread$ | async)"
+              [matBadgeHidden]="((ws.notificationUnread$ | async) ?? 0) == 0"
+              [matBadgeOverlap]="true"
+              [matBadgePosition]="badgePosition">
+              <i class="bi bi-bell-fill"></i>
+            </button>
+            <app-notifications-dropdown
+              ngbDropdownMenu
+              class="notifications-panel dropdown-menu-end">
+            </app-notifications-dropdown>
+          </div>
+        </div>
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNavDropdown"
+                aria-controls="navbarNavDropdown"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+      </div>
     </div>
   </div>
   <div class="container-fluid collapse navbar-collapse navbar-text">
-      <ng-container *ngIf="auth.isLoggedIn$ | async; else blankWelcome">
-        <span class="navbar-icons navbar-welcome-msg">Welcome, {{ userService.localUsername$ | async }}</span>
+      <ng-container *ngIf="userService.sessionUser$ | async as sessionUser; else blankWelcome">
+        <span class="navbar-icons navbar-welcome-msg">Welcome, {{ sessionUser.username }}</span>
       </ng-container>
       <ng-template #blankWelcome>
         <span class="blank-welcome"></span>
       </ng-template>
       <div class="navbar-icons">
-        <span class="navbar-text">
-          <a href="#">
-            <i class="bi bi-chat-fill"></i>
-          </a>
-          <a href="#">
-            <i class="bi bi-bell-fill"></i>
-          </a>
-          <div class="nav-item dropdown" ngbDropdown>
+        <div class="navbar-text">
           <button
-            ngbDropdownToggle
             class="nav-link"
-            type="button"
-            aria-haspopup="true"
-            aria-expanded="false">
-            <i class="bi bi-person-fill"></i>
+            (click)="toggleChat()"
+            [matBadge]="(ws.totalUnread$ | async)"
+            [matBadgeHidden]="((ws.totalUnread$ | async) ?? 0) === 0"
+            [matBadgeOverlap]="true"
+            [matBadgePosition]="badgePosition">
+            <i class="bi bi-chat-fill chat-icon"></i>
           </button>
-          <ul ngbDropdownMenu class="dropdown-menu dropdown-menu-end">
-            <ng-container *ngIf="auth.isLoggedIn$ | async; else loggedOut">
-              <li><button class="dropdown-item" [routerLink]="['user-account']">Account</button></li>
-              <li><button class="dropdown-item" (click)="auth.logout()">Logout</button></li>
-            </ng-container>
-            <ng-template #loggedOut>
-              <li><button class="dropdown-item" (click)="auth.loginWithPopup(); closeDropdown()">Login</button></li>
-              <li><button class="dropdown-item"
-                          (click)="auth.registerWithPopup(); closeDropdown()">Sign Up</button></li>
-            </ng-template>
-          </ul>
+          <div class="nav-item"
+              ngbDropdown
+              (openChange)="onOpenChange($event)">
+            <button
+              class="nav-link notes-toggle"
+              ngbDropdownToggle
+              [matBadge]="(ws.notificationUnread$ | async)"
+              [matBadgeHidden]="((ws.notificationUnread$ | async) ?? 0) == 0"
+              [matBadgeOverlap]="true"
+              [matBadgePosition]="badgePosition">
+              <i class="bi bi-bell-fill"></i>
+            </button>
+            <app-notifications-dropdown
+              ngbDropdownMenu
+              class="dropdown-menu-end notifications-panel">
+            </app-notifications-dropdown>
           </div>
-        </span>
+          <div class="nav-item dropdown" ngbDropdown>
+            <button
+              ngbDropdownToggle
+              class="nav-link"
+              type="button"
+              aria-haspopup="true"
+              aria-expanded="false">
+              <i class="bi bi-person-fill"></i>
+            </button>
+            <ul ngbDropdownMenu class="dropdown-menu dropdown-menu-end">
+              <ng-container *ngIf="auth.isLoggedIn$ | async; else loggedOut">
+                <li>
+                  <button class="dropdown-item" [routerLink]="['/user-account']">Profile</button>
+                </li>
+                <li>
+                  <button class="dropdown-item" (click)="navbarLogOut()">Logout</button>
+                </li>
+              </ng-container>
+              <ng-template #loggedOut>
+                <li>
+                  <button class="dropdown-item" (click)="auth.login(); closeDropdown()">Login</button>
+                </li>
+                <li>
+                  <button class="dropdown-item"
+                          (click)="auth.register(); closeDropdown()">Sign Up
+                  </button>
+                </li>
+              </ng-template>
+            </ul>
+          </div>
+        </div>
       </div>
   </div>
 </nav>

@@ -1,11 +1,11 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.ServerRegionRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.ServerRegionDto;
-import com.sc_fleetfinder.fleets.entities.ServerRegion;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.ServerRegionRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.ServerRegionDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.caching_services.ServerRegionCachingServiceImpl;
-import com.sc_fleetfinder.fleets.services.conversion_services.ServerRegionConversionServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.ServerRegionConversionServiceImpl;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

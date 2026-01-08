@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,10 +20,6 @@ public class PrivateUserResponseDto {
     @Size(min = 1, max = 32, message = "Username must be between 1 and 32 characters")
     private String username;
 
-    @NotBlank(message = "Users email cannot be blank")
-    @Email(message = "Users email must be a valid email format")
-    private String email;
-
     private String server;
 
     private String org;
@@ -33,6 +28,9 @@ public class PrivateUserResponseDto {
 
     @DateTimeFormat(pattern = "MM/dd/yyyy")
     private LocalDateTime acctCreated;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime lastAccessed;
 
     private Set<GroupListingResponseDto> groupListingsDto = new HashSet<>();
 

@@ -2,8 +2,14 @@ package com.sc_fleetfinder.fleets;
 
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
 import com.sc_fleetfinder.fleets.integration_tests.AbstractIntegrationTestDB;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.support.ExecutorSubscribableChannel;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -12,9 +18,22 @@ import org.springframework.test.context.ContextConfiguration;
 @ContextConfiguration(initializers = TestEnvironmentLoader.class)
 @ActiveProfiles("test")
 class FleetsApplicationTests extends AbstractIntegrationTestDB {
-
-	@Test
-	void contextLoads() {
-	}
+//
+//	@TestConfiguration
+//	static class NoCacheConfig {
+//		@Bean
+//		CacheManager cacheManager() {
+//			return new org.springframework.cache.support.NoOpCacheManager();
+//		}
+//	}
+//
+//	@TestConfiguration
+//	static class SimpMessageTestConfig {
+//		@Bean
+//		SimpMessagingTemplate simpMessagingTemplate() {
+//			MessageChannel channel = new ExecutorSubscribableChannel();
+//			return new SimpMessagingTemplate(channel);
+//		}
+//	}
 
 }

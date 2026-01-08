@@ -1,0 +1,79 @@
+<div class="exo-text">
+  <h2 mat-dialog-title><span class="label">Title:</span>{{ data.listing.listingTitle }}</h2>
+  <mat-dialog-content>
+    <div class="top_row">
+      <div class="row-el">
+        <span class="label">User:</span>
+        <span>{{ data.listing.userName }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">ID:</span>
+        <span>{{ data.listing.userId }}</span>
+      </div>
+    </div>
+    <div class="block1">
+      <div class="row-el">
+        <span class="label">Description:</span>
+        <span class="desc">{{ data.listing.listingDescription }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Roles:</span>
+        <span>{{ data.listing.availableRoles }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Comms-service:</span>
+        <span>{{ data.listing.commsService }}</span>
+      </div>
+    </div>
+    <div class="block1">
+      <div class="row-el">
+        <span class="label">First Report:</span>
+        <span> {{ data.issue.firstReportTs | date: 'MMM d, h:mm a' }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Last Report:</span>
+        <span>{{ data.issue.lastReportTs | date: 'MMM d, h:mm a' }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Status:</span>
+        <span>{{ data.issue.status }}</span>
+      </div>
+    </div>
+    <div class="block1">
+      <div class="row-el">
+        <span class="label">Spam:</span> <span>{{ data.issue.spamCount }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Hate speech:</span> <span>{{ data.issue.hateSpeechCount }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">NSFW:</span> <span>{{ data.issue.nsfwCount }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Scam:</span> <span>{{ data.issue.scamCount }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Off Topic:</span> <span>{{ data.issue.offTopicCount }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Troll:</span> <span>{{ data.issue.trollCount }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Doxx:</span> <span>{{ data.issue.doxxCount }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Cheat:</span> <span>{{ data.issue.cheatCount }}</span>
+      </div>
+      <div class="row-el">
+        <span class="label">Other:</span> <span>{{ data.issue.otherCount }}</span>
+      </div>
+      <div class="underline"></div>
+      <div class="row-el">
+        <span class="label">Total Reports Count:</span> <span>{{ data.issue.reportTotalCount }}</span>
+      </div>
+    </div>
+  </mat-dialog-content>
+</div>
+<mat-dialog-actions align="end">
+  <button class="action-buttons" (click)="onCancel()">OK</button>
+</mat-dialog-actions>

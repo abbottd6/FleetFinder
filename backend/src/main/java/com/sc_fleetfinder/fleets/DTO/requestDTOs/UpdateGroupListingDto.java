@@ -19,8 +19,6 @@ public class UpdateGroupListingDto {
     @NotNull(message = "Update group listing request DTO field 'groupId' cannot be null.")
     private Long groupId;
 
-    private Long userId;
-
     @NotNull(message = "Update group listing request DTO field 'serverId' cannot be null")
     private Integer serverId;
 
@@ -44,9 +42,14 @@ public class UpdateGroupListingDto {
     @NotNull(message = "Update group listing request DTO field 'groupStatusId' cannot be null")
     private Integer groupStatusId;
 
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Nullable
-    private Instant eventSchedule;
+    private String eventDate;
+
+    @Nullable
+    private String eventTime;
+
+    @Nullable
+    private String eventTimeZone;
 
     @NotNull(message = "Update group listing request DTO field 'categoryId' cannot be null")
     private Integer categoryId;
@@ -85,7 +88,7 @@ public class UpdateGroupListingDto {
     @NotNull(message = "Update group listing request DTO field 'commsOption' cannot be null.")
     private String commsOption;
 
-    @Size(max = 50, message = "Update group listing request DTO field 'commsService' cannot exceed 50 chars.")
+    @Size(max = 50, message = "Update group listing request DTO field 'listingCommsService' cannot exceed 50 chars.")
     @Nullable
     private String commsService;
 

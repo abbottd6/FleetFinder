@@ -35,6 +35,7 @@ export class GroupListingViewModel {
               public commsOption: string,
               public commsService: string,
               public creationTimestamp: Date,
-              public lastUpdated: Date
+              public lastUpdated: Date,
+              public visStatus: string
       ){}
 }

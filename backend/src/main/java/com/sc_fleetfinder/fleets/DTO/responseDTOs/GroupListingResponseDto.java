@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
+import com.sc_fleetfinder.fleets.utils.VisStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +16,9 @@ public class GroupListingResponseDto {
 
     @NotNull(message = "GroupListingResponseDto field 'groupId' cannot be null")
     private Long groupId;
+
+    @NotNull(message="GroupListingResponseDto field 'userId' cannot be null.")
+    private Long userId;
 
     @NotNull(message = "GroupListingResponseDto field 'userName' cannot be null")
     private String userName;
@@ -109,4 +113,6 @@ public class GroupListingResponseDto {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant lastUpdated;
+
+    private VisStatus visStatus;
 }
