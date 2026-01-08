@@ -1,11 +1,12 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GameplayCategoryService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GameplayCategoryService;
+import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -20,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ContextConfiguration(initializers = TestEnvironmentLoader.class)
+@ContextConfiguration(initializers = TestEnvironmentLoader.class, classes = SimpMessageTestConfig.class)
 public class GameplayCategoryControllerIntegrationTest extends AbstractIntegrationTestDB{
 
     @Autowired
@@ -50,7 +51,7 @@ public class GameplayCategoryControllerIntegrationTest extends AbstractIntegrati
         mockMvc.perform(get("/api/lookup/gameplay-categories/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.gameplayCategoryId").value(1))
-                .andExpect(jsonPath("$.gameplayCategoryName").value("Ship Combat"));
+                .andExpect(jsonPath("$.gameplayCategoryName").value("Commerce/Trade"));
     }
 
     @Test

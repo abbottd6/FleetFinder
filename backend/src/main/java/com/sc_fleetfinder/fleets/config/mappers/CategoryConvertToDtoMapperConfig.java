@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.config.mappers;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameplayCategoryDto;
-import com.sc_fleetfinder.fleets.entities.GameplayCategory;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplayCategoryDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;

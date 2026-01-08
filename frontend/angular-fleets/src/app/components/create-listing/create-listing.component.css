@@ -2,34 +2,36 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  background-color: rgba(108, 117, 125, 100);
-  max-height: 74vh;
+  background-color: rgba(70, 79, 87, 0.4);
+  color: rgba(188, 191, 200, .8);
   margin-left: auto;
   margin-right: auto;
-  padding-bottom: 10rem;
-  min-width: 90vw;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-color: #2c2c2c rgb(108, 117, 125);
-  scrollbar-arrow-color: transparent !important;
-  border-top: 5px solid var(--stark-blue);
-  border-left: 5px solid var(--stark-blue);
-  color: var(--bs-gray-900);
+  padding-top: 2rem;
+  padding-bottom: 6rem;
+  min-width: 95%;
+  clip-path: polygon(
+    3.6% 0%,     /* top edge, a bit right from TL */
+    100% 0%,   /* full top-right corner */
+    100% 97%,  /* right edge, a bit up from BR */
+    96% 100%,  /* bottom edge, a bit left from BR */
+    0% 100%,   /* full bottom-left corner */
+    0% 3%      /* left edge, a bit down from TL */
+  );
 }
 
 @media(min-width: 725px) {
   .page-title {
-    margin: 1.2rem auto 0 5rem;
-    color: var(--bs-gray-900);
+    margin: 2rem auto 1rem 5rem;
     min-width: 90%;
+    padding: 1rem;
   }
 }
 
 @media(max-width: 724px) {
   .page-title {
     margin: 1.2rem 2rem 0 2rem;
-    color: var(--bs-gray-900);
     min-width: 100%;
+    padding: 1rem;
   }
 }
 
@@ -37,17 +39,17 @@
   font-size: clamp(1.1rem, 3vw, 2rem);
 }
 
-.header-line {
-  border-top: 2px solid var(--bs-gray-900);
-  width: 95%;
-  margin: .5rem auto 1.5rem auto;
-}
+/*.header-line {*/
+/*  border-top: 2px solid var(--bs-gray-900);*/
+/*  width: 95%;*/
+/*  margin: .5rem auto 1.5rem auto;*/
+/*}*/
 
 .form-body {
   display: flex;
   flex-direction: column;
   flex: 1;
-  width: 90%;
+  min-width: 90%;
   margin: 0 1rem 3rem 1rem;
   padding-bottom: 15vh;
 }
@@ -98,7 +100,7 @@ app-comms-service-input {
     display: flex;
     flex-direction: row;
     flex: 1;
-    padding-left: clamp(0.25rem, 25vw, 25%);
+    padding-left: clamp(0.25rem, 15vw, 25%);
     justify-content: flex-start;
     width: 100%;
     align-items: center;
@@ -110,10 +112,15 @@ app-comms-service-input {
   .form-title-row {
     display: flex;
     flex-direction: row;
+    padding-left: 0;
     flex: 1;
     justify-content: flex-start;
-    width: 100%;
+    min-width: 95%;
     align-items: center;
+  }
+
+  .form-body {
+    min-width: 90%;
   }
 }
 
@@ -139,7 +146,7 @@ app-comms-service-input {
   .form-row {
     display: grid;
     grid-template-columns:
-      repeat(auto-fit, minmax(425px, max-content));
+      repeat(auto-fit, minmax(450px, max-content));
     padding-left: 3rem;
     padding-right: 3rem;
     justify-content: flex-start;
@@ -201,7 +208,7 @@ app-comms-service-input {
 
 /* datepicker calendar */
 ::ng-deep .mat-datepicker-content .mat-calendar {
-  border: 2px solid rgba(255, 131, 7, 0.5);
+  border: 1px solid rgba(255, 131, 7, 0.5);
   border-radius: 1rem !important;
   max-height: 40vh;
   overflow: auto;
@@ -269,7 +276,8 @@ app-comms-service-input {
   padding: 0.75rem;
   display: flex;
   justify-content: center;
-  color: rgba(161, 13, 13, 0.4) !important;
+  font-weight: 600;
+  color: rgba(90, 2, 2, 0.4) !important;
 }
 
 .submit-button-container {
@@ -299,7 +307,8 @@ app-comms-service-input {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  color: rgba(161, 13, 13, 0.5) !important;
+  color: rgba(90, 2, 2, 0.4) !important;
+  font-weight: 600;
   margin: 1rem;
   font-size: clamp(1rem, 1vw, 1.2rem);
 }

@@ -1,12 +1,12 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.PlanetMoonSystemRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
-import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
-import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.PlanetMoonSystemRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlanetMoonSystemDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.caching_services.PlanetMoonSystemCachingServiceImpl;
-import com.sc_fleetfinder.fleets.services.conversion_services.PlanetMoonSystemConversionServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.PlanetMoonSystemConversionServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

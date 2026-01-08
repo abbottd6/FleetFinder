@@ -1,4 +1,4 @@
-import { GroupListingViewModel } from '../group-listing/group-listing-view-model'
+import {UserRole} from "../../services/user-services/user.service";
 
 export class PublicUser {
 

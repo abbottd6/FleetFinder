@@ -42,7 +42,7 @@
   font-family: "Exo 2", sans-serif;
   font-weight: 400;
   font-size: 1.15rem;
-  background-color: rgba(44, 44, 44, 0.3);
+  background-color: rgba(44, 44, 44, 0.15);
   transition: 0.08s ease;
 }
 
@@ -51,66 +51,94 @@
   color: rgba(188, 191, 200, .5) !important;
 }
 
+.row-is-clicked.field-label {
+  color: rgba(188, 191, 200, .5) !important;
+}
+
 .mat-mdc-row:hover {
   background-color: rgba(255, 131, 7, .05) !important;
   cursor: pointer;
 }
 
-.options-menu-icon {
+.indicators-column {
+  padding-right: 0;
+  padding-left: 0.5rem;
+  align-content: center;
+}
+
+.indicators-column-icon {
+  scale: 0.85;
   transition: color 0.15s ease;
 }
 
-.options-menu-icon:hover {
-  color: rgba(255, 131, 7, .6);
+.indicators-column-icon:hover {
+  color: rgba(255, 131, 7, .4);
   background-color: rgba(44, 44, 44, 0.7);
   border-radius: 0.25rem;
 }
 
-.options-list {
-  padding-left: 0.25rem;
-  padding-right: 0.5rem;
-  margin-bottom: 0.75rem;
+.status-circle-icon.is-fresh {
+  color: #478028;
 }
 
-.options-item {
-  display: block;
-  min-width: 85%;
-  margin: 0.0rem .5rem .25rem .5rem;
-  padding: 0.5rem 0.5rem 0.25rem 0.5rem;
-  clear: both;
+.status-circle-icon.is-recent {
+  color: rgba(218, 165, 32, 0.75);
+}
+
+.status-circle-icon.is-stale {
   color: rgba(255, 131, 7, .6);
-  text-align: left;
-  border-bottom: 1px solid rgba(255, 131, 7, .6);
-  font-size: 95%;
-  transition: background-color 0.15s ease;
 }
 
-.options-item:hover {
-  background-color: rgba(255, 131, 7, .25);
-  color: #2c2c2c;
-  border-radius: 0.25rem;
-  border-bottom: 1px solid #2c2c2c;
-  cursor: pointer;
+.status-circle-icon.is-inactive {
+  color: rgba(90, 2, 2, 0.6);
 }
 
-.bookmark-icon {
-  margin-left: 1rem;
-  transition: color 0.15s ease;
-}
-
-.bookmark-icon:hover {
-  color: rgba(255, 131, 7, .6);
-  background-color: rgba(44, 44, 44, 0.7);
-  border-radius: 0.25rem;
-}
-
-.paginator {
+.no-results-container {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.1rem;
   color: rgba(188, 191, 200, .9);
-  padding: 1rem 2rem 1rem 0;
-  margin-bottom: 5rem;
 }
 
-@media(min-width: 1500px) and (max-width: 2000px) {
+.feed-element {
+  display: flex;
+  flex-direction: column;
+  min-height: 15vh;
+}
+
+.feed-data-row {
+  display: flex;
+  flex-direction: row;
+  gap: 0.75rem;
+  padding-top: 0.1rem;
+  margin: 0;
+}
+
+.title-row {
+  padding-top: 0.25rem;
+  font-size: 1rem;
+}
+
+.feed-label-value-pair {
+  display: flex;
+  flex-direction: row;
+  gap: 0.2rem;
+  padding: 0;
+  margin: 0;
+}
+
+.field-label {
+  color: rgba(255, 131, 7, .6);
+  padding: 0;
+  margin: 0;
+}
+
+.description-row {
+  text-wrap: wrap;
+  padding-bottom: 0.25rem;
+}
+
+@media(min-width: 1530px) and (max-width: 2000px) {
 
   .action-buttons {
     font-size: 0.9rem;
@@ -125,12 +153,16 @@
   }
 }
 
-@media(min-width: 725px) and (max-width: 1499px) {
+@media(min-width: 725px) and (max-width: 1529px) {
   .mat-mdc-header-row {
     font-size: clamp(0.8rem, 1rem, 1.5rem);
   }
   .mat-mdc-row {
     font-size: clamp(0.7rem, 0.9rem, 1rem) !important;
+  }
+
+  .indicators-column-icon {
+    scale: 0.7;
   }
 }
 
@@ -149,8 +181,8 @@
   }
 
   .table-container {
-    max-height: 70% !important;
-    padding-bottom: 3rem;
+    max-height: 90% !important;
+    padding-bottom: 1rem;
   }
 
   .action-buttons-container {
@@ -212,6 +244,9 @@
   /* datepicker calendar container */
   ::ng-deep .mat-datepicker-content {
     margin-bottom: 5rem;
+    border-radius: 1rem;
+    background-color: var(--bs-gray-900) !important;
+    color: rgba(188, 191, 200, .7) !important;
   }
 }
 

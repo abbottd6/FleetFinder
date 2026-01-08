@@ -1,10 +1,10 @@
 package com.sc_fleetfinder.fleets.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.EnvironmentRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
-import com.sc_fleetfinder.fleets.entities.GameEnvironment;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.EnvironmentRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameEnvironmentDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.conversion_services.GameEnvironmentConversionService;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.GameEnvironmentConversionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

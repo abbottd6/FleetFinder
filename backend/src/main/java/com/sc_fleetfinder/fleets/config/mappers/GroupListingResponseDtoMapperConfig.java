@@ -1,18 +1,18 @@
 package com.sc_fleetfinder.fleets.config.mappers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
-import com.sc_fleetfinder.fleets.entities.GameEnvironment;
-import com.sc_fleetfinder.fleets.entities.GameExperience;
-import com.sc_fleetfinder.fleets.entities.GameplayCategory;
-import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.entities.GroupStatus;
-import com.sc_fleetfinder.fleets.entities.Legality;
-import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
-import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
-import com.sc_fleetfinder.fleets.entities.PlayStyle;
-import com.sc_fleetfinder.fleets.entities.PvpStatus;
-import com.sc_fleetfinder.fleets.entities.ServerRegion;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GroupStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Legality;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetarySystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
@@ -51,6 +51,11 @@ public class GroupListingResponseDtoMapperConfig {
                     mapper.map(GroupListing::getGroupId, GroupListingResponseDto::setGroupId);
 
                     mapper.using(ctx -> {
+                        Users user = (Users) ctx.getSource();
+                        return user != null ? user.getUserId() : null;
+                    }).map(GroupListing::getUsers, GroupListingResponseDto::setUserId);
+
+                    mapper.using(ctx -> {
                         Users users = (Users) ctx.getSource();
                         return users != null ? users.getUsername() : null;
                     }).map(GroupListing::getUsers, GroupListingResponseDto::setUserName);
@@ -61,14 +66,29 @@ public class GroupListingResponseDtoMapperConfig {
                     }).map(GroupListing::getServer, GroupListingResponseDto::setServer);
 
                     mapper.using(ctx -> {
+                        ServerRegion server = (ServerRegion) ctx.getSource();
+                        return server != null ? server.getServerId() : null;
+                    }).map(GroupListing::getServer, GroupListingResponseDto::setServerId);
+
+                    mapper.using(ctx -> {
                         GameEnvironment environment = (GameEnvironment) ctx.getSource();
                         return environment != null ? environment.getEnvironmentType() : null;
                     }).map(GroupListing::getEnvironment, GroupListingResponseDto::setEnvironment);
 
                     mapper.using(ctx -> {
+                        GameEnvironment environment = (GameEnvironment) ctx.getSource();
+                        return environment != null ? environment.getEnvironmentId() : null;
+                    }).map(GroupListing::getEnvironment, GroupListingResponseDto::setEnvironmentId);
+
+                    mapper.using(ctx -> {
                         GameExperience experience = (GameExperience) ctx.getSource();
                         return experience != null ? experience.getExperienceType() : null;
                     }).map(GroupListing::getExperience, GroupListingResponseDto::setExperience);
+
+                    mapper.using(ctx -> {
+                        GameExperience experience = (GameExperience) ctx.getSource();
+                        return experience != null ? experience.getExperienceId() : null;
+                    }).map(GroupListing::getExperience, GroupListingResponseDto::setExperienceId);
 
                     mapper.map(GroupListing::getListingTitle, GroupListingResponseDto::setListingTitle);
 
@@ -84,14 +104,34 @@ public class GroupListingResponseDtoMapperConfig {
                     }).map(GroupListing::getPlayStyle, GroupListingResponseDto::setPlayStyle);
 
                     mapper.using(ctx -> {
+                        PlayStyle style = (PlayStyle) ctx.getSource();
+                        if(style == null) {
+                            return null;
+                        }
+                        else {
+                            return style.getStyleId();
+                        }
+                    }).map(GroupListing::getPlayStyle, GroupListingResponseDto::setStyleId);
+
+                    mapper.using(ctx -> {
                         Legality legality = (Legality) ctx.getSource();
                         return legality != null ? legality.getLegalityStatus() : null;
                     }).map(GroupListing::getLegality, GroupListingResponseDto::setLegality);
 
                     mapper.using(ctx -> {
+                        Legality legality = (Legality) ctx.getSource();
+                        return legality != null ? legality.getLegalityId() : null;
+                    }).map(GroupListing::getLegality, GroupListingResponseDto::setLegalityId);
+
+                    mapper.using(ctx -> {
                         GroupStatus groupStatus = (GroupStatus) ctx.getSource();
                         return groupStatus != null ? groupStatus.getGroupStatus() : null;
                     }).map(GroupListing::getGroupStatus, GroupListingResponseDto::setGroupStatus);
+
+                    mapper.using(ctx -> {
+                        GroupStatus groupStatus = (GroupStatus) ctx.getSource();
+                        return groupStatus != null ? groupStatus.getGroupStatusId() : null;
+                    }).map(GroupListing::getGroupStatus, GroupListingResponseDto::setGroupStatusId);
 
                     mapper.map(GroupListing::getEventSchedule, GroupListingResponseDto::setEventSchedule);
 
@@ -99,6 +139,11 @@ public class GroupListingResponseDtoMapperConfig {
                         GameplayCategory category = (GameplayCategory) ctx.getSource();
                         return category != null ? category.getCategoryName() : null;
                     }).map(GroupListing::getCategory, GroupListingResponseDto::setCategory);
+
+                    mapper.using(ctx -> {
+                        GameplayCategory cat = (GameplayCategory) ctx.getSource();
+                        return cat != null ? cat.getCategoryId() : null;
+                    }).map(GroupListing::getCategory, GroupListingResponseDto::setCategoryId);
 
                     mapper.using(ctx -> {
                         GameplaySubcategory subcategory = (GameplaySubcategory) ctx.getSource();
@@ -111,14 +156,34 @@ public class GroupListingResponseDtoMapperConfig {
                     }).map(GroupListing::getSubcategory, GroupListingResponseDto::setSubcategory);
 
                     mapper.using(ctx -> {
+                        GameplaySubcategory subcat = (GameplaySubcategory) ctx.getSource();
+                        if(subcat == null) {
+                            return null;
+                        }
+                        else {
+                            return subcat.getSubcategoryId();
+                        }
+                    }).map(GroupListing::getSubcategory, GroupListingResponseDto::setSubcategoryId);
+
+                    mapper.using(ctx -> {
                         PvpStatus pvpStatus = (PvpStatus) ctx.getSource();
                         return pvpStatus != null ? pvpStatus.getPvpStatus() : null;
                     }).map(GroupListing::getPvpStatus, GroupListingResponseDto::setPvpStatus);
 
                     mapper.using(ctx -> {
+                        PvpStatus pvp = (PvpStatus) ctx.getSource();
+                        return pvp != null ? pvp.getPvpStatusId() : null;
+                    }).map(GroupListing::getPvpStatus, GroupListingResponseDto::setPvpStatusId);
+
+                    mapper.using(ctx -> {
                         PlanetarySystem system = (PlanetarySystem) ctx.getSource();
                         return system != null ? system.getSystemName() : null;
                     }).map(GroupListing::getSystem, GroupListingResponseDto::setSystem);
+
+                    mapper.using(ctx -> {
+                        PlanetarySystem system = (PlanetarySystem) ctx.getSource();
+                        return system != null ? system.getSystemId() : null;
+                    }).map(GroupListing::getSystem, GroupListingResponseDto::setSystemId);
 
                     mapper.using(ctx -> {
                         PlanetMoonSystem planet = (PlanetMoonSystem) ctx.getSource();
@@ -129,6 +194,16 @@ public class GroupListingResponseDtoMapperConfig {
                             return planet.getPlanetName();
                         }
                     }).map(GroupListing::getPlanetMoonSystem, GroupListingResponseDto::setPlanetMoonSystem);
+
+                    mapper.using(ctx -> {
+                        PlanetMoonSystem planet = (PlanetMoonSystem) ctx.getSource();
+                        if(planet == null) {
+                            return null;
+                        }
+                        else {
+                            return planet.getPlanetId();
+                        }
+                    }).map(GroupListing::getPlanetMoonSystem, GroupListingResponseDto::setPlanetId);
 
                     mapper.map(GroupListing::getListingDescription, GroupListingResponseDto::setListingDescription);
 

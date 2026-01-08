@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
   selector: 'app-login-modal',
@@ -6,6 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './login-modal.component.html',
   styleUrl: './login-modal.component.css'
 })
-export class LoginModalComponent {
-
-}
+export class LoginModalComponent {}

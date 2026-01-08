@@ -1,9 +1,9 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
-import com.sc_fleetfinder.fleets.DAO.ExperienceRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameExperienceDto;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.ExperienceRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameExperienceDto;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GameExperienceServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GameExperienceServiceImpl;
 import com.sc_fleetfinder.fleets.services.caching_services.ExperienceCachingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

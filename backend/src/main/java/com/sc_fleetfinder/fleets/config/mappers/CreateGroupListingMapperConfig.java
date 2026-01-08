@@ -1,22 +1,21 @@
 package com.sc_fleetfinder.fleets.config.mappers;
 
-
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
-import com.sc_fleetfinder.fleets.entities.GameExperience;
-import com.sc_fleetfinder.fleets.entities.GameplayCategory;
-import com.sc_fleetfinder.fleets.entities.GameplaySubcategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplaySubcategory;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.entities.GroupStatus;
-import com.sc_fleetfinder.fleets.entities.Legality;
-import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
-import com.sc_fleetfinder.fleets.entities.PlanetarySystem;
-import com.sc_fleetfinder.fleets.entities.PlayStyle;
-import com.sc_fleetfinder.fleets.entities.PvpStatus;
-import com.sc_fleetfinder.fleets.entities.ServerRegion;
-import com.sc_fleetfinder.fleets.entities.GameEnvironment;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GroupStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Legality;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetarySystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
-import org.modelmapper.AbstractConverter;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
@@ -25,7 +24,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Instant;
-
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 
 @Configuration
@@ -44,13 +46,23 @@ public class CreateGroupListingMapperConfig {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        //converter for date time strings to Instant type
-        modelMapper.addConverter(new AbstractConverter<String, Instant>() {
-            @Override
-            protected Instant convert(String source) {
-                return source != null ? Instant.parse(source) : null;
-            }
-        });
+        Converter<CreateGroupListingDto, Instant> dateTimeAndZoneToInstantConverter = ctx -> {
+            CreateGroupListingDto src = ctx.getSource();
+            if(src == null) return null;
+
+            String dateStr = src.getEventDate();
+            String timeStr = src.getEventTime();
+            String zoneStr = src.getEventTimeZone();
+
+            if(dateStr == null || timeStr == null || zoneStr == null) return null;
+            if(dateStr.isBlank() || timeStr.isBlank() || zoneStr.isBlank()) return null;
+
+            LocalDate date = LocalDate.parse(dateStr);
+            LocalTime time = LocalTime.parse(timeStr);
+            ZoneId zone = ZoneId.of(zoneStr);
+
+            return ZonedDateTime.of(date, time, zone).toInstant();
+        };
 
         modelMapper.createTypeMap(CreateGroupListingDto.class, GroupListing.class)
                 .addMappings(mapper -> {
@@ -96,7 +108,7 @@ public class CreateGroupListingMapperConfig {
                             .map(CreateGroupListingDto::getGroupStatusId, GroupListing::setGroupStatus);
 
                     //eventScheduleDate mapped to eventSchedule Instant
-                    mapper.map(CreateGroupListingDto::getEventSchedule, GroupListing::setEventSchedule);
+                    mapper.using(dateTimeAndZoneToInstantConverter).map(src -> src, GroupListing::setEventSchedule);
 
                     //categoryId to category entity
                     mapper.using((MappingContext<Integer, GameplayCategory> ctx) -> mapperLookupService.findCategoryById(ctx.getSource()))

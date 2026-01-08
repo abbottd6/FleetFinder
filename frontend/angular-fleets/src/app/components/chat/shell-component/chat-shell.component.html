@@ -1,0 +1,6 @@
+<app-chat-panel
+  *ngIf="(chatHostSrv.mounted$ | async)"
+  [open]="(chatHostSrv.open$ | async)!"
+  (close)="chatHostSrv.closeChat()"
+  [class.is-collapsed]="(this.chatHostSrv.windowState$ | async) === ChatWindowState.collapsed"
+></app-chat-panel>

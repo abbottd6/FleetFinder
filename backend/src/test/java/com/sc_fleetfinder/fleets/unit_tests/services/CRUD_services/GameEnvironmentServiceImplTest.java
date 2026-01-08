@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GameEnvironmentDto;
-import com.sc_fleetfinder.fleets.services.CRUD_services.GameEnvironmentServiceImpl;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameEnvironmentDto;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GameEnvironmentServiceImpl;
 import com.sc_fleetfinder.fleets.services.caching_services.EnvironmentCachingServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

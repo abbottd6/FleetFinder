@@ -1,0 +1,10 @@
+:host {
+  display: inline-block !important;
+  pointer-events: none;
+  position: fixed;
+  z-index: 9999;
+}
+
+:host app-chat-panel {
+  pointer-events: auto;
+}

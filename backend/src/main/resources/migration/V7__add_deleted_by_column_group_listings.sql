@@ -1,2 +1,0 @@
-ALTER TABLE group_listing
-    ADD COLUMN deleted_by VARCHAR(32) DEFAULT NULL

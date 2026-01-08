@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
-import {LookupService} from "../../../services/api-lookup-services/lookup.service";
+import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
@@ -29,20 +29,14 @@ export class PlanetDropdownComponent implements AfterViewInit{
     });
   }
 
-  applyPlanetFilter(currSystem: number) {
-
-    if (currSystem == null || currSystem === 3) {
-      //clearing filtered planet array after value change and resetting dropdown
-      this.planetMoonControl?.reset();
-      this.planetMoonControl?.disable();
-      this.filteredPlanetMoons.splice(0, this.filteredPlanetMoons.length);
-    }
+  applyPlanetFilter(selectedSystem: number) {
+    console.log("filtering planets for: ", selectedSystem);
 
     //filtering planet moons by selected value of planetarySystem dropdown
     //shows only planets that correspond to the selected system
-    if (currSystem != null && currSystem != 3) {
+    if (selectedSystem != null) {
       this.filteredPlanetMoons = this.planetMoonSystems.filter(
-        planetMoon => planetMoon.systemId === currSystem
+        planetMoon => planetMoon.systemId === selectedSystem
       );
       if (this.filteredPlanetMoons.length > 0) {
         this.planetMoonControl?.enable();

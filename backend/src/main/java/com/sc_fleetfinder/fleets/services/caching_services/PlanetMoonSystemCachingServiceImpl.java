@@ -1,11 +1,10 @@
 package com.sc_fleetfinder.fleets.services.caching_services;
 
-import com.sc_fleetfinder.fleets.DAO.PlanetMoonSystemRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PlanetMoonSystemDto;
-import com.sc_fleetfinder.fleets.entities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.PlanetMoonSystemRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlanetMoonSystemDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetMoonSystem;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.CRUD_services.PlanetMoonSystemService;
-import com.sc_fleetfinder.fleets.services.conversion_services.PlanetMoonSystemConversionService;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.PlanetMoonSystemConversionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

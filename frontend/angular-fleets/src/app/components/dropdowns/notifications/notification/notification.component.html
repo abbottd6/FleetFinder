@@ -1,0 +1,28 @@
+<div class="note-container">
+  <div class="note-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
+    <h1>{{ header }}</h1>
+    <p>{{ note.title.length >= 30 ? (note.title|slice: 0: 30) + '...' : note.title }}
+    @if(isExpired) {
+      <span class="note-msg">{{ note.message }}</span>
+    }
+    </p>
+    <div class="data-row">
+      <div>
+        <span [class.archive-date]="isExpired">{{ message }} {{ archiveDate ? ( archiveDate | date: 'MMM d') : ''}}</span>
+        @if(!isExpired) {
+          <span class="note-msg">{{ note.message }}</span>
+        }
+      </div>
+      <div class="ts-container">
+        <span class="ts">{{ note.createdAt | date: 'MMM d, h:mm a' }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="remove-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
+    <button
+      id="remove-button"
+      (click)="noteService.removeNotification(note.notificationId)">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+</div>

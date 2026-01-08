@@ -3,7 +3,6 @@ package com.sc_fleetfinder.fleets.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
 
     //generic resource not found
@@ -21,13 +20,21 @@ public class ResourceNotFoundException extends RuntimeException {
         super(String.format("%s with id [%d] not found", resourceName, id));
     }
 
+    //searching by user and secondary identifier for a resource
+    public ResourceNotFoundException(String resource, Long user, Long secondaryId) {
+        super(String.format("%s not found for user with id [%d] and additional resource id: [%d]",
+                resource, user, secondaryId));
+    }
+
     //searching by type Integer id
     public ResourceNotFoundException(Integer id) {
+
         super(String.format("Resource with id: [%d] not found", id));
     }
 
     //searching by type Long id
     public ResourceNotFoundException(Long id) {
+
         super(String.format("Resource with id: [%d] not found", id));
     }
 

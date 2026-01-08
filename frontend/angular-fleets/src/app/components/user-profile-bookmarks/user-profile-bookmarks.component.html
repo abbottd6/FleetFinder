@@ -1,0 +1,50 @@
+<div class="title-container">
+  <h5>Bookmarks:</h5>
+</div>
+<div class="button-row">
+  <div class="action-buttons-container">
+    <a>
+      <button type="submit" class="action-buttons"
+              [disabled]="!(selection.hasValue())"
+              (click)="listingInteract.deleteMultipleBms(selection.selected)">
+        Remove
+      </button>
+    </a>
+  </div>
+</div>
+<div class="user-table">
+  <ng-container *ngIf="(layoutMode$ | async) !== 'handheld'; else feedview">
+    <app-desktop-table-view
+      [dataSource]="dataSource"
+      [columns]="fullColumns"
+      (listingToEmit)="emitChildClick($event)"
+      (selected)="changeSelectedFromChild($event)">
+    </app-desktop-table-view>
+  </ng-container>
+
+  <ng-template #feedview>
+    <app-mobile-feed-view
+      [dataSource]="dataSource"
+      [columns]="mobileColumns"
+      (listingForModal)="emitChildClick($event)"
+      (theseSelected)="changeSelectedFromChild($event)">
+    </app-mobile-feed-view>
+  </ng-template>
+</div>
+
+
+<div class="no-results-container" *ngIf="noResults">
+  <p>No active listings bookmarked</p>
+</div>
+
+<!-- Paginator -->
+<div class="paginator">
+  <mat-paginator
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    [pageIndex]="pageIndex"
+    [pageSize]="pageSize"
+    [length]="totalElements"
+    showFirstLastButtons>
+  </mat-paginator>
+</div>
+

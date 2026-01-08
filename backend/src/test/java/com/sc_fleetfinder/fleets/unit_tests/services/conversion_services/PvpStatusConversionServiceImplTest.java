@@ -1,10 +1,10 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.conversion_services;
 
-import com.sc_fleetfinder.fleets.DAO.PvpStatusRepository;
-import com.sc_fleetfinder.fleets.entities.PvpStatus;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.PvpStatusDto;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.PvpStatusRepository;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PvpStatusDto;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.conversion_services.PvpStatusConversionServiceImpl;
+import com.sc_fleetfinder.fleets.services.conversion_services.ListingReferenceDataConversionServices.PvpStatusConversionServiceImpl;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

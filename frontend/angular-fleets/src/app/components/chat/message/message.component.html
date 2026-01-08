@@ -1,0 +1,7 @@
+<div class="msg-wrapper" [ngClass]="userIsSender ? 'thisUser' : 'otherUser'">
+  <div class="msg-body">
+    {{ msg.msgBody }}
+  </div>
+  <label>{{ msg.createdAt | date: 'MMM d, hh:mm a' }}</label>
+</div>
+

@@ -1,85 +1,81 @@
-import {inject, Injectable, OnChanges, OnInit, SimpleChanges} from '@angular/core';
-import {AuthenticatedResult, OidcSecurityService, PopupOptions} from "angular-auth-oidc-client";
+import {inject, Injectable} from '@angular/core';
+import {OidcSecurityService, UserDataResult} from "angular-auth-oidc-client";
 import {
-  BehaviorSubject,
-  catchError,
+  combineLatest,
+  distinctUntilChanged,
+  EMPTY,
   filter,
   map,
-  merge,
-  Observable, shareReplay,
+  Observable,
+  shareReplay,
   switchMap,
-  tap,
-  throwError, withLatestFrom
+  take,
+  timer
 } from "rxjs";
-import {HttpClient} from "@angular/common/http";
-import {PublicUser} from "../../../models/public-user/public-user";
-import {PrivateUser} from "../../../models/private-user/private-user";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
   private readonly oidc = inject(OidcSecurityService);
-
-  // Raw profile/claims OIDC Observable
-  // read only
-  // use for username, email, roles straight from kc
 
   public authClaims$ = this.oidc.userData$;
 
-  // isAuthenticated is an object with a boolean for authState and userData<any>
-  // extract just the authState for isLoggedIn$ boolean
-  public isLoggedIn$ = this.oidc.isAuthenticated$
-    .pipe(map(oidcAuthObj => oidcAuthObj.isAuthenticated))
+  public isLoggedIn$ = this.oidc.isAuthenticated$.pipe(
+    map(oidcAuthObj => oidcAuthObj.isAuthenticated),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true }),
+);
 
-  // OIDC client metadata/settings (auth URL, clientID, redirect URIs, scopes, etc.)
-  configuration$ = this.oidc.getConfiguration();
+  public readonly accessToken$ = this.oidc.getAccessToken().pipe(
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true })
+  )
 
-  constructor() {
-    this.oidc
-      .checkAuth().subscribe();
+
+  public readonly tokenReady$: Observable<string> = this.isLoggedIn$.pipe(
+    switchMap(loggedIn => {
+      if (!loggedIn) return EMPTY;
+
+      // poll getAccessToken until it becomes non-empty
+      return timer(0, 100).pipe(
+        switchMap(() => this.oidc.getAccessToken().pipe(take(1))),
+        filter(token => !!token),
+        take(1),
+      );
+    }),
+    distinctUntilChanged(),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  constructor(private router: Router) {
+    this.oidc.checkAuth().pipe().subscribe(({ isAuthenticated }) => {
+      if (isAuthenticated) {
+        const url = sessionStorage.getItem('post_login_url') ?? '/';
+        sessionStorage.removeItem('post_login_url');
+        this.router.navigateByUrl(url);
+      }
+    });
   }
 
   logout() {
-    return this.oidc
-      .logoff()
-      .subscribe((result) => console.log(result));
+    sessionStorage.setItem('post_logout_msg', 'true');
+
+    return this.oidc.logoff().pipe(
+      map(() => void 0)
+    );
   }
 
-  loginWithPopup() {
-    // calculate a centered position
-    const popupWidth = 550;
-    const popupHeight = 600;
-    const left = Math.round((window.screen.width  - popupWidth)  / 2);
-    const top  = Math.round((window.screen.height - popupHeight) / 3);
-
-    const popupOptions: PopupOptions = {
-      width:  popupWidth,
-      height: popupHeight,
-      left,
-      top
-    };
-
-    return this.oidc
-      .authorizeWithPopUp({}, popupOptions).subscribe();
+  login() {
+    return this.oidc.authorize();
   }
 
-  registerWithPopup() {
-    // calculate a centered position
-    const popupWidth = 550;
-    const popupHeight = 600;
-    const left = Math.round((window.screen.width  - popupWidth)  / 2);
-    const top  = Math.round((window.screen.height - popupHeight) / 3);
-
-    const popupOptions: PopupOptions = {
-      width:  popupWidth,
-      height: popupHeight,
-      left,
-      top
-    };
-
-    return this.oidc
-      .authorizeWithPopUp({customParams: {screen_hint: 'signup'}}, popupOptions).subscribe();
+  register() {
+    return this.oidc.authorize(undefined, {
+      customParams: {
+        prompt: 'create'
+      }
+    })
   }
 }

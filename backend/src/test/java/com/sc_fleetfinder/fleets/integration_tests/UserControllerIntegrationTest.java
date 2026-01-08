@@ -3,10 +3,11 @@ package com.sc_fleetfinder.fleets.integration_tests;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-@ContextConfiguration(initializers = TestEnvironmentLoader.class)
+@ContextConfiguration(initializers = TestEnvironmentLoader.class, classes = SimpMessageTestConfig.class)
 public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
 
     @Autowired
@@ -129,7 +130,6 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.userId").isNumber())
                 .andExpect(jsonPath("$.username").value(MOCK_USERNAME))
-                .andExpect(jsonPath("$.email").value(MOCK_EMAIL))
                 .andExpect(jsonPath("$.server").exists())
                 .andExpect(jsonPath("$.org").exists())
                 .andExpect(jsonPath("$.about").exists())
@@ -166,8 +166,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.userId").isNumber())
-                .andExpect(jsonPath("$.username").value("newUser"))
-                .andExpect(jsonPath("$.email").value("newuser@gmail.com"));
+                .andExpect(jsonPath("$.username").value("newUser"));
     }
 
     @Test

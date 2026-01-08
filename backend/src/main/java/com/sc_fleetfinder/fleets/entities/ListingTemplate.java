@@ -1,0 +1,127 @@
+package com.sc_fleetfinder.fleets.entities;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplaySubcategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GroupStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Legality;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetMoonSystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetarySystem;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.Instant;
+
+
+@Entity
+@Table(name="listing_template")
+@Getter
+@Setter
+public class ListingTemplate {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id_template")
+    private Long templateId;
+
+    @ManyToOne
+    @JoinColumn(name="id_user", nullable = false)
+    private Users user;
+
+    @ManyToOne
+    @JoinColumn(name="server_id")
+    private ServerRegion server;
+
+    @ManyToOne
+    @JoinColumn(name="environment_id")
+    private GameEnvironment environment;
+
+    @ManyToOne
+    @JoinColumn(name="experience_id")
+    private GameExperience experience;
+
+    @Column(name="listing_title")
+    @Size(max = 65, message = "ListingTemplate entity field 'listingTitle' must be less than 65 characters")
+    private String listingTitle;
+
+    @ManyToOne
+    @JoinColumn(name="style_id")
+    private PlayStyle playStyle;
+
+    @ManyToOne
+    @JoinColumn(name="legality_id")
+    private Legality legality;
+
+    @ManyToOne
+    @JoinColumn(name="group_status_id")
+    private GroupStatus groupStatus;
+
+    @Column(name="event_schedule")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant eventSchedule;
+
+    @ManyToOne
+    @JoinColumn(name="category_id")
+    private GameplayCategory category;
+
+    @ManyToOne
+    @JoinColumn(name="subcategory_id")
+    private GameplaySubcategory subcategory;
+
+    @ManyToOne
+    @JoinColumn(name="pvp_status_id")
+    private PvpStatus pvpStatus;
+
+    @ManyToOne
+    @JoinColumn(name="system_id")
+    private PlanetarySystem system;
+
+    @ManyToOne
+    @JoinColumn(name="planet_id")
+    private PlanetMoonSystem planetMoonSystem;
+
+    @Column(name="listing_description")
+    @Size(max=500, message="ListingTemplate field 'description' must be less than 500 characters")
+    private String listingDescription;
+
+    @Column(name="desired_party_size")
+    @Max(value=100, message="ListingTemplate field 'desiredPartySize' must be <= 100.")
+    private Integer desiredPartySize;
+
+    @Column(name="current_party_size")
+    @Max(value=100, message="ListingTemplate field 'currentPartySize' must be <= 100.")
+    private Integer currentPartySize;
+
+    @Column(name="available_roles")
+    @Size(max=255, message="ListingTemplate field 'availableRoles' must be less than 255 characters.")
+    private String availableRoles;
+
+    @Column(name="comms_options")
+    private String commsOption;
+
+    @Column(name="comms_service")
+    private String commsService;
+
+    @CreationTimestamp
+    @Column(name="creation_timestamp")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant creationTimestamp;
+
+}

@@ -174,8 +174,8 @@ class GroupListingServiceImplTest {
                         .anyMatch(violation -> violation.getPropertyPath().toString().equals("commsOption")),
                         "blank commsOption should fail validation create listing"),
                 () -> assertFalse(dtoConstraintViolations.stream()
-                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("commsService")),
-                        "blank commsService should NOT fail validation create listing"));
+                        .anyMatch(violation -> violation.getPropertyPath().toString().equals("listingCommsService")),
+                        "blank listingCommsService should NOT fail validation create listing"));
     }
 
     //testing HTTP response from successful create listing
@@ -193,7 +193,9 @@ class GroupListingServiceImplTest {
             validDto.setPlayStyleId(5);
             validDto.setLegalityId(3);
             validDto.setGroupStatusId(2);
-            validDto.setEventSchedule(Instant.now());
+            validDto.setEventDate("2025-03-15");
+            validDto.setEventTime("18:30:00Z");
+            validDto.setEventTimeZone("Pacific Standard Time");
             validDto.setCategoryId(5);
             validDto.setSubcategoryId(16);
             validDto.setPvpStatusId(1);
@@ -224,7 +226,7 @@ class GroupListingServiceImplTest {
         when(groupListingRepository.save(any(GroupListing.class))).thenReturn(mappedEntity);
 
         //when
-        ResponseEntity<?> response = groupListingService.createGroupListing(validDto);
+        ResponseEntity<?> response = groupListingService.createGroupListing(validDto, testUsers);
 
         //then
         assertInstanceOf(Map.class, response.getBody());
@@ -251,8 +253,13 @@ class GroupListingServiceImplTest {
         //given
         CreateGroupListingDto invalidDto = new CreateGroupListingDto();
 
+        //creating test user
+        Users mockUser = new Users();
+        mockUser.setUserId(1L);
+        mockUser.setUsername("TestUser");
+
         //when
-        ResponseEntity<?> response = groupListingService.createGroupListing(invalidDto);
+        ResponseEntity<?> response = groupListingService.createGroupListing(invalidDto, mockUser);
 
         //then
         assertAll("create listing failed assertions set:",

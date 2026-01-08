@@ -7,6 +7,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
@@ -15,11 +16,11 @@ import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -36,7 +37,9 @@ public class UserServiceImpl implements UserService {
     private final UserConversionServiceImpl userConversionService;
     private final Validator beanValidator;
 
-    public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService, Validator beanValidator) {
+
+    public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService,
+                           Validator beanValidator) {
         this.userRepository = userRepository;
         this.userConversionService = userConversionService;
         this.beanValidator = beanValidator;
@@ -163,15 +166,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PrivateUserResponseDto getUserByKeycloakId(String kcId) {
-        return userRepository
-                .findByKeycloakId(kcId)
-                .filter(u -> !u.getIsDeleted())
-                .map(userConversionService::convertToPrivateDto)
-                .orElseThrow(() -> {
-                    log.error("Attempt to access user data by keycloakId failed due to nonexistent keycloakId: " +
-                            "{}", kcId);
-                    return new ResourceNotFoundException("Users with keycloakId " + kcId + " not found");
-                });
+        Users user = userRepository.findByKeycloakId(kcId).filter(u -> !u.getIsDeleted())
+                .orElseThrow(() -> new ResourceNotFoundException("Users with id " + kcId + " not found"));
+
+        user.setLastAccess(Instant.now());
+        userRepository.save(user);
+
+
+        return userConversionService.convertToPrivateDto(user);
+    }
+
+    @Override
+    public Users verifyUser(String kcId) {
+            return userRepository.findByKeycloakId(kcId)
+                    .filter(u -> !u.getIsDeleted())
+                    .orElseThrow(() -> new ResourceNotFoundException("User with keycloakId "
+                            + kcId + " not found"));
     }
 
     //helper method for normalizing emails. isolated for testing.
