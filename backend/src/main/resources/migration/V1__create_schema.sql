@@ -110,8 +110,9 @@ current_party_size TINYINT NOT NULL,
 available_roles VARCHAR(255),
 comms_options ENUM('Required', 'Optional', 'No Comms') NOT NULL,
 comms_service VARCHAR(50),
-last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+last_updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 creation_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+vis_status VARCHAR(12) NOT NULL DEFAULT 'FRESH',
 PRIMARY KEY(id_group),
 FOREIGN KEY(id_user) REFERENCES `users`(id_user) ON DELETE CASCADE,
 FOREIGN KEY(server_id) REFERENCES server_region(server_id),
@@ -124,5 +125,7 @@ FOREIGN KEY(category_id) REFERENCES gameplay_category(category_id),
 FOREIGN KEY(subcategory_id) REFERENCES gameplay_subcategory(subcategory_id),
 FOREIGN KEY(pvp_status_id) REFERENCES pvp_status(pvp_status_id),
 FOREIGN KEY(system_id) REFERENCES planetary_system(system_id),
-FOREIGN KEY(planet_id) REFERENCES planet_moon_system(planet_id)
+FOREIGN KEY(planet_id) REFERENCES planet_moon_system(planet_id),
+CONSTRAINT chk_listing_vis_status
+    CHECK (vis_status IN ('FRESH', 'RECENT', 'STALE', 'EXPIRED'))
 );

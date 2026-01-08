@@ -86,11 +86,11 @@
 }
 
 .status-circle-icon.is-stale {
-  color: rgba(255, 131, 7, .4);
+  color: rgba(255, 131, 7, .6);
 }
 
 .status-circle-icon.is-expired {
-  color: rgba(90, 2, 2, 0.4);
+  color: rgba(90, 2, 2, 0.6);
 }
 
 .no-results-container {

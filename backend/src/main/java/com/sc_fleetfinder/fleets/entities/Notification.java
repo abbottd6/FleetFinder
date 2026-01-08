@@ -37,6 +37,16 @@ public class Notification {
         this.action = modAction;
     }
 
+    public Notification(Users user,
+                        NotificationType type,
+                        String displayTitle,
+                        String notificationOfStatus) {
+        this.user = user;
+        this.type = type;
+        this.title = displayTitle;
+        this.message = notificationOfStatus;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_notification")

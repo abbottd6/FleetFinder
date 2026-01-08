@@ -24,7 +24,13 @@
         <!-- TODO this ngIf is just for demo to display the icon -->
         <ng-container *ngIf="(row.availableRoles !== null) ; else noStatus">
           <mat-icon
-            matTooltip="ToDo: conversation status"
+            [matTooltip]="
+                        row.visStatus === 'FRESH' ? 'Updated < 3 hours ago' :
+                        row.visStatus === 'RECENT' ? 'Updated < 6 hours ago' :
+                        row.visStatus === 'STALE' ? 'Updated < 12 hours ago or Future/Scheduled and upcoming' :
+                        row.visStatus === 'EXPIRED' ? 'Updated 12+ hours ago' :
+                        'Unknown status'
+                       "
             [matTooltipPosition]="positionOptions[0]"
             class="status-circle-icon"
             [class.is-fresh]="row.visStatus === 'FRESH'"

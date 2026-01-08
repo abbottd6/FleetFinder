@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -121,6 +122,7 @@ public class GroupListingServiceImpl implements GroupListingService {
                 GroupListing groupListing = groupListingConversionService.convertToEntity(dto);
 
                 groupListing.setUsers(requestingUser);
+                groupListing.setLastUpdated(Instant.now());
 
                 groupListingRepository.save(groupListing);
 
@@ -149,6 +151,7 @@ public class GroupListingServiceImpl implements GroupListingService {
                 BeanUtils.copyProperties(temp, listing,
                         "groupId", "users", "creationTimestamp", "isDeleted", "deletedAt");
 
+                listing.setLastUpdated(Instant.now());
                 listing.setVisStatus(VisStatus.FRESH);
 
                 groupListingRepository.save(listing);

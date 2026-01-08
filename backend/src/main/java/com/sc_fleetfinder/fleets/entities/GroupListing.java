@@ -149,7 +149,6 @@ public class GroupListing {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant creationTimestamp;
 
-    @UpdateTimestamp
     @Column(name="last_updated")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant lastUpdated;

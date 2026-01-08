@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS notification
 (
     id_notification BIGINT PRIMARY KEY                     NOT NULL AUTO_INCREMENT,
     id_user         BIGINT                                 NOT NULL,
-    type            ENUM ('LISTING_EXPIRED', 'MOD_DELETE') NOT NULL,
+    type            VARCHAR(25)                            NOT NULL,
     title           VARCHAR(80)                            NULL,
     message         TEXT(255)                              NOT NULL,
     id_action       BIGINT                                 NULL,

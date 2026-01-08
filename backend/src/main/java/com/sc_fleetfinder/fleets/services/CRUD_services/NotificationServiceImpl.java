@@ -1,18 +1,22 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
+import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationUnreadCountDto;
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
+import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
 import com.sc_fleetfinder.fleets.entities.Notification;
+import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,24 +24,26 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Map;
 import java.util.Objects;
 
 @Service
+@Slf4j
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepo;
     private final ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
     private final UserRepository userRepository;
+    private final GroupListingRepository groupListingRepository;
 
     NotificationServiceImpl(NotificationRepository notificationRepo,
                             ModelMapper modelMapper,
-                            SimpMessagingTemplate messagingTemplate, UserRepository userRepository) {
+                            SimpMessagingTemplate messagingTemplate, UserRepository userRepository, GroupListingRepository groupListingRepository) {
         this.notificationRepo = notificationRepo;
         this.modelMapper = modelMapper;
         this.messagingTemplate = messagingTemplate;
         this.userRepository = userRepository;
+        this.groupListingRepository = groupListingRepository;
     }
 
     @Override
@@ -112,5 +118,44 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional(readOnly = true)
     public Integer countUnread(Long userId) {
         return notificationRepo.countUnreadByUserId(userId);
+    }
+
+    @Override
+    @Transactional
+    public void sendOutboxNotification(NotificationOutbox obEntity) {
+        String title = groupListingRepository.findById(obEntity.getEntityId())
+                    .map(GroupListing::getListingTitle)
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "GroupListing", obEntity.getEntityId()));
+
+        Notification newNote = new Notification(
+                obEntity.getEntityOwner(),
+                obEntity.getEventType(),
+                title,
+                obEntity.getEntityNewStatus());
+
+        notificationRepo.save(newNote);
+
+        GetNotificationDto noteDto = modelMapper.map(newNote, GetNotificationDto.class);
+
+        NotificationUnreadCountDto unreadCount = new NotificationUnreadCountDto(
+                notificationRepo.countUnreadByUserId(
+                        obEntity.getEntityOwner().getUserId()
+                )
+        );
+
+        String recipPrincipal = obEntity.getEntityOwner().getKeycloakId();
+
+        messagingTemplate.convertAndSendToUser(
+                recipPrincipal,
+                "/queue/system.notify_count",
+                unreadCount
+        );
+
+        messagingTemplate.convertAndSendToUser(
+                recipPrincipal,
+                "/queue/system.notify",
+                noteDto
+        );
     }
 }

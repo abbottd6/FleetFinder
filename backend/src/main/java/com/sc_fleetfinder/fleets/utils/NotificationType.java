@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.utils;
 
 public enum NotificationType {
-    LISTING_EXPIRED,
+    LISTING_VIS_STATUS_CHANGED,
+    LISTING_ARCHIVED,
     MOD_DELETE
 }

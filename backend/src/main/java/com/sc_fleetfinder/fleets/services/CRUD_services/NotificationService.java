@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
+import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import org.springframework.data.domain.Page;
@@ -22,4 +23,5 @@ public interface NotificationService {
                                          ModListingAction action);
     Integer updateRead(Users user, ReceiveReadNotesDto dto);
     Integer countUnread(Long userId);
+    void sendOutboxNotification(NotificationOutbox single);
 }
