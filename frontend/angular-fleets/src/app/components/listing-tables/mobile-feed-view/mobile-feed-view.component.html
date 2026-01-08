@@ -32,13 +32,14 @@
         (touchstart)="quickMenu.onTouchStart($event, row)"
         (touchend)="quickMenu.onTouchEnd($event)">
       <div class="feed-data-row title-row">
-        <span>{{ row.listingTitle }}</span>
+        <span>{{ row.listingTitle.length > 40 ? (row.listingTitle|slice: 0:40) + '...' : row.listingTitle}}</span>
       </div>
       <div class="feed-data-row">
         <span>{{ row.userName.length > 15 ? (row.userName|slice: 0:15) + '...' : row.userName }}</span>
         <span>|</span>
         <span>{{ row.lastUpdated | date: 'MM/d, h:mm a' }}</span>
-        <span>|</span>
+      </div>
+      <div class="feed-data-row">
         <span class="feed-label-value-pair"><p class="field-label">Category:</p> {{ row.category }}</span>
       </div>
       <div class="feed-data-row">

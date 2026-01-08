@@ -29,6 +29,12 @@
     <td mat-cell *matCellDef="let row" (click)="listingSelected(row)"> {{ row.groupStatus }}</td>
   </ng-container>
 
+  <!-- VIS STATUS COLUMN (USER PROFILE ONLY) -->
+  <ng-container matColumnDef="vis_status">
+    <th mat-header-cell *matHeaderCellDef>Visibility</th>
+    <td mat-cell *matCellDef="let row" (click)="listingSelected(row)"> {{ row.visStatus }}</td>
+  </ng-container>
+
   <!-- Category Column -->
   <ng-container matColumnDef='category'>
     <th mat-header-cell *matHeaderCellDef> Category</th>

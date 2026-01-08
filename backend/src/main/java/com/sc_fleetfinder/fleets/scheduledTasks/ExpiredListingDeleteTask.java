@@ -14,7 +14,7 @@ public class ExpiredListingDeleteTask {
     private final ScheduledArchiveService scheduledArchiveService;
 
     //TODO ADJUST THIS RATE
-    @Scheduled(fixedDelayString= "PT2M")
+    @Scheduled(fixedDelayString= "PT10M")
     @Transactional
     public void archiveExpiredListing() {
         int statusChangedCount = scheduledArchiveService.setArchivedStatus();

@@ -86,8 +86,8 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 SELECT
                     id_group,
                     CASE
-                        WHEN last_updated < (NOW() - INTERVAL 7 DAY)
-                            AND (event_schedule IS NULL OR event_schedule < (NOW() - INTERVAL 7 DAY))
+                        WHEN last_updated < (NOW() - INTERVAL 3 DAY)
+                            AND (event_schedule IS NULL OR event_schedule < (NOW() - INTERVAL 3 DAY))
                             THEN 'EXPIRED'
                         WHEN last_updated < (NOW() - INTERVAL 12 HOUR)
                             AND (event_schedule is NULL OR event_schedule < (NOW() - INTERVAL 12 HOUR))
@@ -108,8 +108,8 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
             UPDATE group_listing gl
             SET gl.vis_status =
                 CASE
-                    WHEN gl.last_updated < (NOW() - INTERVAL 7 DAY)
-                        AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 7 DAY))
+                    WHEN gl.last_updated < (NOW() - INTERVAL 3 DAY)
+                        AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 3 DAY))
                         THEN 'EXPIRED'
                     WHEN gl.last_updated < (NOW() - INTERVAL 12 HOUR)
                         AND (gl.event_schedule is NULL OR gl.event_schedule < (NOW() - INTERVAL 12 HOUR))
@@ -120,10 +120,12 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 END
             WHERE gl.vis_status <>
                 CASE
-                    WHEN gl.last_updated < (NOW() - INTERVAL 7 DAY)
-                        AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 7 DAY))
+                    WHEN gl.last_updated < (NOW() - INTERVAL 3 DAY)
+                        AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 3 DAY))
                         THEN 'EXPIRED'
-                    WHEN gl.last_updated < (NOW() - INTERVAL 12 HOUR) THEN 'INACTIVE'
+                    WHEN gl.last_updated < (NOW() - INTERVAL 12 HOUR)
+                        AND (gl.event_schedule is NULL OR gl.event_schedule < (NOW() - INTERVAL 12 HOUR))
+                        THEN 'INACTIVE'
                     WHEN gl.last_updated < (NOW() - INTERVAL 6 HOUR) THEN 'STALE'
                     WHEN gl.last_updated < (NOW() - INTERVAL 3 HOUR) THEN 'RECENT'
                     ELSE gl.vis_status

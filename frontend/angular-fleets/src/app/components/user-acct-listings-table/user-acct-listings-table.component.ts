@@ -51,7 +51,7 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   private breakpointObserver = inject(BreakpointObserver);
   readonly dialog = inject(MatDialog);
 
-  fullColumns = [ 'select', 'title', 'status', 'category', 'pvp', 'system', 'roles', 'updated' ]
+  fullColumns = [ 'select', 'title', 'status', 'vis_status', 'category', 'pvp', 'roles', 'updated' ]
   mobileColumns = ['select', 'details']
   dataSource = new MatTableDataSource<GroupListingViewModel>();
   selection = new SelectionModel<GroupListingViewModel>(true, []);
@@ -59,7 +59,6 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   constructor(private listingOwnerSrv: ListingOwnerActionsService,
               private userService: UserService,
               protected listingInteract: ListingViewInteractionsService,
-              private templatesApi: ListingTemplatesApiService,
               private snackBar: MatSnackBar) {}
 
   ngOnInit() {

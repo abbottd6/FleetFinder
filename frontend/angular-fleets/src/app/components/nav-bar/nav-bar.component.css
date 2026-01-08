@@ -281,11 +281,11 @@ input::placeholder {
   color: rgba(25, 40, 44, .8);
 }
 
-.nav-item.dropdown #notes-toggle::after  {
+.nav-item.dropdown .notes-toggle::after  {
   display: none;
 }
 
-#notifications-panel {
+.nav-item .notifications-panel {
   min-height: 60px;
   width: 325px;
   clip-path: none;
@@ -294,6 +294,12 @@ input::placeholder {
   border: none;
   border-radius: 6px;
   padding: 6px 1px 4px 6px;
+}
+
+@media(max-width: 500px) {
+  #mobile-notes-dropdown .dropdown-menu-end {
+    right: -60px;
+  }
 }
 
 .bi-chat-fill {

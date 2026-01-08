@@ -71,15 +71,25 @@
             [matBadgePosition]="badgePosition">
             <i class="bi bi-chat-fill chat-icon"></i>
           </button>
-          <button
-            id="notification-icon"
-            class="btn btn-link d-xl-none p-0"
-            [matBadge]="(ws.notificationUnread$ | async)"
-            [matBadgeHidden]="((ws.notificationUnread$ | async) ?? 0) == 0"
-            [matBadgeOverlap]="true"
-            [matBadgePosition]="badgePosition">
-            <i class="bi bi-bell-fill"></i>
-          </button>
+          <div class="nav-item"
+               id="mobile-notes-dropdown"
+               ngbDropdown
+               (openChange)="onOpenChange($event)">
+            <button
+              id="notification-icon"
+              class="btn btn-link d-xl-none p-0 notes-toggle"
+              ngbDropdownToggle
+              [matBadge]="(ws.notificationUnread$ | async)"
+              [matBadgeHidden]="((ws.notificationUnread$ | async) ?? 0) == 0"
+              [matBadgeOverlap]="true"
+              [matBadgePosition]="badgePosition">
+              <i class="bi bi-bell-fill"></i>
+            </button>
+            <app-notifications-dropdown
+              ngbDropdownMenu
+              class="notifications-panel dropdown-menu-end">
+            </app-notifications-dropdown>
+          </div>
         </div>
         <button class="navbar-toggler"
                 type="button"
@@ -115,8 +125,7 @@
               ngbDropdown
               (openChange)="onOpenChange($event)">
             <button
-              class="nav-link"
-              id="notes-toggle"
+              class="nav-link notes-toggle"
               ngbDropdownToggle
               [matBadge]="(ws.notificationUnread$ | async)"
               [matBadgeHidden]="((ws.notificationUnread$ | async) ?? 0) == 0"
@@ -126,8 +135,7 @@
             </button>
             <app-notifications-dropdown
               ngbDropdownMenu
-              id="notifications-panel"
-              class="dropdown-menu-end">
+              class="dropdown-menu-end notifications-panel">
             </app-notifications-dropdown>
           </div>
           <div class="nav-item dropdown" ngbDropdown>

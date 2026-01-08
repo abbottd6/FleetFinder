@@ -1,11 +1,17 @@
 <div class="note-container">
   <div class="note-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
     <h1>{{ header }}</h1>
-    <p>Title: {{ note.title.length >= 30 ? (note.title|slice: 0: 30) + '...' : note.title }}</p>
+    <p>{{ note.title.length >= 30 ? (note.title|slice: 0: 30) + '...' : note.title }}
+    @if(isExpired) {
+      <span class="note-msg">{{ note.message }}</span>
+    }
+    </p>
     <div class="data-row">
       <div>
-        <span>{{ message }}</span>
-        <span id="note-msg">{{ note.message }}</span>
+        <span [class.archive-date]="isExpired">{{ message }} {{ archiveDate ? ( archiveDate | date: 'MMM d') : ''}}</span>
+        @if(!isExpired) {
+          <span class="note-msg">{{ note.message }}</span>
+        }
       </div>
       <div class="ts-container">
         <span class="ts">{{ note.createdAt | date: 'MMM d, h:mm a' }}</span>

@@ -2,7 +2,6 @@ package com.sc_fleetfinder.fleets.scheduledTasks;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingArchiveRepository;
-import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ModerationIssueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,7 +14,6 @@ public class ScheduledArchiveService {
 
     private final GroupListingRepository listingRepo;
     private final ListingArchiveRepository archiveRepo;
-    private final ModerationIssueRepository modIssueRepo;
 
     @Transactional
     public int createOutboxEntriesForArchiveNotifications() {

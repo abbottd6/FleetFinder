@@ -96,7 +96,6 @@ export class WsGatewayService {
           (msg) => {
             const count = JSON.parse(msg.body) as NoteUnreadDto;
             this.noteUnreadSubject.next(count.count);
-            console.log("UNREAD NOTE COUNT: ", this.noteUnreadSubject.value);
           }
         )
 

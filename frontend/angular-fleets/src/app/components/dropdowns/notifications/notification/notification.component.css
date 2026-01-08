@@ -68,8 +68,12 @@ p {
   font-size: 12px;
 }
 
-#note-msg {
+.note-msg {
   color: rgba(52, 135, 168, 0.9);
+}
+
+.archive-date {
+  color:  rgba(255, 131, 7, .5);
 }
 
 .data-row {

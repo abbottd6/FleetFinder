@@ -261,6 +261,8 @@ public class GroupListingServiceImpl implements GroupListingService {
     private Specification<GroupListing> buildListingFilterSpec(SearchListingsDto dto) {
         Specification<GroupListing> spec = (root, query, cb) -> cb.conjunction();
 
+        spec = spec.and((root, query, cb) -> cb.notEqual(root.get("visStatus"), (VisStatus.EXPIRED)));
+
         String search = dto.getSearch();
 
         if (search != null && !search.isBlank()) {
