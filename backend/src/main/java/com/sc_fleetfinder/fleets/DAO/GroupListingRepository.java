@@ -23,18 +23,55 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 entity_new_status, payload_json, status, created_at
                 )
             SELECT
-                'LISTING_VIS_STATUS_CHANGED' AS event_type,
-                'GROUP_LISTING'             AS entity_type,
-                gl.id_group                 AS entity_id,
-                gl.id_user                 AS entity_owner_id,
-                computed.entity_new_status     AS entity_new_status,
+                'LISTING_ARCHIVED'                      AS event_type,
+                'GROUP_LISTING'                         AS entity_type,
+                gl.id_group                             AS entity_id,
+                gl.id_user                              AS entity_owner_id,
+                'ARCHIVED'                              AS entity_new_status,
+                JSON_OBJECT(
+                    'groupId', gl.id_group,
+                    'oldStatus', gl.vis_status,
+                    'newStatus', 'ARCHIVED'
+                )                                       AS payload_json,
+                'PENDING'                               AS status,
+                NOW()                                   AS created_at
+            FROM group_listing gl
+            WHERE gl.vis_status = 'EXPIRED'
+              AND gl.last_updated < (NOW() - INTERVAL 14 DAY)
+              AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 14 DAY))
+            ON DUPLICATE KEY UPDATE outbox_id = outbox_id
+            """, nativeQuery = true)
+    int createOutboxEntriesForArchiveNotifications();
+
+    @Modifying
+    @Query(value = """
+            UPDATE group_listing gl
+            SET gl.vis_status = 'ARCHIVED'
+                WHERE gl.vis_status <> 'ARCHIVED'
+                AND gl.last_updated < (NOW() - INTERVAL 14 DAY)
+                AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 14 DAY))
+            """, nativeQuery = true)
+    int setArchivedStatus();
+
+    @Modifying
+    @Query(value = """
+            INSERT INTO notification_outbox (
+                event_type, entity_type, entity_id, entity_owner_id,
+                entity_new_status, payload_json, status, created_at
+                )
+            SELECT
+                'LISTING_VIS_STATUS_CHANGED'                AS event_type,
+                'GROUP_LISTING'                             AS entity_type,
+                gl.id_group                                 AS entity_id,
+                gl.id_user                                  AS entity_owner_id,
+                computed.entity_new_status                  AS entity_new_status,
                 JSON_OBJECT(
                     'groupId', gl.id_group,
                     'oldStatus', gl.vis_status,
                     'newStatus', computed.entity_new_status
-                ) AS payload_json,
-                'PENDING' AS status,
-                NOW() AS created_at
+                )                                           AS payload_json,
+                'PENDING'                                   AS status,
+                NOW()                                       AS created_at
             FROM group_listing gl
             JOIN (
                 SELECT

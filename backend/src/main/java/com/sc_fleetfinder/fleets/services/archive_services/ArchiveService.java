@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.services.archive_services;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
+import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
 import com.sc_fleetfinder.fleets.entities.Users;
 
 public interface ArchiveService {

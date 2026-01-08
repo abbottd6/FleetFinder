@@ -127,5 +127,5 @@ FOREIGN KEY(pvp_status_id) REFERENCES pvp_status(pvp_status_id),
 FOREIGN KEY(system_id) REFERENCES planetary_system(system_id),
 FOREIGN KEY(planet_id) REFERENCES planet_moon_system(planet_id),
 CONSTRAINT chk_listing_vis_status
-    CHECK (vis_status IN ('FRESH', 'RECENT', 'STALE', 'INACTIVE', 'EXPIRED'))
+    CHECK (vis_status IN ('FRESH', 'RECENT', 'STALE', 'INACTIVE', 'EXPIRED', 'ARCHIVED'))
 );

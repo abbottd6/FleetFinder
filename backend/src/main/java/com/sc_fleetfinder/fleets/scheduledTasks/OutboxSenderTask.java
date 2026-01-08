@@ -21,13 +21,19 @@ public class OutboxSenderTask {
     public void sendOutboxNotifications() {
         final int batchSize = 100;
 
+        log.info("is this running?");
+
         int claimed = outboxService.claimPendingBatch(batchSize);
 
-        if (claimed == 0) {
-            return;
-        }
+//        if (claimed == 0) {
+//            return;
+//        }
 
         List<NotificationOutbox> batch = outboxService.findStatus_Claimed(batchSize);
+
+        if(batch.isEmpty()) {
+            return;
+        }
         for(NotificationOutbox outbox : batch) {
             try {
                 notificationService.sendOutboxNotification(outbox);

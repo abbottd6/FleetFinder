@@ -16,7 +16,7 @@ public interface NotificationOutboxRepository extends JpaRepository<Notification
                 locked_at = NOW(),
                 attempt_count = attempt_count + 1
             WHERE status = 'PENDING'
-                AND (locked_at IS NULL OR locked_at < (NOW() - INTERVAL 10 MINUTE))
+                AND (locked_at IS NULL OR locked_at < (NOW() - INTERVAL 3 MINUTE))
             ORDER BY created_at
             LIMIT :limit
             """, nativeQuery = true)
@@ -24,7 +24,8 @@ public interface NotificationOutboxRepository extends JpaRepository<Notification
 
     @Query(value = """
             SELECT * FROM notification_outbox
-            WHERE status = 'PROCESSING' AND locked_at < (NOW() - INTERVAL 10 MINUTE)
+            WHERE status = 'PROCESSING'
+              AND locked_at < (NOW() - INTERVAL 3 MINUTE)
             ORDER BY created_at
             LIMIT :limit
             """, nativeQuery = true)
