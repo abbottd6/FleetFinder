@@ -54,6 +54,7 @@ services:
       KEYCLOAK_ADMIN_PASSWORD: ${KC_PROD_ADMIN_PASSWORD}
     volumes:
       - ./prod-realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - ./keycloak-themes/fleetfinder:/opt/keycloak/themes/fleetfinder
     ports:
       - "8180:8080"
     depends_on:

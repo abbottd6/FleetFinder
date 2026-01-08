@@ -8,8 +8,18 @@
              aria-current="page"
              data-bs-toggle="collapse"
              [routerLink]="['/user-account']"
-             (click)="closeDropdown()"
-          >Profile</a>
+             (click)="closeDropdown()">
+            <!-- DESKTOP/EXPANDED ALWAYS PROFILE -->
+            <span class="d-none d-xl-inline">Profile</span>
+
+            <!-- MOBILE/COLLAPSED is 'profile' when logged in, else it is 'login' -->
+            <span class="d-inline d-xl-none">
+              <ng-container  *ngIf="(auth.isLoggedIn$ | async) else loginMobile">
+                Profile
+              </ng-container>
+              <ng-template #loginMobile>Login</ng-template>
+            </span>
+          </a>
         </li>
         <li class="nav-item">
           <a class="nav-link"
@@ -50,12 +60,14 @@
             Create Listing
           </a>
         </li>
-        <li class="nav-item toggle-listings-nav" *ngIf="auth.isLoggedIn$ | async">
-          <a class="nav-link"
-             (click)="navbarLogOut()">
-            Logout
-          </a>
-        </li>
+        <ng-container *ngIf="auth.isLoggedIn$ | async">
+          <li class="nav-item toggle-listings-nav">
+            <a class="nav-link"
+               (click)="navbarLogOut()">
+              Logout
+            </a>
+          </li>
+        </ng-container>
       </ul>
     </div>
     <div *ngIf="(navbarLayoutMode$ | async) === 'handheld'">
