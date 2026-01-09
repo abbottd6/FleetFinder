@@ -95,7 +95,7 @@ export class UserService {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(token => {
         if(token && !this.ws.isConnected()) {
-          this.ws.connect(token);
+          this.ws.connect();
         }
     });
   }
