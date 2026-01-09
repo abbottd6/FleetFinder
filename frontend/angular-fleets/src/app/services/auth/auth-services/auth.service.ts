@@ -29,6 +29,7 @@ export class AuthService {
 );
 
   public readonly accessToken$ = this.oidc.getAccessToken().pipe(
+    filter((token): token is string => !!token),
     distinctUntilChanged(),
     shareReplay({ bufferSize: 1, refCount: true })
   )

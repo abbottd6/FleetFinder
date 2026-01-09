@@ -1,4 +1,13 @@
-import {Component, DestroyRef, EventEmitter, inject, Output, ViewChild} from '@angular/core';
+import {
+  AfterViewChecked,
+  Component,
+  DestroyRef,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Output,
+  ViewChild
+} from '@angular/core';
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {MatError, MatFormField, MatHint} from "@angular/material/form-field";
 import {MatInput} from "@angular/material/input";
@@ -27,8 +36,9 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   ],
   styleUrl: './message-input.component.css'
 })
-export class MessageInputComponent {
+export class MessageInputComponent implements AfterViewChecked {
   @ViewChild(CdkTextareaAutosize) autosize?: CdkTextareaAutosize;
+  @ViewChild('msgInput') msgInput?: ElementRef<HTMLElement>;
   ChatWindowState = ChatWindowState;
   private inputDestroyRef = inject(DestroyRef);
   protected isExpanding: boolean = false;
@@ -52,6 +62,12 @@ export class MessageInputComponent {
         this.isExpanding = true;
         setTimeout(() => this.isExpanding = false, 220);
       })
+  }
+
+  ngAfterViewChecked() {
+    if(this.msgInput) {
+      setTimeout(() => this.msgInput?.nativeElement.focus(), 300);
+    }
   }
 
   emitMessage(input: string | null) {

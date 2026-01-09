@@ -78,12 +78,11 @@ public class HiddenListingServiceImpl implements HiddenListingService {
         if(unHidden.isPresent()) {
             GroupListing temp = unHidden.get();
             String title = temp.getListingTitle();
-            response.put("Response", (title + " has been unhidden.").length() <= 20 ? title : title.substring(0,20) + "... has been unhidden.");
-            return ResponseEntity.status(HttpStatus.OK).body(response);
+            response.put("Response", (title + " has been unhidden.").length() >= 20 ? title : title.substring(0,20) + "... has been unhidden.");
         } else {
             response.put("Response", "No hidden listings");
-            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @Override

@@ -1,10 +1,12 @@
-import { Injectable } from '@angular/core';
+import {DestroyRef, inject, Injectable} from '@angular/core';
 import {Client, StompSubscription} from "@stomp/stompjs";
 import {BehaviorSubject, Observable, Subject} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {MessageViewModel} from "../../models/chat/message-view-model";
 import {ConversationViewModel} from "../../models/chat/conversation-view-model";
 import {NotificationViewModel} from "../../models/NotificationViewModel";
+import {AuthService} from "../auth/auth-services/auth.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 export interface UnreadSummaryDto {
   totalUnread: number;
@@ -24,6 +26,7 @@ export interface NoteUnreadDto {
   providedIn: 'root'
 })
 export class WsGatewayService {
+  private wsDestroyRef = inject(DestroyRef);
 
   private client: Client | null = null;
 
@@ -55,7 +58,11 @@ export class WsGatewayService {
 
   private notificationStompSub: StompSubscription | null = null;
 
-  constructor() {
+  private latestAuthToken: string | null = null;
+
+  constructor(private auth: AuthService) {
+    this.auth.accessToken$.pipe(takeUntilDestroyed(this.wsDestroyRef)).subscribe(
+      latest => this.latestAuthToken = latest);
   }
 
   subscribe<T>(destination: string, handler: (body: T) => void): StompSubscription {
@@ -65,14 +72,14 @@ export class WsGatewayService {
     return this.client.subscribe(destination, (msg) => handler(JSON.parse(msg.body) as T));
   }
 
-  connect(token: string): void {
+  connect(): void {
     if(this.client?.active) return;
-    if(!token) return;
+    if(!this.latestAuthToken) return;
 
     this.client = new Client({
       webSocketFactory: () => new WebSocket(`${environment.wsBaseUrl}/websocket`),
       connectHeaders: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.latestAuthToken}`,
       },
       reconnectDelay: 3000,
       heartbeatIncoming: 25000,
@@ -111,11 +118,18 @@ export class WsGatewayService {
       },
 
       onStompError: () => { console.error("STOMP ERROR") },
-      // debug: (s) => console.log(['stomp'], s),
+      debug: (s) => console.log(['stomp'], s),
       onWebSocketClose: () => {
         this.connectedSubject.next(false);
         this.chatUnreadStompSub?.unsubscribe();
         this.chatUnreadStompSub = null;
+
+        this.noteUnreadStompSub?.unsubscribe();
+        this.noteUnreadStompSub = null;
+
+        this.notificationStompSub?.unsubscribe();
+        this.notificationStompSub = null;
+
       }
     });
 
