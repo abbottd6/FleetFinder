@@ -309,6 +309,10 @@
     padding-bottom: 0.25rem !important;
   }
 
+  .search-clear {
+    padding-top: 8px;
+  }
+
   :host ::ng-deep .search-input .mat-mdc-floating-label.mdc-floating-label--float-above {
     margin-top: 0.25rem;
     font-size: 1rem;
@@ -508,7 +512,25 @@
   .mat-mdc-form-field {
     min-width: 95%;
   }
+  .search-clear {
+    padding-top: 8px;
+    height: 40px;
+  }
+
+  /* input field placeholder text?????? */
+  :host ::ng-deep .mat-mdc-form-field:hover:not(:focus-within) .mat-mdc-floating-label {
+    /*color: rgba(255, 131, 7, 0.4) !important;*/
+    padding-top: 8px;
+  }
 }
+
+@media(max-height: 699px) {
+  .search-clear {
+    padding-top: 4px;
+  }
+}
+
+
 
 /* label transition */
 :host ::ng-deep .mat-mdc-form-field .mat-mdc-floating-label {

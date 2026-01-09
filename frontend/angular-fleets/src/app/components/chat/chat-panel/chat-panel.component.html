@@ -10,8 +10,8 @@
             <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
           </button>
         </div>
-        <ng-container *ngIf="(ws.isConnected$ | async) as isConnected" class="h-fill">
-          <mat-icon id="connected-icon" class="connected" [class.not-connected]="!isConnected">circle</mat-icon>
+        <ng-container *ngIf="(ws.isConnected$ | async) as isConnected">
+          <mat-icon id="connected-icon" class="h-fill" [class.not-connected]="!isConnected">circle</mat-icon>
         </ng-container>
         <div class="h-fill">
           <ng-container *ngIf="((ws.totalUnread$ | async) ?? 0) > 0; else waiting">
@@ -105,12 +105,13 @@
               <ng-container *ngIf="(chatLayoutMode$ | async) === 'handheld'">
                 <div class="tabs-button-container">
                   <button mat-button
+                          class="tabs-button"
                           (click)="drawer.toggle()">
+                    <label id="tabs-label">
+                      Conversations
+                    </label>
                     <label [class.tabs-button-rotated]="drawer.opened" class="conversation-tab-icon">
                       >>
-                    </label>
-                    <label id="tabs-label">
-                      Convs.
                     </label>
                   </button>
                 </div>
