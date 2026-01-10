@@ -54,7 +54,9 @@ export class ModListingsTableComponent implements OnInit {
   selection = new SelectionModel<GroupListingViewModel>(true, []);
 
   constructor(private modService: ModApiService, private router: Router, private snackBar: MatSnackBar) {
-    console.log("THE DATA: ", this.modGroupListings);
+    if(!environment.production) {
+      console.log("THE DATA: ", this.modGroupListings);
+    }
   }
 
   ngOnInit() {

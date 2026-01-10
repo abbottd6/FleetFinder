@@ -45,7 +45,9 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
     const draft = history.state?.draft as GroupListingViewModel | undefined;
     this.listingData = draft as GroupListingViewModel;
 
-    console.log(draft);
+    if(!environment.production) {
+      console.log(draft);
+    }
 
     if (draft){
       this.formService.patchFromDraft(draft);

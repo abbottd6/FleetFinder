@@ -42,9 +42,7 @@ export class BookmarkApiService {
   }
 
   getBookmarksBrief(): Observable<any> {
-    return this.httpClient.get<any>(this.bookmarksBriefUrl).pipe(
-      tap(response => console.log("bookmark brief response: ", response))
-    );
+    return this.httpClient.get<any>(this.bookmarksBriefUrl).pipe();
   }
 
   addBookmark(request: AddBookmarkRequest): Observable<any> {

@@ -1,6 +1,6 @@
 import {EventEmitter, Injectable, Input, Output} from '@angular/core';
 import {CloseValue} from "../../../components/group-listing-modal/group-listing-modal.component";
-import {Subject} from "rxjs";
+import {fromEvent, Subject} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +10,18 @@ export class TemplatesModalService {
   close = new EventEmitter<CloseValue>
   private refreshSubject = new Subject<'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | null>();
   readonly refresh$ = this.refreshSubject.asObservable();
+  private templateModalCloseFromPop = false;
+
+  constructor() {
+    fromEvent<PopStateEvent>(window, 'popstate').subscribe(() => {
+      if(this.templateModalIsVisible) {
+        this.templateModalCloseFromPop = true;
+        this.closeModal(null);
+
+        this.templateModalCloseFromPop = false;
+      }
+    });
+  }
 
   private emitTemplatesRefresh(reason: 'delete') {
     this.refreshSubject.next(reason);

@@ -1,10 +1,10 @@
 import {
-  AfterViewChecked,
+  AfterViewChecked, AfterViewInit,
   Component,
   DestroyRef,
   ElementRef,
   EventEmitter,
-  inject,
+  inject, OnInit,
   Output,
   ViewChild
 } from '@angular/core';
@@ -38,9 +38,13 @@ import {BreakpointObserver} from "@angular/cdk/layout";
   ],
   styleUrl: './message-input.component.css'
 })
-export class MessageInputComponent implements AfterViewChecked {
+export class MessageInputComponent {
   @ViewChild(CdkTextareaAutosize) autosize?: CdkTextareaAutosize;
-  @ViewChild('msgInput') msgInput?: ElementRef<HTMLElement>;
+  @ViewChild('msgInput')
+  set msgInput(ref: ElementRef<HTMLInputElement> | undefined) {
+    if(!ref) return;
+    queueMicrotask(() => ref.nativeElement.focus());
+  };
 
   ChatWindowState = ChatWindowState;
   private breakpointObserver = new BreakpointObserver();
@@ -67,12 +71,6 @@ export class MessageInputComponent implements AfterViewChecked {
         this.isExpanding = true;
         setTimeout(() => this.isExpanding = false, 220);
       })
-  }
-
-  ngAfterViewChecked() {
-    // if(this.msgInput) {
-    //   setTimeout(() => this.msgInput?.nativeElement.focus(), 300);
-    // }
   }
 
   emitMessage(input: string | null) {

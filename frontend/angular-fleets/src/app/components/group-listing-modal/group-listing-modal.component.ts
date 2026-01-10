@@ -9,6 +9,7 @@ import {PrivateUser} from "../../models/private-user/private-user";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {environment} from "../../../environments/environment";
 
 export interface CloseValue {
   value: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | null,
@@ -51,7 +52,9 @@ export class GroupListingModalComponent implements OnInit {
 
   ngOnInit() {
     this.userIsListingOwner();
-    console.log("MODAL LISTING DATA: ", this.selectedListing)
+    if(!environment.production) {
+      console.log("MODAL LISTING DATA: ", this.selectedListing)
+    }
   }
 
   userIsListingOwner(): boolean {
