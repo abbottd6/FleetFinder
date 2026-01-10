@@ -1,6 +1,16 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
 import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
-import {BehaviorSubject, combineLatest, distinctUntilChanged, map, Observable, of, Subject, take} from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  distinctUntilChanged, fromEvent,
+  map,
+  Observable,
+  of,
+  Subject,
+  Subscription,
+  take
+} from "rxjs";
 import {BookmarkApiService} from "../../api-services/bookmarks-api/bookmark-api.service";
 import {environment} from "../../../../environments/environment";
 import {ConfirmReportComponent} from "../../../components/pop-ups/confirm-report/confirm-report.component";
@@ -33,6 +43,8 @@ export class ListingViewInteractionsService {
   public longPressTriggered = false;
 
   isModalVisible: boolean = false;
+  private modalCloseFromPop = false;
+
   refreshSubject = new Subject<'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | 'created' | null>();
   readonly refresh$ = this.refreshSubject.asObservable();
 
@@ -58,6 +70,15 @@ export class ListingViewInteractionsService {
       map(([ids, listing]) => !!listing && ids.has(listing.groupId)),
       distinctUntilChanged()
     );
+
+    fromEvent<PopStateEvent>(window, 'popstate').subscribe(() => {
+      if(this.isModalVisible) {
+        this.modalCloseFromPop = true;
+        this.onModalClose({value: null, group: null} as CloseValue);
+
+        this.modalCloseFromPop = false;
+      }
+    });
   }
 
   setSelectedListing(row: GroupListingViewModel | null) {
@@ -84,6 +105,10 @@ export class ListingViewInteractionsService {
     if(this.longPressTriggered) return;
     this.setSelectedListing(tempListing);
     this.uiPrefService.saveRowClick(tempListing.groupId);
+
+    if(!this.isModalVisible) {
+      history.pushState({ listingModal: true }, '');
+    }
 
     this.isModalVisible = true;
   }
@@ -279,7 +304,9 @@ export class ListingViewInteractionsService {
   }
 
   public emitRefresh(reason: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | 'created') {
-    console.log("reason: ", reason);
+    if(!environment.production) {
+      console.log("reason: ", reason);
+    }
     this.refreshSubject.next(reason);
   }
 
@@ -291,6 +318,10 @@ export class ListingViewInteractionsService {
     this.isModalVisible = false;
 
     this.setSelectedListing(null);
+
+    if(!this.modalCloseFromPop && history.state?.listingModal) {
+      history.back();
+    }
 
     if(!action.value) return;
 

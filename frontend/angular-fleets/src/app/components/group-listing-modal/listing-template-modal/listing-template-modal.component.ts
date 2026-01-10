@@ -5,7 +5,6 @@ import {
 } from "../../../services/component-services/templates-modal-service/templates-modal.service";
 import {DatePipe, NgClass, NgIf} from "@angular/common";
 import {ConfirmGenericComponent} from "../../pop-ups/confirm-generic/confirm-generic.component";
-import {BehaviorSubject, Subject, takeUntil} from "rxjs";
 import {Router} from "@angular/router";
 import {MatDialog} from "@angular/material/dialog";
 import {
@@ -14,6 +13,9 @@ import {
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatIcon} from "@angular/material/icon";
+import {environment} from "../../../../environments/environment";
+import {fromEvent} from "rxjs";
+import {CloseValue} from "../group-listing-modal.component";
 
 @Component({
   selector: 'app-listing-template-modal',
@@ -35,16 +37,17 @@ export class ListingTemplateModalComponent implements AfterViewInit {
   @Input() selectedTemplate: ListingTemplateViewModel | null = null;
   @Output() close = new EventEmitter();
 
-
-
   constructor(public templatesModal: TemplatesModalService,
               private templatesApi: ListingTemplatesApiService,
               private snackBar: MatSnackBar,
               private router: Router,
-              private dialog: MatDialog) {}
+              private dialog: MatDialog) {
+  }
 
   ngAfterViewInit() {
-    console.log("selectedTemplate: ", this.selectedTemplate);
+    if(!environment.production) {
+      console.log("selectedTemplate: ", this.selectedTemplate);
+    }
   }
 
   createFromTemplate() {

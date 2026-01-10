@@ -177,6 +177,7 @@ export class ListingFormService implements OnDestroy{
       const minutes = utc.getMinutes();
 
       const parsedDate = new Date(`${this.padDateString(month)}/${this.padDateString(day)}/${year}`);
+
       console.log("Parsed date: ", parsedDate)
 
       const parsedTime = `${this.padDateString(hours)}:${this.padDateString(minutes)}`;

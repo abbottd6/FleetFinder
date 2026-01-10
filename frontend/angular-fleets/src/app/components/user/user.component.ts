@@ -14,7 +14,7 @@ import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButtonModule} from "@angular/material/button";
 import {UserRole, UserService} from "../../services/user-services/user.service";
-import {GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
+import {CloseValue, GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
 import {UserProfileBookmarksComponent} from "../user-profile-bookmarks/user-profile-bookmarks.component";
 import {
@@ -96,7 +96,8 @@ export class UserComponent implements OnInit, OnDestroy {
 
   onListingSelected(listing: GroupListingViewModel) {
     this.selectedListing = listing;
-    this.listingInteract.isModalVisible = true;
+    this.listingInteract.onRowClick(listing);
+    // this.listingInteract.isModalVisible = true;
     if(!environment.production) {
       console.log("Parent modal visibility: ", this.listingInteract.isModalVisible);
     }
@@ -104,6 +105,12 @@ export class UserComponent implements OnInit, OnDestroy {
 
   onTemplateSelected(template: ListingTemplateViewModel) {
     this.selectedTemplate = template;
+
+    if(this.listingInteract.isModalVisible) {
+      this.listingInteract.onModalClose({value: null, group: null} as CloseValue);
+    }
+
+    history.pushState({templateModal: true}, '');
     this.templatesModal.templateModalIsVisible = true;
   }
 

@@ -1,7 +1,6 @@
-import {inject, Injectable} from '@angular/core';
-import {OidcSecurityService, UserDataResult} from "angular-auth-oidc-client";
+import {DestroyRef, inject, Injectable} from '@angular/core';
+import {OidcSecurityService} from "angular-auth-oidc-client";
 import {
-  combineLatest,
   distinctUntilChanged,
   EMPTY,
   filter,
