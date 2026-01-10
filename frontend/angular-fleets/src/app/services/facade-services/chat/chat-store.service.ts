@@ -175,7 +175,6 @@ export class ChatStoreService {
   afterLoadMessages(msgs: MessageViewModel[]) {
     const lastIncoming = [...msgs].reverse().find(
       msg => msg.senderId !== this.userSrv.userId);
-    console.log("this message", lastIncoming?.msgId);
     if(lastIncoming) {
       this.ws.publish('/app/chat.read', {
         conversationId: lastIncoming.conversationId,

@@ -4,6 +4,7 @@ import {Subject} from "rxjs";
 import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 import {ModIssuesViewComponent} from "../mod-issues-view/mod-issues-view.component";
 import {ModActionsTableComponent} from "../mod-actions-table/mod-actions-table.component";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-mod-parent-panel',
@@ -19,7 +20,9 @@ export class ModParentPanelComponent implements OnDestroy {
   constructor(){}
 
   emitChildClick(listing: GroupListingViewModel) {
-    console.log("listing emitted: ", listing.listingTitle);
+    if(!environment.production) {
+      console.log("listing emitted: ", listing.listingTitle);
+    }
     this.listingForModal.emit(listing);
   }
 

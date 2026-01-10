@@ -1,12 +1,12 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
 import {
   BehaviorSubject,
-  combineLatest, distinctUntilChanged,
+  combineLatest, distinctUntilChanged, exhaustMap,
   filter,
   map,
   Observable, of,
   shareReplay,
-  switchMap, take
+  switchMap, take, tap
 } from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {AuthService} from "../auth/auth-services/auth.service";
@@ -51,6 +51,8 @@ export class UserService {
     filter(data => !!data && !!data.userData)
   );
 
+
+
   private refreshTrigger$ = new BehaviorSubject<void>(undefined);
   public refreshUser() { this.refreshTrigger$.next() };
 
@@ -91,13 +93,29 @@ export class UserService {
       }
     });
 
-    this.auth.tokenReady$.pipe(
+    combineLatest([this.auth.tokenReady$, this.ws.isConnected$]).pipe(
+      filter(([token, connected]) => !!token && !connected),
+      exhaustMap(() => {
+        this.ws.connect();
+        return this.ws.isConnected$.pipe(filter(Boolean), take(1))
+      }),
       takeUntilDestroyed(this.destroyRef)
-    ).subscribe(token => {
-        if(token && !this.ws.isConnected()) {
-          this.ws.connect();
-        }
-    });
+    ).subscribe();
+
+    this.ws.isConnected$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+
+    }
+    );
+
+    // this.auth.tokenReady$.pipe(
+    //   takeUntilDestroyed(this.destroyRef),
+    // ).subscribe(token => {
+    //     console.log("connect token: ", token.substring(0,20));
+    //     if(token && !this.ws.isConnected()) {
+    //       this.ws.connect();
+    //       console.log('connect triggered');
+    //     }
+    // });
   }
 
   extractRole(roles: string[]) {

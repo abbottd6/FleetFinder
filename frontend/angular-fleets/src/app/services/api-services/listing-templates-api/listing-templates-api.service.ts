@@ -40,13 +40,11 @@ export class ListingTemplatesApiService {
   }
 
   createTemplate(request: CreateTemplateRequest): Observable<any> {
-    console.log("url: ", this.getUrl, ", request: ", request);
+    if(!environment.production) {
+      console.log("url: ", this.getUrl, ", request: ", request);
+    }
 
-    return this.httpClient.post<any>(this.createUrl, request).pipe(
-      tap(response => {
-        console.log("raw ", response);
-      })
-    );
+    return this.httpClient.post<any>(this.createUrl, request).pipe();
   }
 
   deleteTemplate(templateId: number) {

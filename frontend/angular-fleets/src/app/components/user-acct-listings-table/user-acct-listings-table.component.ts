@@ -34,6 +34,7 @@ import {
   ListingOwnerActionsService
 } from "../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
 import {ListingTemplatesApiService} from "../../services/api-services/listing-templates-api/listing-templates-api.service";
+import {environment} from "../../../environments/environment";
 
 @Component({
   selector: 'app-user-acct-listings-table',
@@ -75,7 +76,9 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   }
 
   emitChildClick(listing: GroupListingViewModel) {
-    console.log("listing emitted: ", listing.listingTitle);
+    if(!environment.production) {
+      console.log("listing emitted: ", listing.listingTitle);
+    }
     this.listingForModal.emit(listing);
   }
 

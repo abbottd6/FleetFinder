@@ -26,7 +26,7 @@ body#keycloak-bg {
 #password,
 #password-confirm,
 #email {
-    color: rgba(255, 255, 255, 0.75) !important;
+    color: rgba(188, 191, 200, 0.85) !important;
 }
 
 body#keycloak-bg::before {
@@ -113,18 +113,54 @@ body#keycloak-bg::after {
 .pf-v5-c-login__main {
     min-width: 25vw;
     margin-inline: auto;
+    background-color: rgb(38, 41, 45);
 }
 
+.pf-v5-c-form-control {
+    background-color: rgb(54, 55, 58);
+    color: transparent;
+}
+
+.pf-v5-c-form-control > :is(input,select,textarea) {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    border: 0 !important;
+    outline: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+}
+
+
+
 .pf-v5-c-form-control > input {
-    outline: 1px solid transparent;
+    outline: solid 1px transparent;
     transition: outline 0.25s ease;
     caret-color: rgba(255, 131, 7, 0.75);
+}
+
+.pf-v5-c-form-control::before {
+    border: 0 !important;
 }
 
 .pf-v5-c-form-control > input:focus {
     color: transparent !important;
     outline: 1px solid rgba(188, 191, 200, 0.5);
 
+}
+
+.pf-v5-c-button.pf-m-control {
+    background-color: rgb(54, 55, 58);
+    color: rgba(188, 191, 200, 0.5);
+}
+
+.pf-v5-c-button.pf-m-control:hover {
+    color: rgba(255, 131, 7, 0.5);
+}
+
+.pf-v5-c-button.pf-m-control::after {
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
 }
 
 .pf-v5-c-button.pf-m-primary {
@@ -140,6 +176,10 @@ body#keycloak-bg::after {
     cursor: pointer
 }
 
+.pf-v5-c-form__group::before {
+    border: 0;
+}
+
 #kc-login.pf-v5-c-button:hover {
     background-color: rgba(255, 131, 7, .25);
     color: rgba(33, 37, 41, .9);
@@ -150,7 +190,7 @@ body#keycloak-bg::after {
     border-block-end-color:rgba(255, 131, 7, .5);
 }
 
-.pf-v5-c-form-control:focus-within:after {
+.pf-v5-c-form-control:focus-within::after {
     border-block-end-width: 2px;
     border-block-end-color: rgba(188, 191, 200, 0.5);
 }
@@ -178,6 +218,7 @@ body#keycloak-bg::after {
     padding: .42rem 1.12rem .42rem 1.12rem;
     background-color: rgba(33, 37, 41, .4);
     margin-inline: .75rem;
+    margin-bottom: 35px !important;
     color: rgba(255, 131, 7, .75);
     font-size: 0.9rem;
     border-radius: .2rem;
@@ -202,6 +243,19 @@ body#keycloak-bg::after {
         min-width: 90vw;
         margin-inline: auto;
     }
+}
+
+.pf-v5-c-login__main-footer-band {
+    border-block-start-color: rgba(188, 191, 200, 0.5);
+}
+
+.pf-v5-c-check__label {
+    color: rgba(188, 191, 200, 0.85);
+}
+
+.pf-v5-c-check__input {
+    color-scheme: dark;
+    accent-color: rgba(188, 191, 200, 0.5);
 }
 
 :where(a) {

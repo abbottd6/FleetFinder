@@ -1,6 +1,6 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
 import {Client, StompSubscription} from "@stomp/stompjs";
-import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {BehaviorSubject, distinctUntilChanged, filter, Observable, Subject} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {MessageViewModel} from "../../models/chat/message-view-model";
 import {ConversationViewModel} from "../../models/chat/conversation-view-model";
@@ -58,11 +58,13 @@ export class WsGatewayService {
 
   private notificationStompSub: StompSubscription | null = null;
 
-  private latestAuthToken: string | null = null;
+  private tokenSubject = new BehaviorSubject<string | null>(null);
 
   constructor(private auth: AuthService) {
-    this.auth.accessToken$.pipe(takeUntilDestroyed(this.wsDestroyRef)).subscribe(
-      latest => this.latestAuthToken = latest);
+    this.auth.tokenReady$.pipe(
+      filter((token): token is string => !!token),
+      distinctUntilChanged()
+    ).subscribe(token => this.tokenSubject.next(token));
   }
 
   subscribe<T>(destination: string, handler: (body: T) => void): StompSubscription {
@@ -74,12 +76,12 @@ export class WsGatewayService {
 
   connect(): void {
     if(this.client?.active) return;
-    if(!this.latestAuthToken) return;
+    if(!this.tokenSubject.getValue()) return;
 
     this.client = new Client({
       webSocketFactory: () => new WebSocket(`${environment.wsBaseUrl}/websocket`),
       connectHeaders: {
-        Authorization: `Bearer ${this.latestAuthToken}`,
+        Authorization: `Bearer ${this.tokenSubject.getValue()}`,
       },
       reconnectDelay: 3000,
       heartbeatIncoming: 25000,

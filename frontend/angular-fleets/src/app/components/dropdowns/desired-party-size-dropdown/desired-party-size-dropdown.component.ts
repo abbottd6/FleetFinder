@@ -13,6 +13,6 @@ export class DesiredPartySizeDropdownComponent implements OnInit{
   partySize: number[] = [];
 
   ngOnInit() {
-    this.partySize = Array.from({ length: 100 }, (_, i) => i + 1);
+    this.partySize = Array.from({ length: 100 }, (_, i) => i + 2);
   }
 }

@@ -37,7 +37,9 @@ export class CreateListingComponent  implements OnInit, OnDestroy {
     this.draft = history.state?.draft as GroupListingViewModel | undefined;
     this.listingData = this.draft as GroupListingViewModel;
 
-    console.log(this.draft);
+    if(!environment.production) {
+      console.log(this.draft);
+    }
 
     if (this.draft){
       this.formService.patchFromDraft(this.draft);

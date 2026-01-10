@@ -27,7 +27,9 @@ export class ListingOwnerActionsService {
               private router: Router) { }
 
   userUpdateSelected(selection: GroupListingViewModel) {
-    console.log(selection);
+    if(!environment.production) {
+      console.log(selection);
+    }
 
     this.router.navigate(['/update-listing'], {
       state: { draft: selection }
