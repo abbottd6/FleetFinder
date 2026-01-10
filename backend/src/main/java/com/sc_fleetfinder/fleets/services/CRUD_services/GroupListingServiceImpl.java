@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingReportRepository;
+import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
@@ -59,6 +60,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final ArchiveService archiveService;
     private final HiddenListingService hls;
     private final ListingReportRepository lrr;
+    private final NotificationOutboxRepository outboxRepo;
 
     @PersistenceContext
     private EntityManager em;
@@ -68,7 +70,8 @@ public class GroupListingServiceImpl implements GroupListingService {
                                    UserRepository userRepository,
                                    ArchiveService archiveService,
                                    HiddenListingService hls,
-                                   ListingReportRepository lrr) {
+                                   ListingReportRepository lrr,
+                                   NotificationOutboxRepository outboxRepo) {
 
         this.groupListingRepository = groupListingRepository;
         this.groupListingConversionService = groupListingConversionService;
@@ -76,6 +79,7 @@ public class GroupListingServiceImpl implements GroupListingService {
         this.archiveService = archiveService;
         this.hls = hls;
         this.lrr = lrr;
+        this.outboxRepo = outboxRepo;
     }
 
     @Override
@@ -155,6 +159,11 @@ public class GroupListingServiceImpl implements GroupListingService {
                 listing.setVisStatus(VisStatus.FRESH);
 
                 groupListingRepository.save(listing);
+
+                int obDeletedCount = outboxRepo.deleteOutboxNotificationsOnEntityUpdate(user.getUserId(),
+                        listing.getGroupId(), "GROUP_LISTING");
+
+                log.info("User update triggered deletion of {} outbox notifications", obDeletedCount);
 
                 Map<String, String> response = new HashMap<>();
                 String title = listing.getListingTitle();
