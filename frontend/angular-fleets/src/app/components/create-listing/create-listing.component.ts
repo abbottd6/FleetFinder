@@ -64,12 +64,10 @@ export class CreateListingComponent  implements OnInit, OnDestroy {
           if(!environment.production) {
             console.log(response.listingTitle)
           }
-          alert(`Your creation of group listing, ${response.listingTitle} was successful!`);
-
           this.resetAndRedirect();
         },
         error: err => {
-          alert(`There was an error creating your listing: ${err.message}`);
+          alert(`There was an error creating your listing (note that there is a limit of 5 active listings per user).`);
         }
       }
     )
@@ -80,7 +78,7 @@ export class CreateListingComponent  implements OnInit, OnDestroy {
     this.listingForm.reset();
     this.formSubmitted = false;
 
-    this.router.navigateByUrl("/group-listings")
+    this.router.navigateByUrl("/listing-success")
   }
 
   ngOnDestroy() {

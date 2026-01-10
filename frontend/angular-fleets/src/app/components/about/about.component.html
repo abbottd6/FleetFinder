@@ -6,11 +6,6 @@
     <h2 class="ext-link-h">External Links:</h2>
     <div id="ext-link-buttons-container">
       <a class="ext-link"
-         onclick="window.open('https://github.com/abbottd6/FleetFinder', '_blank')">
-        Github Repository
-      </a>
-
-      <a class="ext-link"
          onclick="window.open('https://www.linkedin.com/in/dayton-abbott', '_blank')">
         My LinkedIn
       </a>
@@ -42,7 +37,7 @@
         <ul class="tier-two-bullets">
           <li><a class="int-link"
                  onclick="document.getElementById('v1')?.scrollIntoView({ behavior: 'smooth' })">
-            v1 (Previous Release)
+            v1.0 (Previous Release)
           </a></li>
 
           <li><a class="int-link"
@@ -52,15 +47,14 @@
 
           <li><a class="int-link"
                  onclick="document.getElementById('v1.2')?.scrollIntoView({ behavior: 'smooth' })">
-            v1.2 (Current Release)
+            v1.2 (Previous Release)
           </a></li>
 
+          <li><a class="int-link"
+                 onclick="document.getElementById('v1.3')?.scrollIntoView({ behavior: 'smooth' })">
+            MVP (v1.3)
+          </a></li>
         </ul>
-
-        <li><a class="int-link"
-               onclick="document.getElementById('roadmap')?.scrollIntoView({ behavior: 'smooth' })">
-          Roadmap
-        </a></li>
 
         <li><a class="int-link"
                onclick="document.getElementById('architecture')?.scrollIntoView({ behavior: 'smooth' })">
@@ -95,17 +89,15 @@
     <h2 id="what-is-fleetfinder">What is FleetFinder?</h2>
     <div class="text-body">
       <p>
-        FleetFinder is a companion app for the MMO video game <span style="font-style: italic">Star Citizen</span>, a
-        space simulation game being developed by Cloud Imperium Games (CIG). Although
-        <span style="font-style: italic">Star Citizen</span> is in an "alpha" phase, it has live and playable servers
-        (many would dispute the validity of this description) where players can experiment and test the available
-        features.
+        FleetFinder is a companion app for the MMO <span style="font-style: italic">Star Citizen</span>, developed by Cloud
+        Imperium Games. Although the game is still in alpha, it runs live, persistent servers where players actively
+        test and explore its evolving systems.
       </p>
       <p>
-        Given the game's current status as an alpha version, it lacks features that are considered standard for modern
-        MMOs. One major gap is a group finder, a tool that helps players connect with others who share similar
-        interests. The goal of FleetFinder is to fill this gap by helping players team up for shared gameplay
-        experiences, whether collaborative, combative, or both.
+        Because of its alpha status, <span style="font-style: italic">Star Citizen</span> lacks several features common to modern
+        MMOs, including a built-in group finder. FleetFinder fills that gap by helping players connect with others
+        who share similar goals, playstyles, and schedules, whether for cooperative gameplay, PvP, or large-scale
+        fleet operations.
       </p>
     </div>
 
@@ -113,18 +105,15 @@
     <h2 id="why-fleetfinder">Why FleetFinder?</h2>
     <div class="text-body">
       <p>
-        I am building FleetFinder to apply the programming skills that I've developed in the WGU Computer Science
-        program and push myself to branch off to learn new technologies not covered in my coursework. The app solves
-        a real problem for the <span style="font-style: italic">Star Citizen</span> community while also giving me a
-        platform to grow as a fullstack developer.
+        I built FleetFinder to apply and expand the programming skills I developed in the WGU Computer Science
+        program while learning technologies beyond the coursework. It addresses a real need in the
+        <span style="font-style: italic">Star Citizen</span> community and serves as a practical platform for my growth as a
+        full-stack developer.
       </p>
       <p>
-        This project has given me hands-on experience designing a scalable web app while working with languages like
-        Java
-        and TypeScript, frameworks like Spring Boot and Angular, troubleshooting, testing, and much more. FleetFinder
-        development is still in progress, with several features that I plan to implement in the v2/MVP for the
-        app. Each of the features that I plan to implement moving forward will provide further opportunity for me to
-        expand my skills and deepen my understanding of modern software development.
+        Through this project, I’ve gained hands-on experience designing and building a scalable web application
+        using Java, TypeScript, Spring Boot, and Angular, along with authentication, role-based
+        access, Websockets, CI/CD with Jenkins, testing, debugging (a lot), and much more.
       </p>
     </div>
 
@@ -177,6 +166,13 @@
         <li>Bootstrap, HTML/CSS</li>
       </ul>
 
+      <h3>Real-Time Messaging & WebSockets</h3>
+      <ul>
+        <li>Spring WebSocket (STOMP over WebSocket)</li>
+        <li>JWT-authenticated WebSocket connections</li>
+        <li>Real-time notifications, unread counts, and chat messaging</li>
+      </ul>
+
       <h3>Deployment And DevOps</h3>
       <ul>
         <li>Docker and Docker Compose - separate containers for frontend, backend, mysql, Keycloak, and reverse proxy
@@ -203,11 +199,6 @@
         <li>Git/GitHub</li>
       </ul>
 
-      <h3>Planned/Upcoming Integrations</h3>
-      <ul>
-        <li>RabbitMQ - message broker for asynchronous task handling</li>
-        <li>WebSockets - real-time chat and notifications</li>
-      </ul>
     </div>
 
 
@@ -218,26 +209,19 @@
 
     <h2 id="v1">FleetFinder v1 <span style="color: #aa7902">(Previous Release: March 2025)</span></h2>
     <div class="text-body">
-      <p style="text-indent: 0;">v1 of FleetFinder represents the core CRUD functionality of the app, including:</p>
+      <p style="text-indent: 0;">v1 of FleetFinder represented the core CRUD functionality of the app, including:</p>
       <ul>
         <li>MySQL database containing group listings and cacheable static lookup data for listing attributes</li>
         <li>REST API built with Spring Boot</li>
-        <li>Basic Angular frontend with reactive forms for listing creation and a table for viewing current listings
-        </li>
+        <li>Basic Angular frontend with reactive forms for listing creation and a table for viewing current listings</li>
         <li>Responsive web design for different viewport sizes</li>
         <li>Thorough unit and integration testing of services, mapper configurations, REST controllers, etc.</li>
       </ul>
-      <p>
-        I will be adding user accounts in v2, so the group listing creation for v1 just uses a hard coded testUser. The
-        UI is only partially functional in v1, it contains
-        placeholders for features planned in future versions. This version lays the foundation for the more advanced
-        functionality and serves as a snapshot of my progress thus far.
-      </p>
     </div>
 
     <h2 id="v1.1">FleetFinder v1.1 <span style="color: #aa7902">(Previous Release: June 2025)</span></h2>
     <div class="text-body">
-      <p style="text-indent: 0;">v1.1 expands FleetFinder features to include user authentication:</p>
+      <p style="text-indent: 0;">v1.1 expanded FleetFinder features to include user authentication:</p>
       <ul>
         <li>Keycloak integration with the existing MySQL data base</li>
         <li>Separate Docker container to run Keycloak</li>
@@ -249,7 +233,7 @@
       </ul>
     </div>
 
-    <h2 id="v1.2">FleetFinder v1.2 <span style="color: darkgreen">(Current Release: Nov 15th, 2025)</span></h2>
+    <h2 id="v1.2">FleetFinder v1.2 <span style="color: #aa7902">(Previous Release: Nov 2025)</span></h2>
     <div class="text-body">
       <p style="text-indent: 0;">The focus of v1.2 was to improve IAM by adding role-based access and other
         features:</p>
@@ -272,35 +256,27 @@
       </ul>
     </div>
 
-    <h2 id="roadmap">Roadmap</h2>
-    <div class="text-body">
-      <p>
-        FleetFinder is nearing the MVP. In v1.3, I will focus on a refactor of the main listing view table and some
-        other associated features:
-      </p>
-      <ul>
-        <li>Pagination</li>
-        <li>Search, filter, and sort</li>
-        <li>Content reporting by users for spam/inappropriate content</li>
-        <li>Listing bookmarking</li>
-        <li>Templating (saving form templates for reuse)</li>
-        <li>Adding an additional tab within the moderator panel for viewing reported listings and various mod
-          actions
-        </li>
-      </ul>
-      <p>
-        I hope to have these features completed within the coming week, after which I will move on to the final pre-MVP
-        development stage which will include RabbitMQ and WebSockets for instant messaging features and MVP deployment
-        refinements for IAM, such as email verification, CAPTCHA (or similar), and terms of service.
-      </p>
-      <p>
-        Once I have completed the MVP features, I plan to create posts on several relevant
-        <span style="font-style: italic">Star Citizen</span> community forms to attract users to test the platform. I
-        have been working
-        on this project off and on for over a year now, and I am very excited to release the MVP and see people
-        using the platform that I have developed. I am hoping to deploy the MVP sometime around mid December 2025.
-      </p>
-    </div>
+    <h2 id="v1.3">FleetFinder MVP (v1.3)<span style="color: darkgreen"> (Current Release: Jan 2026)</span></h2>
+      <div class="text-body">
+        <p>
+          v1.3 connected all of the previous features together on the frontend, and added some additional features,
+          including:
+        </p>
+        <ul>
+          <li>Table Pagination</li>
+          <li>Search, filter, and sort</li>
+          <li>Content reporting by users for spam/inappropriate content</li>
+          <li>Listing bookmarking</li>
+          <li>Hiding listings</li>
+          <li>Templating (saving form templates for reuse)</li>
+          <li>Websockets and real-time messaging</li>
+          <li>Notifications and real-time alerts</li>
+          <li>Account email verification</li>
+          <li>Additional moderation features for managing reported listings</li>
+          <li>Scheduling for recurrent cleanup of tables, expired listings, and creating/sending corresponding notifications</li>
+          <li>UI rework for a more modern appearance aligned with the domain</li>
+        </ul>
+      </div>
 
 
     <span class="ext-link-h"><a class="int-link"

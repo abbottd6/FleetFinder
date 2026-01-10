@@ -78,6 +78,8 @@ import {
   NotificationsDropdownComponent
 } from "./components/dropdowns/notifications/notifications-dropdown/notifications-dropdown.component";
 import {NotificationComponent} from "./components/dropdowns/notifications/notification/notification.component";
+import { ListingSuccessComponent } from './components/listing-success/listing-success.component';
+import { HowToComponent } from './components/how-to/how-to.component';
 
 @NgModule({
   declarations: [
@@ -97,6 +99,8 @@ import {NotificationComponent} from "./components/dropdowns/notifications/notifi
     ConfirmGenericComponent,
     ConfirmClearIssueComponent,
     ModIssueDetailedComponent,
+    ListingSuccessComponent,
+    HowToComponent,
   ],
   imports: [
     BrowserModule,

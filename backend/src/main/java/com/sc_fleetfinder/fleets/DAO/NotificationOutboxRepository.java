@@ -48,4 +48,15 @@ public interface NotificationOutboxRepository extends JpaRepository<Notification
             WHERE outbox_id = :outboxId
             """, nativeQuery = true)
     int markFailed(@Param("outboxId") long outboxId, @Param("error") String error);
+
+    @Modifying
+    @Query(value = """
+            DELETE FROM notification_outbox ob
+            WHERE ob.entity_owner_id = :userId
+                AND ob.entity_id = :eId
+                AND ob.entity_type = :eType
+            """, nativeQuery = true)
+    int deleteOutboxNotificationsOnEntityUpdate(@Param("userId") Long userId,
+                                                            @Param("eId") Long eId,
+                                                            @Param("eType") String eType);
 }

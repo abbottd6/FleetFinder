@@ -77,7 +77,6 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
           if(!environment.production) {
             console.log(response.listingTitle)
           }
-          alert(`Your creation of group listing, ${response.listingTitle} was successful!`);
 
           this.resetAndRedirect();
         },
@@ -93,6 +92,6 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
     this.listingForm.reset();
     this.formSubmitted = false;
 
-    this.router.navigateByUrl("/group-listings")
+    this.router.navigateByUrl("/listing-success")
   }
 }

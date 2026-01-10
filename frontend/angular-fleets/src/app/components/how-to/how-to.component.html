@@ -1,0 +1,133 @@
+<div class="container-clip-path-wrapper">
+  <div class="body-container">
+    <h1 id="top">How To Use FleetFinder</h1>
+    <div class="success-body">
+      <div class="section-links">
+        <div class="bullet-text-body">
+          <div class="int-link">
+            <a onclick="document.getElementById('create')?.scrollIntoView({ behavior: 'smooth' })">
+              Create a group
+            </a>
+          </div>
+
+          <div class="int-link">
+            <a onclick="document.getElementById('join')?.scrollIntoView({ behavior: 'smooth' })">
+              Join a group
+            </a>
+          </div>
+
+          <div class="int-link">
+            <a onclick="document.getElementById('report')?.scrollIntoView({ behavior: 'smooth' })">
+              Reporting and Hiding Listings
+            </a>
+          </div>
+
+          <div class="int-link">
+            <a onclick="document.getElementById('template')?.scrollIntoView({ behavior: 'smooth' })">
+              Templates
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="text-body-container">
+        <span id="create" class="body-title"><h2>Create a Group</h2></span>
+        <div class="text-body">
+          <ul>
+            <li><span class="highlight-text">Create an account</span> and verify your email (check your spam folder!)
+            </li>
+            <li>Use the <span class="highlight-text">Create listing page</span> and fill in the form fields with
+              information about your group
+            </li>
+            <li>Create the listing and wait for other users to message you</li>
+            <li>Once someone messages you, exchange in game credentials or comms credentials</li>
+            <li>Meet up at the <span style="font-style: italic">Star Citizen</span> login page</li>
+            <li>Join a group with your new crew members <span class="highlight-text">before you log in</span> so you
+              can be sure you are on the same server
+            </li>
+            <li>You can delete or update your listings by visiting the <span class="highlight-text">Profile page</span>
+              and selecting your listing in the <span class="highlight-text">My Listings</span> tab
+            </li>
+            <li>There is currently a <span class="highlight-text">limit of 5 listings per user</span> to reduce
+              spam content
+            </li>
+          </ul>
+        </div>
+        <span id="join" class="body-title"><h2>Join a Group</h2></span>
+        <div class="text-body">
+          <ul>
+            <li><span class="highlight-text">Create an account</span> and verify your email (check your spam folder!)
+            </li>
+            <li>Use the <span class="highlight-text">Search listings page</span> to search and filter for listings in
+              your desired area of gameplay
+            </li>
+            <li>Once you find a group that interests you, use the quick access menu (right click on desktop,
+              long press on mobile) to message the user. You can also click (tap on mobile) the listing to view
+              more details about the listing.
+            </li>
+            <li>If the group owner invites you to join, exchange in game credentials or comms credentials</li>
+            <li>Meet up at the <span style="font-style: italic">Star Citizen</span> login page</li>
+            <li>Join a group with your new crew members <span class="highlight-text">before you log in</span> so you
+              can be sure you are on the same server
+            </li>
+          </ul>
+        </div>
+        <span id="report" class="body-title"><h2>Reporting and Hiding Listings</h2></span>
+        <div class="text-body">
+          <ul>
+            <li><span class="highlight-text">Create an account</span> and verify your email (check your spam folder!)
+            </li>
+            <li>Hiding listings can be undone, reporting listings cannot</li>
+            <li>Both 'Hide' and 'Report' will exclude the selected listing from your search results.</li>
+            <li>Use the <span class="highlight-text">Quick Access Menu</span> (desktop: right click, mobile: long press)
+              to select either 'Hide' or 'Report'. You can also access these options from the detailed view of the
+              listing through the 'Options' button
+            </li>
+            <li>If you are reporting a listing, select a basis for the report</li>
+            <li>Hidden listings can be 'unhidden' using the 'Hidden' dropdown menu (to the right, above the search
+              results) on the search page
+            </li>
+          </ul>
+        </div>
+        <span id="template" class="body-title"><h2>Templates</h2></span>
+        <div class="text-body">
+          <ul>
+            <li><span class="highlight-text">Create an account</span> and verify your email (check your spam folder!)
+            </li>
+            <li><span class="highlight-text">Create a listing</span> with the details that you would like to save
+              in a template
+            </li>
+            <li>Navigate to the <span class="highlight-text">Profile page</span> and ensure you are viewing the
+              <span class="highlight-text">My Listings tab</span></li>
+            <li>Select a listing with the checkbox (only one listing can be templated at a time) or use
+              the quick access menu (right click on the listing on desktop, or long press on mobile)
+            </li>
+            <li>If using the checkbox, click the save template button</li>
+            <li>If using quick access, click template</li>
+            <li>You can view the template in the <span class="highlight-text">Profile -> Templates tab</span></li>
+            <li>To create a listing from a template, select the listing in the <span
+              class="highlight-text">Templates</span>
+              tab, and use either the quick access menu or the <span class="highlight-text">Create from</span> button
+            </li>
+          </ul>
+        </div>
+        <span class="back-top"><a class="int-link"
+            onclick="document.getElementById('top')?.scrollIntoView({ behavior: 'smooth' })">
+            Back To Top</a></span>
+        <div id="button-container">
+          <a (click)="auth.register()">
+            <button class="action-buttons"><span>Create Account</span></button>
+          </a>
+          <a [routerLink]="['/group-listings']">
+            <button class="action-buttons"><span>Browse Listings</span></button>
+          </a>
+        </div>
+        <div class="dev-text">
+            <span>Enjoying FleetFinder? Consider
+              <a class="ext-link"
+                 onclick="window.open('https://ko-fi.com/scfleetfinder', '_blank')">
+                donating through Ko-Fi</a> to support hosting and on-going development.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
