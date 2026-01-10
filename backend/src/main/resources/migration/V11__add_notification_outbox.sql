@@ -14,6 +14,6 @@ CREATE TABLE IF NOT EXISTS notification_outbox
     locked_at         TIMESTAMP     NULL,
     sent_at           TIMESTAMP     NULL,
     FOREIGN KEY (entity_owner_id) REFERENCES `users` (id_user) ON DELETE CASCADE,
-    UNIQUE KEY uq_note_outbox_event (event_type, entity_type, entity_id),
+    UNIQUE KEY uq_note_outbox_event (event_type, entity_type, entity_id, entity_new_status),
     KEY idx_on_outbox_status_and_created (status, created_at)
 );
