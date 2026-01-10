@@ -10,8 +10,15 @@
             <mat-icon class="dropdown-arrow">arrow_drop_down</mat-icon>
           </button>
         </div>
-        <ng-container *ngIf="(ws.isConnected$ | async) as isConnected">
-          <mat-icon id="connected-icon" class="h-fill" [class.not-connected]="!isConnected">circle</mat-icon>
+        <ng-container>
+          <mat-icon
+            id="connected-icon"
+            class="h-fill"
+            [class.not-connected]="(ws.isConnected$ | async) !== true"
+            [matTooltip]="((ws.isConnected$ | async) === true)
+              ? 'Chat connected' :
+              'Chat disconnected, refresh the page.'">
+            circle</mat-icon>
         </ng-container>
         <div class="h-fill">
           <ng-container *ngIf="((ws.totalUnread$ | async) ?? 0) > 0; else waiting">

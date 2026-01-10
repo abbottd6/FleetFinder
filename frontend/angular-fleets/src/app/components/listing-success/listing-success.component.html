@@ -1,0 +1,54 @@
+<div class="container-clip-path-wrapper">
+  <div class="body-container">
+    <h1>Success!</h1>
+    <div class="success-body">
+      <ng-container *ngIf="successLayoutMode$ | async as mode">
+        <div class="text-body-container">
+          <ng-container *ngIf="mode !== 'full'">
+            <div class="image-container">
+              <div class="image-border">
+                <img src="/images/success.png" class="success-image" alt="Pico is the best">
+              </div>
+            </div>
+          </ng-container>
+          <span id="body-title"><h2>What next?</h2></span>
+          <div class="text-body">
+            <ul>
+              <li><span class="highlight-text">Save a template</span> of your listing (profile page) if you would like
+                to reuse it in the future
+              </li>
+              <li>Keep an eye on your <span class="highlight-text">messages</span> for a message from another user</li>
+              <li>Once someone messages you, exchange in game credentials or comms credentials</li>
+              <li>Meet up at the <span style="font-style: italic">Star Citizen</span> login page</li>
+              <li>Join a group with your new crew members <span class="highlight-text">before you log in</span> so you
+                can
+                be sure you are on the same server
+              </li>
+            </ul>
+          </div>
+            <div id="button-container">
+              <a [routerLink]="['/user-account']">
+                <button class="action-buttons"><span>Profile</span></button>
+              </a>
+              <a [routerLink]="['/group-listings']">
+                <button class="action-buttons"><span>Browse Listings</span></button>
+              </a>
+            </div>
+          <div class="dev-text">
+            <span>Enjoying FleetFinder? Consider
+              <a class="ext-link"
+                onclick="window.open('https://ko-fi.com/scfleetfinder', '_blank')">
+                donating through Ko-Fi</a> to support hosting and on-going development.</span>
+          </div>
+        </div>
+        <ng-container *ngIf="mode === 'full'">
+          <div class="image-container">
+            <div class="image-border">
+              <img src="/images/success.png" class="success-image" alt="Pico is the best">
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div>

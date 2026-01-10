@@ -35,6 +35,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ConfirmGenericComponent} from "../../pop-ups/confirm-generic/confirm-generic.component";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {ChatOptionsMenuService} from "../../../services/facade-services/chat/chat-options-menu.service";
+import {MatTooltip} from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-chat-panel',
@@ -66,6 +67,7 @@ import {ChatOptionsMenuService} from "../../../services/facade-services/chat/cha
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
+    MatTooltip,
   ],
   styleUrl: './chat-panel.component.css'
 })
