@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {AuthService} from "../../services/auth/auth-services/auth.service";
 
 @Component({
   selector: 'app-how-to',
@@ -7,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './how-to.component.css'
 })
 export class HowToComponent {
-
+  constructor(protected auth: AuthService) {}
 }
