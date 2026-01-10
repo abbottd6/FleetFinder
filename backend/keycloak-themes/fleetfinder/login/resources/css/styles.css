@@ -118,7 +118,6 @@ body#keycloak-bg::after {
 
 .pf-v5-c-form-control {
     background-color: rgb(54, 55, 58);
-    color: transparent;
 }
 
 .pf-v5-c-form-control > :is(input,select,textarea) {
