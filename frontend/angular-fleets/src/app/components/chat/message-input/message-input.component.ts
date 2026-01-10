@@ -70,9 +70,9 @@ export class MessageInputComponent implements AfterViewChecked {
   }
 
   ngAfterViewChecked() {
-    if(this.msgInput) {
-      setTimeout(() => this.msgInput?.nativeElement.focus(), 300);
-    }
+    // if(this.msgInput) {
+    //   setTimeout(() => this.msgInput?.nativeElement.focus(), 300);
+    // }
   }
 
   emitMessage(input: string | null) {
