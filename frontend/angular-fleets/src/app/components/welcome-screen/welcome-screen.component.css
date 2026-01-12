@@ -31,6 +31,11 @@
   clip-path: polygon(0% 0%, 88% 0%, 100% 12%, 100% 100%, 100% 100%, 12% 100%, 0% 88%, 0% 0%);
 }
 
+.highlight-text {
+  color: rgba(52, 135, 168, 0.9);
+  font-weight: 600;
+}
+
 @media(min-width: 700px) {
   h1 {
     padding: 2rem 4rem 2rem 4rem;
