@@ -145,8 +145,7 @@ app-comms-service-input {
 @media(min-width: 725px) {
   .form-row {
     display: grid;
-    grid-template-columns:
-      repeat(auto-fit, minmax(450px, max-content));
+    grid-template-columns: repeat(auto-fit, minmax(450px, max-content));
     padding-left: 3rem;
     padding-right: 3rem;
     justify-content: flex-start;
