@@ -74,6 +74,23 @@ ul {
   color: rgba(52, 135, 168, 0.9);
   font-weight: 600;
 }
+.is-fresh {
+  color: #478028;
+}
+
+.is-recent {
+  color: rgba(218, 165, 32, 0.75);
+}
+
+.is-stale {
+  color: rgba(255, 131, 7, .6);
+}
+
+.is-inactive {
+  color: rgba(90, 2, 2, 1);
+  font-weight: 600;
+  background-color: var(--bs-dark);
+}
 
 .this-color {
   color:  rgba(255, 131, 7, .5);
