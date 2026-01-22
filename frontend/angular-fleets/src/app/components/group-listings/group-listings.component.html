@@ -260,18 +260,19 @@
   <div class="no-results-container" *ngIf="noResults">
     <p>No active listings match the search/filter criteria.</p>
   </div>
+  <!-- Paginator -->
+  <div class="paginator">
+    <mat-paginator
+      [pageSizeOptions]="[5, 10, 25, 50]"
+      [pageIndex]="pageIndex"
+      [pageSize]="pageSize"
+      [length]="totalElements"
+      showFirstLastButtons>
+    </mat-paginator>
+  </div>
 </div>
 
-<!-- Paginator -->
-<div class="paginator">
-  <mat-paginator
-    [pageSizeOptions]="[5, 10, 25, 50]"
-    [pageIndex]="pageIndex"
-    [pageSize]="pageSize"
-    [length]="totalElements"
-    showFirstLastButtons>
-  </mat-paginator>
-</div>
+
 
 <app-group-listing-modal
   *ngIf="listingInteract.isModalVisible && (listingInteract.bookmarkedIds$ | async) as bookmarkedIds"

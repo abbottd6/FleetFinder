@@ -22,6 +22,33 @@ body {
   margin: 0;
 }
 
+.navbar::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 4px 0;
+  pointer-events: none;
+  opacity: 0.2;
+  filter: blur(4px);
+  mix-blend-mode: screen;
+  clip-path: inherit;
+
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(223, 241, 255, .3),
+      rgba(223, 241, 255, .3), 1px,
+      transparent 4px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(223, 241, 255, .3),
+      rgba(223, 241, 255, .3), 1px,
+      transparent 4px,
+      transparent 4px
+    );
+}
+
 .body-container {
   display: flex;
   flex-direction: column;

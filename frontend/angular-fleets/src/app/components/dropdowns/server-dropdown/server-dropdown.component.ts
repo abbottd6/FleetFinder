@@ -42,7 +42,9 @@ export class ServerDropdownComponent implements AfterViewInit {
         complete: () => {
           const userTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
           const region = this.defaultRegionFromTimeZone(userTz);
-          this.formService.serverRegion.patchValue(region);
+          if(region) {
+            this.formService.serverRegion.patchValue(region);
+          }
         }
       })
   }
