@@ -1,19 +1,26 @@
 .navbar.bg-primary {
-  background-color: var(--stark-blue) !important;
+  background-color: var(--bs-dark) !important;
   /*border: 1px groove rgba(13, 47, 67, 1);*/
-  border-radius: .75rem;
   font-weight: 600;
   position: sticky;
   top: 0;
   left: 0;
   min-width: 100%;
-  height: 65px;
+  height: 55px;
   z-index: 1030;
-
+  padding-top: 0;
+  padding-bottom: 0 !important;
 }
+
+@media(max-width: 1199px) {
+  .navbar.bg-primary {
+    padding-top: 6px;
+  }
+}
+
 #navbar-title {
-  color: rgba(255, 131, 7, .75);
-  font-weight: 600;
+  color: rgba(255, 131, 7, .6);
+  font-weight: 400;
   padding-left: 1vw;
   margin-right: 2vw;
 }
@@ -25,16 +32,25 @@
 .navbar-text {
   display: flex;
   align-items: center;
-  font-weight: 600;
-  color: rgba(25, 40, 44, .75);
+  font-weight: 300;
+  color: rgba(188, 191, 200, .75);
 }
 
 .nav-link {
-  color: rgba(25, 40, 44, .75);
+  font-weight: 400;
+  color: rgba(188, 191, 200, .75);
 }
 
 .navbar-nav .nav-link.show {
   color: rgba(255, 131, 7, .6);
+}
+
+.navbar .navbar-toggler {
+  border-color: rgba(188, 191, 200, .4) !important;
+}
+
+.navbar .navbar-toggler:focus {
+  box-shadow: 0 0 0 4px rgba(188, 191, 200, .1);
 }
 
 @media(min-width: 1200px) {
@@ -262,23 +278,23 @@ input::placeholder {
 }
 
 .bi-person-fill {
-  color: rgba(15, 24, 27, 0.75);
+  color: rgba(188, 191, 200, .5);
   font-size: 1.5rem;
   padding: .5rem 1vw .5rem .25rem;
 }
 
 .bi-person-fill:hover {
-  color: rgba(25, 40, 44, .8);
+  color: rgba(134, 137, 149, 0.5);
 }
 
 .bi-bell-fill {
-  color: rgba(15, 24, 27, 0.75);
+  color: rgba(188, 191, 200, .5);
   font-size: 1.25rem;
   margin: .5rem;
 }
 
 .bi-bell-fill:hover {
-  color: rgba(25, 40, 44, .8);
+  color: rgba(134, 137, 149, 0.5);
 }
 
 .nav-item.dropdown .notes-toggle::after  {
@@ -303,14 +319,14 @@ input::placeholder {
 }
 
 .bi-chat-fill {
-  color: rgba(15, 24, 27, 0.75);
+  color: rgba(188, 191, 200, .5);
   font-size: 1.25rem;
   margin: .5rem .5rem .5rem 1rem;
 }
 
 .bi-chat-fill:hover {
   /*color: rgba(188, 191, 200, .8);*/
-  color: rgba(25, 40, 44, .8);
+  color: rgba(134, 137, 149, 0.5);
 }
 
 .nav-link {

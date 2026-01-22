@@ -1,6 +1,6 @@
 .table-container {
   display: block !important;
-  overflow-y: scroll !important;
+  overflow-y: visible !important;
   overflow-x: scroll !important;
   max-height: 85% !important;
   min-width: 100%;
@@ -168,7 +168,7 @@
 
 @media(max-width: 724px) {
   .mat-mdc {
-    overflow: scroll;
+    overflow: visible;
   }
 
   .search-bar-wrapper {
@@ -181,8 +181,8 @@
   }
 
   .table-container {
-    max-height: 90% !important;
     padding-bottom: 1rem;
+    max-height: fit-content;
   }
 
   .action-buttons-container {
