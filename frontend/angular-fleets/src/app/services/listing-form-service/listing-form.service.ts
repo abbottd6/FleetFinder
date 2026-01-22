@@ -1,7 +1,7 @@
 import {Injectable, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from "@angular/forms";
 import {requiredIfGroupStatusFuture} from "../../common/validators/custom-validators";
-import {catchError, forkJoin, of, Subscription} from "rxjs";
+import {BehaviorSubject, catchError, forkJoin, of, Subscription} from "rxjs";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {LookupService} from "../api-services/reference-data-api/lookup.service";
 import {environment} from "../../../environments/environment";
@@ -48,6 +48,7 @@ export type ListingFormShape = {
 })
 export class ListingFormService implements OnDestroy{
   private subs = new Subscription();
+
   listingFormGroup!: FormGroup<ListingFormShape>;
 
   constructor(private formBuilder: NonNullableFormBuilder, private lookup: LookupService) {
@@ -92,8 +93,8 @@ export class ListingFormService implements OnDestroy{
       }),
       sessionEnvInfoGroup: this.formBuilder.group<SessionEnvInfoGroup>({
         serverRegion: new FormControl(null, [Validators.required]),
-        gameEnvironment: new FormControl(null, [Validators.required]),
-        gameExperience: new FormControl(null, [Validators.required]),
+        gameEnvironment: new FormControl(1, [Validators.required]),
+        gameExperience: new FormControl(1, [Validators.required]),
       }),
       gameplayInfoGroup: this.formBuilder.group<GameplayInfoGroup>({
         playStyle: new FormControl(null),
@@ -113,8 +114,8 @@ export class ListingFormService implements OnDestroy{
         currentPartySize: new FormControl(null, [Validators.required]),
         desiredPartySize: new FormControl(null, [Validators.required]),
         availableRoles: new FormControl(null, [Validators.minLength(3)]),
-        commsOption: new FormControl(null, [Validators.required]),
-        commsService: new FormControl({value: null, disabled: true}),
+        commsOption: new FormControl('Optional', [Validators.required]),
+        commsService: new FormControl({value: null, disabled: false}),
       })
     });
   }
