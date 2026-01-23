@@ -60,6 +60,7 @@ public class ListingArchive {
         this.currentPartySize = listing.getCurrentPartySize();
         this.desiredPartySize = listing.getDesiredPartySize();
         this.commsOption = listing.getCommsOption();
+
         this.listingCreationTs = listing.getCreationTimestamp();
         this.listingLastUpdated = listing.getLastUpdated();
         this.reportTotalCount = issue.getReportTotalCount();
@@ -143,7 +144,7 @@ public class ListingArchive {
     private String listingTitle;
 
     @NotNull(message="ListingArchive field 'listingDescription' cannot be null.")
-    @Column(name="listing_description", length=550, nullable = false)
+    @Column(name="listing_description", length=2000, nullable = true)
     private String listingDescription;
 
     @Column(name="listing_roles")
@@ -168,8 +169,7 @@ public class ListingArchive {
     private GameExperience experience;
 
     @ManyToOne
-    @Nullable
-    @JoinColumn(name="style_id")
+    @JoinColumn(name="style_id", nullable = true)
     private PlayStyle playStyle;
 
     @ManyToOne
@@ -182,8 +182,7 @@ public class ListingArchive {
     @NotNull(message = "GroupListing entity field 'groupStatus' cannot be null")
     private GroupStatus groupStatus;
 
-    @Column(name="event_schedule")
-    @Nullable
+    @Column(name="event_schedule", nullable = true)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant eventSchedule;
 
@@ -193,8 +192,7 @@ public class ListingArchive {
     private GameplayCategory category;
 
     @ManyToOne
-    @JoinColumn(name="subcategory_id")
-    @Nullable
+    @JoinColumn(name="subcategory_id", nullable = true)
     private GameplaySubcategory subcategory;
 
     @ManyToOne
@@ -208,8 +206,7 @@ public class ListingArchive {
     private PlanetarySystem system;
 
     @ManyToOne
-    @JoinColumn(name="planet_id")
-    @Nullable
+    @JoinColumn(name="planet_id", nullable = true)
     private PlanetMoonSystem planetMoonSystem;
 
     @Column(name="current_party_size")
@@ -221,8 +218,12 @@ public class ListingArchive {
     private Integer desiredPartySize;
 
     @Column(name="comms_options")
-    @NotNull(message = "GroupListing entity field 'commsOptions' cannot be null")
+    @NotNull(message = "ListingArchive field 'commsOptions' cannot be null.")
     private String commsOption;
+
+    @Column(name="language_code")
+    @NotNull(message="ListingArchive field 'languageCode' cannot be null.")
+    private String languageCode;
 
     @Column(name="listing_creation_ts")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

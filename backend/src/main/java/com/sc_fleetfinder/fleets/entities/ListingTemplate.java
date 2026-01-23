@@ -10,6 +10,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,7 +59,7 @@ public class ListingTemplate {
     private GameExperience experience;
 
     @Column(name="listing_title")
-    @Size(max = 65, message = "ListingTemplate entity field 'listingTitle' must be less than 65 characters")
+    @Size(max = 128, message = "ListingTemplate entity field 'listingTitle' must be less than 128 characters")
     private String listingTitle;
 
     @ManyToOne
@@ -77,10 +78,16 @@ public class ListingTemplate {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant eventSchedule;
 
+    //TODO: MODIFY THIS SO USERS CAN SELECT MULTIPLE CATEGORIES PER LSITING
+    // CREATE A 'listing_category' TABLE THAT RELATES A LISTING TO A CATEGORY SPECIFICATION
+    // WHERE EACH listing_category ENTRY CONTAINS id_group AND A SINGLE id_category
+    // SO, MULTIPLE ENTRIES PER LISTING IF THERE ARE MULTIPLE CATEGORIES
     @ManyToOne
     @JoinColumn(name="category_id")
     private GameplayCategory category;
 
+    //TODO: SAME AS CATEGORY
+    // NEED TO FIGURE OUT HOW THIS WILL WORK FOR ARCHIVING AND TEMPLATING
     @ManyToOne
     @JoinColumn(name="subcategory_id")
     private GameplaySubcategory subcategory;
@@ -97,8 +104,8 @@ public class ListingTemplate {
     @JoinColumn(name="planet_id")
     private PlanetMoonSystem planetMoonSystem;
 
-    @Column(name="listing_description")
-    @Size(max=500, message="ListingTemplate field 'description' must be less than 500 characters")
+    @Column(name="listing_description", nullable = true)
+    @Size(max=2000, message="ListingTemplate field 'description' must be less than 2000 characters")
     private String listingDescription;
 
     @Column(name="desired_party_size")
@@ -119,9 +126,13 @@ public class ListingTemplate {
     @Column(name="comms_service")
     private String commsService;
 
+    //TODO CREATE THE ENUM FOR THIS AND DECIDE WHICH LANGUAGES TO INCLUDE
+    @Column(name="language_code")
+    @NotNull(message="ListingTemplate field 'languageCode' cannot be null.")
+    private String languageCode;
+
     @CreationTimestamp
     @Column(name="creation_timestamp")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant creationTimestamp;
-
 }
