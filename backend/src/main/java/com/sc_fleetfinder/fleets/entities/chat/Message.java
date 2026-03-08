@@ -5,6 +5,8 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.MessageType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -54,6 +56,7 @@ public class Message {
     @JoinColumn(name="id_sender", nullable = false)
     private Users sender;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="message_type", nullable = false)
     private MessageType messageType = MessageType.TEXT;
 

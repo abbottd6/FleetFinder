@@ -1,7 +1,10 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -127,9 +130,10 @@ public class ListingTemplate {
     private String commsService;
 
     //TODO CREATE THE ENUM FOR THIS AND DECIDE WHICH LANGUAGES TO INCLUDE
+    @Enumerated(EnumType.STRING)
     @Column(name="language_code")
     @NotNull(message="ListingTemplate field 'languageCode' cannot be null.")
-    private String languageCode;
+    private LanguageOptions languageCode;
 
     @CreationTimestamp
     @Column(name="creation_timestamp")

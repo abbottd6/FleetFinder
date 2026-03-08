@@ -12,6 +12,7 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Planetary
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import com.sc_fleetfinder.fleets.utils.VisStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -145,10 +146,10 @@ public class GroupListing {
     @Column(name="comms_service")
     private String commsService;
 
-    //TODO CREATE THE ENUM FOR THIS AND DECIDE WHICH LANGUAGES TO INCLUDE
+    @Enumerated(EnumType.STRING)
     @Column(name="language_code")
     @NotNull(message= "GroupListing entity field 'languageCode' cannot be null")
-    private String languageCode;
+    private LanguageOptions languageCode;
 
     @CreationTimestamp
     @Column(name="creation_timestamp")

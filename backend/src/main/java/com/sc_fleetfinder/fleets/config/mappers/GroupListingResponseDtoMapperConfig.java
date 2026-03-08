@@ -14,6 +14,7 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -222,6 +223,8 @@ public class GroupListingResponseDtoMapperConfig {
                         String commsService = (String) ctx.getSource();
                         return Objects.requireNonNullElse(commsService, "");
                     }).map(GroupListing::getCommsService, GroupListingResponseDto::setCommsService);
+
+                    mapper.map(GroupListing::getLanguageCode, GroupListingResponseDto::setLanguageCode);
 
                     mapper.map(GroupListing::getCreationTimestamp, GroupListingResponseDto::setCreationTimestamp);
 

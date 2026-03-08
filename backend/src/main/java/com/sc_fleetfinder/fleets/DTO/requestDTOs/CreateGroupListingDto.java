@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -88,4 +89,7 @@ public class CreateGroupListingDto {
     @Size(max = 50, message = "Create listing DTO field 'listingCommsService' cannot exceed 50 characters")
     @Nullable
     private String commsService;
+
+    @NotNull(message = "CreateGroupListingDto field 'languageCode' cannot be null")
+    private LanguageOptions languageCode;
 }

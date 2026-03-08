@@ -153,6 +153,8 @@ public class CreateGroupListingMapperConfig {
 
                     //comms service mapped automatically due to property name and type match
 
+                    //language code mapped automatically due to property name and type match
+
                 });
         return modelMapper;
     }

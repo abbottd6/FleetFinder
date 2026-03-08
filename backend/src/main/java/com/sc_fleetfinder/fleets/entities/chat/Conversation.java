@@ -75,7 +75,7 @@ public class Conversation {
     private Instant updatedAt;
 
     @OneToOne
-    @JoinColumn(name="last_msg_id")
+    @JoinColumn(name="last_msg_id", nullable = true)
     private Message lastMsg;
 
     // hash of minUserId:maxUserId. null for group chats.

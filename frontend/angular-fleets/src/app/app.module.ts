@@ -80,6 +80,7 @@ import {
 import {NotificationComponent} from "./components/dropdowns/notifications/notification/notification.component";
 import { ListingSuccessComponent } from './components/listing-success/listing-success.component';
 import { HowToComponent } from './components/how-to/how-to.component';
+import { AbstractDropdownComponent } from './components/dropdowns/abstract-dropdown/abstract-dropdown.component';
 
 @NgModule({
   declarations: [

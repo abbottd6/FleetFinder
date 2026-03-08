@@ -14,8 +14,11 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -221,9 +224,10 @@ public class ListingArchive {
     @NotNull(message = "ListingArchive field 'commsOptions' cannot be null.")
     private String commsOption;
 
+    @Enumerated(EnumType.STRING)
     @Column(name="language_code")
     @NotNull(message="ListingArchive field 'languageCode' cannot be null.")
-    private String languageCode;
+    private LanguageOptions languageCode;
 
     @Column(name="listing_creation_ts")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

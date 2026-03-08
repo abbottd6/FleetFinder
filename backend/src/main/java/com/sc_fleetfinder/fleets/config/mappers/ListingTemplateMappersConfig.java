@@ -215,6 +215,8 @@ public class ListingTemplateMappersConfig {
                         String commsService = (String) ctx.getSource();
                         return Objects.requireNonNullElse(commsService, "");
                     }).map(ListingTemplate::getCommsService, ListingTemplateResponseDto::setCommsService);
+
+                    mapper.map(ListingTemplate::getLanguageCode, ListingTemplateResponseDto::setLanguageCode);
                 });
 
         return mm;
@@ -319,6 +321,8 @@ public class ListingTemplateMappersConfig {
 
                         return mapperLookupService.findPlanetMoonSystemById(planetId);
                     }).map(CreateGroupListingDto::getPlanetId, ListingTemplate::setPlanetMoonSystem);
+
+                    mapper.map(CreateGroupListingDto::getLanguageCode, ListingTemplate::setLanguageCode);
 
                 });
         return modelMapper;
