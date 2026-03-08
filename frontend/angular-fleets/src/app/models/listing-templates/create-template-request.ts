@@ -24,6 +24,7 @@ export class CreateTemplateRequest {
       availableRoles: listing.availableRoles,
       commsOption: listing.commsOption,
       commsService: listing.commsService,
+      languageCode: listing.language,
     })
   }
 }

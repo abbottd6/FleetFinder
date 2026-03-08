@@ -107,8 +107,9 @@ public class ListingTemplate {
     @JoinColumn(name="planet_id")
     private PlanetMoonSystem planetMoonSystem;
 
-    @Column(name="listing_description", nullable = true)
-    @Size(max=2000, message="ListingTemplate field 'description' must be less than 2000 characters")
+    @Column(name="listing_description", nullable = false)
+    @NotNull(message = "ListingTemplate field 'listingDescription' cannot be null.")
+    @Size(max=2000, message="ListingTemplate field 'listingDescription' must be less than 2000 characters.")
     private String listingDescription;
 
     @Column(name="desired_party_size")

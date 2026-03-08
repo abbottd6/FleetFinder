@@ -1,5 +1,3 @@
-import {environment} from "../../../environments/environment";
-
 export class CreateListingRequest {
   constructor(formData: any) {
     Object.assign(this, {
@@ -24,6 +22,7 @@ export class CreateListingRequest {
       availableRoles: formData.groupSpecInfoGroup.availableRoles,
       commsOption: formData.groupSpecInfoGroup.commsOption,
       commsService: formData.groupSpecInfoGroup.commsService,
+      languageCode: formData.groupSpecInfoGroup.languageCode,
     })
   }
 

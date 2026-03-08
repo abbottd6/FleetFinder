@@ -27,4 +27,6 @@ export const LANGUAGE_OPTIONS: { code: string; label: string }[] = [
   { code: 'TR', label: 'Turkish' },
   { code: 'UK', label: 'Ukrainian' },
   { code: 'VI', label: 'Vietnamese' },
-];
+] as const;
+
+export type LanguageCode = typeof LANGUAGE_OPTIONS[number]['code'];

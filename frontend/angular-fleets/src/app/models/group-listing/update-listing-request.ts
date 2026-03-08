@@ -1,6 +1,3 @@
-import {environment} from "../../../environments/environment";
-import { DateTime } from 'luxon';
-
 export class UpdateListingRequest {
   constructor(formData: any, gId: number) {
     if (formData.groupStatus != 2) {
@@ -32,6 +29,7 @@ export class UpdateListingRequest {
       availableRoles: formData.groupSpecInfoGroup.availableRoles,
       commsOption: formData.groupSpecInfoGroup.commsOption,
       commsService: formData.groupSpecInfoGroup.commsService,
+      languageCode: formData.groupSpecInfoGroup.languageCode,
     })
   }
 

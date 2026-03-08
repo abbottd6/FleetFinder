@@ -1,3 +1,5 @@
+import { LanguageCode } from "../language-options";
+
 export class ListingTemplateViewModel {
 
   constructor (
@@ -33,6 +35,7 @@ export class ListingTemplateViewModel {
     public availableRoles: string,
     public commsOption: string,
     public commsService: string,
+    public language: LanguageCode,
     public creationTimestamp: Date,
   ){}
 }

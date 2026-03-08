@@ -122,7 +122,8 @@ public class GroupListing {
     @JoinColumn(name="planet_id")
     private PlanetMoonSystem planetMoonSystem;
 
-    @Column(name="listing_description", nullable = true)
+    @Column(name="listing_description", nullable = false)
+    @NotNull(message = "GroupListing field 'listingDescription' cannot be null.")
     @Size(max = 2000, message = "Listing description cannot be longer than 2000 characters")
     private String listingDescription;
 
