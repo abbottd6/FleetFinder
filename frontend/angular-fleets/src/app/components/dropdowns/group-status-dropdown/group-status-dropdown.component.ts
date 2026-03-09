@@ -3,6 +3,7 @@ import {LookupService} from "../../../services/api-services/reference-data-api/l
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {GroupStatus} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-group-status-dropdown',
@@ -13,7 +14,7 @@ import {environment} from "../../../../environments/environment";
 })
 export class GroupStatusDropdownComponent implements AfterViewInit{
   @Input() groupStatusControl!: FormControl;
-  groupStatuses: {groupStatusId: number, groupStatus: string}[] = [];
+  groupStatuses: GroupStatus[] = [];
 
   constructor(private lookupService: LookupService) {}
 

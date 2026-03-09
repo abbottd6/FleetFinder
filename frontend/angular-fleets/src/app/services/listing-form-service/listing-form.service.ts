@@ -160,7 +160,7 @@ export class ListingFormService implements OnDestroy{
           availableRoles: draft.availableRoles,
           commsOption: draft.commsOption,
           commsService: draft.commsService,
-          language: draft.language
+          language: draft.languageCode
         }
       });
       this.category?.setValue(draft.categoryId);

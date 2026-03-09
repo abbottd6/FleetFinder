@@ -11,8 +11,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.node.ObjectNode;
 
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -92,6 +94,7 @@ class GroupListingsControllerTest {
         mockListing1.setAvailableRoles("Here are some available roles");
         mockListing1.setCommsOption("Required");
         mockListing1.setCommsService("This is a comms service");
+        mockListing1.setLanguageCode(LanguageOptions.English);
         mockListing1.setCreationTimestamp(Instant.parse(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
         mockListing1.setLastUpdated(Instant.parse(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
 
@@ -119,6 +122,7 @@ class GroupListingsControllerTest {
         mockListing2.setAvailableRoles("Here are some available roles");
         mockListing2.setCommsOption("Optional");
         mockListing2.setCommsService("");
+        mockListing2.setLanguageCode(LanguageOptions.English);
         mockListing2.setCreationTimestamp(Instant.parse(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
         mockListing2.setLastUpdated(Instant.parse(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
 
@@ -304,6 +308,8 @@ class GroupListingsControllerTest {
                         .value("Required"))
                 .andExpect(jsonPath("$.commsService")
                         .value("This is a comms service"))
+                .andExpect(jsonPath("$.languageCode")
+                        .value("English"))
                 .andExpect(jsonPath("$.creationTimestamp")
                         .exists())
                 .andExpect(jsonPath("$.creationTimestamp")
@@ -347,6 +353,7 @@ class GroupListingsControllerTest {
             mockDto.setAvailableRoles("mock roles");
             mockDto.setCommsOption("Optional");
             mockDto.setCommsService("Discord");
+            mockDto.setLanguageCode(LanguageOptions.English);
 
         Map<String, String> response = new HashMap<>();
         response.put("listingTitle", mockDto.getListingTitle());
@@ -400,6 +407,7 @@ class GroupListingsControllerTest {
         mockDto.setAvailableRoles(null);
         mockDto.setCommsOption("Optional");
         mockDto.setCommsService(null);
+        mockDto.setLanguageCode(LanguageOptions.English);
 
         Map<String, String> response = new HashMap<>();
         response.put("listingTitle", mockDto.getListingTitle());
@@ -453,6 +461,7 @@ class GroupListingsControllerTest {
         mockDto.setAvailableRoles("mock roles");
         mockDto.setCommsOption("Optional");
         mockDto.setCommsService("Discord");
+        mockDto.setLanguageCode(LanguageOptions.English);
 
         Users mockUser = new Users();
         mockUser.setUserId(12L);
@@ -518,7 +527,36 @@ class GroupListingsControllerTest {
                 .andExpect(jsonPath("$.currentPartySize")
                         .value("Create group listing DTO field 'currentPartySize' cannot be null"))
                 .andExpect(jsonPath("$.commsOption")
-                        .value("Create listing DTO field 'commsOption' cannot be null"));
+                        .value("Create listing DTO field 'commsOption' cannot be null"))
+                .andExpect(jsonPath("$.languageCode")
+                        .value("CreateGroupListingDto field 'languageCode' cannot be null"));
+    }
+
+    @Test
+    void testCreateGroupListing_BadRequest_InvalidLanguageCode() throws Exception {
+        ObjectNode body = objectMapper.createObjectNode();
+        body.put("serverId", 1);
+        body.put("environmentId", 1);
+        body.put("experienceId", 1);
+        body.put("listingTitle", "Some valid title");
+        body.put("legalityId", 1);
+        body.put("groupStatusId", 1);
+        body.put("categoryId", 1);
+        body.put("pvpStatusId", 1);
+        body.put("systemId", 1);
+        body.put("listingDescription", "Some valid description");
+        body.put("desiredPartySize", 5);
+        body.put("currentPartySize", 2);
+        body.put("commsOption", "Optional");
+        body.put("languageCode", "Klingon"); // not a valid LanguageOptions constant
+
+        mockMvc.perform(post("/api/group-listings/create_listing")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(body)))
+                .andExpect(status().isBadRequest());
     }
 
 

@@ -3,6 +3,7 @@ import {LookupService} from "../../../services/api-services/reference-data-api/l
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {PlanetarySystem} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-system-dropdown',
@@ -13,7 +14,7 @@ import {environment} from "../../../../environments/environment";
 })
 export class SystemDropdownComponent implements AfterViewInit{
   @Input() planetarySystemControl!: FormControl;
-  systems: {systemId: number, systemName: string}[] = [];
+  systems: PlanetarySystem[] = [];
 
   constructor(private lookupService: LookupService) { }
 

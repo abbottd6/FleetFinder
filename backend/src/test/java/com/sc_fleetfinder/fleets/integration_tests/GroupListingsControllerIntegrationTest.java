@@ -6,6 +6,7 @@ import tools.jackson.databind.ObjectMapper;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,6 +120,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                         "$.commsOption").value("Optional"))
                 .andExpect(jsonPath(
                         "$.commsService").value("Discord"))
+                .andExpect(jsonPath("$.languageCode").value("English"))
                 .andExpect(jsonPath("$.creationTimestamp").exists())
                 .andExpect(jsonPath("$.lastUpdated").exists());
     }
@@ -155,6 +157,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
             testDto.setAvailableRoles("Medic, Sniper"); // Optional
             testDto.setCommsOption("Optional");
             testDto.setCommsService("Discord");
+            testDto.setLanguageCode(LanguageOptions.English);
 
 //        Users mockUser = new Users();
 //        mockUser.setUsername("mock user");
@@ -198,7 +201,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                 .andExpect(jsonPath("$.currentPartySize").value(2))
                 .andExpect(jsonPath("$.availableRoles").value("Medic, Sniper"))
                 .andExpect(jsonPath("$.commsOption").value("Optional"))
-                .andExpect(jsonPath("$.commsService").value("Discord"));
+                .andExpect(jsonPath("$.commsService").value("Discord"))
+                .andExpect(jsonPath("$.languageCode").value("English"));
     }
 
     @Test
@@ -224,6 +228,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
         testDto.setDesiredPartySize(5);
         testDto.setCurrentPartySize(2);
         testDto.setCommsOption("Optional");
+        testDto.setLanguageCode(LanguageOptions.English);
 
         //posting the listing to call createGroupListing
         mockMvc.perform(post("/api/group-listings/create_listing")
@@ -260,7 +265,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                 .andExpect(jsonPath("$.currentPartySize").value(2))
                 .andExpect(jsonPath("$.availableRoles").value(""))
                 .andExpect(jsonPath("$.commsOption").value("Optional"))
-                .andExpect(jsonPath("$.commsService").value(""));
+                .andExpect(jsonPath("$.commsService").value(""))
+                .andExpect(jsonPath("$.languageCode").value("English"));
     }
 
     @Test
@@ -282,6 +288,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
         testDto.setDesiredPartySize(5);
         testDto.setCurrentPartySize(2);
         testDto.setCommsOption("Optional");
+        testDto.setLanguageCode(LanguageOptions.English);
 
 //        Users mockUser = new Users();
 //        mockUser.setUserId(12L);

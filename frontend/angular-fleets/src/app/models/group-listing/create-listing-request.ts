@@ -22,7 +22,7 @@ export class CreateListingRequest {
       availableRoles: formData.groupSpecInfoGroup.availableRoles,
       commsOption: formData.groupSpecInfoGroup.commsOption,
       commsService: formData.groupSpecInfoGroup.commsService,
-      languageCode: formData.groupSpecInfoGroup.languageCode,
+      languageCode: formData.groupSpecInfoGroup.language,
     })
   }
 

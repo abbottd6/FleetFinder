@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {LookupService} from "../reference-data-api/lookup.service";
 import {BehaviorSubject, map, Observable, of, Subject} from "rxjs";
+import {LANGUAGE_OPTIONS, LanguageCode} from "../../../models/language-options";
 
 export interface filterOptions {
   id: number,
@@ -24,6 +25,7 @@ export interface ListingFilterState {
   dateStart: string | null;
   dateEnd: string | null;
   commsOption: filterOptions | null;
+  language: filterOptions | null;
 }
 
 export type PersistedFilterState = Omit<ListingFilterState, 'searchInput'>;
@@ -41,6 +43,7 @@ export type FilterOptionKey =
   | 'planetMoonSystem'
   | 'groupStatus'
   | 'commsOption'
+  | 'language'
   | 'dateStart'
   | 'dateEnd'
 
@@ -68,6 +71,7 @@ export class FilterService {
     dateStart: null,
     dateEnd: null,
     commsOption: null,
+    language: null,
   }
 
   private stateSubject = new BehaviorSubject<ListingFilterState>(this.state);
@@ -95,6 +99,7 @@ export class FilterService {
       dateStart: null,
       dateEnd: null,
       commsOption: null,
+      language: null,
     }
 
     this.state = cleared;
@@ -253,5 +258,14 @@ export class FilterService {
         }))
       )
     );
+  }
+
+  filterLanguages(): Observable<filterOptions[]> {
+    return of(LANGUAGE_OPTIONS).pipe(
+      map(langs => langs.map(lang => ({
+        id: langs.indexOf(lang),
+        option: lang
+      })))
+    )
   }
 }

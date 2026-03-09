@@ -4,6 +4,7 @@ import {catchError, of} from "rxjs";
 import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
 import {ListingFormService} from "../../../services/listing-form-service/listing-form.service";
+import {ServerRegion} from "../../../models/reference-data/reference-data.models";
 
 @Component({
     selector: 'app-server-dropdown',
@@ -13,7 +14,7 @@ import {ListingFormService} from "../../../services/listing-form-service/listing
 })
 export class ServerDropdownComponent implements AfterViewInit {
   @Input() serverControl!: FormControl;
-  servers: {serverId: number, servername: string}[] = [];
+  servers: ServerRegion[] = [];
 
   constructor(private lookupService: LookupService,
               private cdr: ChangeDetectorRef,

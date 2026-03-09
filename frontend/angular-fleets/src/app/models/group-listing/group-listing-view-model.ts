@@ -36,7 +36,7 @@ export class GroupListingViewModel {
               public availableRoles: string,
               public commsOption: string,
               public commsService: string,
-              public language: LanguageCode,
+              public languageCode: LanguageCode,
               public creationTimestamp: Date,
               public lastUpdated: Date,
               public visStatus: string

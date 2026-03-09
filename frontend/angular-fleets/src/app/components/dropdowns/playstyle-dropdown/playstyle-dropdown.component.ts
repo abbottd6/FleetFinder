@@ -3,6 +3,7 @@ import {LookupService} from "../../../services/api-services/reference-data-api/l
 import {catchError, of, pipe} from "rxjs";
 import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {PlayStyle} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-playstyle-dropdown',
@@ -13,7 +14,7 @@ import {environment} from "../../../../environments/environment";
 })
 export class PlaystyleDropdownComponent implements AfterViewInit{
   @Input() playStyleControl!: FormControl;
-  playStyles: {styleId: number, playStyle: string}[] = [];
+  playStyles: PlayStyle[] = [];
 
   constructor(private lookupService: LookupService) {}
 

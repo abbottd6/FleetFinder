@@ -4,6 +4,7 @@ import {catchError, of} from "rxjs";
 import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
 import {ListingFormService} from "../../../services/listing-form-service/listing-form.service";
+import {GameplaySubcategory} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-subcategory-dropdown',
@@ -15,10 +16,8 @@ import {ListingFormService} from "../../../services/listing-form-service/listing
 export class SubcategoryDropdownComponent implements AfterViewInit{
   @Input() subcategoryControl!: FormControl;
   @Input() categoryControl!: FormControl;
-  subcategories: {subcategoryId: number, subcategoryName: string,
-    gameplayCategoryId: number, gameplayCategoryName: string}[] = [];
-  filteredSubcategories: {subcategoryId: number, subcategoryName: string,
-    gameplayCategoryId: number, gameplayCategoryName: string}[] = [];
+  subcategories: GameplaySubcategory[] = [];
+  filteredSubcategories: GameplaySubcategory[] = [];
 
   constructor(private lookupService: LookupService) { }
 

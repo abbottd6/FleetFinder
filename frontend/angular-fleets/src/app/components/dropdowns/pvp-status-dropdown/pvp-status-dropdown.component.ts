@@ -3,6 +3,7 @@ import {LookupService} from "../../../services/api-services/reference-data-api/l
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {PvpStatus} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-pvp-status-dropdown',
@@ -14,7 +15,7 @@ import {environment} from "../../../../environments/environment";
 
 export class PvpStatusDropdownComponent implements AfterViewInit{
   @Input() pvpStatusControl!: FormControl;
-  pvpStatuses: {pvpStatusId: number, pvpStatus: string}[] = [];
+  pvpStatuses: PvpStatus[] = [];
 
   constructor(private lookupService: LookupService) { }
 

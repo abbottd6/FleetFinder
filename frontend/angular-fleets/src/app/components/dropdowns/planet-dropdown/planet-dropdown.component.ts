@@ -3,6 +3,7 @@ import {LookupService} from "../../../services/api-services/reference-data-api/l
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {PlanetMoonSystem} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-planet-dropdown',
@@ -14,8 +15,8 @@ import {environment} from "../../../../environments/environment";
 export class PlanetDropdownComponent implements AfterViewInit{
   @Input() planetMoonControl!: FormControl;
   @Input() planetarySystemControl!: FormControl;
-  planetMoonSystems: {planetId: number, planetName: string, systemId: number, systemName: string}[] = [];
-  filteredPlanetMoons: {planetId: number, planetName: string, systemId: number, systemName: string}[] = [];
+  planetMoonSystems: PlanetMoonSystem[] = [];
+  filteredPlanetMoons: PlanetMoonSystem[] = [];
 
   constructor(private lookupService: LookupService) { }
 

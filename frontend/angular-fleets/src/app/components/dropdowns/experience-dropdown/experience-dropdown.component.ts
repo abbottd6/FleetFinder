@@ -3,6 +3,7 @@ import {LookupService} from "../../../services/api-services/reference-data-api/l
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {GameExperience} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-experience-dropdown',
@@ -13,7 +14,7 @@ import {environment} from "../../../../environments/environment";
 })
 export class ExperienceDropdownComponent implements AfterViewInit{
   @Input() experienceControl!: FormControl;
-  experiences: {experienceId: number, experienceType: string}[] = [];
+  experiences: GameExperience[] = [];
 
   constructor(private lookupService: LookupService) {}
 

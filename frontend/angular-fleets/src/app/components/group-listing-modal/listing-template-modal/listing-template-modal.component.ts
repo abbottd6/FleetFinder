@@ -14,8 +14,6 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatIcon} from "@angular/material/icon";
 import {environment} from "../../../../environments/environment";
-import {fromEvent} from "rxjs";
-import {CloseValue} from "../group-listing-modal.component";
 
 @Component({
   selector: 'app-listing-template-modal',

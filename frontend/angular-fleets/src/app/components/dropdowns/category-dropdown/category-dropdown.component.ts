@@ -3,6 +3,7 @@ import {LookupService} from "../../../services/api-services/reference-data-api/l
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {GameplayCategory} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-category-dropdown',
@@ -13,7 +14,7 @@ import {environment} from "../../../../environments/environment";
 })
 export class CategoryDropdownComponent implements AfterViewInit{
   @Input() categoryControl!: FormControl;
-  categories: {gameplayCategoryId: number, gameplayCategoryName: string}[] = [];
+  categories: GameplayCategory[] = [];
 
   constructor(private lookupService: LookupService) {}
 

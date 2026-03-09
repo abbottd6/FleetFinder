@@ -10,12 +10,14 @@ FleetFinder is a full-stack web app for *Star Citizen* players to find and join 
 
 ### Backend (Maven — run from `backend/`)
 
+Use the Maven wrapper (`./mvnw`), not `mvn` directly — Maven is not on the system PATH.
+
 ```bash
-mvn clean package          # Build JAR
-mvn clean package -DskipTests
-mvn test                   # All tests
-mvn test -Dtest=ClassName  # Single test class
-mvn test -Dtest=ClassName#methodName  # Single test method
+./mvnw clean package          # Build JAR
+./mvnw clean package -DskipTests
+./mvnw test                   # All tests
+./mvnw test -Dtest=ClassName  # Single test class
+./mvnw test -Dtest=ClassName#methodName  # Single test method
 ```
 
 Tests use JUnit 5, Mockito, MockMVC, TestContainers (requires Docker), AssertJ.
@@ -84,11 +86,12 @@ DAO/                 # Spring Data JPA repositories
 DTO/                 # requestDTOs/ and responseDTOs/
 exceptions/          # ResourceNotFoundException (404), ActionNotAuthorizedException (401) + handlers
 scheduledTasks/      # BackgroundCleanupService
+utils/               # LanguageOptions enum (28 spoken language constants)
 ```
 
 ### Database
 
-Schema: `sc_fleetfinder`. Migrations: Flyway V1–V9, V11–V12 (no V10) in `backend/src/main/resources/migration/`.
+Schema: `sc_fleetfinder`. Migrations: Flyway V1–V9, V11–V13 (no V10) in `backend/src/main/resources/migration/`. V13 makes `language_code` NOT NULL on `group_listing`, `listing_template`, and `listing_archive`.
 
 Key relationships:
 - `users` → OneToMany `group_listing` (CASCADE DELETE)
@@ -107,8 +110,21 @@ Root: `frontend/angular-fleets/src/app/`
 ```
 components/   # UI — organized by feature (listings, chat, moderation, user, dropdowns, input fields, dialogs)
 services/     # API clients, WsGatewayService, facade/store services, form services
-models/       # TypeScript interfaces mirroring backend DTOs
+models/
+  reference-data/reference-data.models.ts  # Typed interfaces for all 11 lookup/reference data types
+                                           # (ServerRegion, GameEnvironment, GameExperience,
+                                           #  GameplayCategory, GameplaySubcategory, PlayStyle,
+                                           #  GroupStatus, Legality, PvpStatus,
+                                           #  PlanetarySystem, PlanetMoonSystem)
+  group-listing/  # GroupListingViewModel, CreateListingRequest, UpdateListingRequest
+  language-options.ts  # LANGUAGE_OPTIONS const array + LanguageCode union type (as const)
+  # ...other domain models (chat, user, moderation, notifications, templates, etc.)
 ```
+
+**Reference data typing conventions:**
+- `LookupService` returns `Observable<InterfaceType[]>` — never `any[]`
+- Dropdown component data arrays are typed as `InterfaceType[]` — never inline object types
+- Form controls for reference data store the **ID only** (`FormControl<number | null>`), not the full object
 
 Auth: `angular-oauth2-oidc` + `keycloak-angular` → JWT attached to all HTTP requests via interceptor. Same JWT passed as query param on WebSocket connection.
 

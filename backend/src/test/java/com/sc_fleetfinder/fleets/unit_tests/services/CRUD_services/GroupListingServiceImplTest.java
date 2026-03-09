@@ -7,6 +7,7 @@ import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
@@ -175,7 +176,10 @@ class GroupListingServiceImplTest {
                         "blank commsOption should fail validation create listing"),
                 () -> assertFalse(dtoConstraintViolations.stream()
                         .anyMatch(violation -> violation.getPropertyPath().toString().equals("listingCommsService")),
-                        "blank listingCommsService should NOT fail validation create listing"));
+                        "blank listingCommsService should NOT fail validation create listing"),
+                () -> assertTrue(dtoConstraintViolations.stream()
+                        .anyMatch(v -> v.getPropertyPath().toString().equals("languageCode")),
+                        "blank languageCode should fail validation"));
     }
 
     //testing HTTP response from successful create listing
@@ -207,6 +211,7 @@ class GroupListingServiceImplTest {
             validDto.setAvailableRoles("These are valid available roles");
             validDto.setCommsOption("Required");
             validDto.setCommsService("This is a valid comms service");
+            validDto.setLanguageCode(LanguageOptions.English);
 
         //creating test user
         Users testUsers = new Users();

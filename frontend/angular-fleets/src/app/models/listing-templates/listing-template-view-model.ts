@@ -35,7 +35,7 @@ export class ListingTemplateViewModel {
     public availableRoles: string,
     public commsOption: string,
     public commsService: string,
-    public language: LanguageCode,
+    public languageCode: LanguageCode,
     public creationTimestamp: Date,
   ){}
 }

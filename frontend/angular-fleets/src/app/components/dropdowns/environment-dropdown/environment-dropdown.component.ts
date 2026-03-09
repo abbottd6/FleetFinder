@@ -3,6 +3,7 @@ import {LookupService} from "../../../services/api-services/reference-data-api/l
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {GameEnvironment} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-environment-dropdown',
@@ -13,7 +14,7 @@ import {environment} from "../../../../environments/environment";
 })
 export class EnvironmentDropdownComponent implements AfterViewInit{
   @Input() environmentControl!: FormControl;
-  environments: {environmentId: number, environmentType: string}[] = [];
+  environments: GameEnvironment[] = [];
 
 
   constructor(private lookupService: LookupService) {}

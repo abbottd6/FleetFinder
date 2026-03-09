@@ -3,6 +3,7 @@ import {LookupService} from "../../../services/api-services/reference-data-api/l
 import {catchError, of} from "rxjs";
 import {FormControl, FormGroup} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {Legality} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-legality-dropdown',
@@ -13,7 +14,7 @@ import {environment} from "../../../../environments/environment";
 })
 export class LegalityDropdownComponent implements AfterViewInit{
   @Input() legalityControl!: FormControl;
-  legalities: {legalityId: number, legalityStatus: string}[] = [];
+  legalities: Legality[] = [];
 
   constructor(private lookupService: LookupService) {}
 

@@ -345,6 +345,11 @@ public class GroupListingServiceImpl implements GroupListingService {
                         criteriaBuilder.equal(root.get(fieldName), tempOption));
             }
 
+            if(fieldName.equals("languageCode")) {
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get(fieldName), value));
+            }
+
             else if(fieldName.equals("dateStart")) {
                 LocalDate date = (LocalDate) value;
                 spec = spec.and((root, query, criteriaBuilder) ->
