@@ -37,6 +37,8 @@ import org.springframework.validation.annotation.Validated;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -352,14 +354,18 @@ public class GroupListingServiceImpl implements GroupListingService {
 
             else if(fieldName.equals("dateStart")) {
                 LocalDate date = (LocalDate) value;
+                System.out.println("Start Date: " + date);
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.greaterThanOrEqualTo(root.get("eventSchedule"), date)
                 );
             }
             else if(fieldName.equals("dateEnd")) {
                 LocalDate date = (LocalDate) value;
+                //add one day to the filter date so that anything with a time on the last day of filter end is included
+                LocalDate datePlus = date.plusDays(1);
+                System.out.println("End Date: " + datePlus);
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.lessThanOrEqualTo(root.get("eventSchedule"), date)
+                        criteriaBuilder.lessThan(root.get("eventSchedule"), datePlus)
                 );
             }
 

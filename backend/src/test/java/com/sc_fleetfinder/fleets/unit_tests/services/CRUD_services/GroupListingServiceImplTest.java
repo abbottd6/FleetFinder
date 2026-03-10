@@ -1,12 +1,15 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
+import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionServiceImpl;
@@ -28,6 +31,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.Instant;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -35,6 +39,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -54,6 +60,12 @@ class GroupListingServiceImplTest {
 
     @Mock
     private GroupListingConversionServiceImpl groupListingConversionService;
+
+    @Mock
+    private ArchiveService archiveService;
+
+    @Mock
+    private UserRepository userRepository;
 
     private static Validator validator;
 
@@ -281,8 +293,91 @@ class GroupListingServiceImplTest {
     }
 
     @Test
-    @Disabled
-    void testDeleteGroupListing() {
+    void testDeleteGroupListing_Success() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
+
+        // given
+        Users mockUser = new Users();
+        mockUser.setUserId(1L);
+        mockUser.setUsername("TestUser");
+        mockUser.setGroupListings(new HashSet<>());
+
+        GroupListing mockListing = new GroupListing();
+        mockListing.setGroupId(1L);
+        mockListing.setUsers(mockUser);  // same instance — Objects.equals returns true
+
+        when(groupListingRepository.findById(1L)).thenReturn(Optional.of(mockListing));
+        doNothing().when(archiveService).prepareUserDeleteRecords(any(), any());
+        // userRepository.save and groupListingRepository.delete are void mocks (no-op by default)
+
+        // when
+        ResponseEntity<?> response = groupListingService.deleteGroupListing(1L, mockUser);
+
+        // then
+        assertAll("deleteGroupListing success assertions:",
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode(),
+                        "Successful delete should return 200 OK"),
+                () -> assertEquals(0, logCaptor.getErrorLogs().size(),
+                        "Successful delete should not produce error logs"),
+                () -> verify(groupListingRepository, times(1)).findById(1L),
+                () -> verify(archiveService, times(1)).prepareUserDeleteRecords(any(), any()),
+                () -> verify(groupListingRepository, times(1)).delete(any(GroupListing.class))
+        );
+    }
+
+    @Test
+    void testDeleteGroupListing_Fail_ListingNotFound() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
+
+        // given
+        Users mockUser = new Users();
+        mockUser.setUserId(1L);
+        mockUser.setUsername("TestUser");
+
+        when(groupListingRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when
+        ResponseEntity<?> response = groupListingService.deleteGroupListing(999L, mockUser);
+
+        // then
+        assertAll("deleteGroupListing not found assertions:",
+                () -> assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode(),
+                        "Missing listing should return 404 NOT FOUND"),
+                () -> assertTrue(logCaptor.getErrorLogs().stream()
+                        .anyMatch(log -> log.contains("DeleteGroupListing failed.")),
+                        "Expected error log for missing listing"),
+                () -> verify(archiveService, never()).prepareUserDeleteRecords(any(), any())
+        );
+    }
+
+    @Test
+    void testDeleteGroupListing_Fail_NotAuthorized() {
+        LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
+
+        // given — listing is owned by a different user
+        Users listingOwner = new Users();
+        listingOwner.setUserId(99L);
+        listingOwner.setUsername("ListingOwner");
+
+        Users requestingUser = new Users();
+        requestingUser.setUserId(1L);
+        requestingUser.setUsername("DifferentUser");
+
+        GroupListing mockListing = new GroupListing();
+        mockListing.setGroupId(1L);
+        mockListing.setUsers(listingOwner);  // owned by someone else
+
+        when(groupListingRepository.findById(1L)).thenReturn(Optional.of(mockListing));
+
+        // when
+        ResponseEntity<?> response = groupListingService.deleteGroupListing(1L, requestingUser);
+
+        // then
+        assertAll("deleteGroupListing unauthorized assertions:",
+                () -> assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode(),
+                        "Unauthorized delete should return 401"),
+                () -> verify(archiveService, never()).prepareUserDeleteRecords(any(), any())
+        );
     }
 
     @Test

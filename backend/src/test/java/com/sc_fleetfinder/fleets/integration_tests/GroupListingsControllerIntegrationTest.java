@@ -23,7 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -314,5 +318,43 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
             .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testDeleteGroupListing_Success() throws Exception {
+        // when: delete the seed listing owned by TestUser (keycloakId = "someKeycloakId")
+        mockMvc.perform(delete("/api/group-listings/delete_listing/1")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.listingId").value("1"));
+
+        // then: listing is no longer accessible (deleted within the current transaction)
+        mockMvc.perform(get("/api/group-listings/1")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId"))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteGroupListing_NotFound() throws Exception {
+        mockMvc.perform(delete("/api/group-listings/delete_listing/9999")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteGroupListing_Unauthorized_WrongUser() throws Exception {
+        jdbcTemplate.update(
+                "INSERT INTO users (keycloak_id, user_name, email) VALUES (?, ?, ?)",
+                "anotherKeycloakId", "AnotherTestUser", "another@test.com");
+
+        mockMvc.perform(delete("/api/group-listings/delete_listing/1")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "anotherKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isUnauthorized());
     }
 }

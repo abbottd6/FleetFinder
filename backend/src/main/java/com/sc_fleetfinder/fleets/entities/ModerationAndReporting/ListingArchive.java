@@ -63,6 +63,7 @@ public class ListingArchive {
         this.currentPartySize = listing.getCurrentPartySize();
         this.desiredPartySize = listing.getDesiredPartySize();
         this.commsOption = listing.getCommsOption();
+        this.languageCode = listing.getLanguageCode();
 
         this.listingCreationTs = listing.getCreationTimestamp();
         this.listingLastUpdated = listing.getLastUpdated();
@@ -106,6 +107,7 @@ public class ListingArchive {
         this.currentPartySize = listing.getCurrentPartySize();
         this.desiredPartySize = listing.getDesiredPartySize();
         this.commsOption = listing.getCommsOption();
+        this.languageCode = listing.getLanguageCode();
         this.listingCreationTs = listing.getCreationTimestamp();
         this.listingLastUpdated = listing.getLastUpdated();
         this.reportTotalCount = issue.getReportTotalCount();

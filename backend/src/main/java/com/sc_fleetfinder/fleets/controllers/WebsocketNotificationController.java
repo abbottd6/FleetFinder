@@ -58,6 +58,8 @@ public class WebsocketNotificationController {
         Integer count = notificationService.countUnread(user.getUserId());
         NotificationUnreadCountDto dto = new NotificationUnreadCountDto(count);
 
+
+
         messagingTemplate.convertAndSendToUser(
                 userSub,
                 "queue/system.notify_count",

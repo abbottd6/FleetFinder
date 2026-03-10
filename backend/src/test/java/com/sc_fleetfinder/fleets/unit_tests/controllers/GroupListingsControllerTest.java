@@ -39,9 +39,11 @@ import java.util.Optional;
 import org.springframework.http.MediaType;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -566,7 +568,62 @@ class GroupListingsControllerTest {
     }
 
     @Test
-    @Disabled
-    void deleteGroupListing() {
+    void deleteGroupListing_Success() throws Exception {
+        Users mockUser = new Users();
+        mockUser.setUserId(1L);
+        mockUser.setUsername("mock user");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("mockuser@gmail.com");
+        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
+        Map<String, String> response = new HashMap<>();
+        response.put("listingId", "1");
+        doAnswer(inv -> ResponseEntity.status(HttpStatus.OK).body(response))
+                .when(groupListingService).deleteGroupListing(anyLong(), any(Users.class));
+
+        mockMvc.perform(delete("/api/group-listings/delete_listing/1")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.listingId").value("1"));
+    }
+
+    @Test
+    void deleteGroupListing_NotFound() throws Exception {
+        Users mockUser = new Users();
+        mockUser.setUserId(1L);
+        mockUser.setUsername("mock user");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("mockuser@gmail.com");
+        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
+        doAnswer(inv -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group listing not found."))
+                .when(groupListingService).deleteGroupListing(anyLong(), any(Users.class));
+
+        mockMvc.perform(delete("/api/group-listings/delete_listing/500")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void deleteGroupListing_Unauthorized() throws Exception {
+        Users mockUser = new Users();
+        mockUser.setUserId(2L);
+        mockUser.setUsername("different user");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("different@gmail.com");
+        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
+        doAnswer(inv -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authorized to delete this listing."))
+                .when(groupListingService).deleteGroupListing(anyLong(), any(Users.class));
+
+        mockMvc.perform(delete("/api/group-listings/delete_listing/1")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isUnauthorized());
     }
 }
