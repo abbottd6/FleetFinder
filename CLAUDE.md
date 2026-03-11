@@ -22,6 +22,35 @@ Use the Maven wrapper (`./mvnw`), not `mvn` directly — Maven is not on the sys
 
 Tests use JUnit 5, Mockito, MockMVC, TestContainers (requires Docker), AssertJ.
 
+**Test structure:**
+```
+src/test/java/com/sc_fleetfinder/fleets/
+  unit_tests/
+    controllers/         # @WebMvcTest + @Import(SecurityConfig.class), @MockitoBean JwtDecoder
+    services/
+      archive_services/
+      CRUD_services/
+      listing_services/  # ListingTemplateServiceImplTest
+      mod_services/      # ModerationServiceImplTest
+      reporting_services/ # ListingReportingServiceImplTest
+      caching_services/
+      conversion_services/
+    scheduledTasks/
+  integration_tests/     # @SpringBootTest + AbstractIntegrationTestDB (TestContainers mysql:8.2)
+```
+
+**Key test patterns:**
+- Controller tests: `@WebMvcTest`, `@Import(SecurityConfig.class)`, JWT via `.with(jwt().authorities(...))`
+- Integration tests: extend `AbstractIntegrationTestDB`, annotate `@Transactional` (auto-rollback), inject `JdbcTemplate` for raw SQL setup
+- Services with `@Autowired` field injection alongside constructor injection: after `@InjectMocks`, manually inject `@Autowired` fields via `ReflectionTestUtils.setField()` in `@BeforeEach`
+- Over-stubbed shared mock helpers: use `@MockitoSettings(strictness = Strictness.LENIENT)` on the class
+
+**Integration test gotchas:**
+- `SecurityConfig` is `@Profile("!test")` — not loaded in integration tests. Default Spring Security CSRF is **enabled**. Unauthenticated POST without `.with(csrf())` returns 403 (CSRF fail), not 401. Always add `.with(csrf())` to unauthenticated POST tests.
+- Spring Boot 4 `Page<>` JSON: `totalElements` is at `$.page.totalElements`, not `$.totalElements`.
+- `jdbcTemplate.queryForObject(..., Timestamp.class).toInstant()` applies the JVM timezone and gives wrong UTC values. For timestamp comparisons use `UNIX_TIMESTAMP(col)` in SQL and compare to `instant.getEpochSecond()`.
+- `ZoneId.of()` requires IANA names (`"America/Los_Angeles"`, `"UTC"`). Windows-style names (`"Pacific Standard Time"`) throw at runtime.
+
 ### Frontend (npm — run from `frontend/angular-fleets/`)
 
 ```bash
