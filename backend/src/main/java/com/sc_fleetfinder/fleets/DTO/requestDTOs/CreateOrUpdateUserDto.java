@@ -26,6 +26,9 @@ public class CreateOrUpdateUserDto {
     @Email(message = "Create user field 'email' must be a valid email address")
     private String email;
 
+    @Size(max = 20, message = "CreateOrUpdateUserDto field 'discordId' cannot exceed 20 characters.")
+    private String discordId;
+
     private String server;
 
     @Size(max = 25, message = "Create user DTO field 'org' cannot exceed 25 characters")

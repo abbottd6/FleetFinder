@@ -9,4 +9,5 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByKeycloakId(String kcId);
     Optional<Users> findByEmail(String email);
     Optional<Users> findByUsernameIgnoreCase(String username);
+    Optional<Users> findByDiscordId(String discordId);
 }

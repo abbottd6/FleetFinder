@@ -9,5 +9,9 @@ export class PrivateUser {
               public about: string,
               public acctCreated: Date,
               public lastAccess: Date,
+              public discordId: string,
+              public externalSysNotesEnabled: boolean,
+              public externalGroupNotesEnabled: boolean,
+              public externalSocialNotesEnabled: boolean,
               public groupListingsDto: GroupListingViewModel[]) {}
 }

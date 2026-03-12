@@ -6,6 +6,8 @@ import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,6 +207,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                         .subject("newUserKeycloakId")
                         .claim("preferred_username", "newUser")
                         .claim("email", "newuser@gmail.com")
+                        .claim("discord_user_id", "20characterdiscordid")
                 )
                         .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .accept(MediaType.APPLICATION_JSON)
@@ -212,7 +215,33 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.userId").isNumber())
-                .andExpect(jsonPath("$.username").value("newUser"));
+                .andExpect(jsonPath("$.username").value("newUser"))
+                .andExpect(jsonPath("$.discordId").value("20characterdiscordid"))
+                .andExpect(jsonPath("$.externalSysNotesEnabled").value(false))
+                .andExpect(jsonPath("$.externalGroupNotesEnabled").value(false))
+                .andExpect(jsonPath("$.externalSocialNotesEnabled").value(false));
+    }
+
+    @Test
+    void testCreateUser_SuccessFromMe404_DiscordNull() throws Exception {
+        mockMvc.perform(post("/api/users/create-user")
+                        .with(jwt().jwt(j -> j
+                                        .subject("anotherUserKeycloakId")
+                                        .claim("preferred_username", "newestUser")
+                                        .claim("email", "newestuser@gmail.com")
+                                        .claim("discord_user_id", null)
+                                )
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.userId").isNumber())
+                .andExpect(jsonPath("$.username").value("newestUser"))
+                .andExpect(jsonPath("$.discordId").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.externalSysNotesEnabled").value(false))
+                .andExpect(jsonPath("$.externalGroupNotesEnabled").value(false))
+                .andExpect(jsonPath("$.externalSocialNotesEnabled").value(false));
     }
 
     @Test

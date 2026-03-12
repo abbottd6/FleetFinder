@@ -260,3 +260,61 @@ body#keycloak-bg::after {
 :where(a) {
     color: rgb(46, 122, 188);
 }
+
+#kc-social-providers .pf-v5-c-login__main-body li {
+    align-self: center;
+}
+
+#kc-social-providers .pf-v5-u-pb-sm {
+    margin-inline: auto;
+}
+
+#social-discord {
+    border: 1px solid #5865F2;
+    border-radius: 3px;
+    padding: 12px;
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: center !important;
+    align-items: center;
+    transition: background-color 0.25s ease;
+}
+
+#social-discord svg {
+    display: none;
+}
+
+#social-discord::after {
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    border-right-color: transparent;
+    border-top-color: transparent;
+    outline-color: transparent;
+    color: transparent;
+}
+
+#social-discord:hover {
+    background-color: rgba(71, 82, 196, .75);
+    /*border-top-color: rgb(31, 167, 248);*/
+    /*border-bottom-color: rgb(31, 167, 248);*/
+    /*border-left-color: rgb(31, 167, 248);*/
+    /*border-right-color: rgb(31, 167, 248);*/
+    /*outline-color: rgb(31, 167, 248);*/
+    /*color: rgb(31, 167, 248);*/
+}
+
+#social-discord::before {
+    content: '';
+    display: inline-block;
+    width: 100px;
+    height: 28px;
+    background-image: url('../img/Discord-Logo-White.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+}
+
+.pf-v5-u-m-auto {
+    display: none;
+}

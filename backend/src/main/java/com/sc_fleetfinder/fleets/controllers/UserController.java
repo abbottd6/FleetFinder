@@ -88,8 +88,9 @@ public class UserController {
         String kcId = jwt.getSubject();
         String username = jwt.getClaimAsString("preferred_username");
         String email = jwt.getClaimAsString("email");
+        String discordId = jwt.getClaimAsString("discord_user_id");
 
-        return userService.createUser(kcId, username, email);
+        return userService.createUser(kcId, username, email, discordId);
     }
 
     //TODO ensure that this is not using a userId passed from the frontend

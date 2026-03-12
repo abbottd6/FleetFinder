@@ -32,6 +32,14 @@ public class PrivateUserResponseDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime lastAccessed;
 
+    private String discordId;
+
+    private Boolean externalSysNotesEnabled;
+
+    private Boolean externalGroupNotesEnabled;
+
+    private Boolean externalSocialNotesEnabled;
+
     private Set<GroupListingResponseDto> groupListingsDto = new HashSet<>();
 
     public PrivateUserResponseDto() {}

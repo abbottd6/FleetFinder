@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Validated
     @Transactional
-    public PrivateUserResponseDto createUser(String keycloakId, String rawUsername, String rawEmail ) {
+    public PrivateUserResponseDto createUser(String keycloakId, String rawUsername, String rawEmail, String discordId) {
         // check for keycloakId uniqueness
         // new keycloakIds should always be unique, regardless of reused usernames/emails for deleted accounts,
         // so it doesnt matter if this isDeleted() or not
@@ -112,11 +112,22 @@ public class UserServiceImpl implements UserService {
             }
         });
 
+        // check discordId uniqueness
+        userRepository.findByDiscordId(discordId).ifPresent(existing -> {
+            if(discordId != null && !existing.getIsDeleted()) {
+                log.error("User creation requested for existing Discord ID: {}", existing.getDiscordId());
+                throw new UserConflictException(
+                        "A user with Discord ID :'" + discordId + "' already exists."
+                );
+            }
+        });
+
         // if uniqueness validators pass, create a dto to do bean validation on attributes
         CreateOrUpdateUserDto newUserDto = new CreateOrUpdateUserDto();
         newUserDto.setKeycloakId(keycloakId);
         newUserDto.setUsername(rawUsername);
         newUserDto.setEmail(normalizedEmail);
+        newUserDto.setDiscordId(discordId);
 
         // call bean validator on the dto
         Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = beanValidator.validate(newUserDto);
@@ -131,9 +142,11 @@ public class UserServiceImpl implements UserService {
 
         // map the validated new user to an entity
         Users newUser = new Users();
-        newUser.setKeycloakId(keycloakId);
-        newUser.setUsername(rawUsername);
-        newUser.setEmail(rawEmail);
+        newUser.setKeycloakId(newUserDto.getKeycloakId());
+        newUser.setUsername(newUserDto.getUsername());
+        newUser.setEmail(newUserDto.getEmail());
+        newUser.setDiscordId(newUserDto.getDiscordId());
+
         newUser.setIsDeleted(false);
 
         userRepository.save(newUser);
@@ -171,7 +184,6 @@ public class UserServiceImpl implements UserService {
 
         user.setLastAccess(Instant.now());
         userRepository.save(user);
-
 
         return userConversionService.convertToPrivateDto(user);
     }
