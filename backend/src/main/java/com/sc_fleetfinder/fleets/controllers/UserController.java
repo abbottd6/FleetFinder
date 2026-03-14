@@ -104,11 +104,8 @@ public class UserController {
         return userService.updateUser(kcId, updateUserDto);
     }
 
-    //TODO ensure that this is not using a userId passed from the frontend
-    //TODO should only use the token derived id
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete_me")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
-    // needs to use authentication principal and keycloakId instead of userId
     public ResponseEntity<Void> deleteUser(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
         userService.deleteUser(kcId);

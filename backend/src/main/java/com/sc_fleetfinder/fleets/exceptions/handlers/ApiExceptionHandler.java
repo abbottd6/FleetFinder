@@ -39,7 +39,7 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleNotFound(ResourceNotFoundException e) {
-        log.error("Resource not found error: {}", e.getMessage());
+        log.warn("Resource not found error: {}", e.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 Map.of("error", "NOT_FOUND",

@@ -35,9 +35,17 @@ export class UserApiService {
           raw.about!,
           raw.acctCreated!,
           raw.lastAccess!,
+          raw.discordId!,
+          raw.externalSysNotesEnabled!,
+          raw.externalGroupNotesEnabled!,
+          raw.externalSocialNotesEnabled!,
           raw.groupListingsDto!
         );
       })
     );
+  }
+
+  public deleteUser() {
+    return this.http.delete<Partial<PrivateUser>>('/api/users/delete_me');
   }
 }

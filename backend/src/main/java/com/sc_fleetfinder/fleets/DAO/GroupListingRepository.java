@@ -132,4 +132,12 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 END
             """, nativeQuery = true)
     int updateListingVisStatuses();
+
+    @Modifying
+    @Query(value = """
+            UPDATE group_listing gl
+            SET gl.vis_status = 'EXPIRED'
+            WHERE gl.id_user = :userId
+            """, nativeQuery = true)
+    void expireAllUserListingsOnDelete(@Param("userId") Long userId);
 }

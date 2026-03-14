@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {map, shareReplay, Subject, takeUntil} from "rxjs";
-import {RouterModule} from "@angular/router";
+import {Router, RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListItem, MatNavList} from "@angular/material/list";
@@ -32,6 +32,11 @@ import {
   ListingTemplateModalComponent
 } from "../group-listing-modal/listing-template-modal/listing-template-modal.component";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
+import {UserApiService} from "../../services/user-services/userApi.service";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmDeleteComponent} from "../pop-ups/confirm-delete/confirm-delete.component";
+import {ConfirmGenericComponent} from "../pop-ups/confirm-generic/confirm-generic.component";
+import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.service";
 
 @Component({
     selector: 'app-user',
@@ -62,7 +67,10 @@ export class UserComponent implements OnInit, OnDestroy {
               protected auth: AuthService,
               protected listingInteract: ListingViewInteractionsService,
               protected templatesModal: TemplatesModalService,
-              private chatHostSrv: ChatHostService) {
+              private chatHostSrv: ChatHostService,
+              private userApiSrv: UserApiService,
+              private router: Router,
+              private dialog: MatDialog) {
 
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
       if(reason != null) {
@@ -115,8 +123,31 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   userComponentLogout() {
-    this.chatHostSrv.closeChat()
+    this.chatHostSrv.closeChat();
     this.auth.logout().subscribe();
+  }
+
+  openConfirmUserDelete(): void {
+    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
+      data: {
+        message: "Are you sure you want to delete your account?",
+        title: "Confirm Account Deletion"
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.userDelete();
+      }
+    });
+  }
+
+  userDelete() {
+    this.userApiSrv.deleteUser().subscribe(
+      result => {
+        this.userComponentLogout();
+      }
+    );
   }
 
   isMobile$ = this.breakpointObserver

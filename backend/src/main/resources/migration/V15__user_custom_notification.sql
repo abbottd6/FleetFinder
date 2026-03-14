@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS user_custom_notification
     id_custom_note BIGINT      NOT NULL AUTO_INCREMENT PRIMARY KEY,
     user_id        BIGINT      NOT NULL,
     enabled        TINYINT(1)  NOT NULL DEFAULT 0,
+    tag_label      VARCHAR(32) NULL,
     environment_id INT         NULL,
     experience_id  INT         NULL,
     category_id    INT         NULL,

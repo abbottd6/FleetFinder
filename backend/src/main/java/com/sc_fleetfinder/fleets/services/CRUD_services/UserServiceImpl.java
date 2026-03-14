@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
+import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrUpdateUserDto;
@@ -9,10 +10,12 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
+import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminService;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -36,13 +39,18 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserConversionServiceImpl userConversionService;
     private final Validator beanValidator;
+    private final GroupListingRepository groupListingRepository;
+    private final KeycloakAdminService kcAdminService;
 
 
     public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService,
-                           Validator beanValidator) {
+                           Validator beanValidator, GroupListingRepository groupListingRepository,
+                           KeycloakAdminService kcAdminService) {
         this.userRepository = userRepository;
         this.userConversionService = userConversionService;
         this.beanValidator = beanValidator;
+        this.groupListingRepository = groupListingRepository;
+        this.kcAdminService = kcAdminService;
     }
 
     @Override
@@ -113,14 +121,16 @@ public class UserServiceImpl implements UserService {
         });
 
         // check discordId uniqueness
-        userRepository.findByDiscordId(discordId).ifPresent(existing -> {
-            if(discordId != null && !existing.getIsDeleted()) {
-                log.error("User creation requested for existing Discord ID: {}", existing.getDiscordId());
-                throw new UserConflictException(
-                        "A user with Discord ID :'" + discordId + "' already exists."
-                );
-            }
-        });
+        if(discordId != null) {
+            userRepository.findByDiscordId(discordId).ifPresent(existing -> {
+                if (!existing.getIsDeleted()) {
+                    log.error("User creation requested for existing Discord ID: {}", existing.getDiscordId());
+                    throw new UserConflictException(
+                            "A user with Discord ID :'" + discordId + "' already exists."
+                    );
+                }
+            });
+        }
 
         // if uniqueness validators pass, create a dto to do bean validation on attributes
         CreateOrUpdateUserDto newUserDto = new CreateOrUpdateUserDto();
@@ -171,10 +181,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    // This needs to change to use the @AuthenticationPrincipal and keycloakId from JWT
+    @Transactional
     public void deleteUser(String kcId) {
-        userRepository.delete(userRepository.findByKeycloakId(kcId)
-                .orElseThrow(() -> new ResourceNotFoundException("Users with id " + kcId + " not found")));
+        Users toDelete = userRepository.findByKeycloakId(kcId)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot delete user when kcId " + kcId + " not found"));
+
+        groupListingRepository.expireAllUserListingsOnDelete(toDelete.getUserId());
+
+        toDelete.setEmail("deleted_" + toDelete.getUserId() + "@deleted.com");
+        toDelete.setServerId(null);
+        toDelete.setOrg(null);
+        toDelete.setAbout(null);
+        toDelete.setDiscordId(null);
+        toDelete.setExternalSysNotesEnabled(false);
+        toDelete.setExternalGroupNotesEnabled(false);
+        toDelete.setExternalSocialNotesEnabled(false);
+        toDelete.setIsDeleted(true);
+        toDelete.setKeycloakId("deleted_" + toDelete.getUserId());
+
+        try {
+            kcAdminService.deleteKeycloakUser(kcId);
+        }
+        catch(Exception e) {
+            log.warn(e.getMessage());
+        }
+
+        userRepository.save(toDelete);
+
+        log.info("Deleted user with id {}", toDelete.getUserId());
     }
 
     @Override

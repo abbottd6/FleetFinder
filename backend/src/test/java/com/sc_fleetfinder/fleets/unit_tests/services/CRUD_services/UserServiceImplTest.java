@@ -1,10 +1,12 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
+import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserServiceImpl;
+import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminService;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -39,8 +41,14 @@ public class UserServiceImplTest {
     @Mock
     private ModelMapper userModelMapper;
 
+    @Mock
+    private GroupListingRepository groupListingRepository;
+
     @InjectMocks
     private UserServiceImpl userService;
+
+    @InjectMocks
+    private KeycloakAdminService kcAdminService;
 
     @Mock
     private UserConversionServiceImpl userConversionService;
@@ -57,7 +65,7 @@ public class UserServiceImplTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
 
-        userService = new UserServiceImpl(userRepository, userConversionService, validator);
+        userService = new UserServiceImpl(userRepository, userConversionService, validator, groupListingRepository, kcAdminService);
     }
 
     @Test

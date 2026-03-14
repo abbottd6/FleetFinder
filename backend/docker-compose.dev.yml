@@ -50,7 +50,7 @@ services:
       - KEYCLOAK_ADMIN=admin
       - KEYCLOAK_ADMIN_PASSWORD=kcpassword
     volumes:
-      - ./src/main/resources/keycloak/dev-realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - ./src/main/resources/keycloak/dev-dev-realm-export.json:/opt/keycloak/data/import/dev-realm-export.json
       - ./keycloak-themes/fleetfinder:/opt/keycloak/themes/fleetfinder
     ports:
       - "8180:8080"
