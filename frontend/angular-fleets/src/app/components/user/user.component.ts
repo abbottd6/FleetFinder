@@ -37,6 +37,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {ConfirmDeleteComponent} from "../pop-ups/confirm-delete/confirm-delete.component";
 import {ConfirmGenericComponent} from "../pop-ups/confirm-generic/confirm-generic.component";
 import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.service";
+import {
+  UserDeleteAccountPopupComponent
+} from "../pop-ups/user-delete-account-popup/user-delete-account-popup.component";
 
 @Component({
     selector: 'app-user',
@@ -128,12 +131,8 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   openConfirmUserDelete(): void {
-    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
-      data: {
-        message: "Are you sure you want to delete your account?",
-        title: "Confirm Account Deletion"
-      }
-    });
+    //TODO create a new confirm delete component for this with a checkbox to require confirmation of delete
+    const dialogRef = this.dialog.open(UserDeleteAccountPopupComponent);
 
     dialogRef.afterClosed().subscribe(result => {
       if(result) {

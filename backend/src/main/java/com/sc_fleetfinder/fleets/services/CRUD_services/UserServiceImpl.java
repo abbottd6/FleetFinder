@@ -189,6 +189,7 @@ public class UserServiceImpl implements UserService {
         groupListingRepository.expireAllUserListingsOnDelete(toDelete.getUserId());
 
         toDelete.setEmail("deleted_" + toDelete.getUserId() + "@deleted.com");
+        toDelete.setUsername("deleted_" + toDelete.getUserId());
         toDelete.setServerId(null);
         toDelete.setOrg(null);
         toDelete.setAbout(null);
