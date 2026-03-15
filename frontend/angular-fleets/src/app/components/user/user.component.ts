@@ -34,12 +34,16 @@ import {
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 import {UserApiService} from "../../services/user-services/userApi.service";
 import {MatDialog} from "@angular/material/dialog";
-import {ConfirmDeleteComponent} from "../pop-ups/confirm-delete/confirm-delete.component";
-import {ConfirmGenericComponent} from "../pop-ups/confirm-generic/confirm-generic.component";
-import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.service";
 import {
   UserDeleteAccountPopupComponent
 } from "../pop-ups/user-delete-account-popup/user-delete-account-popup.component";
+import {DropdownModule} from "../dropdowns/dropdown-module/dropdown.module";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
+import {MatError, MatHint} from "@angular/material/form-field";
+import {UpdateUserFormService} from "../../services/user-services/update-user-form.service";
+import {UpdateUserRequest} from "../../models/private-user/update-user-request";
+import {HttpStatusCode} from "@angular/common/http";
 
 @Component({
     selector: 'app-user',
@@ -49,7 +53,8 @@ import {
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
     UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent,
-    UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent, ListingTemplateModalComponent],
+    UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent, ListingTemplateModalComponent,
+    DropdownModule, FormsModule, MatError, MatFormField, MatHint, MatInput, MatLabel, MatFormField, ReactiveFormsModule],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {
@@ -66,6 +71,8 @@ export class UserComponent implements OnInit, OnDestroy {
   selectedTab: 'listings'|'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
   shouldDisplayMod$: boolean = false;
 
+  protected editing: boolean = false;
+
   constructor(public userService: UserService,
               protected auth: AuthService,
               protected listingInteract: ListingViewInteractionsService,
@@ -73,7 +80,8 @@ export class UserComponent implements OnInit, OnDestroy {
               private chatHostSrv: ChatHostService,
               private userApiSrv: UserApiService,
               private router: Router,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              protected userFormSrv: UpdateUserFormService) {
 
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
       if(reason != null) {
@@ -131,7 +139,6 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   openConfirmUserDelete(): void {
-    //TODO create a new confirm delete component for this with a checkbox to require confirmation of delete
     const dialogRef = this.dialog.open(UserDeleteAccountPopupComponent);
 
     dialogRef.afterClosed().subscribe(result => {
@@ -147,6 +154,26 @@ export class UserComponent implements OnInit, OnDestroy {
         this.userComponentLogout();
       }
     );
+  }
+
+  userProfileEdit() {
+    this.editing = true;
+  }
+
+  cancelEdit() {
+    this.editing = false;
+  }
+
+  saveProfileEdit() {
+    const server = this.userFormSrv.serverControl.value;
+    const org = this.userFormSrv.orgControl.value;
+
+    const request = new UpdateUserRequest(server, org);
+    this.userApiSrv.updateMe(request).subscribe(response => {
+          this.userService.refreshUser();
+          this.editing = false;
+      }
+    )
   }
 
   isMobile$ = this.breakpointObserver

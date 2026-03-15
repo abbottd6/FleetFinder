@@ -1,8 +1,10 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -19,7 +21,6 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import nl.altindag.log.LogCaptor;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -39,6 +40,8 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -66,6 +69,9 @@ class GroupListingServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private NotificationOutboxRepository notificationOutboxRepository;
 
     private static Validator validator;
 
@@ -288,8 +294,91 @@ class GroupListingServiceImplTest {
     }
 
     @Test
-    @Disabled
-    void testUpdateGroupListing() {
+    void testUpdateGroupListing_Success() {
+        // given
+        Users owner = new Users();
+        owner.setUserId(1L);
+        owner.setUsername("Owner");
+
+        UpdateGroupListingDto dto = new UpdateGroupListingDto();
+        dto.setGroupId(1L);
+        dto.setListingTitle("Updated title");
+
+        GroupListing existingListing = new GroupListing();
+        existingListing.setGroupId(1L);
+        existingListing.setUsers(owner);
+        existingListing.setListingTitle("Old title");
+
+        GroupListing converted = new GroupListing();
+        converted.setListingTitle("Updated title");
+
+        when(groupListingRepository.findById(1L)).thenReturn(Optional.of(existingListing));
+        when(groupListingConversionService.convertToEntity(any(UpdateGroupListingDto.class))).thenReturn(converted);
+        when(groupListingRepository.save(any(GroupListing.class))).thenReturn(existingListing);
+        when(notificationOutboxRepository.deleteOutboxNotificationsOnEntityUpdate(
+                anyLong(), anyLong(), any(String.class))).thenReturn(0);
+
+        // when
+        ResponseEntity<?> response = groupListingService.updateGroupListing(dto, owner);
+
+        // then
+        assertAll("updateGroupListing success assertions:",
+                () -> assertEquals(HttpStatus.OK, response.getStatusCode()),
+                () -> assertNotNull(response.getBody()),
+                () -> assertInstanceOf(Map.class, response.getBody()),
+                () -> assertEquals("Updated title", ((Map<?, ?>) response.getBody()).get("listingTitle")),
+                () -> verify(groupListingRepository, times(1)).findById(1L),
+                () -> verify(groupListingRepository, times(1)).save(any(GroupListing.class))
+        );
+    }
+
+    @Test
+    void testUpdateGroupListing_NotFound() {
+        // given
+        Users requestingUser = new Users();
+        requestingUser.setUserId(1L);
+
+        UpdateGroupListingDto dto = new UpdateGroupListingDto();
+        dto.setGroupId(999L);
+
+        when(groupListingRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // when
+        ResponseEntity<?> response = groupListingService.updateGroupListing(dto, requestingUser);
+
+        // then
+        assertAll("updateGroupListing not found assertions:",
+                () -> assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode()),
+                () -> verify(groupListingRepository, never()).save(any(GroupListing.class))
+        );
+    }
+
+    @Test
+    void testUpdateGroupListing_Unauthorized() {
+        // given — listing is owned by a different user
+        Users listingOwner = new Users();
+        listingOwner.setUserId(99L);
+
+        Users requestingUser = new Users();
+        requestingUser.setUserId(1L);
+
+        GroupListing existingListing = new GroupListing();
+        existingListing.setGroupId(1L);
+        existingListing.setUsers(listingOwner);
+
+        UpdateGroupListingDto dto = new UpdateGroupListingDto();
+        dto.setGroupId(1L);
+
+        when(groupListingRepository.findById(1L)).thenReturn(Optional.of(existingListing));
+
+        // when
+        ResponseEntity<?> response = groupListingService.updateGroupListing(dto, requestingUser);
+
+        // then
+        assertAll("updateGroupListing unauthorized assertions:",
+                () -> assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode()),
+                () -> verify(groupListingRepository, never()).save(any(GroupListing.class))
+        );
     }
 
     @Test
@@ -430,13 +519,4 @@ class GroupListingServiceImplTest {
 
     }
 
-    @Test
-    @Disabled
-    void testConvertListingToResponseDto() {
-    }
-
-    @Test
-    @Disabled
-    void testConvertToEntity() {
-    }
 }

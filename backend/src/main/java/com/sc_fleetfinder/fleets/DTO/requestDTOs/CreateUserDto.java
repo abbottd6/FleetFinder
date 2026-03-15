@@ -29,6 +29,9 @@ public class CreateUserDto {
     @Size(max = 20, message = "CreateUserDto field 'discordId' cannot exceed 20 characters.")
     private String discordId;
 
+    @Size(min = 2, max = 32, message = "CreateUserDto field 'discordUsername' violates size constraints.")
+    private String discordUsername;
+
     private String server;
 
     @Size(max = 25, message = "Create user DTO field 'org' cannot exceed 25 characters")

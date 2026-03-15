@@ -208,6 +208,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                         .claim("preferred_username", "newUser")
                         .claim("email", "newuser@gmail.com")
                         .claim("discord_user_id", "20characterdiscordid")
+                        .claim("discord_username", "mockDiscordUsername")
                 )
                         .authorities(new SimpleGrantedAuthority("ROLE_user")))
                 .accept(MediaType.APPLICATION_JSON)
@@ -216,7 +217,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.userId").isNumber())
                 .andExpect(jsonPath("$.username").value("newUser"))
-                .andExpect(jsonPath("$.discordId").value("20characterdiscordid"))
+                .andExpect(jsonPath("$.discordUsername").value("mockDiscordUsername"))
                 .andExpect(jsonPath("$.externalSysNotesEnabled").value(false))
                 .andExpect(jsonPath("$.externalGroupNotesEnabled").value(false))
                 .andExpect(jsonPath("$.externalSocialNotesEnabled").value(false));
@@ -230,6 +231,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                                         .claim("preferred_username", "newestUser")
                                         .claim("email", "newestuser@gmail.com")
                                         .claim("discord_user_id", null)
+                                        .claim("discord_username", null)
                                 )
                                 .authorities(new SimpleGrantedAuthority("ROLE_user")))
                         .accept(MediaType.APPLICATION_JSON)
@@ -238,7 +240,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.userId").isNumber())
                 .andExpect(jsonPath("$.username").value("newestUser"))
-                .andExpect(jsonPath("$.discordId").value(IsNull.nullValue()))
+                .andExpect(jsonPath("$.discordUsername").value(IsNull.nullValue()))
                 .andExpect(jsonPath("$.externalSysNotesEnabled").value(false))
                 .andExpect(jsonPath("$.externalGroupNotesEnabled").value(false))
                 .andExpect(jsonPath("$.externalSocialNotesEnabled").value(false));

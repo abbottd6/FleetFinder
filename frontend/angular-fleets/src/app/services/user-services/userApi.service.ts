@@ -4,6 +4,7 @@ import {PrivateUser} from "../../models/private-user/private-user";
 import {catchError, map, Observable, throwError} from "rxjs";
 import {AuthService} from "../auth/auth-services/auth.service";
 import {UserDataResult} from "angular-auth-oidc-client";
+import {UpdateUserRequest} from "../../models/private-user/update-user-request";
 
 @Injectable({
   providedIn: 'root'
@@ -35,7 +36,7 @@ export class UserApiService {
           raw.about!,
           raw.acctCreated!,
           raw.lastAccess!,
-          raw.discordId!,
+          raw.discordUsername!,
           raw.externalSysNotesEnabled!,
           raw.externalGroupNotesEnabled!,
           raw.externalSocialNotesEnabled!,
@@ -43,6 +44,10 @@ export class UserApiService {
         );
       })
     );
+  }
+
+  public updateMe(userData: UpdateUserRequest) {
+    return this.http.put('/api/users/update_me', userData);
   }
 
   public deleteUser() {

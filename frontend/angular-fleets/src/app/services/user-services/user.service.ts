@@ -28,7 +28,7 @@ export interface SessionUser {
   server: string,
   org: string,
   about: string,
-  discordId: string,
+  discordUsername: string,
   externalSysNotesEnabled: boolean,
   externalGroupNotesEnabled: boolean,
   externalSocialNotesEnabled: boolean,

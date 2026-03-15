@@ -2,12 +2,12 @@ package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.GroupListingsController;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import tools.jackson.databind.ObjectMapper;
@@ -45,6 +45,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -129,124 +130,6 @@ class GroupListingsControllerTest {
         mockListing2.setLastUpdated(Instant.parse(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
 
         mockGroupListings = Arrays.asList(mockListing1, mockListing2);
-    }
-
-    // not using this method anymore.
-    @Test
-    @Disabled
-    void testGetAllGroupListings_FoundList() throws Exception {
-        List<GroupListingResponseDto> listingsMocks = this.mockGroupListings;
-
-        when(groupListingService.getAllGroupListings()).thenReturn(listingsMocks);
-
-        //Results for [0] are matched to mockListing1 and [1] is matched to mockListing2 in @BeforeEach
-        mockMvc.perform(MockMvcRequestBuilders.get("/api/group-listings")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$._embedded.content.size()").value(2))
-                .andExpect(jsonPath("$._embedded.content[0].groupId")
-                        .value(1L))
-                .andExpect(jsonPath("$._embedded.content[0].userName")
-                        .value("TestUser"))
-                .andExpect(jsonPath("$._embedded.content[0].server")
-                        .value("USA"))
-                .andExpect(jsonPath("$._embedded.content[0].environment")
-                        .value("Live"))
-                .andExpect(jsonPath("$._embedded.content[0].experience")
-                        .value("Persistent Universe"))
-                .andExpect(jsonPath("$._embedded.content[0].listingTitle")
-                        .value("Test listing1 title"))
-                .andExpect(jsonPath("$._embedded.content[0].playStyle")
-                        .value("Casual"))
-                .andExpect(jsonPath("$._embedded.content[0].legality")
-                        .value("Lawful"))
-                .andExpect(jsonPath("$._embedded.content[0].groupStatus")
-                        .value("Future/Scheduled"))
-                .andExpect(jsonPath("$._embedded.content[0].eventSchedule")
-                        .exists())
-                .andExpect(jsonPath("$._embedded.content[0].eventSchedule")
-                        .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()))
-                .andExpect(jsonPath("$._embedded.content[0].category")
-                        .value("Medical"))
-                .andExpect(jsonPath("$._embedded.content[0].subcategory")
-                        .value("For Hire"))
-                .andExpect(jsonPath("$._embedded.content[0].pvpStatus")
-                        .value("PvX"))
-                .andExpect(jsonPath("$._embedded.content[0].system")
-                        .value("Stanton"))
-                .andExpect(jsonPath("$._embedded.content[0].planetMoonSystem")
-                        .value("Stanton I"))
-                .andExpect(jsonPath("$._embedded.content[0].listingDescription")
-                        .value("This is a description"))
-                .andExpect(jsonPath("$._embedded.content[0].desiredPartySize")
-                        .value(3))
-                .andExpect(jsonPath("$._embedded.content[0].currentPartySize")
-                        .value(1))
-                .andExpect(jsonPath("$._embedded.content[0].availableRoles")
-                        .value("Here are some available roles"))
-                .andExpect(jsonPath("$._embedded.content[0].commsOption")
-                        .value("Required"))
-                .andExpect(jsonPath("$._embedded.content[0].commsService")
-                        .value("This is a comms service"))
-                .andExpect(jsonPath("$._embedded.content[0].creationTimestamp")
-                        .exists())
-                .andExpect(jsonPath("$._embedded.content[0].creationTimestamp")
-                        .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()))
-                .andExpect(jsonPath("$._embedded.content[0].lastUpdated").exists())
-                .andExpect(jsonPath("$._embedded.content[0].lastUpdated")
-                        .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()))
-                //
-                //
-                //second listing matched to mockListing2 from @BeforeEach
-                //
-                //
-                .andExpect(jsonPath("$._embedded.content[1].groupId")
-                        .value(2L))
-                .andExpect(jsonPath("$._embedded.content[1].userName")
-                        .value("DifferentTestUser"))
-                .andExpect(jsonPath("$._embedded.content[1].server")
-                        .value("AUS"))
-                .andExpect(jsonPath("$._embedded.content[1].environment")
-                        .value("PTU"))
-                .andExpect(jsonPath("$._embedded.content[1].experience")
-                        .value("Persistent Universe"))
-                .andExpect(jsonPath("$._embedded.content[1].listingTitle")
-                        .value("Different listing title"))
-                .andExpect(jsonPath("$._embedded.content[1].playStyle")
-                        .value("Competitive"))
-                .andExpect(jsonPath("$._embedded.content[1].legality")
-                        .value("Unlawful"))
-                .andExpect(jsonPath("$._embedded.content[1].groupStatus")
-                        .value("Current/Live"))
-                .andExpect(jsonPath("$._embedded.content[1].eventSchedule").isEmpty())
-                .andExpect(jsonPath("$._embedded.content[1].category")
-                        .value("Ship Combat"))
-                .andExpect(jsonPath("$._embedded.content[1].subcategory")
-                        .value("Dueling"))
-                .andExpect(jsonPath("$._embedded.content[1].pvpStatus")
-                        .value("PvP"))
-                .andExpect(jsonPath("$._embedded.content[1].system")
-                        .value("Pyro"))
-                .andExpect(jsonPath("$._embedded.content[1].planetMoonSystem")
-                        .value("Pyro I"))
-                .andExpect(jsonPath("$._embedded.content[1].listingDescription")
-                        .value("This is a better description"))
-                .andExpect(jsonPath("$._embedded.content[1].desiredPartySize")
-                        .value(2))
-                .andExpect(jsonPath("$._embedded.content[1].currentPartySize")
-                        .value(1))
-                .andExpect(jsonPath("$._embedded.content[1].availableRoles")
-                        .value("Here are some available roles"))
-                .andExpect(jsonPath("$._embedded.content[1].commsOption")
-                        .value("Optional"))
-                .andExpect(jsonPath("$._embedded.content[1].commsService")
-                        .value(""))
-                .andExpect(jsonPath("$._embedded.content[1].creationTimestamp").exists())
-                .andExpect(jsonPath("$._embedded.content[1].creationTimestamp")
-                        .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()))
-                .andExpect(jsonPath("$._embedded.content[1].lastUpdated").exists())
-                .andExpect(jsonPath("$._embedded.content[1].lastUpdated")
-                        .value(Instant.now().truncatedTo(ChronoUnit.MINUTES).toString()));
     }
 
     @Test
@@ -563,8 +446,134 @@ class GroupListingsControllerTest {
 
 
     @Test
-    @Disabled
-    void updateGroupListing() {
+    void updateGroupListing_Success() throws Exception {
+        UpdateGroupListingDto dto = new UpdateGroupListingDto();
+        dto.setGroupId(1L);
+        dto.setServerId(1);
+        dto.setEnvironmentId(1);
+        dto.setExperienceId(1);
+        dto.setListingTitle("Updated listing title");
+        dto.setLegalityId(1);
+        dto.setGroupStatusId(1);
+        dto.setCategoryId(1);
+        dto.setPvpStatusId(1);
+        dto.setSystemId(1);
+        dto.setListingDescription("Updated listing description here.");
+        dto.setDesiredPartySize(3);
+        dto.setCurrentPartySize(1);
+        dto.setCommsOption("Optional");
+        dto.setLanguageCode(LanguageOptions.English);
+
+        Users mockUser = new Users();
+        mockUser.setUserId(1L);
+        mockUser.setUsername("TestUser");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("test@test.com");
+        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
+        Map<String, String> response = new HashMap<>();
+        response.put("listingTitle", "Updated listing title");
+        doAnswer(inv -> ResponseEntity.status(HttpStatus.OK).body(response))
+                .when(groupListingService).updateGroupListing(any(UpdateGroupListingDto.class), any(Users.class));
+
+        mockMvc.perform(put("/api/group-listings/update_listing")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.listingTitle").value("Updated listing title"));
+    }
+
+    @Test
+    void updateGroupListing_NotFound() throws Exception {
+        UpdateGroupListingDto dto = new UpdateGroupListingDto();
+        dto.setGroupId(999L);
+        dto.setServerId(1);
+        dto.setEnvironmentId(1);
+        dto.setExperienceId(1);
+        dto.setListingTitle("Updated listing title");
+        dto.setLegalityId(1);
+        dto.setGroupStatusId(1);
+        dto.setCategoryId(1);
+        dto.setPvpStatusId(1);
+        dto.setSystemId(1);
+        dto.setListingDescription("Updated listing description here.");
+        dto.setDesiredPartySize(3);
+        dto.setCurrentPartySize(1);
+        dto.setCommsOption("Optional");
+        dto.setLanguageCode(LanguageOptions.English);
+
+        Users mockUser = new Users();
+        mockUser.setUserId(1L);
+        mockUser.setUsername("TestUser");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("test@test.com");
+        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
+        doAnswer(inv -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group listing not found."))
+                .when(groupListingService).updateGroupListing(any(UpdateGroupListingDto.class), any(Users.class));
+
+        mockMvc.perform(put("/api/group-listings/update_listing")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void updateGroupListing_Unauthorized() throws Exception {
+        UpdateGroupListingDto dto = new UpdateGroupListingDto();
+        dto.setGroupId(1L);
+        dto.setServerId(1);
+        dto.setEnvironmentId(1);
+        dto.setExperienceId(1);
+        dto.setListingTitle("Updated listing title");
+        dto.setLegalityId(1);
+        dto.setGroupStatusId(1);
+        dto.setCategoryId(1);
+        dto.setPvpStatusId(1);
+        dto.setSystemId(1);
+        dto.setListingDescription("Updated listing description here.");
+        dto.setDesiredPartySize(3);
+        dto.setCurrentPartySize(1);
+        dto.setCommsOption("Optional");
+        dto.setLanguageCode(LanguageOptions.English);
+
+        Users mockUser = new Users();
+        mockUser.setUserId(2L);
+        mockUser.setUsername("DifferentUser");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("different@test.com");
+        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
+        doAnswer(inv -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authorized to update this listing."))
+                .when(groupListingService).updateGroupListing(any(UpdateGroupListingDto.class), any(Users.class));
+
+        mockMvc.perform(put("/api/group-listings/update_listing")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void updateGroupListing_ValidationFail() throws Exception {
+        UpdateGroupListingDto invalidDto = new UpdateGroupListingDto();
+        // empty dto — fails all @NotNull/@NotBlank validations
+
+        mockMvc.perform(put("/api/group-listings/update_listing")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidDto)))
+                .andExpect(status().isBadRequest());
     }
 
     @Test

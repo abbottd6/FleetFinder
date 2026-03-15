@@ -35,7 +35,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -89,19 +91,22 @@ public class UserController {
         String username = jwt.getClaimAsString("preferred_username");
         String email = jwt.getClaimAsString("email");
         String discordId = jwt.getClaimAsString("discord_user_id");
+        String discordUsername = jwt.getClaimAsString("discord_username");
 
-        return userService.createUser(kcId, username, email, discordId);
+        return userService.createUser(kcId, username, email, discordId, discordUsername);
     }
 
-    //TODO ensure that this is not using a userId passed from the frontend
-    //TODO should only use the token derived id
-    @PutMapping("/{id}")
+    @PutMapping("/update_me")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
-    // needs to use authentication principal and keycloakId instead of userId
-    public PrivateUserResponseDto updateUser(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateUserDto updateUserDto) {
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateUserDto updateUserDto) {
         String kcId = jwt.getSubject();
 
-        return userService.updateUser(kcId, updateUserDto);
+        userService.updateUser(kcId, updateUserDto);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("response", "Profile updated.");
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete_me")

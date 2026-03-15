@@ -83,6 +83,10 @@ public class Users {
     @Size(max = 20)
     private String discordId;
 
+    @Column(name="discord_username")
+    @Size(min=2, max=32)
+    private String discordUsername;
+
     @Column(name="external_sys_notes_enabled")
     @NotNull(message = "Users entity field 'externalSysNotesEnabled' cannot be null.")
     private Boolean externalSysNotesEnabled = Boolean.FALSE;

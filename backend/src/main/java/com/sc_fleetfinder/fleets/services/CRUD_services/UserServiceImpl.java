@@ -1,16 +1,19 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.ServerRegionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrUpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.ServerRegionServiceImpl;
 import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminService;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
@@ -43,17 +46,20 @@ public class UserServiceImpl implements UserService {
     private final GroupListingRepository groupListingRepository;
     private final KeycloakAdminService kcAdminService;
     private final ApplicationEventPublisher eventPublisher;
+    private final ServerRegionServiceImpl serverService;
 
 
     public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService,
                            Validator beanValidator, GroupListingRepository groupListingRepository,
-                           KeycloakAdminService kcAdminService, ApplicationEventPublisher eventPublisher) {
+                           KeycloakAdminService kcAdminService, ApplicationEventPublisher eventPublisher,
+                           ServerRegionServiceImpl serverService) {
         this.userRepository = userRepository;
         this.userConversionService = userConversionService;
         this.beanValidator = beanValidator;
         this.groupListingRepository = groupListingRepository;
         this.kcAdminService = kcAdminService;
         this.eventPublisher = eventPublisher;
+        this.serverService = serverService;
     }
 
     @Override
@@ -83,16 +89,14 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 1) Perform repository-level uniqueness checks on keycloakId, email, and username.
-     * 2) If no conflicts exist, build a CreateOrUpdateUserDto and run BeanValidation on it.
+     * 2) If no conflicts exist, build a CreateUserDto and run BeanValidation on it.
      * 3) If DTO is valid, create and save new Users, otherwise throw UserConflictException.
      */
     @Override
     @Validated
     @Transactional
-    public PrivateUserResponseDto createUser(String keycloakId, String rawUsername, String rawEmail, String discordId) {
-        // check for keycloakId uniqueness
-        // new keycloakIds should always be unique, regardless of reused usernames/emails for deleted accounts,
-        // so it doesnt matter if this isDeleted() or not
+    public PrivateUserResponseDto createUser(String keycloakId, String rawUsername, String rawEmail,
+                                             String discordId, String discordUsername) {
         userRepository.findByKeycloakId(keycloakId).ifPresent(existing -> {
             log.error("User Creation failed due to pre-existing Keycloak ID: {}", existing.getKeycloakId());
             throw new UserConflictException(
@@ -136,14 +140,15 @@ public class UserServiceImpl implements UserService {
         }
 
         // if uniqueness validators pass, create a dto to do bean validation on attributes
-        CreateOrUpdateUserDto newUserDto = new CreateOrUpdateUserDto();
+        CreateUserDto newUserDto = new CreateUserDto();
         newUserDto.setKeycloakId(keycloakId);
         newUserDto.setUsername(rawUsername);
         newUserDto.setEmail(normalizedEmail);
         newUserDto.setDiscordId(discordId);
+        newUserDto.setDiscordUsername(discordUsername);
 
         // call bean validator on the dto
-        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = beanValidator.validate(newUserDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = beanValidator.validate(newUserDto);
 
         // prepare response if bean validation fails
         if (!violations.isEmpty()) {
@@ -159,6 +164,7 @@ public class UserServiceImpl implements UserService {
         newUser.setUsername(newUserDto.getUsername());
         newUser.setEmail(newUserDto.getEmail());
         newUser.setDiscordId(newUserDto.getDiscordId());
+        newUser.setDiscordUsername(newUserDto.getDiscordUsername());
 
         newUser.setIsDeleted(false);
 
@@ -170,17 +176,24 @@ public class UserServiceImpl implements UserService {
     @Override
     @Validated
     public PrivateUserResponseDto updateUser(String kcId, @Valid UpdateUserDto updateUserDto) {
-        Users users = userRepository.findByKeycloakId(kcId)
+        Users user = userRepository.findByKeycloakId(kcId)
                 .orElseThrow(() -> new ResourceNotFoundException("Users with id " + kcId + " not found"));
 
-        if(!Objects.equals(updateUserDto.getUserId(), users.getUserId())) {
-            throw new InvalidUserDataException("Users with keycloakId " + kcId + " does not match local userId.");
+        log.info("Server ID: {}", updateUserDto.getServerId());
+
+        try {
+            if(updateUserDto.getServerId() != null) {
+                user.setServerId(serverService.getServerEntityById(updateUserDto.getServerId()));
+            }
+            user.setOrg(updateUserDto.getOrg());
+
+            userRepository.save(user);
+        }
+        catch (Exception e) {
+            throw new InvalidUserDataException(e.getMessage());
         }
 
-        BeanUtils.copyProperties(updateUserDto, users);
-        userRepository.save(users);
-
-        return userConversionService.convertToPrivateDto(users);
+        return userConversionService.convertToPrivateDto(user);
     }
 
     @Override
@@ -197,6 +210,7 @@ public class UserServiceImpl implements UserService {
         toDelete.setOrg(null);
         toDelete.setAbout(null);
         toDelete.setDiscordId(null);
+        toDelete.setDiscordUsername(null);
         toDelete.setExternalSysNotesEnabled(false);
         toDelete.setExternalGroupNotesEnabled(false);
         toDelete.setExternalSocialNotesEnabled(false);

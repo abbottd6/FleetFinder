@@ -32,7 +32,7 @@ public class PrivateUserResponseDto {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime lastAccessed;
 
-    private String discordId;
+    private String discordUsername;
 
     private Boolean externalSysNotesEnabled;
 

@@ -9,7 +9,7 @@ export class PrivateUser {
               public about: string,
               public acctCreated: Date,
               public lastAccess: Date,
-              public discordId: string,
+              public discordUsername: string,
               public externalSysNotesEnabled: boolean,
               public externalGroupNotesEnabled: boolean,
               public externalSocialNotesEnabled: boolean,

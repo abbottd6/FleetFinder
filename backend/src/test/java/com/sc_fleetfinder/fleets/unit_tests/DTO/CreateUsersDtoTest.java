@@ -1,148 +1,192 @@
 package com.sc_fleetfinder.fleets.unit_tests.DTO;
 
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrUpdateUserDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@Disabled
-public class CreateUsersDtoTest {
+class CreateUsersDtoTest {
 
     private Validator validator;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
-    //Testing valid field values
     @Test
-    public void testValidCreateUserDto() {
-        CreateOrUpdateUserDto userDto = new CreateOrUpdateUserDto();
-        userDto.setUsername("Batman");
-        userDto.setEmail("batman@gmail.com");
-        userDto.setServer("AUS");
-        userDto.setOrg("Organization");
-        userDto.setAbout("I don't like bats.");
+    void testValidCreateUserDto_requiredFieldsOnly() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("Batman");
+        dto.setEmail("batman@example.com");
 
-        //Act
-        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
 
-        //Assert
         assertTrue(violations.isEmpty());
     }
 
     @Test
-    public void testInvalidCreateUserDto_null() {
-        CreateOrUpdateUserDto userDto = new CreateOrUpdateUserDto();
+    void testValidCreateUserDto_withAllOptionalFields() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("Batman");
+        dto.setEmail("batman@example.com");
+        dto.setDiscordId("123456789012345");
+        dto.setDiscordUsername("BatmanDiscord");
+        dto.setServer("AUS");
+        dto.setOrg("Justice League");
+        dto.setAbout("I am Batman.");
 
-        //Act
-        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = validator.validate(userDto);
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
 
-        //Assert
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void testInvalidCreateUserDto_allNull() {
+        CreateUserDto dto = new CreateUserDto();
+
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
+
         assertFalse(violations.isEmpty());
-
-        //number of fields with not null/empty/blank
+        // keycloakId (@NotNull), username (@NotBlank), email (@NotBlank)
         assertEquals(3, violations.size());
     }
 
     @Test
-    public void testInvalidCreateUserDto_blankName() {
-        CreateOrUpdateUserDto userDto = new CreateOrUpdateUserDto();
+    void testInvalidCreateUserDto_nullKeycloakId() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setUsername("Batman");
+        dto.setEmail("batman@example.com");
 
-        userDto.setUsername("");
-        userDto.setEmail("batman@gmail.com");
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
 
-        //Act
-        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = validator.validate(userDto);
-
-        //Assert
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Create user DTO field 'username' cannot be blank") | violation.getMessage().equals("Username must be between 1 and 32 characters.")));
+        assertEquals(1, violations.size());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("keycloakId")));
     }
 
     @Test
-    public void testInvalidCreateUserDto_blankPassword() {
-        CreateOrUpdateUserDto userDto = new CreateOrUpdateUserDto();
+    void testInvalidCreateUserDto_blankUsername() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("");
+        dto.setEmail("batman@example.com");
 
-        userDto.setUsername("Batman");
-        userDto.setEmail("batman@gmail.com");
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
 
-        //Act
-        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = validator.validate(userDto);
-
-        //Assert
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Create user DTO password cannot be blank") | violation.getMessage().equals("Users password must be between 8 and 32 characters")));
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("username")));
     }
 
     @Test
-    public void testInvalidCreateUserDto_blankEmail() {
-        CreateOrUpdateUserDto userDto = new CreateOrUpdateUserDto();
+    void testInvalidCreateUserDto_usernameTooShort() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("ab"); // 2 chars, min is 3
+        dto.setEmail("batman@example.com");
 
-        userDto.setUsername("Batman");
-        userDto.setEmail("");
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
 
-        //Act
-        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = validator.validate(userDto);
-
-        //Assert
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(violation -> violation.getMessage().equals("Create user DTO field 'email' cannot be blank")));
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("username")));
     }
 
     @Test
-    public void testValidCreateUserDto_validEmail() {
-        CreateOrUpdateUserDto userDto = new CreateOrUpdateUserDto();
+    void testInvalidCreateUserDto_usernameTooLong() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("B".repeat(33)); // 33 chars, max is 32
+        dto.setEmail("batman@example.com");
 
-        userDto.setUsername("Batman");
-        userDto.setEmail("batman@gmail.com");
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
 
-        //Act
-        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = validator.validate(userDto);
-
-        //Assert
-        assertTrue(violations.isEmpty());
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("username")));
     }
 
     @Test
-    public void testInvalidCreateUserDto_invalidEmail() {
-        CreateOrUpdateUserDto userDto = new CreateOrUpdateUserDto();
+    void testInvalidCreateUserDto_blankEmail() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("Batman");
+        dto.setEmail("");
 
-        userDto.setUsername("Batman");
-        userDto.setEmail("batman.com");
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
 
-        //Act
-        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = validator.validate(userDto);
-
-        //Assert
         assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email")));
     }
 
     @Test
-    public void testInvalidCreateUserDto_invalidUserNameMax() {
-        CreateOrUpdateUserDto userDto = new CreateOrUpdateUserDto();
+    void testInvalidCreateUserDto_invalidEmail() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("Batman");
+        dto.setEmail("batman.com"); // missing @ sign
 
-        userDto.setUsername("BatmanBigAndStrongAndToughAndBetterThanSpiderMan");
-        userDto.setEmail("batman@gmail.com");
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
 
-        //Act
-        Set<ConstraintViolation<CreateOrUpdateUserDto>> violations = validator.validate(userDto);
-
-        //Assert
         assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email")));
+    }
+
+    @Test
+    void testInvalidCreateUserDto_discordIdTooLong() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("Batman");
+        dto.setEmail("batman@example.com");
+        dto.setDiscordId("1".repeat(21)); // 21 chars, max is 20
+
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
+
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("discordId")));
+    }
+
+    @Test
+    void testInvalidCreateUserDto_orgTooLong() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("Batman");
+        dto.setEmail("batman@example.com");
+        dto.setOrg("O".repeat(26)); // 26 chars, max is 25
+
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
+
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("org")));
+    }
+
+    @Test
+    void testInvalidCreateUserDto_aboutTooLong() {
+        CreateUserDto dto = new CreateUserDto();
+        dto.setKeycloakId("some-keycloak-id");
+        dto.setUsername("Batman");
+        dto.setEmail("batman@example.com");
+        dto.setAbout("A".repeat(256)); // 256 chars, max is 255
+
+        Set<ConstraintViolation<CreateUserDto>> violations = validator.validate(dto);
+
+        assertFalse(violations.isEmpty());
+        assertTrue(violations.stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("about")));
     }
 }

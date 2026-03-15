@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
 import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
-import org.junit.jupiter.api.Disabled;
 import tools.jackson.databind.ObjectMapper;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
@@ -59,16 +58,6 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
 
     @Autowired
     private MapperLookupService mapperLookupService;
-
-    @Test
-    @Disabled
-    void testGetAllGroupListings_Success() throws Exception {
-        mockMvc.perform(get("/api/group-listings")
-                .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId"))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("_embedded.groupListingResponseDtoes[0].groupId").value("1"));
-    }
 
     @Test
     void testGetGroupListingByIdSuccess() throws Exception {

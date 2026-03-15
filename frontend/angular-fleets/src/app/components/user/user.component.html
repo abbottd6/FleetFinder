@@ -92,17 +92,43 @@
                 <span class="user-profile-field-name">Email: </span>
                 <span class="user-profile-field-val"> {{ user.email }}</span>
               </li>
-              <li class="user-profile-row">
-                <span class="user-profile-field-name">Preferred Server: </span>
-                <span class="user-profile-field-val"> {{ user.server }} </span>
-              </li>
-              <li class="user-profile-row">
-                <span class="user-profile-field-name">Org: </span>
-                <span class="user-profile-field-val"> {{ user.org }} </span>
-              </li>
+              <ng-container *ngIf="!editing; else editable">
+                <li class="user-profile-row">
+                  <span class="user-profile-field-name">Preferred Server: </span>
+                  <span class="user-profile-field-val"> {{ user.server }} </span>
+                </li>
+                <li class="user-profile-row">
+                  <span class="user-profile-field-name">Org: </span>
+                  <span class="user-profile-field-val"> {{ user.org }} </span>
+                </li>
+              </ng-container>
+              <ng-template #editable>
+                <div class="server-dd-container">
+                  <app-server-dropdown
+                    [serverControl]="userFormSrv.serverControl">
+                  </app-server-dropdown>
+                </div>
+                <div class="org-input">
+                  <mat-label id="org-label">Org Name:</mat-label>
+                  <mat-form-field>
+                    <mat-error *ngIf="userFormSrv.orgControl?.hasError &&
+                    (userFormSrv.orgControl?.dirty || !userFormSrv.orgControl?.untouched)">
+                    </mat-error>
+                    <input
+                      matInput
+                      [formControl]="userFormSrv.orgControl"
+                      (input)="userFormSrv.orgUpdateCharacterCount()"
+                      maxlength="32"
+                      placeholder="Enter org name..."
+                      [attr.aria-labelledby]="'listing-title'">
+                    <mat-hint align="start">{{ userFormSrv.orgCharacterCount }}/32</mat-hint>
+                  </mat-form-field>
+                </div>
+
+              </ng-template>
               <li class="user-profile-row">
                 <span class="user-profile-field-name">Discord: </span>
-                <span class="user-profile-field-val"> {{ user.discordId }} </span>
+                <span class="user-profile-field-val"> {{ user.discordUsername }} </span>
               </li>
               <li class="user-profile-row">
                 <span class="user-profile-field-name">Account Created: </span>
@@ -112,9 +138,22 @@
 
             <div class="account-tabs-button-container">
 
-              <button class="action-buttons">
-                Update Profile
-              </button>
+              <ng-container *ngIf="!editing; else openedEditor">
+                <button class="action-buttons"
+                  (click)="userProfileEdit()">
+                  Edit Profile
+                </button>
+              </ng-container>
+              <ng-template #openedEditor>
+                <button class="action-buttons"
+                        (click)="cancelEdit()">
+                  Cancel Edit
+                </button>
+                <button class="action-buttons"
+                        (click)="saveProfileEdit()">
+                  Save Profile
+                </button>
+              </ng-template>
 
 
               <button class="action-buttons"

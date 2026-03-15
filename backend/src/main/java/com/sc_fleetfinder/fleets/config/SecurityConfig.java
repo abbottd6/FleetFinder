@@ -58,11 +58,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
 //    @Bean
 //    OncePerRequestFilter logAuthorities() {
 //        return new OncePerRequestFilter() {

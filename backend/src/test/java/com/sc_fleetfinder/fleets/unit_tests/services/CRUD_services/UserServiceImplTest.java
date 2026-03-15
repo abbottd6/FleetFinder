@@ -6,10 +6,12 @@ import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.HiddenListingServiceImpl;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingBookmarkServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.ServerRegionServiceImpl;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingTemplateServiceImpl;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserServiceImpl;
 import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminService;
@@ -59,14 +61,19 @@ public class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
+    @InjectMocks
+    private ServerRegionServiceImpl serverService;
+
     @Mock
     private KeycloakAdminService kcAdminService;
 
     @Mock
     private UserConversionServiceImpl userConversionService;
 
-    private static Validator validator;
+    @Mock
     private static ApplicationEventPublisher eventPublisher;
+
+    private static Validator validator;
 
     @BeforeAll
     static void initValidator() {
@@ -79,7 +86,7 @@ public class UserServiceImplTest {
         MockitoAnnotations.openMocks(this);
 
         userService = new UserServiceImpl(userRepository, userConversionService, validator,
-                groupListingRepository, kcAdminService, eventPublisher);
+                groupListingRepository, kcAdminService, eventPublisher, serverService);
     }
 
     @Test
@@ -92,6 +99,7 @@ public class UserServiceImplTest {
         mockUser.setUsername("mockUsername");
         mockUser.setEmail("mockEmail");
         mockUser.setDiscordId("20characterdiscordid");
+        mockUser.setDiscordUsername("mockDiscordUsername");
         mockUser.setIsDeleted(false);
 
         //when a request is made to create user with the same keycloak id
@@ -100,7 +108,8 @@ public class UserServiceImplTest {
         //then
         assertAll("create Users fail assertion set: ExistingKeycloakId",
                 () -> assertThrows(UserConflictException.class, () ->
-                        userService.createUser("mockKeycloakId", "none", "none", "none")),
+                        userService.createUser("mockKeycloakId", "none", "none",
+                                "none", "none")),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
                         .anyMatch(log -> log.contains("User Creation failed due to pre-existing Keycloak ID:"))),
                 () -> verify(userRepository, times(1)).findByKeycloakId("mockKeycloakId"));
@@ -116,6 +125,7 @@ public class UserServiceImplTest {
         mockUser.setUsername("mockUsername");
         mockUser.setEmail("mockEmail");
         mockUser.setDiscordId("20characterdiscordid");
+        mockUser.setDiscordUsername("mockDiscordUsername");
         mockUser.setIsDeleted(false);
 
         //when a create user request attempts to create a user with the same email
@@ -124,7 +134,8 @@ public class UserServiceImplTest {
         //then
         assertAll("create Users fail assertion set: ExistingEmail",
                 () -> assertThrows(UserConflictException.class, () ->
-                        userService.createUser("none", "none", "mockEmail", "none")),
+                        userService.createUser("none", "none", "mockEmail",
+                                "none", "none")),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
                         .anyMatch(log -> log.contains("User creation requested for existing email: "))),
                 () -> verify(userRepository, times(1)).findByEmail("mockemail"));
@@ -140,6 +151,7 @@ public class UserServiceImplTest {
         mockUser.setUsername("mockUsername");
         mockUser.setEmail("mockEmail");
         mockUser.setDiscordId("20characterdiscordid");
+        mockUser.setDiscordUsername("mockDiscordUsername");
         mockUser.setIsDeleted(false);
 
         //when a create user request attempts to create a user with the same username
@@ -147,7 +159,8 @@ public class UserServiceImplTest {
 
         assertAll("create Users fail assertion set: ExistingUsername",
                 () -> assertThrows(UserConflictException.class, () ->
-                        userService.createUser("none", "mockUsername", "none", "none")),
+                        userService.createUser("none", "mockUsername", "none",
+                                "none", "none")),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
                         .anyMatch(log -> log.contains("User creation requested for existing username: "))),
                 () -> verify(userRepository, times(1)).findByUsernameIgnoreCase("mockUsername"));
@@ -163,6 +176,7 @@ public class UserServiceImplTest {
         mockUser.setUsername("mockUsername");
         mockUser.setEmail("mockEmail");
         mockUser.setDiscordId("20characterdiscordid");
+        mockUser.setDiscordUsername("mockDiscordUsername");
         mockUser.setIsDeleted(false);
 
         //when a create user request attempts to create a user with the same discordId
@@ -171,7 +185,7 @@ public class UserServiceImplTest {
         assertAll("create Users fail assertion set: ExistingDiscordId",
                 () -> assertThrows(UserConflictException.class, () ->
                         userService.createUser("none", "none", "none",
-                                "20characterdiscordid")),
+                                "20characterdiscordid", "none")),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
                         .anyMatch(log -> log.contains("User creation requested for existing Discord ID: "))),
                 () -> verify(userRepository, times(1)).findByDiscordId("20characterdiscordid"));
@@ -187,6 +201,7 @@ public class UserServiceImplTest {
         mockUser.setUsername("mockUsername");
         mockUser.setEmail("thisrawemail@gmail.com");
         mockUser.setDiscordId("20characterdiscordid");
+        mockUser.setDiscordUsername("mockDiscordUsername");
         mockUser.setIsDeleted(true);
 
         // when a request is made to create user with the same userName and email, but the user isDeleted
@@ -200,7 +215,7 @@ public class UserServiceImplTest {
 
         PrivateUserResponseDto newMockUser = assertDoesNotThrow(
                 () -> userService.createUser("newUuidMockKeycloakId", "mockUsername",
-                        "   tHiSrAWemaIl@gmail.com    ", "20characterdiscordid"),
+                        "   tHiSrAWemaIl@gmail.com    ", "20characterdiscordid", "mockDiscordUsername"),
                         "createUser should not throw when existing user is deleted"
         );
 
@@ -229,6 +244,7 @@ public class UserServiceImplTest {
         mockUser.setOrg("SomeOrg");
         mockUser.setAbout("Some about text");
         mockUser.setDiscordId("12345678901234567890");
+        mockUser.setDiscordUsername("mockDiscordUsername");
         mockUser.setExternalSysNotesEnabled(true);
         mockUser.setExternalGroupNotesEnabled(true);
         mockUser.setExternalSocialNotesEnabled(true);
@@ -248,12 +264,14 @@ public class UserServiceImplTest {
                 () -> assertNull(mockUser.getOrg()),
                 () -> assertNull(mockUser.getAbout()),
                 () -> assertNull(mockUser.getDiscordId()),
+                () -> assertNull(mockUser.getDiscordUsername()),
                 () -> assertFalse(mockUser.getExternalSysNotesEnabled()),
                 () -> assertFalse(mockUser.getExternalGroupNotesEnabled()),
                 () -> assertFalse(mockUser.getExternalSocialNotesEnabled()),
                 () -> assertTrue(mockUser.getIsDeleted()),
                 () -> verify(groupListingRepository, times(1)).expireAllUserListingsOnDelete(123L),
                 () -> verify(userRepository, times(1)).save(mockUser),
+                () -> verify(eventPublisher).publishEvent(any(UserAccountDeleteEvent.class)),
                 () -> assertTrue(logCaptor.getInfoLogs().stream()
                         .anyMatch(log -> log.contains("Deleted user with id 123")))
         );
@@ -288,6 +306,7 @@ public class UserServiceImplTest {
         //when/then — should not throw despite KC failure
         assertDoesNotThrow(() -> userService.deleteUser("mock-kc-id"));
         verify(userRepository, times(1)).save(any());
+        verify(eventPublisher).publishEvent(any(UserAccountDeleteEvent.class));
         assertTrue(logCaptor.getWarnLogs().stream()
                 .anyMatch(log -> log.contains("Keycloak unavailable")));
     }
