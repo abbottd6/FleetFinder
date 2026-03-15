@@ -13,6 +13,7 @@ import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue
 import com.sc_fleetfinder.fleets.entities.Notification;
 import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.Objects;
 
@@ -168,5 +170,16 @@ public class NotificationServiceImpl implements NotificationService {
                 "/queue/system.notify",
                 noteDto
         );
+    }
+
+    @TransactionalEventListener
+    public void onUserAccountDeleted(UserAccountDeleteEvent event) {
+        try {
+            notificationRepo.deleteAllByUser_userId(event.getDeletedUser().getUserId());
+        }
+        catch (Exception e) {
+            log.error("User account delete event threw an error trying to delete the users " +
+                    "notifications:\n{}", e.getMessage());
+        }
     }
 }

@@ -109,11 +109,19 @@
                 <span class="user-profile-field-val"> {{ user.acctCreated | date: 'MMM d, yyyy h:mm a' }} </span>
               </li>
             </ul>
+
             <div class="account-tabs-button-container">
+
+              <button class="action-buttons">
+                Update Profile
+              </button>
+
+
               <button class="action-buttons"
                       (click)="openConfirmUserDelete()">Delete Account
               </button>
             </div>
+
           </ng-container>
 
           <!-- MODERATOR TAB -->

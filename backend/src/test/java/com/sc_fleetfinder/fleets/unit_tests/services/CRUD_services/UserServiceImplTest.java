@@ -1,10 +1,16 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.ServerRegionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
+import com.sc_fleetfinder.fleets.services.CRUD_services.HiddenListingServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingBookmarkServiceImpl;
+import com.sc_fleetfinder.fleets.services.CRUD_services.ListingTemplateServiceImpl;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserServiceImpl;
 import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminService;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
@@ -21,12 +27,15 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.*;
@@ -44,16 +53,20 @@ public class UserServiceImplTest {
     @Mock
     private GroupListingRepository groupListingRepository;
 
+    @Mock
+    private ServerRegionRepository serverRepository;
+
     @InjectMocks
     private UserServiceImpl userService;
 
-    @InjectMocks
+    @Mock
     private KeycloakAdminService kcAdminService;
 
     @Mock
     private UserConversionServiceImpl userConversionService;
 
     private static Validator validator;
+    private static ApplicationEventPublisher eventPublisher;
 
     @BeforeAll
     static void initValidator() {
@@ -65,7 +78,8 @@ public class UserServiceImplTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
 
-        userService = new UserServiceImpl(userRepository, userConversionService, validator, groupListingRepository, kcAdminService);
+        userService = new UserServiceImpl(userRepository, userConversionService, validator,
+                groupListingRepository, kcAdminService, eventPublisher);
     }
 
     @Test
@@ -195,5 +209,86 @@ public class UserServiceImplTest {
                 () -> assertTrue(logCaptor.getErrorLogs().isEmpty()),
                 () -> assertEquals(newMockUser.getUsername(), "mockUsername"),
                 () -> verify(userRepository, times(1)).findByKeycloakId("newUuidMockKeycloakId"));
+    }
+
+    @Test
+    void deleteUser_Success() {
+        LogCaptor logCaptor = LogCaptor.forClass(UserServiceImpl.class);
+
+        ServerRegion testServer = new ServerRegion();
+        testServer.setServerId(1);
+        testServer.setServerName("Banana");
+
+        //given a mock user with all PII fields populated
+        Users mockUser = new Users();
+        mockUser.setUserId(123L);
+        mockUser.setKeycloakId("mock-kc-id");
+        mockUser.setUsername("someUsername");
+        mockUser.setEmail("some@email.com");
+        mockUser.setServerId(testServer);
+        mockUser.setOrg("SomeOrg");
+        mockUser.setAbout("Some about text");
+        mockUser.setDiscordId("12345678901234567890");
+        mockUser.setExternalSysNotesEnabled(true);
+        mockUser.setExternalGroupNotesEnabled(true);
+        mockUser.setExternalSocialNotesEnabled(true);
+        mockUser.setIsDeleted(false);
+
+        when(userRepository.findByKeycloakId("mock-kc-id")).thenReturn(Optional.of(mockUser));
+
+        //when
+        userService.deleteUser("mock-kc-id");
+
+        //then
+        assertAll("deleteUser field overwrites",
+                () -> assertEquals("deleted_123@deleted.com", mockUser.getEmail()),
+                () -> assertEquals("deleted_123", mockUser.getUsername()),
+                () -> assertEquals("deleted_123", mockUser.getKeycloakId()),
+                () -> assertNull(mockUser.getServerId()),
+                () -> assertNull(mockUser.getOrg()),
+                () -> assertNull(mockUser.getAbout()),
+                () -> assertNull(mockUser.getDiscordId()),
+                () -> assertFalse(mockUser.getExternalSysNotesEnabled()),
+                () -> assertFalse(mockUser.getExternalGroupNotesEnabled()),
+                () -> assertFalse(mockUser.getExternalSocialNotesEnabled()),
+                () -> assertTrue(mockUser.getIsDeleted()),
+                () -> verify(groupListingRepository, times(1)).expireAllUserListingsOnDelete(123L),
+                () -> verify(userRepository, times(1)).save(mockUser),
+                () -> assertTrue(logCaptor.getInfoLogs().stream()
+                        .anyMatch(log -> log.contains("Deleted user with id 123")))
+        );
+    }
+
+    @Test
+    void deleteUser_NotFound() {
+        //given no user exists for the provided kcId
+        when(userRepository.findByKeycloakId("unknown-kc-id")).thenReturn(Optional.empty());
+
+        //then
+        assertThrows(ResourceNotFoundException.class, () -> userService.deleteUser("unknown-kc-id"));
+        verify(groupListingRepository, never()).expireAllUserListingsOnDelete(any());
+        verify(userRepository, never()).save(any());
+    }
+
+    @Test
+    void deleteUser_KeycloakFailure_StillCompletes() {
+        LogCaptor logCaptor = LogCaptor.forClass(UserServiceImpl.class);
+
+        //given a mock user
+        Users mockUser = new Users();
+        mockUser.setUserId(123L);
+        mockUser.setKeycloakId("mock-kc-id");
+        mockUser.setUsername("someUsername");
+        mockUser.setEmail("some@email.com");
+        mockUser.setIsDeleted(false);
+
+        when(userRepository.findByKeycloakId("mock-kc-id")).thenReturn(Optional.of(mockUser));
+        doThrow(new RuntimeException("Keycloak unavailable")).when(kcAdminService).deleteKeycloakUser("mock-kc-id");
+
+        //when/then — should not throw despite KC failure
+        assertDoesNotThrow(() -> userService.deleteUser("mock-kc-id"));
+        verify(userRepository, times(1)).save(any());
+        assertTrue(logCaptor.getWarnLogs().stream()
+                .anyMatch(log -> log.contains("Keycloak unavailable")));
     }
 }

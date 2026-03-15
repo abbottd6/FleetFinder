@@ -5,11 +5,14 @@ import com.sc_fleetfinder.fleets.DAO.HiddenListingRepository;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.HiddenListing;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class HiddenListingServiceImpl implements HiddenListingService {
 
     private final HiddenListingRepository hlr;
@@ -96,6 +100,17 @@ public class HiddenListingServiceImpl implements HiddenListingService {
             return ResponseEntity.status(HttpStatus.OK).body(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @TransactionalEventListener
+    public void onUserAccountDeleted(UserAccountDeleteEvent event) {
+        try {
+            hlr.deleteAllByUser(event.getDeletedUser());
+        }
+        catch (Exception e) {
+            log.error("User account delete event threw an error trying to delete the users " +
+                    "hidden listings:\n{}", e.getMessage());
         }
     }
 }

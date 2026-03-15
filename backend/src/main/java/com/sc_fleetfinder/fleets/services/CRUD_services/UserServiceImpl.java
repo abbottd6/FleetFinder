@@ -7,6 +7,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrUpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
@@ -15,10 +16,10 @@ import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServ
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -41,16 +42,18 @@ public class UserServiceImpl implements UserService {
     private final Validator beanValidator;
     private final GroupListingRepository groupListingRepository;
     private final KeycloakAdminService kcAdminService;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService,
                            Validator beanValidator, GroupListingRepository groupListingRepository,
-                           KeycloakAdminService kcAdminService) {
+                           KeycloakAdminService kcAdminService, ApplicationEventPublisher eventPublisher) {
         this.userRepository = userRepository;
         this.userConversionService = userConversionService;
         this.beanValidator = beanValidator;
         this.groupListingRepository = groupListingRepository;
         this.kcAdminService = kcAdminService;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -208,6 +211,8 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(toDelete);
+
+        eventPublisher.publishEvent(new UserAccountDeleteEvent(toDelete));
 
         log.info("Deleted user with id {}", toDelete.getUserId());
     }
