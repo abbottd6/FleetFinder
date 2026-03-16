@@ -8,4 +8,6 @@ public interface KeycloakAdminService {
 
     //event listener
     public void removeDiscordAccountLink(UserRemoveDiscLinkEvent event);
+
+    public String generateDiscordKeycloakLink(String token);
 }

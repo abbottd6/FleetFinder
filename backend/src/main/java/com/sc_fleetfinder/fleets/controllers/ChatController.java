@@ -9,6 +9,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetConversationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetMessageDto;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.chat_services.ChatService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
@@ -54,7 +55,7 @@ public class ChatController {
 
     @PostMapping("/conv_messages")
     public Page<GetMessageDto> getConversationMessages(@AuthenticationPrincipal Jwt jwt,
-                                                       @RequestBody GetConvMessagesRqstDto dto) {
+                                                       @Valid @RequestBody GetConvMessagesRqstDto dto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 
@@ -67,7 +68,7 @@ public class ChatController {
 
     @PostMapping("/conv_provision")
     public GetConversationDto conversationProvision(@AuthenticationPrincipal Jwt jwt,
-                                                   @RequestBody FindOrStartNewConversationDto dto) {
+                                                   @Valid @RequestBody FindOrStartNewConversationDto dto) {
 
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
@@ -77,7 +78,7 @@ public class ChatController {
 
     @PostMapping("/send_message")
     public ResponseEntity<?> sendMessage(@AuthenticationPrincipal Jwt jwt,
-                                         @RequestBody SendMessageDto dto) {
+                                         @Valid @RequestBody SendMessageDto dto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
         GetMessageDto created = chatService.sendNewMessage(user, dto);
@@ -117,7 +118,7 @@ public class ChatController {
 
     @PatchMapping("/unmute_conv")
     public GetConversationDto unmuteAndReturnConv(@AuthenticationPrincipal Jwt jwt,
-                                                         @RequestBody UnMuteAndProvisionRequestDto dto) {
+                                                         @Valid @RequestBody UnMuteAndProvisionRequestDto dto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 

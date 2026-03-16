@@ -2,9 +2,10 @@ package com.sc_fleetfinder.fleets.services.Keycloak_Services;
 
 import com.sc_fleetfinder.fleets.config.KeycloakAdminProperties;
 import com.sc_fleetfinder.fleets.events.UserRemoveDiscLinkEvent;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.keycloak.authorization.client.ResourceNotFoundException;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -13,12 +14,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.Base64;
 
 @Service
 @Slf4j
@@ -26,10 +31,12 @@ public class KeycloakAdminServiceImpl implements KeycloakAdminService {
 
     private final KeycloakAdminProperties props;
     private final RestTemplate restTemplate;
+    private final Environment environment;
 
-    public KeycloakAdminServiceImpl(KeycloakAdminProperties props, RestTemplate restTemplate) {
+    public KeycloakAdminServiceImpl(KeycloakAdminProperties props, RestTemplate restTemplate, Environment environment) {
         this.props = props;
         this.restTemplate = restTemplate;
+        this.environment = environment;
     }
 
     private String getAdminToken() {
@@ -58,6 +65,28 @@ public class KeycloakAdminServiceImpl implements KeycloakAdminService {
         headers.setBearerAuth(token);
 
         restTemplate.exchange(url, HttpMethod.DELETE, new HttpEntity<>(headers), Void.class);
+    }
+
+    @Override
+    @SneakyThrows //Mac.getInstance may throw algorithm not found
+    public String generateDiscordKeycloakLink(String sessionState) {
+        String nonce = UUID.randomUUID().toString();
+
+        String redirectUri = props.getFrontendBaseUrl() + "/user-account";
+        String identityProvider = "discord";
+
+        String combine = nonce + sessionState + props.getFrontendClientId() + identityProvider;
+
+        log.info(combine);
+
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] check = md.digest(combine.getBytes(StandardCharsets.UTF_8));
+        String hash = Base64.getUrlEncoder().withoutPadding().encodeToString(check);
+
+        return props.getServerUrl() + "/realms/" + props.getRealm() + "/broker/"
+                + identityProvider + "/link?client_id=" + props.getFrontendClientId()
+                + "&redirect_uri=" + redirectUri + "&nonce=" + nonce
+                + "&hash=" + hash;
     }
 
     @Override

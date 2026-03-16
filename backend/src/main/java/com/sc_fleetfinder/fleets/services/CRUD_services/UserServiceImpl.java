@@ -194,6 +194,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String generateUserDiscordLink(String token) {
+        return kcAdminService.generateDiscordKeycloakLink(token);
+    }
+
+    @Override
     @Transactional
     public PrivateUserResponseDto removeDiscordAccountLink(String kcId) {
         Users user = userRepository.findByKeycloakId(kcId)

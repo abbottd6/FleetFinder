@@ -12,4 +12,6 @@ public class KeycloakAdminProperties {
     private String clientSecret;
     private String realm;
     private String serverUrl;
+    private String frontendBaseUrl;
+    private String frontendClientId;
 }

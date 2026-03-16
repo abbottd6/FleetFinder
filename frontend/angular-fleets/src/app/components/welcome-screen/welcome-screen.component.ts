@@ -1,6 +1,7 @@
-import {AfterViewInit, Component} from '@angular/core';
+import {AfterViewInit, Component, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {UserService} from "../../services/user-services/user.service";
 
 @Component({
     selector: 'app-welcome-screen',
@@ -8,8 +9,15 @@ import {MatSnackBar} from "@angular/material/snack-bar";
     styleUrl: './welcome-screen.component.css',
     standalone: false
 })
-export class WelcomeScreenComponent implements AfterViewInit {
-  constructor(public auth: AuthService, protected snackBar: MatSnackBar) {}
+export class WelcomeScreenComponent implements OnInit, AfterViewInit {
+  constructor(public auth: AuthService, protected snackBar: MatSnackBar, private userService: UserService) {}
+
+  ngOnInit() {
+    if(sessionStorage.getItem('pendingDiscordLink')) {
+      sessionStorage.removeItem('pendingDiscordLink');
+      this.userService.kcProfileRefresh();
+    }
+  }
 
   ngAfterViewInit() {
     if(sessionStorage.getItem("post_logout_msg") === 'true') {

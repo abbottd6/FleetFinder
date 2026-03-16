@@ -56,7 +56,7 @@ public class ModerationController {
 
     @PutMapping("/mod_clear_issue")
     @PreAuthorize("isAuthenticated() and hasRole('mod')")
-    public ResponseEntity<?> modClearIssue(@AuthenticationPrincipal Jwt jwt, @RequestBody ModClearIssueDto dto) {
+    public ResponseEntity<?> modClearIssue(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody ModClearIssueDto dto) {
         String keycloakId = jwt.getSubject();
 
         Users requestingMod = userRepository.findByKeycloakId(keycloakId)

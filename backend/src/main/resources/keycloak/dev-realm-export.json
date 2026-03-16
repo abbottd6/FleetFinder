@@ -795,11 +795,7 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "http://localhost:4200/user",
-        "http://localhost:4200/assets/silent-check-sso.html",
-        "http://localhost:4200/",
-        "http://localhost:4200",
-        "http://localhost:4200/login/callback"
+        "http://localhost:4200/*"
       ],
       "webOrigins": [
         "http://localhost:4200"

@@ -179,6 +179,13 @@ export class UserComponent implements OnInit, OnDestroy {
     )
   }
 
+  userLinkDiscord() {
+    this.userApiSrv.discordMe().subscribe(url => {
+      sessionStorage.setItem('pendingDiscordLink', 'true');
+      window.location.href = url;
+    })
+  }
+
   confirmRemoveDiscord() {
     const dialogRef = this.dialog.open(ConfirmDelinkDiscordPopupComponent);
 

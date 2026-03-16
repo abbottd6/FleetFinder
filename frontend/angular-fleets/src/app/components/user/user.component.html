@@ -132,10 +132,13 @@
                   <span class="user-profile-field-val"> {{ user.discordUsername }} </span>
                   <a class="disc-account-link"
                      (click)="confirmRemoveDiscord()">
-                    (Remove Discord)</a>
+                    <span class="bracky">[</span> Remove Discord <span class="bracky">]</span></a>
                 </ng-container>
                 <ng-template #discordNotLinked>
-
+                  <a class="disc-account-link"
+                     (click)="userLinkDiscord()">
+                    <span class="bracky">[</span> Link Discord <span class="bracky">]</span>
+                  </a>
                 </ng-template>
               </li>
               <li class="user-profile-row">

@@ -113,6 +113,19 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/discord_me")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> manualDiscordLink(@AuthenticationPrincipal Jwt jwt) {
+        String sessionState = jwt.getClaimAsString("sid");
+
+        String keycloakDiscLinkUrl = userService.generateUserDiscordLink(sessionState);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("url", keycloakDiscLinkUrl);
+
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/remove_discord")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> removeDiscordLink(@AuthenticationPrincipal Jwt jwt) {
@@ -202,7 +215,7 @@ public class UserController {
     @PostMapping("/my/templates/save")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> createTemplate(@AuthenticationPrincipal Jwt jwt,
-                                          @RequestBody CreateGroupListingDto dto) {
+                                          @Valid @RequestBody CreateGroupListingDto dto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 

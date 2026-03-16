@@ -50,6 +50,12 @@ export class UserApiService {
     return this.http.put('/api/users/update_me', userData);
   }
 
+  public discordMe() {
+    return this.http.get<{ url: string }>('/api/users/discord_me').pipe(
+      map(response => response.url)
+    );
+  }
+
   public removeDiscord() {
     return this.http.delete('/api/users/remove_discord');
   }

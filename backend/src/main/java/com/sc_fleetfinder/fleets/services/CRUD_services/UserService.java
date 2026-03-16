@@ -27,12 +27,12 @@ public interface UserService {
      * @return newly created userDto
      * @throws UserConflictException if email or userName is already in use by another user
      */
-    @Validated
     PrivateUserResponseDto createUser(String kcId, String rawUsername, String rawEmail,
                                       String discordId, String discordUsername);
 
-    @Validated
     PrivateUserResponseDto updateUser(String kcId, @Valid UpdateUserDto updateUserDto);
+
+    String generateUserDiscordLink(String kcId);
 
     PrivateUserResponseDto removeDiscordAccountLink(String kcId);
 
