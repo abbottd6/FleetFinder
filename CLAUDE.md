@@ -44,6 +44,7 @@ src/test/java/com/sc_fleetfinder/fleets/
 - Integration tests: extend `AbstractIntegrationTestDB`, annotate `@Transactional` (auto-rollback), inject `JdbcTemplate` for raw SQL setup
 - Services with `@Autowired` field injection alongside constructor injection: after `@InjectMocks`, manually inject `@Autowired` fields via `ReflectionTestUtils.setField()` in `@BeforeEach`
 - Over-stubbed shared mock helpers: use `@MockitoSettings(strictness = Strictness.LENIENT)` on the class
+- `GroupListingServiceImpl` has 7 constructor params; Mockito passes `null` for any without a matching `@Mock`. `NotificationOutboxRepository` is required for the `updateGroupListing` path — add `@Mock private NotificationOutboxRepository notificationOutboxRepository;` when testing update.
 
 **Integration test gotchas:**
 - `SecurityConfig` is `@Profile("!test")` — not loaded in integration tests. Default Spring Security CSRF is **enabled**. Unauthenticated POST without `.with(csrf())` returns 403 (CSRF fail), not 401. Always add `.with(csrf())` to unauthenticated POST tests.
@@ -118,9 +119,13 @@ scheduledTasks/      # BackgroundCleanupService
 utils/               # LanguageOptions enum (28 spoken language constants)
 ```
 
+### GroupListings Search
+
+The listing feed uses **`POST /api/group-listings/search`** with a `SearchListingsDto` body (filters, pagination, sort). `GET /api/group-listings` has **no controller handler** — `getAllGroupListings()` still exists on the service but is not exposed. Do not write tests against `GET /api/group-listings`.
+
 ### Database
 
-Schema: `sc_fleetfinder`. Migrations: Flyway V1–V9, V11–V13 (no V10) in `backend/src/main/resources/migration/`. V13 makes `language_code` NOT NULL on `group_listing`, `listing_template`, and `listing_archive`.
+Schema: `sc_fleetfinder`. Migrations: Flyway V1–V9, V11–V14 (no V10) in `backend/src/main/resources/migration/`. V13 makes `language_code` NOT NULL on `group_listing`, `listing_template`, and `listing_archive`. V14 adds `discord_id`, notification preference fields, and `user_custom_notification`/`new_listing_notification_queue` tables.
 
 Key relationships:
 - `users` → OneToMany `group_listing` (CASCADE DELETE)

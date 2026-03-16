@@ -1,36 +1,34 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
-import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.ServerRegionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
-import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
+import com.sc_fleetfinder.fleets.events.UserRemoveDiscLinkEvent;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.ServerRegionServiceImpl;
-import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminService;
+import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminServiceImpl;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -44,14 +42,14 @@ public class UserServiceImpl implements UserService {
     private final UserConversionServiceImpl userConversionService;
     private final Validator beanValidator;
     private final GroupListingRepository groupListingRepository;
-    private final KeycloakAdminService kcAdminService;
+    private final KeycloakAdminServiceImpl kcAdminService;
     private final ApplicationEventPublisher eventPublisher;
     private final ServerRegionServiceImpl serverService;
 
 
     public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService,
                            Validator beanValidator, GroupListingRepository groupListingRepository,
-                           KeycloakAdminService kcAdminService, ApplicationEventPublisher eventPublisher,
+                           KeycloakAdminServiceImpl kcAdminService, ApplicationEventPublisher eventPublisher,
                            ServerRegionServiceImpl serverService) {
         this.userRepository = userRepository;
         this.userConversionService = userConversionService;
@@ -175,11 +173,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Validated
+    @Transactional
     public PrivateUserResponseDto updateUser(String kcId, @Valid UpdateUserDto updateUserDto) {
         Users user = userRepository.findByKeycloakId(kcId)
                 .orElseThrow(() -> new ResourceNotFoundException("Users with id " + kcId + " not found"));
-
-        log.info("Server ID: {}", updateUserDto.getServerId());
 
         try {
             if(updateUserDto.getServerId() != null) {
@@ -192,6 +189,26 @@ public class UserServiceImpl implements UserService {
         catch (Exception e) {
             throw new InvalidUserDataException(e.getMessage());
         }
+
+        return userConversionService.convertToPrivateDto(user);
+    }
+
+    @Override
+    @Transactional
+    public PrivateUserResponseDto removeDiscordAccountLink(String kcId) {
+        Users user = userRepository.findByKeycloakId(kcId)
+                .orElseThrow(() -> new ResourceNotFoundException("Users with id " + kcId + " not found"));
+
+        user.setDiscordId(null);
+        user.setDiscordUsername(null);
+        user.setExternalSysNotesEnabled(false);
+        user.setExternalGroupNotesEnabled(false);
+        user.setExternalSocialNotesEnabled(false);
+
+        userRepository.save(user);
+        userRepository.flush();
+
+        eventPublisher.publishEvent(new UserRemoveDiscLinkEvent(user));
 
         return userConversionService.convertToPrivateDto(user);
     }
@@ -232,9 +249,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PrivateUserResponseDto getUserByKeycloakId(String kcId) {
+    public PrivateUserResponseDto getUserByKeycloakIdAndCheckDiscord(String kcId,
+                                                                     String discId, String discName) {
         Users user = userRepository.findByKeycloakId(kcId).filter(u -> !u.getIsDeleted())
                 .orElseThrow(() -> new ResourceNotFoundException("Users with id " + kcId + " not found"));
+
+        if(discId != null && user.getDiscordId() == null) {
+            user.setDiscordId(discId);
+            user.setDiscordUsername(discName);
+        }
 
         user.setLastAccess(Instant.now());
         userRepository.save(user);

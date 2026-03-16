@@ -162,6 +162,8 @@ body#keycloak-bg::after {
     border-top: 0;
 }
 
+/* Login buttons */
+
 .pf-v5-c-button.pf-m-primary {
     background-color: rgba(33, 37, 41, .4);
     border: 1px solid rgba(255, 131, 7, .75);
@@ -174,6 +176,26 @@ body#keycloak-bg::after {
     color: rgba(33, 37, 41, .9);
     cursor: pointer
 }
+
+/* account link (first-broker-login page) buttons */
+
+#updateProfile, #linkAccount {
+    background-color: rgba(33, 37, 41, .4);
+    border: 1px solid rgba(255, 131, 7, .75);
+    color: rgba(255, 131, 7, .75);
+    transition: color 0.25s ease, background-color 0.25s ease;
+    margin-bottom: 20px;
+    width: 75%;
+    margin-inline: auto;
+}
+
+#updateProfile:hover, #linkAccount:hover {
+    background-color: rgba(255, 131, 7, .25);
+    color: rgba(33, 37, 41, .9);
+    cursor: pointer
+}
+
+/* ------------------------------------------------- */
 
 .pf-v5-c-form__group::before {
     border: 0;

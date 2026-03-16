@@ -13,7 +13,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButtonModule} from "@angular/material/button";
-import {UserRole, UserService} from "../../services/user-services/user.service";
+import {SessionUser, UserRole, UserService} from "../../services/user-services/user.service";
 import {CloseValue, GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
 import {UserProfileBookmarksComponent} from "../user-profile-bookmarks/user-profile-bookmarks.component";
@@ -44,6 +44,9 @@ import {MatError, MatHint} from "@angular/material/form-field";
 import {UpdateUserFormService} from "../../services/user-services/update-user-form.service";
 import {UpdateUserRequest} from "../../models/private-user/update-user-request";
 import {HttpStatusCode} from "@angular/common/http";
+import {
+  ConfirmDelinkDiscordPopupComponent
+} from "../pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component";
 
 @Component({
     selector: 'app-user',
@@ -172,6 +175,23 @@ export class UserComponent implements OnInit, OnDestroy {
     this.userApiSrv.updateMe(request).subscribe(response => {
           this.userService.refreshUser();
           this.editing = false;
+      }
+    )
+  }
+
+  confirmRemoveDiscord() {
+    const dialogRef = this.dialog.open(ConfirmDelinkDiscordPopupComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.removeDiscordLink();
+      }
+    })
+  }
+
+  removeDiscordLink() {
+    this.userApiSrv.removeDiscord().subscribe( response => {
+        this.userService.kcProfileRefresh();
       }
     )
   }

@@ -9,12 +9,9 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
-import com.sc_fleetfinder.fleets.services.CRUD_services.HiddenListingServiceImpl;
-import com.sc_fleetfinder.fleets.services.CRUD_services.ListingBookmarkServiceImpl;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.ServerRegionServiceImpl;
-import com.sc_fleetfinder.fleets.services.CRUD_services.ListingTemplateServiceImpl;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserServiceImpl;
-import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminService;
+import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminServiceImpl;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -65,7 +62,7 @@ public class UserServiceImplTest {
     private ServerRegionServiceImpl serverService;
 
     @Mock
-    private KeycloakAdminService kcAdminService;
+    private KeycloakAdminServiceImpl kcAdminService;
 
     @Mock
     private UserConversionServiceImpl userConversionService;

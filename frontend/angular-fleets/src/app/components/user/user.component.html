@@ -128,7 +128,15 @@
               </ng-template>
               <li class="user-profile-row">
                 <span class="user-profile-field-name">Discord: </span>
-                <span class="user-profile-field-val"> {{ user.discordUsername }} </span>
+                <ng-container *ngIf="user.discordUsername; else discordNotLinked">
+                  <span class="user-profile-field-val"> {{ user.discordUsername }} </span>
+                  <a class="disc-account-link"
+                     (click)="confirmRemoveDiscord()">
+                    (Remove Discord)</a>
+                </ng-container>
+                <ng-template #discordNotLinked>
+
+                </ng-template>
               </li>
               <li class="user-profile-row">
                 <span class="user-profile-field-name">Account Created: </span>

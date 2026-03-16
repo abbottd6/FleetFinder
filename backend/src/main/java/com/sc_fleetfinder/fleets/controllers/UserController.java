@@ -22,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -81,7 +82,10 @@ public class UserController {
     public PrivateUserResponseDto getMe(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
 
-        return userService.getUserByKeycloakId(kcId);
+        String discId = jwt.getClaimAsString("discord_user_id");
+        String discName = jwt.getClaimAsString("discord_username");
+
+        return userService.getUserByKeycloakIdAndCheckDiscord(kcId, discId, discName);
     }
 
     @PostMapping("/create-user")
@@ -107,6 +111,16 @@ public class UserController {
         response.put("response", "Profile updated.");
 
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/remove_discord")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> removeDiscordLink(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+
+        PrivateUserResponseDto responseDto = userService.removeDiscordAccountLink(kcId);
+
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @DeleteMapping("/delete_me")

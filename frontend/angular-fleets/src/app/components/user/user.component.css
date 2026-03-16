@@ -161,6 +161,19 @@
   align-self: center !important;
 }
 
+.disc-account-link {
+  color: rgb(53, 114, 163);
+  padding-left: 20px;
+  text-decoration: underline;
+  transition: color 0.5s ease, font-size 0.5s ease;
+}
+
+.disc-account-link:hover {
+  color: rgba(52, 135, 168, 0.9);
+  font-size: 101%;
+  cursor: pointer;
+}
+
 @media(min-width: 725px) {
   .mat-mdc-form-field {
     min-width: 75%;

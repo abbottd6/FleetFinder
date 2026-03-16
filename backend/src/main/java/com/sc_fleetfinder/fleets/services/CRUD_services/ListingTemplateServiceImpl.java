@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -85,6 +86,7 @@ public class ListingTemplateServiceImpl implements ListingTemplateService {
     }
 
     @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void onUserAccountDeleted(UserAccountDeleteEvent event) {
         try {
             ltr.deleteAllByUserId(event.getDeletedUser().getUserId());

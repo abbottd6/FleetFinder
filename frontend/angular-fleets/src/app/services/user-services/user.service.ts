@@ -51,10 +51,12 @@ export class UserService {
   private readonly userSubject = new BehaviorSubject<SessionUser | null>(null);
   readonly sessionUser$ = this.userSubject.asObservable();
 
-  private kcProfile$ = this.auth.authClaims$.pipe(
-    filter(data => !!data && !!data.userData)
-  );
+  get debugUserSubj() {
+    return this.userSubject.value;
+  }
 
+  private kcProfileSubject = new BehaviorSubject<any>(null);
+  private kcProfile$ = this.kcProfileSubject.asObservable();
 
 
   private refreshTrigger$ = new BehaviorSubject<void>(undefined);
@@ -69,6 +71,11 @@ export class UserService {
   );
 
   constructor() {
+
+    this.auth.authClaims$.pipe(
+      filter(data => !!data && !!data.userData)
+    ).subscribe(data => this.kcProfileSubject.next(data));
+
     this.auth.isLoggedIn$.pipe(
       takeUntilDestroyed(this.destroyRef),
 
@@ -84,6 +91,10 @@ export class UserService {
           }),
           distinctUntilChanged((a, b) =>
             a?.userId === b?.userId &&
+            a?.discordUsername === b?.discordUsername &&
+            a?.externalSysNotesEnabled === b?.externalSysNotesEnabled &&
+            a?.externalGroupNotesEnabled === b?.externalGroupNotesEnabled &&
+            a?.externalSocialNotesEnabled === b?.externalSocialNotesEnabled &&
             a?.primaryRole === b?.primaryRole &&
             a?.groupListingsDto === b?.groupListingsDto &&
             a?.lastAccess === b?.lastAccess
@@ -106,10 +117,7 @@ export class UserService {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
 
-    this.ws.isConnected$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-
-    }
-    );
+    this.ws.isConnected$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {});
 
     // this.auth.tokenReady$.pipe(
     //   takeUntilDestroyed(this.destroyRef),
@@ -120,6 +128,14 @@ export class UserService {
     //       console.log('connect triggered');
     //     }
     // });
+  }
+
+  kcProfileRefresh() {
+    this.auth.forceNewToken().pipe(
+      tap(loginResp => {
+          this.kcProfileSubject.next(loginResp);
+      })
+    ).subscribe();
   }
 
   extractRole(roles: string[]) {

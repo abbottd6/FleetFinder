@@ -50,6 +50,10 @@ export class UserApiService {
     return this.http.put('/api/users/update_me', userData);
   }
 
+  public removeDiscord() {
+    return this.http.delete('/api/users/remove_discord');
+  }
+
   public deleteUser() {
     return this.http.delete<Partial<PrivateUser>>('/api/users/delete_me');
   }

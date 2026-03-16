@@ -1,0 +1,49 @@
+<mat-dialog-content class="message-container">
+  <div class="header-container">
+    <h5>Confirm Discord Account Link Removal</h5>
+  </div>
+  <div class="message-body">
+    <div class="subheader-container">
+      <span>Confirm that you would like to <span class="fancy-text">remove the link to your Discord account.</span>.</span>
+    </div>
+    <ul>
+      <li>
+        Discord<span class="bold-text"> user ID and username will be removed.</span>
+      </li>
+
+      <li>
+        All SCFleetFinder notifications through Discord will be disabled.
+      </li>
+
+      <li>
+        If you originally set up your account through Discord and did not create a password, you will need
+        to use the 'forgot password' option on the login screen to set one to log in again.
+      </li>
+
+      <li>
+        You can re-link later if you want to.
+      </li>
+
+    </ul>
+    <div class="alt-text">
+      <span>
+        If you would prefer to disable or limit Discord notifications, you can do this by changing your notification
+        preferences on the "Notifications" tab of the Profile page.
+      </span>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    class="action-buttons"
+    (click)="onCancel()">
+    Cancel
+  </button>
+
+  <button
+    mat-button class="action-buttons"
+    (click)="onConfirm()">
+    Confirm
+  </button>
+</mat-dialog-actions>
