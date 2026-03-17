@@ -31,6 +31,7 @@ export class UserApiService {
         return new PrivateUser(
           raw.userId!,
           raw.username!,
+          raw.email!,
           raw.server!,
           raw.org!,
           raw.about!,

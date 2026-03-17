@@ -4,6 +4,7 @@ export class PrivateUser {
 
   constructor(public userId: number,
               public username: string,
+              public email: string,
               public server: string,
               public org: string,
               public about: string,

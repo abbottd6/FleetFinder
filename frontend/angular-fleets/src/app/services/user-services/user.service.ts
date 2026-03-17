@@ -86,7 +86,7 @@ export class UserService {
           filter(([, ffPrivate]) => !!ffPrivate),
           map(([kcClaims, ffPrivate]) => {
             const primaryRole = this.extractRole(kcClaims.userData.roles) ?? UserRole.user;
-            const email = kcClaims.userData.email;
+            const email = ffPrivate.email;
             return {...ffPrivate, primaryRole, email} satisfies SessionUser;
           }),
           distinctUntilChanged((a, b) =>
