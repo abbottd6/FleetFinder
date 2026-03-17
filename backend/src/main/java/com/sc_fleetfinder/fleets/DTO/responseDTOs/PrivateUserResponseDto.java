@@ -20,6 +20,8 @@ public class PrivateUserResponseDto {
     @Size(min = 1, max = 32, message = "Username must be between 1 and 32 characters")
     private String username;
 
+    private String email;
+
     private String server;
 
     private String org;

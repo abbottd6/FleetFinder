@@ -4,17 +4,24 @@ CREATE TABLE IF NOT EXISTS user_custom_notification
     user_id        BIGINT      NOT NULL,
     enabled        TINYINT(1)  NOT NULL DEFAULT 0,
     tag_label      VARCHAR(32) NULL,
+    server_id      INT         NULL,
     environment_id INT         NULL,
     experience_id  INT         NULL,
     category_id    INT         NULL,
     subcategory_id INT         NULL,
+    system_id      INT         NULL,
     language_code  VARCHAR(10) NULL,
     pvp_status_id  INT         NULL,
+    legality_id    INT         NULL,
+    group_status_id INT        NULL,
     keywords       VARCHAR(32) NULL,
     created_at     TIMESTAMP            DEFAULT CURRENT_TIMESTAMP NOT NULL,
 
     CONSTRAINT fk_custom_note_to_user
         FOREIGN KEY (user_id) REFERENCES users (id_user),
+
+    CONSTRAINT fk_custom_note_to_server
+        FOREIGN KEY (server_id) REFERENCES server_region (server_id),
 
     CONSTRAINT fk_custom_note_to_env
         FOREIGN KEY (environment_id) REFERENCES game_environment (environment_id),
@@ -28,8 +35,17 @@ CREATE TABLE IF NOT EXISTS user_custom_notification
     CONSTRAINT fk_custom_note_to_subcategory
         FOREIGN KEY (subcategory_id) REFERENCES gameplay_subcategory (subcategory_id),
 
+    CONSTRAINT fk_custom_note_to_system
+        FOREIGN KEY (system_id) REFERENCES planetary_system (system_id),
+
     CONSTRAINT fk_custom_note_to_pvp_status
-        FOREIGN KEY (pvp_status_id) REFERENCES pvp_status (pvp_status_id)
+        FOREIGN KEY (pvp_status_id) REFERENCES pvp_status (pvp_status_id),
+
+    CONSTRAINT fk_custom_note_to_legality
+        FOREIGN KEY (legality_id) REFERENCES legality (legality_id),
+
+    CONSTRAINT fk_custom_note_to_group_status
+        FOREIGN KEY (group_status_id) REFERENCES group_status (group_status_id)
 );
 
 CREATE TABLE IF NOT EXISTS new_listing_notify_queue
