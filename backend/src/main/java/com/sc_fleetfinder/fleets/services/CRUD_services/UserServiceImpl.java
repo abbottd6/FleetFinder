@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserNotePrefDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -191,6 +192,30 @@ public class UserServiceImpl implements UserService {
         }
 
         return userConversionService.convertToPrivateDto(user);
+    }
+
+    @Override
+    @Transactional
+    public String updateUserNotificationPreference(Users user, UpdateUserNotePrefDto dto) {
+
+        switch (dto.getLabel()) {
+            case "sysNotes":
+                user.setExternalSysNotesEnabled(dto.getValue());
+                userRepository.save(user);
+                break;
+            case "groupNotes":
+                user.setExternalGroupNotesEnabled(dto.getValue());
+                userRepository.save(user);
+                break;
+            case "socialNotes":
+                user.setExternalSocialNotesEnabled(dto.getValue());
+                userRepository.save(user);
+                break;
+            default:
+                throw new InvalidUserDataException(dto.getLabel() + " is not a valid label");
+        }
+
+        return dto.getLabel();
     }
 
     @Override

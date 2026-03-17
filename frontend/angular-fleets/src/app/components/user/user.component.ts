@@ -47,6 +47,7 @@ import {HttpStatusCode} from "@angular/common/http";
 import {
   ConfirmDelinkDiscordPopupComponent
 } from "../pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component";
+import {UserProfileNotificationsParentComponent} from "../user-profile-notifications-tabs/user-profile-notifications-parent/user-profile-notifications-parent.component";
 
 @Component({
     selector: 'app-user',
@@ -57,7 +58,8 @@ import {
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
     UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent,
     UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent, ListingTemplateModalComponent,
-    DropdownModule, FormsModule, MatError, MatFormField, MatHint, MatInput, MatLabel, MatFormField, ReactiveFormsModule],
+    DropdownModule, FormsModule, MatError, MatFormField, MatHint, MatInput, MatLabel, MatFormField, ReactiveFormsModule,
+    UserProfileNotificationsParentComponent],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {
@@ -71,7 +73,7 @@ export class UserComponent implements OnInit, OnDestroy {
   selectedTemplate: ListingTemplateViewModel | null = null;
 
   groupListings: GroupListingViewModel[] = []
-  selectedTab: 'listings'|'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
+  selectedTab: 'listings' | 'notifications' |'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
   shouldDisplayMod$: boolean = false;
 
   protected editing: boolean = false;

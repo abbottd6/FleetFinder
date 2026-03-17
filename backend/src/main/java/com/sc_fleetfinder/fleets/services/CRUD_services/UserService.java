@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserNotePrefDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -31,6 +32,8 @@ public interface UserService {
                                       String discordId, String discordUsername);
 
     PrivateUserResponseDto updateUser(String kcId, @Valid UpdateUserDto updateUserDto);
+
+    String updateUserNotificationPreference(Users user, UpdateUserNotePrefDto dto);
 
     String generateUserDiscordLink(String kcId);
 

@@ -14,6 +14,11 @@
             My Listings
           </a>
           <a mat-list-item class="mat-nav-list-item"
+             [class.active]="selectedTab==='notifications'"
+             (click)="selectTab('notifications')">
+            Notifications
+          </a>
+          <a mat-list-item class="mat-nav-list-item"
             [class.active]="selectedTab==='bookmarks'"
             (click)="selectTab('bookmarks')">
             Bookmarks
@@ -65,6 +70,13 @@
               [userListings]="(groupListings)" class="user-table"
               (listingForModal)="onListingSelected($event)">
             </app-user-acct-listings-table>
+          </ng-container>
+
+          <!-- NOTIFICATIONS TAB -->
+          <ng-container *ngIf="selectedTab === 'notifications'">
+            <app-user-profile-notifications>
+
+            </app-user-profile-notifications>
           </ng-container>
 
           <!-- USER BOOKMARKED LISTINGS TAB -->

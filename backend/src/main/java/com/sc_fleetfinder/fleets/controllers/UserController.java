@@ -7,6 +7,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.AddHidde
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.SubmitListingReportDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserNotePrefDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
@@ -109,6 +110,22 @@ public class UserController {
 
         Map<String, String> response = new HashMap<>();
         response.put("response", "Profile updated.");
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/update_ext_note_pref")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> updateUserNotificationPreference(@AuthenticationPrincipal Jwt jwt,
+                                                              @Valid @RequestBody UpdateUserNotePrefDto dto) {
+        String kcId = jwt.getSubject();
+
+        Users user = userService.verifyUser(kcId);
+
+        String label = this.userService.updateUserNotificationPreference(user, dto);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("response", label);
 
         return ResponseEntity.ok(response);
     }

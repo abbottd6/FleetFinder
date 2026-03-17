@@ -158,6 +158,10 @@ export class UserService {
   get server(): string | null { return this.userSubject.value?.server ?? null; }
   get org(): string | null { return this.userSubject.value?.org ?? null; }
   get about(): string | null { return this.userSubject.value?.about ?? null; }
+  get discordUsername(): string | null { return this.userSubject.value?.discordUsername ?? null; }
+  get sysNotesEnabled(): boolean | null { return this.userSubject.value?.externalSysNotesEnabled ?? null; }
+  get groupNotesEnabled(): boolean | null { return this.userSubject.value?.externalGroupNotesEnabled ?? null; }
+  get socialNotesEnabled(): boolean | null { return this.userSubject.value?.externalSocialNotesEnabled ?? null; }
   get acctCreated(): Date | null { return this.userSubject.value?.acctCreated ?? null; }
   get lastAccess(): Date | null { return this.userSubject.value?.lastAccess ?? null; }
   get primaryRole(): UserRole | null { return this.userSubject.value?.primaryRole ?? null; }

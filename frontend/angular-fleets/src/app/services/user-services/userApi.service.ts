@@ -5,6 +5,7 @@ import {catchError, map, Observable, throwError} from "rxjs";
 import {AuthService} from "../auth/auth-services/auth.service";
 import {UserDataResult} from "angular-auth-oidc-client";
 import {UpdateUserRequest} from "../../models/private-user/update-user-request";
+import {UpdateNotificationPreferenceRequest} from "../../models/private-user/update-notification-preference-request";
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +60,12 @@ export class UserApiService {
 
   public removeDiscord() {
     return this.http.delete('/api/users/remove_discord');
+  }
+
+  public updateExternalNotificationPreference(pref: UpdateNotificationPreferenceRequest) {
+    return this.http.put<{label: string}>('/api/users/update_ext_note_pref', pref).pipe(
+      map(response => response.label)
+    );
   }
 
   public deleteUser() {
