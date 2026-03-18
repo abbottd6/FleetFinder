@@ -9,9 +9,11 @@ import org.springframework.data.domain.Page;
 
 public interface PushSubscriptionService {
 
+    Page<GetPushSubDto> getAllMyPushSubs(Users user, GenericPageRequestDto pageDto);
+
     GetPushSubDto createNewPushSub(Users user, CreatePushSubRequestDto dto);
 
     GetPushSubDto updatePushSub(Users user, UpdatePushSubRequestDto dto);
 
-    Page<GetPushSubDto> getAllMyPushSubs(Users user, GenericPageRequestDto pageDto);
+    Integer deletePushSub(Users user, Long idPushSub);
 }

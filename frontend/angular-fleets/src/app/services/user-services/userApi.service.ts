@@ -2,10 +2,8 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {catchError, map, Observable, throwError} from "rxjs";
-import {AuthService} from "../auth/auth-services/auth.service";
 import {UserDataResult} from "angular-auth-oidc-client";
 import {UpdateUserRequest} from "../../models/private-user/update-user-request";
-import {UpdateNotificationPreferenceRequest} from "../../models/private-user/update-notification-preference-request";
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +11,7 @@ import {UpdateNotificationPreferenceRequest} from "../../models/private-user/upd
 
 export class UserApiService {
 
-  constructor(private http: HttpClient, private readonly auth: AuthService) {}
+  constructor(private http: HttpClient) {}
 
   public getMe(profile: UserDataResult): Observable<PrivateUser> {
     return this.http.get<Partial<PrivateUser>>('/api/users/me').pipe(
@@ -60,12 +58,6 @@ export class UserApiService {
 
   public removeDiscord() {
     return this.http.delete('/api/users/remove_discord');
-  }
-
-  public updateExternalNotificationPreference(pref: UpdateNotificationPreferenceRequest) {
-    return this.http.put<{label: string}>('/api/users/update_ext_note_pref', pref).pipe(
-      map(response => response.label)
-    );
   }
 
   public deleteUser() {

@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.config.mappers;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrEditListingTemplateDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
@@ -36,30 +37,30 @@ import java.util.Objects;
 @Configuration
 public class ListingTemplateMappersConfig {
 
-    private final MapperLookupService mapperLookupService;
+    private final MapperLookupService mls;
 
-    public ListingTemplateMappersConfig(MapperLookupService mapperLookupService) {
-        this.mapperLookupService = mapperLookupService;
+    public ListingTemplateMappersConfig(MapperLookupService mls) {
+        this.mls = mls;
     }
 
     private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yy HH:mm")
             .withZone(ZoneOffset.UTC);
 
 
-    @Bean("templateDtoMapper")
-    public ModelMapper templateDtoMapper() {
+    @Bean("listingTemplateMapper")
+    public ModelMapper templatesMapper() {
 
-        ModelMapper mm = new ModelMapper();
-        mm.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        mm.addConverter(new AbstractConverter<Instant, String>() {
+        modelMapper.addConverter(new AbstractConverter<Instant, String>() {
             @Override
             protected String convert(Instant source) {
                 return source != null ? UTC_FORMATTER.format(source) : null;
             }
         });
 
-        mm.createTypeMap(ListingTemplate.class, ListingTemplateResponseDto.class)
+        modelMapper.createTypeMap(ListingTemplate.class, ListingTemplateResponseDto.class)
                 .addMappings(mapper -> {
                     mapper.using(ctx -> {
                         Users user = (Users) ctx.getSource();
@@ -219,17 +220,11 @@ public class ListingTemplateMappersConfig {
                     mapper.map(ListingTemplate::getLanguageCode, ListingTemplateResponseDto::setLanguageCode);
                 });
 
-        return mm;
-    }
 
-    @Bean("templateEntityMapper")
-    public ModelMapper templateEntityMapper() {
-
-        ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-        Converter<CreateGroupListingDto, Instant> dateTimeAndZoneToInstantConverter = ctx -> {
-            CreateGroupListingDto src = ctx.getSource();
+        Converter<CreateOrEditListingTemplateDto, Instant> dateTimeAndZoneToInstantConverter = ctx -> {
+            CreateOrEditListingTemplateDto src = ctx.getSource();
             if (src == null) return null;
 
             String dateStr = src.getEventDate();
@@ -246,28 +241,27 @@ public class ListingTemplateMappersConfig {
             return ZonedDateTime.of(date, time, zone).toInstant();
         };
 
-        modelMapper.createTypeMap(CreateGroupListingDto.class, ListingTemplate.class)
+        modelMapper.createTypeMap(CreateOrEditListingTemplateDto.class, ListingTemplate.class)
                 .addMappings(mapper -> {
 
-                    //skipping auto-generated fields
                     mapper.skip(ListingTemplate::setTemplateId);
                     mapper.skip(ListingTemplate::setCreationTimestamp);
 
                     //userId to user entity
-                    mapper.using((MappingContext<Long, Users> ctx) -> mapperLookupService.findUserById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getUserId, ListingTemplate::setUser);
+                    mapper.using((MappingContext<Long, Users> ctx) -> mls.findUserById(ctx.getSource()))
+                            .map(CreateOrEditListingTemplateDto::getUserId, ListingTemplate::setUser);
 
                     //serverId to server entity
-                    mapper.using((MappingContext<Integer, ServerRegion> ctx) -> mapperLookupService.findServerRegionById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getServerId, ListingTemplate::setServer);
+                    mapper.using((MappingContext<Integer, ServerRegion> ctx) -> mls.findServerRegionById(ctx.getSource()))
+                            .map(CreateOrEditListingTemplateDto::getServerId, ListingTemplate::setServer);
 
                     //environmentId to environment entity
-                    mapper.using((MappingContext<Integer, GameEnvironment> ctx) -> mapperLookupService.findEnvironmentById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getEnvironmentId, ListingTemplate::setEnvironment);
+                    mapper.using((MappingContext<Integer, GameEnvironment> ctx) -> mls.findEnvironmentById(ctx.getSource()))
+                            .map(CreateOrEditListingTemplateDto::getEnvironmentId, ListingTemplate::setEnvironment);
 
                     //experienceId to experience entity
-                    mapper.using((MappingContext<Integer, GameExperience> ctx) -> mapperLookupService.findExperienceById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getExperienceId, ListingTemplate::setExperience);
+                    mapper.using((MappingContext<Integer, GameExperience> ctx) -> mls.findExperienceById(ctx.getSource()))
+                            .map(CreateOrEditListingTemplateDto::getExperienceId, ListingTemplate::setExperience);
 
                     //listing title mapped automatically by model mapper due to property name and type match
 
@@ -277,23 +271,23 @@ public class ListingTemplateMappersConfig {
                         if (playStyleId == null) {
                             return null;
                         }
-                        return mapperLookupService.findPlayStyleById(ctx.getSource());
-                    }).map(CreateGroupListingDto::getPlayStyleId, ListingTemplate::setPlayStyle);
+                        return mls.findPlayStyleById(ctx.getSource());
+                    }).map(CreateOrEditListingTemplateDto::getPlayStyleId, ListingTemplate::setPlayStyle);
 
                     //legalityId to legality entity
-                    mapper.using((MappingContext<Integer, Legality> ctx) -> mapperLookupService.findLegalityById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getLegalityId, ListingTemplate::setLegality);
+                    mapper.using((MappingContext<Integer, Legality> ctx) -> mls.findLegalityById(ctx.getSource()))
+                            .map(CreateOrEditListingTemplateDto::getLegalityId, ListingTemplate::setLegality);
 
                     //groupStatusId to groupStatus entity
-                    mapper.using((MappingContext<Integer, GroupStatus> ctx) -> mapperLookupService.findGroupStatusById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getGroupStatusId, ListingTemplate::setGroupStatus);
+                    mapper.using((MappingContext<Integer, GroupStatus> ctx) -> mls.findGroupStatusById(ctx.getSource()))
+                            .map(CreateOrEditListingTemplateDto::getGroupStatusId, ListingTemplate::setGroupStatus);
 
                     //eventScheduleDate mapped to eventSchedule Instant
                     mapper.using(dateTimeAndZoneToInstantConverter).map(src -> src, ListingTemplate::setEventSchedule);
 
                     //categoryId to category entity
-                    mapper.using((MappingContext<Integer, GameplayCategory> ctx) -> mapperLookupService.findCategoryById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getCategoryId, ListingTemplate::setCategory);
+                    mapper.using((MappingContext<Integer, GameplayCategory> ctx) -> mls.findCategoryById(ctx.getSource()))
+                            .map(CreateOrEditListingTemplateDto::getCategoryId, ListingTemplate::setCategory);
 
                     //subcategoryId to subcategory entity
                     mapper.using((MappingContext<Integer, GameplaySubcategory> ctx) -> {
@@ -301,16 +295,16 @@ public class ListingTemplateMappersConfig {
                         if (subcategoryId == null) {
                             return null;
                         }
-                        return mapperLookupService.findSubcategoryById(ctx.getSource());
-                    }).map(CreateGroupListingDto::getSubcategoryId, ListingTemplate::setSubcategory);
+                        return mls.findSubcategoryById(ctx.getSource());
+                    }).map(CreateOrEditListingTemplateDto::getSubcategoryId, ListingTemplate::setSubcategory);
 
                     //pvpStatusId to pvp status entity
-                    mapper.using((MappingContext<Integer, PvpStatus> ctx) -> mapperLookupService.findPvpStatusById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getPvpStatusId, ListingTemplate::setPvpStatus);
+                    mapper.using((MappingContext<Integer, PvpStatus> ctx) -> mls.findPvpStatusById(ctx.getSource()))
+                            .map(CreateOrEditListingTemplateDto::getPvpStatusId, ListingTemplate::setPvpStatus);
 
                     //systemId to planetary system entity
-                    mapper.using((MappingContext<Integer, PlanetarySystem> ctx) -> mapperLookupService.findPlanetarySystemById(ctx.getSource()))
-                            .map(CreateGroupListingDto::getSystemId, ListingTemplate::setSystem);
+                    mapper.using((MappingContext<Integer, PlanetarySystem> ctx) -> mls.findPlanetarySystemById(ctx.getSource()))
+                            .map(CreateOrEditListingTemplateDto::getSystemId, ListingTemplate::setSystem);
 
                     //planetId to planet moon system entity
                     mapper.using((MappingContext<Integer, PlanetMoonSystem> ctx) -> {
@@ -319,12 +313,25 @@ public class ListingTemplateMappersConfig {
                             return null;
                         }
 
-                        return mapperLookupService.findPlanetMoonSystemById(planetId);
-                    }).map(CreateGroupListingDto::getPlanetId, ListingTemplate::setPlanetMoonSystem);
+                        return mls.findPlanetMoonSystemById(planetId);
+                    }).map(CreateOrEditListingTemplateDto::getPlanetId, ListingTemplate::setPlanetMoonSystem);
 
-                    mapper.map(CreateGroupListingDto::getLanguageCode, ListingTemplate::setLanguageCode);
+                    //listing description mapped automatically due to property name and type match
+
+                    //desired party size mapped automatically due to property name and type match
+
+                    //current party size mapped automatically due to property name and type match
+
+                    //available roles mapped automatically due to property name and type match
+
+                    //comsms option mapped automatically due to property name and type match
+
+                    //comsms service mapped automatically due to property name and type match
+
+                    //language code mapped automatically due to property name and type match
 
                 });
         return modelMapper;
     }
+
 }

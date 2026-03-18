@@ -1,13 +1,12 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {map, Subject, takeUntil} from "rxjs";
 import {UserService} from "../../../services/user-services/user.service";
-import {UserApiService} from "../../../services/user-services/userApi.service";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {MatLabel} from "@angular/material/input";
 import {MatIcon} from "@angular/material/icon";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {UpdateListingRequest} from "../../../models/group-listing/update-listing-request";
 import {UpdateNotificationPreferenceRequest} from "../../../models/private-user/update-notification-preference-request";
+import {NotificationApiService} from "../../../services/api-services/notification-api/notification-api.service";
 
 @Component({
   selector: 'app-profile-notification-settings-tab',
@@ -31,7 +30,7 @@ export class ProfileNotificationSettingsTabComponent implements OnInit, OnDestro
   public socialNotesControl: FormControl<boolean> = new FormControl();
   socialDisabled: boolean = false;
 
-  constructor(private userService: UserService, private userApiService: UserApiService) {
+  constructor(private userService: UserService, private notificationApiService: NotificationApiService) {
     this.getUserNotePrefs();
   }
 
@@ -45,14 +44,14 @@ export class ProfileNotificationSettingsTabComponent implements OnInit, OnDestro
     this.socialNotesControl.setValue(this.userService.socialNotesEnabled ?? false);
   }
 
-  updateSysNotesPref() {
+  updateDiscordSysNotesPref() {
     const label: string = 'sysNotes';
     const val = this.sysNotesControl.value;
 
     const updateRequest = new UpdateNotificationPreferenceRequest(label, val);
 
 
-    this.userApiService.updateExternalNotificationPreference(updateRequest).subscribe(
+    this.notificationApiService.updateExternalNotificationPreference(updateRequest).subscribe(
       response => {
         console.log(response);
         this.userService.refreshUser();
@@ -62,13 +61,13 @@ export class ProfileNotificationSettingsTabComponent implements OnInit, OnDestro
     );
   }
 
-  updateGroupNotesPref() {
+  updateDiscordGroupNotesPref() {
     const label: string = 'groupNotes';
     const val = this.groupNotesControl.value;
 
     const updateRequest = new UpdateNotificationPreferenceRequest(label, val);
 
-    this.userApiService.updateExternalNotificationPreference(updateRequest).subscribe(
+    this.notificationApiService.updateExternalNotificationPreference(updateRequest).subscribe(
       response => {
         this.groupDisabled = true;
         console.log(response);
@@ -79,13 +78,13 @@ export class ProfileNotificationSettingsTabComponent implements OnInit, OnDestro
     )
   }
 
-  updateSocialNotesPref() {
+  updateDiscordSocialNotesPref() {
     const label: string = 'socialNotes';
     const val = this.socialNotesControl.value;
 
     const updateRequest = new UpdateNotificationPreferenceRequest(label, val);
 
-    this.userApiService.updateExternalNotificationPreference(updateRequest).subscribe(
+    this.notificationApiService.updateExternalNotificationPreference(updateRequest).subscribe(
       response => {
         this.socialDisabled = true;
         console.log(response);

@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.unit_tests.services.listing_services;
 
 import com.sc_fleetfinder.fleets.DAO.ListingTemplateRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrEditListingTemplateDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingTemplate;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -90,7 +91,7 @@ class ListingTemplateServiceImplTest {
     @Test
     void createTemplate_Success_ShortTitle() {
         String shortTitle = "Short title";
-        CreateGroupListingDto dto = new CreateGroupListingDto();
+        CreateOrEditListingTemplateDto dto = new CreateOrEditListingTemplateDto();
         ListingTemplate mockTemplate = new ListingTemplate();
         mockTemplate.setListingTitle(shortTitle);
 
@@ -110,7 +111,7 @@ class ListingTemplateServiceImplTest {
     void createTemplate_Success_LongTitle_Truncated() {
         // title > 25 chars — service truncates at 25 + "..."
         String longTitle = "This title is longer than twenty-five characters";
-        CreateGroupListingDto dto = new CreateGroupListingDto();
+        CreateOrEditListingTemplateDto dto = new CreateOrEditListingTemplateDto();
         ListingTemplate mockTemplate = new ListingTemplate();
         mockTemplate.setListingTitle(longTitle);
 
@@ -128,7 +129,7 @@ class ListingTemplateServiceImplTest {
 
     @Test
     void createTemplate_Fail_ExceptionThrown() {
-        CreateGroupListingDto dto = new CreateGroupListingDto();
+        CreateOrEditListingTemplateDto dto = new CreateOrEditListingTemplateDto();
         when(tcs.convertToEntity(any())).thenThrow(new RuntimeException("Conversion failed"));
 
         try (LogCaptor logCaptor = LogCaptor.forClass(ListingTemplateServiceImpl.class)) {

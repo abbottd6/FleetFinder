@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrEditListingTemplateDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
@@ -148,7 +149,7 @@ public class UserControllerTest {
         mockDto.setLanguageCode(LanguageOptions.English);
 
         doAnswer(inv -> ResponseEntity.ok(Map.of("message", "Template saved: Test template title")))
-                .when(lts).createTemplate(any(Users.class), any(CreateGroupListingDto.class));
+                .when(lts).createTemplate(any(Users.class), any(CreateOrEditListingTemplateDto.class));
 
         mockMvc.perform(post("/api/users/my/templates/save")
                         .with(jwt()
@@ -188,7 +189,7 @@ public class UserControllerTest {
         mockDto.setLanguageCode(LanguageOptions.English);
 
         doAnswer(inv -> ResponseEntity.ok(Map.of("message", "Template saved: Test template title")))
-                .when(lts).createTemplate(any(Users.class), any(CreateGroupListingDto.class));
+                .when(lts).createTemplate(any(Users.class), any(CreateOrEditListingTemplateDto.class));
 
         mockMvc.perform(post("/api/users/my/templates/save")
                         .with(jwt()
@@ -202,12 +203,14 @@ public class UserControllerTest {
 
     @Test
     void createTemplate_Fail_ServiceError() throws Exception {
+
+
         CreateGroupListingDto mockDto = new CreateGroupListingDto();
         mockDto.setLanguageCode(LanguageOptions.English);
 
         doAnswer(inv -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Map.of("message", "Could note create the listing template.")))
-                .when(lts).createTemplate(any(Users.class), any(CreateGroupListingDto.class));
+                .when(lts).createTemplate(any(Users.class), any(CreateOrEditListingTemplateDto.class));
 
         mockMvc.perform(post("/api/users/my/templates/save")
                         .with(jwt()

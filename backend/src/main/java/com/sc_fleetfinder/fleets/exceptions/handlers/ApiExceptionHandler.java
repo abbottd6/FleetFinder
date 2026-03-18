@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.exceptions.handlers;
 
 import com.sc_fleetfinder.fleets.exceptions.ConfirmationRequiredException;
+import com.sc_fleetfinder.fleets.exceptions.ContentLimitException;
 import com.sc_fleetfinder.fleets.exceptions.ConversationIntegrityException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,16 @@ public class ApiExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 Map.of("error", "NOT_FOUND",
+                        "message", e.getMessage())
+        );
+    }
+
+    @ExceptionHandler(ContentLimitException.class)
+    public ResponseEntity<Map<String, Object>> handleContentExcess(ContentLimitException e) {
+        log.info("User has reached a content limit: {}", e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                Map.of("error", "FORBIDDEN",
                         "message", e.getMessage())
         );
     }

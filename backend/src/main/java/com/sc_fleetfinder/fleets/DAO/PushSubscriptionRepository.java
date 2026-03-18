@@ -15,4 +15,6 @@ public interface PushSubscriptionRepository extends JpaRepository<PushSubscripti
     Optional<PushSubscription> findByUserAndDeviceUrl(Users user, String deviceUrl);
 
     Optional<PushSubscription> findByUserAndIdPushSub(Users user, Long idPushSub);
+
+    Integer deleteByUserAndIdPushSub(Users user, Long idPushSub);
 }

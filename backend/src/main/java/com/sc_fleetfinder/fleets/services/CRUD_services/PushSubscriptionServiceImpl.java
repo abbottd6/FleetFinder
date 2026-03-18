@@ -8,8 +8,11 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.G
 import com.sc_fleetfinder.fleets.entities.PushSubscription;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
+import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,16 +26,25 @@ public class PushSubscriptionServiceImpl implements PushSubscriptionService {
     private final PushSubscriptionRepository pushSubRepo;
     private final ModelMapper modelMapper;
 
-    public PushSubscriptionServiceImpl(PushSubscriptionRepository pushSubRepo, ModelMapper modelMapper) {
+    public PushSubscriptionServiceImpl(PushSubscriptionRepository pushSubRepo,
+                                       @Qualifier("pushSubscriptionMapper")ModelMapper modelMapper) {
         this.pushSubRepo = pushSubRepo;
         this.modelMapper = modelMapper;
+    }
+
+    @Override
+    public Page<GetPushSubDto> getAllMyPushSubs(Users user, GenericPageRequestDto pageDto) {
+        Pageable pageable = PageRequest.of(pageDto.getPageIdx(), pageDto.getPageSize());
+
+        Page<PushSubscription> entityPage = pushSubRepo.getPushSubscriptionsByUser(user, pageable);
+        return entityPage.map(pushSub -> modelMapper.map(pushSub, GetPushSubDto.class));
     }
 
     @Override
     public GetPushSubDto createNewPushSub(Users user, CreatePushSubRequestDto dto) {
 
         if(pushSubRepo.findByUserAndDeviceUrl(user, dto.getDeviceUrl()).isPresent()) {
-            throw new IllegalArgumentException("Push subscription already exists for this user and device.");
+            throw new DuplicateEntryException("Push subscription already exists for this user and device.");
         }
 
         PushSubscription newPushSub = new PushSubscription(user, dto);
@@ -73,10 +85,19 @@ public class PushSubscriptionServiceImpl implements PushSubscriptionService {
     }
 
     @Override
-    public Page<GetPushSubDto> getAllMyPushSubs(Users user, GenericPageRequestDto pageDto) {
-        Pageable pageable = PageRequest.of(pageDto.getPageIdx(), pageDto.getPageSize());
+    public Integer deletePushSub(Users user, Long idPushSub) {
+        Integer deletedCount = pushSubRepo.deleteByUserAndIdPushSub(user, idPushSub);
 
-        Page<PushSubscription> entityPage = pushSubRepo.getPushSubscriptionsByUser(user, pageable);
-        return entityPage.map(pushSub -> modelMapper.map(pushSub, GetPushSubDto.class));
+        if(deletedCount == 0) {
+            log.warn("User with ID: {} attempted to delete a PushSubscription with ID: {}. \n"
+                    + "The action failed because this PushSub either did not belong to them, "
+                    + " or it did not exist.", user.getUserId(), idPushSub);
+
+            throw new ResourceNotFoundException("PushSubscription", user.getUserId(),
+                    idPushSub);
+        }
+        else {
+            return deletedCount;
+        }
     }
 }

@@ -5,7 +5,7 @@
       <mat-label class="toggle-label">System Notifications:</mat-label>
       <mat-slide-toggle
         [formControl]="sysNotesControl"
-        (change)="updateSysNotesPref()"
+        (change)="updateDiscordSysNotesPref()"
         [disabled]="sysDisabled">
       </mat-slide-toggle>
     </div>
@@ -13,7 +13,7 @@
       <mat-label class="toggle-label">Group Notifications:</mat-label>
       <mat-slide-toggle
         [formControl]="groupNotesControl"
-        (change)="updateGroupNotesPref()"
+        (change)="updateDiscordGroupNotesPref()"
         [disabled]="groupDisabled">
       </mat-slide-toggle>
     </div>
@@ -21,7 +21,7 @@
       <mat-label class="toggle-label">Social Notifications:</mat-label>
       <mat-slide-toggle
         [formControl]="socialNotesControl"
-        (change)="updateSocialNotesPref()"
+        (change)="updateDiscordSocialNotesPref()"
         [disabled]="socialDisabled">
       </mat-slide-toggle>
     </div>

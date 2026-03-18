@@ -125,7 +125,7 @@ The listing feed uses **`POST /api/group-listings/search`** with a `SearchListin
 
 ### Database
 
-Schema: `sc_fleetfinder`. Migrations: Flyway V1–V9, V11–V14 (no V10) in `backend/src/main/resources/migration/`. V13 makes `language_code` NOT NULL on `group_listing`, `listing_template`, and `listing_archive`. V14 adds `discord_id`, notification preference fields, and `user_custom_notification`/`new_listing_notification_queue` tables.
+Schema: `sc_fleetfinder`. Migrations: Flyway V1–V9, V11–V16 (no V10) in `backend/src/main/resources/migration/`. V13 makes `language_code` NOT NULL on `group_listing`, `listing_template`, and `listing_archive`. V14 adds `discord_id` and notification preference fields to `users`. V15 creates `user_custom_notification` (14-column custom notification filter table with FK to all reference data) and `new_listing_notify_queue`. V16 creates `push_subscription` (Web Push API — device_url, public_key, browser_secret, per-category enabled flags).
 
 Key relationships:
 - `users` → OneToMany `group_listing` (CASCADE DELETE)

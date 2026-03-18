@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.ListingTemplateRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrEditListingTemplateDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingTemplate;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -41,7 +42,7 @@ public class ListingTemplateServiceImpl implements ListingTemplateService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> createTemplate(Users user, CreateGroupListingDto dto) {
+    public ResponseEntity<?> createTemplate(Users user, CreateOrEditListingTemplateDto dto) {
         Map<String, String> response = new HashMap<>();
 
         try {
