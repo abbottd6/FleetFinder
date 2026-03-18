@@ -1,0 +1,82 @@
+package com.sc_fleetfinder.fleets.services.CRUD_services;
+
+import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.CreatePushSubRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdatePushSubRequestDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPushSubDto;
+import com.sc_fleetfinder.fleets.entities.PushSubscription;
+import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
+import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+
+@Service
+@Slf4j
+public class PushSubscriptionServiceImpl implements PushSubscriptionService {
+
+    private final PushSubscriptionRepository pushSubRepo;
+    private final ModelMapper modelMapper;
+
+    public PushSubscriptionServiceImpl(PushSubscriptionRepository pushSubRepo, ModelMapper modelMapper) {
+        this.pushSubRepo = pushSubRepo;
+        this.modelMapper = modelMapper;
+    }
+
+    @Override
+    public GetPushSubDto createNewPushSub(Users user, CreatePushSubRequestDto dto) {
+
+        if(pushSubRepo.findByUserAndDeviceUrl(user, dto.getDeviceUrl()).isPresent()) {
+            throw new IllegalArgumentException("Push subscription already exists for this user and device.");
+        }
+
+        PushSubscription newPushSub = new PushSubscription(user, dto);
+
+        PushSubscription saved = pushSubRepo.save(newPushSub);
+
+        return modelMapper.map(saved, GetPushSubDto.class);
+    }
+
+    @Override
+    public GetPushSubDto updatePushSub(Users user, UpdatePushSubRequestDto dto) {
+
+        PushSubscription toUpdate = pushSubRepo.findByUserAndIdPushSub(user, dto.getIdPushSub())
+                .orElseThrow(() -> new ActionNotAuthorizedException(user.getUserId(), "update", "PushSubscription",
+                        dto.getIdPushSub()));
+
+        switch (dto.getLabel()) {
+            case "sysNotes":
+                toUpdate.setSysNotesEnabled(dto.getValue());
+                break;
+            case "groupNotes":
+                toUpdate.setGroupNotesEnabled(dto.getValue());
+                break;
+            case "socialNotes":
+                toUpdate.setSocialNotesEnabled(dto.getValue());
+                break;
+            default:
+                log.error("A user attempted to update a PushSubscription with a label that does not match one of the " +
+                        "explicitly defined types: {}. Should be 'sysNotes', 'groupNotes', or 'socialNotes'."
+                        , dto.getLabel());
+
+                throw new IllegalArgumentException(dto.getLabel() + " is not a valid notification category.");
+        }
+
+        PushSubscription saved = pushSubRepo.save(toUpdate);
+
+        return modelMapper.map(saved, GetPushSubDto.class);
+    }
+
+    @Override
+    public Page<GetPushSubDto> getAllMyPushSubs(Users user, GenericPageRequestDto pageDto) {
+        Pageable pageable = PageRequest.of(pageDto.getPageIdx(), pageDto.getPageSize());
+
+        Page<PushSubscription> entityPage = pushSubRepo.getPushSubscriptionsByUser(user, pageable);
+        return entityPage.map(pushSub -> modelMapper.map(pushSub, GetPushSubDto.class));
+    }
+}

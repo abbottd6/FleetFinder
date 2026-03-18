@@ -5,16 +5,20 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.AddHiddenRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.SubmitListingReportDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.CreatePushSubRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdatePushSubRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserNotePrefDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdateUserNotePrefDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPushSubDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.HiddenListingService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingBookmarkService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingTemplateService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.PushSubscriptionService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.reporting_services.ListingReportingService;
 import jakarta.validation.Valid;
@@ -52,17 +56,20 @@ public class UserController {
     private final ListingBookmarkService bms;
     private final UserService userService;
     private final ListingTemplateService lts;
+    private final PushSubscriptionService pushSubService;
 
     public UserController(HiddenListingService hls,
                           ListingReportingService lrs,
                           ListingBookmarkService bms,
                           UserService userService,
-                          ListingTemplateService lts) {
+                          ListingTemplateService lts,
+                          PushSubscriptionService pushSubService) {
         this.hls = hls;
         this.lrs = lrs;
         this.bms = bms;
         this.userService = userService;
         this.lts = lts;
+        this.pushSubService = pushSubService;
     };
 
     @GetMapping
@@ -129,6 +136,52 @@ public class UserController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/create_push_sub")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> createPushSub(@AuthenticationPrincipal Jwt jwt,
+                                           @Valid @RequestBody CreatePushSubRequestDto dto) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        GetPushSubDto responseDto = pushSubService.createNewPushSub(user, dto);
+
+        Map<String, GetPushSubDto> response = new HashMap<>();
+        response.put("response", responseDto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/update_push_sub")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> updatePushSub(@AuthenticationPrincipal Jwt jwt,
+                                           @Valid @RequestBody UpdatePushSubRequestDto dto) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        GetPushSubDto responseDto = pushSubService.updatePushSub(user, dto);
+
+        Map<String, GetPushSubDto> response = new HashMap<>();
+        response.put("response", responseDto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/get_my_push_subs")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> getMyPushSubs(@AuthenticationPrincipal Jwt jwt,
+                                           @RequestBody GenericPageRequestDto pageDto) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        Page<GetPushSubDto> responseDtos = pushSubService.getAllMyPushSubs(user, pageDto);
+
+        Map<String, Page<GetPushSubDto>> response = new HashMap<>();
+        response.put("response", responseDtos);
+
+        return ResponseEntity.ok(response);
+    }
+
 
     @GetMapping("/discord_me")
     @PreAuthorize("isAuthenticated() and hasRole('user')")

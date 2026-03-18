@@ -4,7 +4,11 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvir
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplaySubcategory;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GroupStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Legality;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlanetarySystem;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,6 +52,22 @@ public class UserCustomNotification {
     @Column(name = "tag_label", nullable = true)
     @Size(max = 32)
     private String tagLabel;
+
+    @ManyToOne
+    @JoinColumn(name = "server_id", nullable = true)
+    private ServerRegion server;
+
+    @ManyToOne
+    @JoinColumn(name = "system_id", nullable = true)
+    private PlanetarySystem planetarySystem;
+
+    @ManyToOne
+    @JoinColumn(name = "legality_id", nullable = true)
+    private Legality legality;
+
+    @ManyToOne
+    @JoinColumn(name = "group_status_id", nullable = true)
+    private GroupStatus groupStatus;
 
     @ManyToOne
     @JoinColumn(name = "environment_id", nullable = true)
