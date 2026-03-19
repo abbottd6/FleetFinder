@@ -8,7 +8,7 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.junit.jupiter.api.Disabled;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
@@ -27,6 +27,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -286,6 +287,267 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
     @Test
     void testDeletePushSub_NoAuth_Returns401() throws Exception {
         mockMvc.perform(delete("/api/user_notification_preferences/delete_push_sub/1")
+                        .with(csrf()))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // ─── custom notification helpers ──────────────────────────────────────────
+
+    private Long insertCustomNote(Long userId) {
+        jdbcTemplate.update(
+                "INSERT INTO user_custom_notification (user_id, enabled) VALUES (?, 1)",
+                userId
+        );
+        return jdbcTemplate.queryForObject(
+                "SELECT MAX(id_custom_note) FROM user_custom_notification", Long.class);
+    }
+
+    private Long getOtherUserId() {
+        Users other = userRepository.findByKeycloakId("customNoteOtherIntKcId")
+                .orElseGet(() -> {
+                    Users u = new Users();
+                    u.setKeycloakId("customNoteOtherIntKcId");
+                    u.setUsername("CustomNoteOtherIntUser");
+                    u.setEmail("customnoteother_int@test.com");
+                    u.setIsDeleted(false);
+                    return userRepository.save(u);
+                });
+        return other.getUserId();
+    }
+
+    // ─── PUT /update_discord_notification_pref ────────────────────────────────
+
+    @Test
+    void testUpdateDiscordNotePref_Success_SysNotes_Returns200() throws Exception {
+        mockMvc.perform(put("/api/user_notification_preferences/update_discord_notification_pref")
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"label\":\"sysNotes\",\"value\":true}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testUpdateDiscordNotePref_InvalidLabel_Returns400() throws Exception {
+        mockMvc.perform(put("/api/user_notification_preferences/update_discord_notification_pref")
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"label\":\"badLabel\",\"value\":true}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testUpdateDiscordNotePref_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(put("/api/user_notification_preferences/update_discord_notification_pref")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"label\":\"sysNotes\",\"value\":true}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // ─── GET /get_my_custom_notifications ─────────────────────────────────────
+    // These tests depend on the bug fix in CustomNotificationServiceImpl line 39:
+    // modelMapper.map(UserCustomNotification.class, ...) must be modelMapper.map(cNote, ...)
+
+    @Test
+    @Disabled("Requires production bug fix: CustomNotificationServiceImpl line 39 passes class literal instead of entity instance to ModelMapper")
+    void testGetMyCustomNotifications_Success_ReturnsTwoNotes() throws Exception {
+        Long userId = getTestUserId();
+        insertCustomNote(userId);
+        insertCustomNote(userId);
+
+        mockMvc.perform(get("/api/user_notification_preferences/get_my_custom_notifications")
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"pageIdx\":0,\"pageSize\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(2));
+    }
+
+    @Test
+    @Disabled("Requires production bug fix: CustomNotificationServiceImpl line 39 passes class literal instead of entity instance to ModelMapper")
+    void testGetMyCustomNotifications_OnlyReturnsOwnNotes() throws Exception {
+        Long userId = getTestUserId();
+        Long otherId = getOtherUserId();
+        insertCustomNote(userId);
+        insertCustomNote(otherId);
+
+        mockMvc.perform(get("/api/user_notification_preferences/get_my_custom_notifications")
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"pageIdx\":0,\"pageSize\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
+    }
+
+    // ─── POST /create_custom_notification ─────────────────────────────────────
+
+    @Test
+    @Disabled("Requires production bug fix: CustomNotificationMapperConfig converters call findById(null) when DTO reference ID fields are null")
+    void testCreateCustomNotification_Success_PersistsToDb() throws Exception {
+        Long userId = getTestUserId();
+
+        mockMvc.perform(post("/api/user_notification_preferences/create_custom_notification")
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"PvE Only\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customNoteId").isNumber());
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM user_custom_notification WHERE user_id = ?", Integer.class, userId);
+        assertThat(count).isEqualTo(1);
+    }
+
+    @Test
+    void testCreateCustomNotification_AtLimit_Returns403() throws Exception {
+        Long userId = getTestUserId();
+        for (int i = 0; i < 10; i++) {
+            insertCustomNote(userId);
+        }
+
+        mockMvc.perform(post("/api/user_notification_preferences/create_custom_notification")
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"Over Limit\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testCreateCustomNotification_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(post("/api/user_notification_preferences/create_custom_notification")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"PvE Only\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // ─── PUT /edit_custom_notification/{noteId} ───────────────────────────────
+
+    @Test
+    @Disabled("Requires production bug fix: CustomNotificationMapperConfig converters call findById(null) when DTO reference ID fields are null")
+    void testEditCustomNotification_Success_UpdatesTagLabel() throws Exception {
+        Long userId = getTestUserId();
+        Long noteId = insertCustomNote(userId);
+
+        mockMvc.perform(put("/api/user_notification_preferences/edit_custom_notification/" + noteId)
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"Updated Label\"}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testEditCustomNotification_WrongOwner_Returns401() throws Exception {
+        Long otherId = getOtherUserId();
+        Long noteId = insertCustomNote(otherId);
+
+        mockMvc.perform(put("/api/user_notification_preferences/edit_custom_notification/" + noteId)
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"Updated\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testEditCustomNotification_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(put("/api/user_notification_preferences/edit_custom_notification/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"Updated\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // ─── PATCH /custom_notification_state_change/{id} ────────────────────────
+
+    @Test
+    void testStateChange_Enable_Returns200() throws Exception {
+        Long userId = getTestUserId();
+        Long noteId = insertCustomNote(userId);
+
+        mockMvc.perform(patch("/api/user_notification_preferences/custom_notification_state_change/" + noteId)
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .with(csrf())
+                        .param("enabledState", "false"))
+                .andExpect(status().isOk());
+
+        Integer enabled = jdbcTemplate.queryForObject(
+                "SELECT enabled FROM user_custom_notification WHERE id_custom_note = ?",
+                Integer.class, noteId);
+        assertThat(enabled).isEqualTo(0);
+    }
+
+    @Test
+    void testStateChange_WrongOwner_Returns401() throws Exception {
+        Long otherId = getOtherUserId();
+        Long noteId = insertCustomNote(otherId);
+
+        mockMvc.perform(patch("/api/user_notification_preferences/custom_notification_state_change/" + noteId)
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .with(csrf())
+                        .param("enabledState", "false"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // ─── DELETE /delete_custom_notification/{id} ──────────────────────────────
+
+    @Test
+    void testDeleteCustomNotification_Success_RemovesFromDb() throws Exception {
+        Long userId = getTestUserId();
+        Long noteId = insertCustomNote(userId);
+
+        mockMvc.perform(delete("/api/user_notification_preferences/delete_custom_notification/" + noteId)
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isOk());
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM user_custom_notification WHERE id_custom_note = ?",
+                Integer.class, noteId);
+        assertThat(count).isEqualTo(0);
+    }
+
+    @Test
+    void testDeleteCustomNotification_WrongOwner_Returns401() throws Exception {
+        Long otherId = getOtherUserId();
+        Long noteId = insertCustomNote(otherId);
+
+        mockMvc.perform(delete("/api/user_notification_preferences/delete_custom_notification/" + noteId)
+                        .with(jwt()
+                                .jwt(j -> j.subject(MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testDeleteCustomNotification_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(delete("/api/user_notification_preferences/delete_custom_notification/1")
                         .with(csrf()))
                 .andExpect(status().isUnauthorized());
     }

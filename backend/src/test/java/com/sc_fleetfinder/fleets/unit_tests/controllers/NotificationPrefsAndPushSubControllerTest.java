@@ -7,7 +7,10 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.G
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.NotificationPrefsAndPushSubController;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetCustomNotificationResponseDto;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
+import com.sc_fleetfinder.fleets.exceptions.ContentLimitException;
+import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.CustomNotificationService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.PushSubscriptionService;
@@ -32,11 +35,14 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -281,5 +287,233 @@ class NotificationPrefsAndPushSubControllerTest {
                                 .jwt(j -> j.claim("sub", MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user"))))
                 .andExpect(status().isNotFound());
+    }
+
+    // ─── PUT /update_discord_notification_pref ────────────────────────────────
+
+    @Test
+    void testUpdateDiscordNotePref_Success_Returns200() throws Exception {
+        when(userService.updateUserNotificationPreference(any(), any())).thenReturn(true);
+
+        mockMvc.perform(put("/api/user_notification_preferences/update_discord_notification_pref")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"label\":\"sysNotes\",\"value\":true}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testUpdateDiscordNotePref_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(put("/api/user_notification_preferences/update_discord_notification_pref")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"label\":\"sysNotes\",\"value\":true}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testUpdateDiscordNotePref_InvalidLabel_Returns400() throws Exception {
+        // InvalidUserDataException has @ResponseStatus(BAD_REQUEST) → 400
+        when(userService.updateUserNotificationPreference(any(), any()))
+                .thenThrow(new InvalidUserDataException("Invalid label"));
+
+        mockMvc.perform(put("/api/user_notification_preferences/update_discord_notification_pref")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"label\":\"badLabel\",\"value\":true}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    // ─── GET /get_my_custom_notifications ─────────────────────────────────────
+
+    @Test
+    void testGetMyCustomNotifications_Success_Returns200() throws Exception {
+        GetCustomNotificationResponseDto dto = new GetCustomNotificationResponseDto();
+        dto.setCustomNoteId(1L);
+        dto.setEnabled(true);
+        Page<GetCustomNotificationResponseDto> page = new PageImpl<>(List.of(dto));
+
+        when(customNotificationService.getAllMyCustomNotifications(any(), any())).thenReturn(page);
+
+        mockMvc.perform(get("/api/user_notification_preferences/get_my_custom_notifications")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"pageIdx\":0,\"pageSize\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
+    }
+
+    @Test
+    void testGetMyCustomNotifications_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(get("/api/user_notification_preferences/get_my_custom_notifications")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"pageIdx\":0,\"pageSize\":10}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // ─── POST /create_custom_notification ────────────────────────────────────
+
+    @Test
+    void testCreateCustomNotification_Success_Returns200() throws Exception {
+        GetCustomNotificationResponseDto responseDto = new GetCustomNotificationResponseDto();
+        responseDto.setCustomNoteId(1L);
+
+        when(customNotificationService.createNewCustomNotification(any(), any())).thenReturn(responseDto);
+
+        mockMvc.perform(post("/api/user_notification_preferences/create_custom_notification")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"PvE Only\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customNoteId").value(1));
+    }
+
+    @Test
+    void testCreateCustomNotification_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(post("/api/user_notification_preferences/create_custom_notification")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"PvE Only\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testCreateCustomNotification_TagLabelTooLong_Returns400() throws Exception {
+        // @Size(max=32) on tagLabel field in CreateOrEditCustomNotificationDto → 400
+        String tooLong = "a".repeat(33);
+
+        mockMvc.perform(post("/api/user_notification_preferences/create_custom_notification")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"" + tooLong + "\"}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testCreateCustomNotification_AtLimit_Returns403() throws Exception {
+        // ContentLimitException has @ResponseStatus(FORBIDDEN) → 403
+        when(customNotificationService.createNewCustomNotification(any(), any()))
+                .thenThrow(new ContentLimitException(1L, "UserCustomNotification", 10));
+
+        mockMvc.perform(post("/api/user_notification_preferences/create_custom_notification")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"Test\"}"))
+                .andExpect(status().isForbidden());
+    }
+
+    // ─── PUT /edit_custom_notification/{noteId} ───────────────────────────────
+
+    @Test
+    void testEditCustomNotification_Success_Returns200() throws Exception {
+        GetCustomNotificationResponseDto responseDto = new GetCustomNotificationResponseDto();
+        responseDto.setCustomNoteId(1L);
+
+        when(customNotificationService.editCustomNotification(any(), eq(1L), any())).thenReturn(responseDto);
+
+        mockMvc.perform(put("/api/user_notification_preferences/edit_custom_notification/1")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"Updated\"}"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testEditCustomNotification_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(put("/api/user_notification_preferences/edit_custom_notification/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"Updated\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testEditCustomNotification_NotOwner_Returns401() throws Exception {
+        when(customNotificationService.editCustomNotification(any(), eq(1L), any()))
+                .thenThrow(new ActionNotAuthorizedException(1L, "edit", "UserCustomNotification", 1L));
+
+        mockMvc.perform(put("/api/user_notification_preferences/edit_custom_notification/1")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"tagLabel\":\"Updated\"}"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // ─── PATCH /custom_notification_state_change/{id} ────────────────────────
+
+    @Test
+    void testStateChange_Success_Returns200() throws Exception {
+        doNothing().when(customNotificationService).enablementStateChange(any(), eq(1L), eq(true));
+
+        mockMvc.perform(patch("/api/user_notification_preferences/custom_notification_state_change/1")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .param("enabledState", "true"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testStateChange_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(patch("/api/user_notification_preferences/custom_notification_state_change/1")
+                        .param("enabledState", "true"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testStateChange_NotOwner_Returns401() throws Exception {
+        doThrow(new ActionNotAuthorizedException(1L, "state change", "UserCustomNotification", 1L))
+                .when(customNotificationService).enablementStateChange(any(), any(), any());
+
+        mockMvc.perform(patch("/api/user_notification_preferences/custom_notification_state_change/1")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .param("enabledState", "true"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // ─── DELETE /delete_custom_notification/{id} ─────────────────────────────
+
+    @Test
+    void testDeleteCustomNotification_Success_Returns200() throws Exception {
+        doNothing().when(customNotificationService).deleteCustomNotification(any(), eq(1L));
+
+        mockMvc.perform(delete("/api/user_notification_preferences/delete_custom_notification/1")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testDeleteCustomNotification_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(delete("/api/user_notification_preferences/delete_custom_notification/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testDeleteCustomNotification_NotOwner_Returns401() throws Exception {
+        doThrow(new ActionNotAuthorizedException(1L, "delete", "UserCustomNotification", 1L))
+                .when(customNotificationService).deleteCustomNotification(any(), any());
+
+        mockMvc.perform(delete("/api/user_notification_preferences/delete_custom_notification/1")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isUnauthorized());
     }
 }
