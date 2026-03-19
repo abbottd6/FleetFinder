@@ -14,6 +14,10 @@ import {UserApiService} from "./userApi.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {WsGatewayService} from "../websocket-messaging/ws-gateway.service";
+import {
+  ConfirmDelinkDiscordPopupComponent
+} from "../../components/pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component";
+import {MatDialog} from "@angular/material/dialog";
 
 export enum UserRole {
   admin = 'admin',
@@ -70,7 +74,7 @@ export class UserService {
       shareReplay({bufferSize: 1, refCount: true})
   );
 
-  constructor() {
+  constructor(private dialog: MatDialog, private userApiService: UserApiService) {
 
     this.auth.authClaims$.pipe(
       filter(data => !!data && !!data.userData)
@@ -119,15 +123,6 @@ export class UserService {
 
     this.ws.isConnected$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {});
 
-    // this.auth.tokenReady$.pipe(
-    //   takeUntilDestroyed(this.destroyRef),
-    // ).subscribe(token => {
-    //     console.log("connect token: ", token.substring(0,20));
-    //     if(token && !this.ws.isConnected()) {
-    //       this.ws.connect();
-    //       console.log('connect triggered');
-    //     }
-    // });
   }
 
   kcProfileRefresh() {
@@ -150,6 +145,30 @@ export class UserService {
       role = UserRole.user
     }
     return role;
+  }
+
+  userLinkDiscord() {
+    this.userApiService.discordMe().subscribe(url => {
+      sessionStorage.setItem('pendingDiscordLink', 'true');
+      window.location.href = url;
+    })
+  }
+
+  confirmRemoveDiscord() {
+    const dialogRef = this.dialog.open(ConfirmDelinkDiscordPopupComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.removeDiscordLink();
+      }
+    })
+  }
+
+  removeDiscordLink() {
+    this.userApiService.removeDiscord().subscribe( response => {
+        this.kcProfileRefresh();
+      }
+    )
   }
 
   get sessionUser(): SessionUser | null { return this.userSubject.value ?? null; }

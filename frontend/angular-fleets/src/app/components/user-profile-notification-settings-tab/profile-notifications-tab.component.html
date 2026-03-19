@@ -1,0 +1,119 @@
+<div class="title-container">
+  <h5>Notifications:</h5>
+</div>
+<mat-accordion
+  class="settings-container"
+  [multi]="true">
+
+  <!-- DISCORD NOTIFICATIONS ------------------------------------------------------------->
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Discord Notification Settings
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="toggles-container">
+      <div class="dynamic-discord-container">
+        <ng-container *ngIf="!userService.discordUsername; else hasDisc">
+          <div class="toggle-row">
+            <mat-label class="toggle-label">Discord User:</mat-label>
+            <a class="disc-account-link"
+               (click)="userService.userLinkDiscord()">
+              <span class="bracky">[</span> Link Discord <span class="bracky">]</span>
+            </a>
+          </div>
+        </ng-container>
+        <ng-template #hasDisc>
+          <div class="expanded-toggle-row">
+            <mat-label class="toggle-label">Discord User:</mat-label>
+            <span id="discUsername">{{ userService.discordUsername }}</span>
+            <a class="disc-account-unlink"
+               (click)="userService.confirmRemoveDiscord()">
+              <span class="bracky">[</span> Remove Discord <span class="bracky">]</span>
+            </a>
+          </div>
+        </ng-template>
+      </div>
+      <div class="toggle-row" [class.three-col-toggle-row]="discSysNotesSaved">
+        <mat-label class="toggle-label">System Notifications:</mat-label>
+        <mat-slide-toggle
+          [formControl]="discSysNotesControl"
+          (change)="updateDiscordSysNotesPref()">
+        </mat-slide-toggle>
+        <ng-container *ngIf="discSysNotesSaved">
+          <span>Saved!</span>
+        </ng-container>
+      </div>
+      <div class="toggle-row" [class.three-col-toggle-row]="discGroupNotesSaved">
+        <mat-label class="toggle-label">Group Notifications:</mat-label>
+        <mat-slide-toggle
+          [formControl]="discGroupNotesControl"
+          (change)="updateDiscordGroupNotesPref()">
+        </mat-slide-toggle>
+        <ng-container *ngIf="discGroupNotesSaved">
+          <span>Saved!</span>
+        </ng-container>
+      </div>
+      <div class="toggle-row" [class.three-col-toggle-row]="discSocialNotesSaved">
+        <mat-label class="toggle-label">Social Notifications:</mat-label>
+        <mat-slide-toggle
+          [formControl]="discSocialNotesControl"
+          (change)="updateDiscordSocialNotesPref()">
+        </mat-slide-toggle>
+        <ng-container *ngIf="discSocialNotesSaved">
+          <span>Saved!</span>
+        </ng-container>
+      </div>
+    </div>
+  </mat-expansion-panel>
+
+  <!-- PUSH NOTIFICATIONS ------------------------------------------------------------>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Push Notification Settings
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+  </mat-expansion-panel>
+
+  <!-- CUSTOM NOTIFICATIONS ---------------------------------------------------------->
+
+  <mat-expansion-panel
+    class="custom-notes-parent-container"
+    [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Custom Notifications
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="custom-notes-create-container">
+      <div class="button-row">
+        <button
+          class="action-buttons-with-icons"
+          (click)="showCustomNoteForm()">
+          <mat-icon>add</mat-icon>
+          Create New
+        </button>
+      </div>
+      <app-custom-notification-form
+        [class.do-not-show-form]="doNotShowCustomNotesForm"
+        [class.show-form]="!doNotShowCustomNotesForm">
+      </app-custom-notification-form>
+    </div>
+    <div class="proliferation-container">
+
+    </div>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel
+    class="notifications-container">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        My Notifications
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+  </mat-expansion-panel>
+</mat-accordion>
+

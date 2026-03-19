@@ -47,7 +47,9 @@ import {HttpStatusCode} from "@angular/common/http";
 import {
   ConfirmDelinkDiscordPopupComponent
 } from "../pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component";
-import {UserProfileNotificationsParentComponent} from "../user-profile-notifications-tabs/user-profile-notifications-parent/user-profile-notifications-parent.component";
+import {
+  ProfileNotificationsTabComponent
+} from "../user-profile-notification-settings-tab/profile-notifications-tab.component";
 
 @Component({
     selector: 'app-user',
@@ -58,8 +60,7 @@ import {UserProfileNotificationsParentComponent} from "../user-profile-notificat
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
     UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent,
     UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent, ListingTemplateModalComponent,
-    DropdownModule, FormsModule, MatError, MatFormField, MatHint, MatInput, MatLabel, MatFormField, ReactiveFormsModule,
-    UserProfileNotificationsParentComponent],
+    DropdownModule, FormsModule, MatError, MatFormField, MatHint, MatInput, MatLabel, MatFormField, ReactiveFormsModule, ProfileNotificationsTabComponent],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {
@@ -177,30 +178,6 @@ export class UserComponent implements OnInit, OnDestroy {
     this.userApiSrv.updateMe(request).subscribe(response => {
           this.userService.refreshUser();
           this.editing = false;
-      }
-    )
-  }
-
-  userLinkDiscord() {
-    this.userApiSrv.discordMe().subscribe(url => {
-      sessionStorage.setItem('pendingDiscordLink', 'true');
-      window.location.href = url;
-    })
-  }
-
-  confirmRemoveDiscord() {
-    const dialogRef = this.dialog.open(ConfirmDelinkDiscordPopupComponent);
-
-    dialogRef.afterClosed().subscribe(result => {
-      if(result) {
-        this.removeDiscordLink();
-      }
-    })
-  }
-
-  removeDiscordLink() {
-    this.userApiSrv.removeDiscord().subscribe( response => {
-        this.userService.kcProfileRefresh();
       }
     )
   }

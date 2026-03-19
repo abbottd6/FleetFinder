@@ -195,26 +195,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public String updateUserNotificationPreference(Users user, UpdateUserNotePrefDto dto) {
+    public Boolean updateUserNotificationPreference(Users user, UpdateUserNotePrefDto dto) {
+        Boolean returnVal;
 
         switch (dto.getLabel()) {
             case "sysNotes":
                 user.setExternalSysNotesEnabled(dto.getValue());
                 userRepository.save(user);
+                returnVal = user.getExternalSysNotesEnabled();
                 break;
             case "groupNotes":
                 user.setExternalGroupNotesEnabled(dto.getValue());
                 userRepository.save(user);
+                returnVal = user.getExternalGroupNotesEnabled();
                 break;
             case "socialNotes":
                 user.setExternalSocialNotesEnabled(dto.getValue());
                 userRepository.save(user);
+                returnVal = user.getExternalSocialNotesEnabled();
                 break;
             default:
                 throw new InvalidUserDataException(dto.getLabel() + " is not a valid label");
         }
 
-        return dto.getLabel();
+        return returnVal;
     }
 
     @Override

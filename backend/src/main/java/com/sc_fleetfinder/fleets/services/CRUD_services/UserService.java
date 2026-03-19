@@ -32,7 +32,7 @@ public interface UserService {
 
     PrivateUserResponseDto updateUser(String kcId, @Valid UpdateUserDto updateUserDto);
 
-    String updateUserNotificationPreference(Users user, UpdateUserNotePrefDto dto);
+    Boolean updateUserNotificationPreference(Users user, UpdateUserNotePrefDto dto);
 
     String generateUserDiscordLink(String kcId);
 

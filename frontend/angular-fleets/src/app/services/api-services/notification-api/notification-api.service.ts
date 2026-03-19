@@ -36,8 +36,6 @@ export class NotificationApiService {
   }
 
   public updateExternalNotificationPreference(pref: UpdateNotificationPreferenceRequest) {
-    return this.httpClient.put<{label: string}>(`${this.notePrefsBaseUrl}/update_discord_notification_pref`, pref).pipe(
-      map(response => response.label)
-    );
+    return this.httpClient.put(`${this.notePrefsBaseUrl}/update_discord_notification_pref`, pref);
   }
 }

@@ -57,10 +57,7 @@ public class NotificationPrefsAndPushSubController {
 
         Users user = userService.verifyUser(kcId);
 
-        String label = this.userService.updateUserNotificationPreference(user, dto);
-
-        Map<String, String> response = new HashMap<>();
-        response.put("response", label);
+        Boolean response = this.userService.updateUserNotificationPreference(user, dto);
 
         return ResponseEntity.ok(response);
     }

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ProfileNotificationSettingsTabComponent } from './profile-notification-settings-tab.component';
+import { ProfileNotificationsTabComponent } from './profile-notifications-tab.component';
 
 describe('ProfileNotificationSettingsTabComponent', () => {
-  let component: ProfileNotificationSettingsTabComponent;
-  let fixture: ComponentFixture<ProfileNotificationSettingsTabComponent>;
+  let component: ProfileNotificationsTabComponent;
+  let fixture: ComponentFixture<ProfileNotificationsTabComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ProfileNotificationSettingsTabComponent]
+      declarations: [ProfileNotificationsTabComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ProfileNotificationSettingsTabComponent);
+    fixture = TestBed.createComponent(ProfileNotificationsTabComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

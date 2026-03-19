@@ -82,7 +82,6 @@ import { ListingSuccessComponent } from './components/listing-success/listing-su
 import { HowToComponent } from './components/how-to/how-to.component';
 import { UserDeleteAccountPopupComponent } from './components/pop-ups/user-delete-account-popup/user-delete-account-popup.component';
 import { ConfirmDelinkDiscordPopupComponent } from './components/pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component';
-
 @NgModule({
   declarations: [
     AppComponent,

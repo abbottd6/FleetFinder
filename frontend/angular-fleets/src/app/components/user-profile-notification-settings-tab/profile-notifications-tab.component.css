@@ -1,0 +1,213 @@
+.title-container {
+  margin: 1rem 0 1rem 1rem;
+}
+
+.settings-container {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  min-height: 200px;
+  margin: 1rem auto 100px 1rem;
+}
+
+.mat-expansion-panel {
+  background-color: rgba(136, 138, 143, 0.1);
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mat-expansion-panel-header,
+.mat-expansion-panel-header:focus:not(:hover) {
+  &.cdk-mouse-focused:not(:hover),
+  &.cdk-touch-focused:not(:hover) {
+    background-color: transparent;
+  }
+}
+
+.mat-expansion-panel-header {
+  min-height: 60px;
+  font-size: 110%;
+  transition: color 0.25s ease !important;
+}
+
+:host ::ng-deep .mat-expansion-indicator svg {
+  fill: rgba(150, 168, 183, .8);
+  transition: fill 0.25s ease;
+}
+
+.mat-expansion-panel-header:hover,
+:host ::ng-deep .mat-expansion-panel-header:hover .mat-expansion-indicator svg{
+  color: rgba(255, 131, 7, .4);
+  fill: rgba(255, 131, 7, .4);
+}
+
+.toggles-container {
+  display: grid;
+  grid-template-rows: repeat(4, 50px);
+}
+
+.disc-account-link {
+  color: rgb(53, 114, 163);
+  text-decoration: none;
+  border-bottom: 1px solid rgb(53, 114, 163);
+  width: 130px;
+  transition: color 0.5s ease, font-size 0.5s ease, border-bottom-color 0.5s ease;
+}
+
+.disc-account-link:hover {
+  color: rgba(52, 135, 168, 0.9);
+  cursor: pointer;
+  border-bottom-color: rgba(52, 135, 168, 0.9);
+}
+
+.disc-account-unlink {
+  color: rgb(53, 114, 163);
+  text-decoration: none;
+  border-bottom: 1px solid rgb(53, 114, 163);
+  width: 171px;
+  transition: color 0.5s ease, font-size 0.5s ease, border-bottom-color 0.5s ease;
+}
+
+.disc-account-unlink:hover {
+  color: rgba(52, 135, 168, 0.9);
+  cursor: pointer;
+  border-bottom-color: rgba(52, 135, 168, 0.9);
+}
+
+.disc-account-unlink .bracky {
+  font-size: 120%;
+}
+
+.child-container-header {
+  margin: 10px 10px 10px 10px;
+  padding: 2px;
+  font-size: clamp(100%, 101%, 105%);
+}
+
+.dynamic-discord-container {
+  width: fit-content;
+}
+
+.toggle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-left: 50px;
+  max-width: 425px;
+  min-width: 275px;
+  width: fit-content;
+  align-content: baseline;
+}
+
+.three-col-toggle-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr !important;
+}
+
+.expanded-toggle-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin-left: 50px;
+  max-width: 500px;
+  min-width: 275px;
+  width: fit-content;
+  align-content: center;
+}
+
+:host ::ng-deep .mat-mdc-slide-toggle {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+#discUsername {
+  margin-top: 2px;
+}
+
+:host ::ng-deep .mdc-switch__track {
+  color: rgba(136, 138, 143, 0.75) !important;
+  border-radius: 100px;
+  scale: 0.85;
+}
+
+:host ::ng-deep .mdc-switch--checked .mdc-switch__track {
+  /*background-color:rgba(255, 131, 7, .35);*/
+  background-color: rgba(53, 114, 163, 0.5);
+  border: 1px solid rgba(52, 58, 64, 0.85);
+}
+
+:host ::ng-deep .mdc-switch--unselected .mdc-switch__track {
+  /*background-color: rgba(136, 138, 143, 0.3);*/
+  background-color:rgba(255, 131, 7, .1);
+}
+
+:host ::ng-deep .mdc-switch__shadow {
+  background-color: rgba(150, 168, 183, 1);
+  border-radius: 100px;
+}
+
+::ng-deep .mat-mdc-slide-toggle {
+  /*fill: ;*/
+  --mdc-switch-selected-icon-color: rgba(52, 58, 64, 1);
+}
+
+@media(max-width: 800px) {
+  .mat-expansion-panel {
+    font-size: 1rem;
+  }
+
+  .toggle-row {
+    margin-left: 20px;
+    font-size: 0.9rem;
+  }
+  .expanded-toggle-row {
+    font-size: 0.9rem;
+    margin-left: 20px;
+    max-width: 300px;
+  }
+}
+
+.toggle-label {
+  width: 200px;
+  margin-top: 2px;
+}
+
+.button-row {
+  display: flex;
+  flex-direction: row;
+  margin: 10px 10px 20px 50px;
+}
+
+.custom-notes-create-container {
+  border-bottom: 1px solid;
+}
+
+.do-not-show-form {
+  max-height: 0;
+  max-width: 0;
+  border: 1px solid transparent;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+app-custom-notification-form {
+  transition: max-height 0.5s ease, max-width 0.4s ease, border 0.5s ease;
+}
+
+.show-form {
+  overflow: visible;
+  max-height: 1000px;
+  max-width: 800px;
+  border: 1px solid rgba(136, 138, 143, 0.75);
+}
+
+.proliferation-container {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, 1fr);
+  width: 100%;
+  min-height: 100px;
+  justify-content: center;
+  /*border: 1px solid yellowgreen;*/
+}
