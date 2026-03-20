@@ -22,6 +22,9 @@ import {
 } from "../../../models/NotificationPrefAndCustomNotesModels/CreateOrUpdateCustomNoteRequest";
 import {NotificationApiService} from "../../../services/api-services/notification-api/notification-api.service";
 import {AsyncPipe} from "@angular/common";
+import {
+  NotificationSettingsApiService
+} from "../../../services/api-services/notification-api/notification-settings-api.service";
 
 @Component({
   selector: 'app-custom-notification-form',
@@ -51,7 +54,7 @@ export class CustomNotificationFormComponent implements OnInit, OnDestroy {
   customNoteData?: CustomNotificationViewModel | undefined;
 
   constructor(protected noteFormService: CustomNoteFormService,
-              private notesApi: NotificationApiService) {}
+              private noteSettingsApi: NotificationSettingsApiService) {}
 
   ngOnInit() {
     this.customNoteForm = this.noteFormService.customNotificationForm;
@@ -84,7 +87,7 @@ export class CustomNotificationFormComponent implements OnInit, OnDestroy {
       console.log(newCustomNoteData);
     }
 
-    this.notesApi.createCustomNotification(newCustomNoteData).subscribe({
+    this.noteSettingsApi.createCustomNotification(newCustomNoteData).subscribe({
       next: response => {
         if(!environment.production) {
           console.log(response.tagLabel);

@@ -104,7 +104,16 @@
       </app-custom-notification-form>
     </div>
     <div class="proliferation-container">
-
+      <ng-container *ngIf="!noCustomNotes; else noNotes">
+        @for(note of userCustomNotes; track note.customNoteId ?? note.tagLabel) {
+          <app-custom-notification-chip
+            [customNoteInput]="note">
+          </app-custom-notification-chip>
+        }
+      </ng-container>
+      <ng-template #noNotes>
+        <span>You do not have any custom notifications configured.</span>
+      </ng-template>
     </div>
   </mat-expansion-panel>
 

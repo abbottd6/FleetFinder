@@ -1,6 +1,6 @@
 :host {
   overflow-y: scroll;
-
+  width: 100%;
 }
 
 .title-container {
@@ -185,6 +185,10 @@
   margin: 10px 10px 20px 50px;
 }
 
+.custom-notes-parent-container {
+  width: 100%;
+}
+
 .custom-notes-create-container {
   border-bottom: 1px solid;
 }
@@ -212,8 +216,10 @@ app-custom-notification-form {
 .proliferation-container {
   display: grid;
   grid-template-rows: repeat(auto-fill, 1fr);
-  width: 100%;
+  width: 95%;
+  margin-inline: auto;
   min-height: 100px;
-  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
   /*border: 1px solid yellowgreen;*/
 }

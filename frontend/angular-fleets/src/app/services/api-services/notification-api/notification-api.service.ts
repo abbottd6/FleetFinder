@@ -20,7 +20,6 @@ export class NotificationApiService {
   private getUrl = `${environment.apiBaseUrl}/notify/my_notifications`;
   private deleteUrl = `${environment.apiBaseUrl}/notify/delete`;
   private deleteAllUrl = `${environment.apiBaseUrl}/notify/delete_all`;
-  private notePrefsBaseUrl = `${environment.apiBaseUrl}/user_notification_preferences`;
 
   constructor(private httpClient: HttpClient) { }
 
@@ -39,14 +38,5 @@ export class NotificationApiService {
 
   deleteAllMyNotifications() {
     return this.httpClient.delete(`${this.deleteAllUrl}/notify/delete_all`);
-  }
-
-  createCustomNotification(request: CreateOrUpdateCustomNoteRequest) {
-    return this.httpClient.post<CustomNotificationViewModel>(
-      `${this.notePrefsBaseUrl}/create_custom_notification`, request);
-  }
-
-  updateExternalNotificationPreference(pref: UpdateNotificationPreferenceRequest) {
-    return this.httpClient.put(`${this.notePrefsBaseUrl}/update_discord_notification_pref`, pref);
   }
 }

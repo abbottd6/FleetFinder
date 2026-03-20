@@ -62,7 +62,7 @@ public class NotificationPrefsAndPushSubController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/get_my_custom_notifications")
+    @PostMapping("/get_my_custom_notifications")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public Page<GetCustomNotificationResponseDto> getMyCustomNotifications(@AuthenticationPrincipal Jwt jwt,
                                                       @RequestBody GenericPageRequestDto pageDto) {
@@ -91,8 +91,6 @@ public class NotificationPrefsAndPushSubController {
                                                     @RequestBody CreateOrEditCustomNotificationDto dto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
-
-        log.info("reached this point.");
 
         GetCustomNotificationResponseDto customNote = cns.editCustomNotification(user, noteId, dto);
 
