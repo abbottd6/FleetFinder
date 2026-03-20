@@ -44,34 +44,52 @@ public class CustomNotificationMapperConfig {
 
                     mapper.map(CreateOrEditCustomNotificationDto::getTagLabel, UserCustomNotification::setTagLabel);
 
-                    mapper.using((MappingContext<Integer, ServerRegion> ctx) -> mls.findServerRegionById(ctx.getSource()))
-                            .map(CreateOrEditCustomNotificationDto::getServerId, UserCustomNotification::setServer);
+                    mapper.using((MappingContext<Integer, ServerRegion> ctx) -> {
+                        Integer id = ctx.getSource();
+                        return id != null ? mls.findServerRegionById(id) : null;
+                    }).map(CreateOrEditCustomNotificationDto::getServerId, UserCustomNotification::setServer);
 
-                    mapper.using((MappingContext<Integer, GameEnvironment> ctx) -> mls.findEnvironmentById(ctx.getSource()))
-                            .map(CreateOrEditCustomNotificationDto::getEnvironmentId, UserCustomNotification::setEnvironment);
+                    mapper.using((MappingContext<Integer, GameEnvironment> ctx) -> {
+                        Integer id = ctx.getSource();
+                        return id != null ? mls.findEnvironmentById(id) : null;
+                    }).map(CreateOrEditCustomNotificationDto::getEnvironmentId, UserCustomNotification::setEnvironment);
 
-                    mapper.using((MappingContext<Integer, GameExperience> ctx) -> mls.findExperienceById(ctx.getSource()))
-                            .map(CreateOrEditCustomNotificationDto::getExperienceId, UserCustomNotification::setExperience);
+                    mapper.using((MappingContext<Integer, GameExperience> ctx) -> {
+                        Integer id = ctx.getSource();
+                        return id != null ? mls.findExperienceById(id) : null;
+                    }).map(CreateOrEditCustomNotificationDto::getExperienceId, UserCustomNotification::setExperience);
 
-                    mapper.using((MappingContext<Integer, GameplayCategory> ctx) -> mls.findCategoryById(ctx.getSource()))
-                            .map(CreateOrEditCustomNotificationDto::getCategoryId, UserCustomNotification::setCategory);
+                    mapper.using((MappingContext<Integer, GameplayCategory> ctx) -> {
+                        Integer id = ctx.getSource();
+                        return id != null ? mls.findCategoryById(id) : null;
+                    }).map(CreateOrEditCustomNotificationDto::getCategoryId, UserCustomNotification::setCategory);
 
-                    mapper.using((MappingContext<Integer, GameplaySubcategory> ctx) -> mls.findSubcategoryById(ctx.getSource()))
-                            .map(CreateOrEditCustomNotificationDto::getSubcategoryId, UserCustomNotification::setSubcategory);
+                    mapper.using((MappingContext<Integer, GameplaySubcategory> ctx) -> {
+                        Integer id = ctx.getSource();
+                        return id != null ? mls.findSubcategoryById(id) : null;
+                    }).map(CreateOrEditCustomNotificationDto::getSubcategoryId, UserCustomNotification::setSubcategory);
 
-                    mapper.using((MappingContext<Integer, PlanetarySystem> ctx) -> mls.findPlanetarySystemById(ctx.getSource()))
-                            .map(CreateOrEditCustomNotificationDto::getSystemId, UserCustomNotification::setSystem);
+                    mapper.using((MappingContext<Integer, PlanetarySystem> ctx) -> {
+                        Integer id = ctx.getSource();
+                        return id != null ? mls.findPlanetarySystemById(id) : null;
+                    }).map(CreateOrEditCustomNotificationDto::getSystemId, UserCustomNotification::setSystem);
 
                     mapper.map(CreateOrEditCustomNotificationDto::getLanguageCode, UserCustomNotification::setLanguageCode);
 
-                    mapper.using((MappingContext<Integer, PvpStatus> ctx) -> mls.findPvpStatusById(ctx.getSource()))
-                            .map(CreateOrEditCustomNotificationDto::getPvpStatusId, UserCustomNotification::setPvpStatus);
+                    mapper.using((MappingContext<Integer, PvpStatus> ctx) -> {
+                        Integer id = ctx.getSource();
+                        return id != null ? mls.findPvpStatusById(id) : null;
+                    }).map(CreateOrEditCustomNotificationDto::getPvpStatusId, UserCustomNotification::setPvpStatus);
 
-                    mapper.using((MappingContext<Integer, Legality> ctx) -> mls.findLegalityById(ctx.getSource()))
-                            .map(CreateOrEditCustomNotificationDto::getLegalityId, UserCustomNotification::setLegality);
+                    mapper.using((MappingContext<Integer, Legality> ctx) -> {
+                        Integer id = ctx.getSource();
+                        return id != null ? mls.findLegalityById(id) : null;
+                    }).map(CreateOrEditCustomNotificationDto::getLegalityId, UserCustomNotification::setLegality);
 
-                    mapper.using((MappingContext<Integer, GroupStatus> ctx) -> mls.findGroupStatusById(ctx.getSource()))
-                            .map(CreateOrEditCustomNotificationDto::getGroupStatusId, UserCustomNotification::setGroupStatus);
+                    mapper.using((MappingContext<Integer, GroupStatus> ctx) -> {
+                        Integer id = ctx.getSource();
+                        return id != null ? mls.findGroupStatusById(id) : null;
+                    }).map(CreateOrEditCustomNotificationDto::getGroupStatusId, UserCustomNotification::setGroupStatus);
 
                     mapper.map(CreateOrEditCustomNotificationDto::getKeywords, UserCustomNotification::setKeywords);
                 });

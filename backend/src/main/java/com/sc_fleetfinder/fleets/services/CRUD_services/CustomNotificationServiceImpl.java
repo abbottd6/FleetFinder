@@ -36,7 +36,7 @@ public class CustomNotificationServiceImpl implements CustomNotificationService 
 
         Page<UserCustomNotification> entityPage = cnr.findByUser(user, pageable);
 
-        return entityPage.map(cNote -> modelMapper.map(UserCustomNotification.class, GetCustomNotificationResponseDto.class));
+        return entityPage.map(cNote -> modelMapper.map(cNote, GetCustomNotificationResponseDto.class));
     }
 
     @Override
@@ -75,6 +75,12 @@ public class CustomNotificationServiceImpl implements CustomNotificationService 
         UserCustomNotification toChange = cnr.findByUserAndCustomNoteId(user, customNoteId)
                 .orElseThrow(() -> new ActionNotAuthorizedException(user.getUserId(), "state change",
                         "UserCustomNotification", customNoteId));
+
+        Integer enabledCount = cnr.countByUser(user);
+        //noinspection PointlessBooleanExpression is not pointless: clarifying
+        if((state == true) && (enabledCount >= ENABLED_LIMIT)) {
+            throw new ContentLimitException(user.getUserId(), "UserCustomNotification", ENABLED_LIMIT);
+        }
 
         toChange.setEnabled(state);
 

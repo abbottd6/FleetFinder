@@ -355,7 +355,6 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
     // modelMapper.map(UserCustomNotification.class, ...) must be modelMapper.map(cNote, ...)
 
     @Test
-    @Disabled("Requires production bug fix: CustomNotificationServiceImpl line 39 passes class literal instead of entity instance to ModelMapper")
     void testGetMyCustomNotifications_Success_ReturnsTwoNotes() throws Exception {
         Long userId = getTestUserId();
         insertCustomNote(userId);
@@ -372,7 +371,6 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
     }
 
     @Test
-    @Disabled("Requires production bug fix: CustomNotificationServiceImpl line 39 passes class literal instead of entity instance to ModelMapper")
     void testGetMyCustomNotifications_OnlyReturnsOwnNotes() throws Exception {
         Long userId = getTestUserId();
         Long otherId = getOtherUserId();
@@ -392,7 +390,6 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
     // ─── POST /create_custom_notification ─────────────────────────────────────
 
     @Test
-    @Disabled("Requires production bug fix: CustomNotificationMapperConfig converters call findById(null) when DTO reference ID fields are null")
     void testCreateCustomNotification_Success_PersistsToDb() throws Exception {
         Long userId = getTestUserId();
 
@@ -440,7 +437,6 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
     // ─── PUT /edit_custom_notification/{noteId} ───────────────────────────────
 
     @Test
-    @Disabled("Requires production bug fix: CustomNotificationMapperConfig converters call findById(null) when DTO reference ID fields are null")
     void testEditCustomNotification_Success_UpdatesTagLabel() throws Exception {
         Long userId = getTestUserId();
         Long noteId = insertCustomNote(userId);

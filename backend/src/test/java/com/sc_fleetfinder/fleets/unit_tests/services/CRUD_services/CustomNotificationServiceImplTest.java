@@ -69,7 +69,7 @@ class CustomNotificationServiceImplTest {
 
         when(cnr.findByUser(eq(mockUser), any())).thenReturn(entityPage);
         // NOTE: stub matches the BUGGY production code that passes the class literal instead of the entity instance
-        when(modelMapper.map(UserCustomNotification.class, GetCustomNotificationResponseDto.class)).thenReturn(dto);
+        when(modelMapper.map(any(UserCustomNotification.class), eq(GetCustomNotificationResponseDto.class))).thenReturn(dto);
 
         Page<GetCustomNotificationResponseDto> result = service.getAllMyCustomNotifications(mockUser, pageDto);
 
