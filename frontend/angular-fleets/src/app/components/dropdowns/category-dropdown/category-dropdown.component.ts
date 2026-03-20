@@ -1,7 +1,7 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
-import {FormControl, FormGroup} from "@angular/forms";
+import {catchError, of, Subject} from "rxjs";
+import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
 import {GameplayCategory} from "../../../models/reference-data/reference-data.models";
 
@@ -12,13 +12,15 @@ import {GameplayCategory} from "../../../models/reference-data/reference-data.mo
   templateUrl: './category-dropdown.component.html',
   styleUrl: './category-dropdown.component.css'
 })
-export class CategoryDropdownComponent implements AfterViewInit{
+export class CategoryDropdownComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   @Input() categoryControl!: FormControl;
   categories: GameplayCategory[] = [];
 
   constructor(private lookupService: LookupService) {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.fetchCategories();
   }
 
@@ -35,5 +37,10 @@ export class CategoryDropdownComponent implements AfterViewInit{
           console.log('Gameplay categories dropdown options fetched:', this.categories);
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

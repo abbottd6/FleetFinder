@@ -5,7 +5,7 @@ import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {MatLabel} from "@angular/material/input";
 import {MatIcon} from "@angular/material/icon";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
-import {UpdateNotificationPreferenceRequest} from "../../models/private-user/update-notification-preference-request";
+import {UpdateNotificationPreferenceRequest} from "../../models/NotificationPrefAndCustomNotesModels/update-notification-preference-request";
 import {NotificationApiService} from "../../services/api-services/notification-api/notification-api.service";
 import {MatExpansionModule, MatExpansionPanelTitle} from "@angular/material/expansion";
 import {NgIf} from "@angular/common";
@@ -74,6 +74,10 @@ export class ProfileNotificationsTabComponent implements OnInit, OnDestroy {
 
   showCustomNoteForm(){
     this.doNotShowCustomNotesForm = !this.doNotShowCustomNotesForm;
+  }
+
+  createOrUpdateSuccess(val: boolean) {
+    this.doNotShowCustomNotesForm = val;
   }
 
   getUserNotePrefs() {

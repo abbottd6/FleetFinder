@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { CustomNotificationServiceService } from './custom-notification-service.service';
+import { CustomNotificationService } from './custom-notification.service';
 
 describe('CustomNotificationServiceService', () => {
-  let service: CustomNotificationServiceService;
+  let service: CustomNotificationService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(CustomNotificationServiceService);
+    service = TestBed.inject(CustomNotificationService);
   });
 
   it('should be created', () => {

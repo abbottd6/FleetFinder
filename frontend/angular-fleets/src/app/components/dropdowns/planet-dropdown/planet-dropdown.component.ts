@@ -1,7 +1,7 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
-import {FormControl, FormGroup} from "@angular/forms";
+import {catchError, of, Subject} from "rxjs";
+import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
 import {PlanetMoonSystem} from "../../../models/reference-data/reference-data.models";
 
@@ -12,7 +12,9 @@ import {PlanetMoonSystem} from "../../../models/reference-data/reference-data.mo
   templateUrl: './planet-dropdown.component.html',
   styleUrl: './planet-dropdown.component.css'
 })
-export class PlanetDropdownComponent implements AfterViewInit{
+export class PlanetDropdownComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<void> = new Subject<void>();
+
   @Input() planetMoonControl!: FormControl;
   @Input() planetarySystemControl!: FormControl;
   planetMoonSystems: PlanetMoonSystem[] = [];
@@ -20,7 +22,7 @@ export class PlanetDropdownComponent implements AfterViewInit{
 
   constructor(private lookupService: LookupService) { }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.fetchPlanetMoonSystems();
 
     // Subscribing to planetary system changes to filter planet moons by system
@@ -75,5 +77,10 @@ export class PlanetDropdownComponent implements AfterViewInit{
           console.log('Planet moon systems dropdown options fetched:', this.planetMoonSystems);
         }
       })
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

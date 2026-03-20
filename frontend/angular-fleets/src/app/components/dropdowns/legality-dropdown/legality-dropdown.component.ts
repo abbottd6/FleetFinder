@@ -1,7 +1,7 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
-import {FormControl, FormGroup} from "@angular/forms";
+import {catchError, of, Subject} from "rxjs";
+import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
 import {Legality} from "../../../models/reference-data/reference-data.models";
 
@@ -12,13 +12,15 @@ import {Legality} from "../../../models/reference-data/reference-data.models";
   templateUrl: './legality-dropdown.component.html',
   styleUrl: './legality-dropdown.component.css'
 })
-export class LegalityDropdownComponent implements AfterViewInit{
+export class LegalityDropdownComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   @Input() legalityControl!: FormControl;
   legalities: Legality[] = [];
 
   constructor(private lookupService: LookupService) {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
       this.fetchLegalities();
   }
 
@@ -34,5 +36,10 @@ export class LegalityDropdownComponent implements AfterViewInit{
         if(!environment.production) {
           console.log('Legality dropdown options fetched:' + this.legalities);
         }});
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

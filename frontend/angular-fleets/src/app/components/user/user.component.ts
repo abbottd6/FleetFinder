@@ -43,10 +43,6 @@ import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
 import {MatError, MatHint} from "@angular/material/form-field";
 import {UpdateUserFormService} from "../../services/user-services/update-user-form.service";
 import {UpdateUserRequest} from "../../models/private-user/update-user-request";
-import {HttpStatusCode} from "@angular/common/http";
-import {
-  ConfirmDelinkDiscordPopupComponent
-} from "../pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component";
 import {
   ProfileNotificationsTabComponent
 } from "../user-profile-notification-settings-tab/profile-notifications-tab.component";

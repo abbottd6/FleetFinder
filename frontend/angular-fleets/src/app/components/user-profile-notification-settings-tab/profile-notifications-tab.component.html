@@ -99,7 +99,8 @@
       </div>
       <app-custom-notification-form
         [class.do-not-show-form]="doNotShowCustomNotesForm"
-        [class.show-form]="!doNotShowCustomNotesForm">
+        [class.show-form]="!doNotShowCustomNotesForm"
+        (closeForm)="createOrUpdateSuccess($event)">
       </app-custom-notification-form>
     </div>
     <div class="proliferation-container">

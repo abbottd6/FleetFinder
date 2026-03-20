@@ -30,3 +30,4 @@ export const LANGUAGE_OPTIONS: string[] = [
 ] as const;
 
 export type LanguageCode = typeof LANGUAGE_OPTIONS[number];
+

@@ -1,19 +1,80 @@
-<app-server-dropdown>
-</app-server-dropdown>
+<div class="form-container">
+  <h5>New Custom Notification</h5>
+  <div class="form-row">
+    <!-- label control -->
+    <app-generic-small-input-field
+      [label]="'Name:'"
+      [errorLabel]="'Name'"
+      [min]="3"
+      [max]="32"
+      [inputCtrl]="noteFormService.labelCtrl"
+      [placeholder]="'Reference label...'">
+    </app-generic-small-input-field>
 
-<app-environment-dropdown>
-</app-environment-dropdown>
+    <app-server-dropdown
+      [serverControl]="noteFormService.serverCtrl">
+    </app-server-dropdown>
+  </div>
 
-<app-experience-dropdown>
-</app-experience-dropdown>
+  <div class="form-row">
+    <app-environment-dropdown
+      [environmentControl]="noteFormService.environmentCtrl">
+    </app-environment-dropdown>
 
-<app-category-dropdown>
-</app-category-dropdown>
+    <app-experience-dropdown
+      [experienceControl]="noteFormService.experienceCtrl">
+    </app-experience-dropdown>
+  </div>
 
-<app-subcategory-dropdown>
-</app-subcategory-dropdown>
+  <div class="form-row">
+    <app-category-dropdown
+      [categoryControl]="noteFormService.categoryCtrl">
+    </app-category-dropdown>
 
-<app-system-dropdown>
-</app-system-dropdown>
+    <app-subcategory-dropdown
+      [subcategoryControl]="noteFormService.subcategoryCtrl"
+      [categoryControl]="noteFormService.categoryCtrl"
+      [altLabel]="'Subcategory:'">
+    </app-subcategory-dropdown>
+  </div>
 
+  <div class="form-row">
+    <app-system-dropdown
+      [planetarySystemControl]="noteFormService.systemCtrl">
+    </app-system-dropdown>
+  </div>
+
+  <div class="form-row">
+    <app-pvp-status-dropdown
+      [pvpStatusControl]="noteFormService.pvpStatusCtrl">
+    </app-pvp-status-dropdown>
+
+    <app-legality-dropdown
+      [legalityControl]="noteFormService.legalityCtrl">
+    </app-legality-dropdown>
+  </div>
+
+  <div class="form-row">
+    <app-abstract-string-dropdown
+      [abstractControl]="noteFormService.languageCtrl"
+      [options]="LANGUAGE_OPTIONS"
+      [placeholderLabel]="'Language'">
+    </app-abstract-string-dropdown>
+
+    <app-group-status-dropdown
+      [groupStatusControl]="noteFormService.groupStatusCtrl">
+    </app-group-status-dropdown>
+  </div>
+  <div class="button-row">
+    <button class="action-buttons"
+            (click)="cancel()">
+      Cancel
+    </button>
+    <button class="action-buttons"
+      (click)="onSubmit()"
+      [disabled]="submitting$ | async">
+      Submit
+    </button>
+  </div>
+</div>
 

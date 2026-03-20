@@ -1,7 +1,7 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
-import {FormControl, FormGroup} from "@angular/forms";
+import {catchError, of, Subject} from "rxjs";
+import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
 import {GameExperience} from "../../../models/reference-data/reference-data.models";
 
@@ -12,13 +12,14 @@ import {GameExperience} from "../../../models/reference-data/reference-data.mode
   templateUrl: './experience-dropdown.component.html',
   styleUrl: './experience-dropdown.component.css'
 })
-export class ExperienceDropdownComponent implements AfterViewInit{
+export class ExperienceDropdownComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<void> = new Subject<void>();
   @Input() experienceControl!: FormControl;
   experiences: GameExperience[] = [];
 
   constructor(private lookupService: LookupService) {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.fetchGameExperiences();
   }
 
@@ -35,5 +36,10 @@ export class ExperienceDropdownComponent implements AfterViewInit{
           console.log('Experiences dropdown options fetched:', this.experiences);
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

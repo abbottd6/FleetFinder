@@ -1,7 +1,7 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
-import {FormControl, FormGroup} from "@angular/forms";
+import {catchError, of, Subject} from "rxjs";
+import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
 import {PlanetarySystem} from "../../../models/reference-data/reference-data.models";
 
@@ -12,13 +12,15 @@ import {PlanetarySystem} from "../../../models/reference-data/reference-data.mod
   templateUrl: './system-dropdown.component.html',
   styleUrl: './system-dropdown.component.css'
 })
-export class SystemDropdownComponent implements AfterViewInit{
+export class SystemDropdownComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   @Input() planetarySystemControl!: FormControl;
   systems: PlanetarySystem[] = [];
 
   constructor(private lookupService: LookupService) { }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.lookupService.getPlanetarySystems()
       .pipe(
         catchError((err) => {
@@ -31,5 +33,10 @@ export class SystemDropdownComponent implements AfterViewInit{
           console.log('Planetary systems dropdown options fetched:', this.systems);
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

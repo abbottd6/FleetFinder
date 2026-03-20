@@ -92,6 +92,8 @@ public class NotificationPrefsAndPushSubController {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 
+        log.info("reached this point.");
+
         GetCustomNotificationResponseDto customNote = cns.editCustomNotification(user, noteId, dto);
 
         return ResponseEntity.ok(customNote);

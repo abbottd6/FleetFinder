@@ -1,7 +1,7 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
-import {FormControl, FormGroup} from "@angular/forms";
+import {catchError, of, Subject} from "rxjs";
+import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
 import {GameEnvironment} from "../../../models/reference-data/reference-data.models";
 
@@ -12,14 +12,15 @@ import {GameEnvironment} from "../../../models/reference-data/reference-data.mod
   templateUrl: './environment-dropdown.component.html',
   styleUrl: './environment-dropdown.component.css'
 })
-export class EnvironmentDropdownComponent implements AfterViewInit{
+export class EnvironmentDropdownComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   @Input() environmentControl!: FormControl;
   environments: GameEnvironment[] = [];
 
 
   constructor(private lookupService: LookupService) {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.fetchGameEnvironments();
   }
 
@@ -36,5 +37,10 @@ export class EnvironmentDropdownComponent implements AfterViewInit{
           console.log('Environments dropdown options fetched:', this.environments);
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
