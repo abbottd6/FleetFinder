@@ -43,18 +43,22 @@ export class NotificationSettingsApiService {
       `${this.notePrefsBaseUrl}/create_custom_notification`, request);
   }
 
+  editCustomNotificationData(noteId: number, edited: CreateOrUpdateCustomNoteRequest) {
+    return this.httpClient.put<CustomNotificationViewModel>(
+      `${this.notePrefsBaseUrl}/edit_custom_notification/${noteId}`, edited)
+  }
+
+  customNotificationStateChangeRequest(request: CustomNoteStateRequest) {
+    return this.httpClient.patch<CustomNotificationViewModel>(
+      `${this.notePrefsBaseUrl}/custom_notification_state_change/${request.idCustomNote}`, null,
+      {params: { enabledState: request.enabledState }});
+  }
+
   deleteCustomNotification(noteId: number) {
     return this.httpClient.delete(`${this.notePrefsBaseUrl}/delete_custom_notification/${noteId}`);
   }
 
-  updateExternalNotificationPreference(pref: UpdateNotificationPreferenceRequest) {
+  updateDiscordNotificationPreference(pref: UpdateNotificationPreferenceRequest) {
     return this.httpClient.put(`${this.notePrefsBaseUrl}/update_discord_notification_pref`, pref);
-  }
-
-  customNotificationStateChangeRequest(request: CustomNoteStateRequest) {
-
-    return this.httpClient.patch<CustomNotificationViewModel>(
-      `${this.notePrefsBaseUrl}/custom_notification_state_change/${request.idCustomNote}`, null,
-      {params: { enabledState: request.enabledState }});
   }
 }

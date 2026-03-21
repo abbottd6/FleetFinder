@@ -28,14 +28,16 @@ export class CustomNotificationChipComponent implements OnInit, OnChanges {
 
   protected enabledCtrl!: FormControl<boolean>;
 
-  constructor(protected customNoteSettings: CustomNotificationService) {}
+  constructor(protected customNoteService: CustomNotificationService) {}
 
   ngOnInit() {
     this.enabledCtrl = new FormControl(this.customNoteInput.enabled, {nonNullable: true});
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.enabledCtrl.setValue(this.customNoteInput.enabled);
+    if(this.customNoteInput.enabled && this.enabledCtrl) {
+      this.enabledCtrl.setValue(this.customNoteInput.enabled);
+    }
   }
 
   emitEnabledState() {

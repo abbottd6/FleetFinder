@@ -37,15 +37,50 @@
   transition: color 0.25s ease !important;
 }
 
+mat-panel-title {
+  border-bottom: 3px solid rgba(65, 103, 142, 0.6);
+  flex: 0 0 auto;
+
+  clip-path: polygon(
+    7px 0%,        /* top-left: start */
+    calc(100% - 7px) 0%,   /* top-right: start */
+    100% 7px,      /* top-right: end */
+    100% calc(100% - 7px), /* bottom-right: start */
+    calc(100% - 12px) 100%, /* bottom-right: end */
+    12px 100%,      /* bottom-left: start */
+    0% calc(100% - 7px),   /* bottom-left: end */
+    0% 7px         /* top-left: end */
+  );
+}
+
+mat-panel-description {
+  flex: 1 1 max-content;
+  opacity: 0;
+  color: rgba(150, 168, 183, 0.8);
+  transition: opacity 0.25s ease;
+}
+
+mat-panel-description.mat-expansion-panel-header-description {
+  margin-right: 5%;
+  justify-content: flex-end;
+  font-family: "Exo 2", sans-serif;
+}
+
 :host ::ng-deep .mat-expansion-indicator svg {
   fill: rgba(150, 168, 183, .8);
   transition: fill 0.25s ease;
 }
 
-.mat-expansion-panel-header:hover,
-:host ::ng-deep .mat-expansion-panel-header:hover .mat-expansion-indicator svg{
-  color: rgba(255, 131, 7, .4);
-  fill: rgba(255, 131, 7, .4);
+.mat-expansion-panel-header:hover {
+  color: rgba(65, 103, 142, 0.9);
+  fill: rgba(65, 103, 142, 0.9);
+}
+
+.mat-expansion-panel-header:hover mat-panel-description,
+.mat-expansion-panel-header:focus mat-panel-description,
+:host ::ng-deep .mat-expansion-panel-header:hover .mat-expansion-indicator svg {
+  opacity: 1;
+  fill: rgba(255, 131, 7, .3);
 }
 
 .toggles-container {
@@ -195,6 +230,8 @@
   margin-right: 50px;
   display: flex;
   flex-direction: column;
+  font-family: "Exo 2", sans-serif;
+  font-size: 110%;
 }
 
 .custom-notes-parent-container {
@@ -205,9 +242,18 @@
   border-bottom: 1px solid;
 }
 
+.bullet-container {
+  margin-inline: 20px;
+  font-family: "Exo 2", sans-serif;
+}
+
+.bullet-container li {
+  margin-top: 10px;
+}
+
 app-custom-notification-form {
   transform-origin: top left;
-  transition: transform 0.7s ease, max-height 0.7s ease;
+  transition: transform 0.5s ease, max-height 0.5s ease;
 }
 
 .do-not-show-form {
@@ -227,7 +273,7 @@ app-custom-notification-form {
   overflow-y: visible;
   overflow-x: hidden;
   margin-inline: auto;
-  border: 1px solid rgba(136, 138, 143, 0.5);
+  border: 1px solid rgba(28, 24, 24, 0.1);
   border-radius: 10px;
 }
 
@@ -238,6 +284,5 @@ app-custom-notification-form {
   margin-inline: auto;
   min-height: 100px;
   margin-top: 20px;
-  gap: 10px;
-  /*border: 1px solid yellowgreen;*/
+  gap: 20px;
 }

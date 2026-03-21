@@ -1,15 +1,13 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {map, Observable, Subject, takeUntil} from "rxjs";
+import {Component, OnDestroy} from '@angular/core';
+import {Subject, takeUntil} from "rxjs";
 import {UserService} from "../../services/user-services/user.service";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {MatLabel} from "@angular/material/input";
 import {MatIcon} from "@angular/material/icon";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {UpdateNotificationPreferenceRequest} from "../../models/NotificationPrefAndCustomNotesModels/update-notification-preference-request";
-import {NotificationApiService} from "../../services/api-services/notification-api/notification-api.service";
 import {MatExpansionModule, MatExpansionPanelTitle} from "@angular/material/expansion";
 import {AsyncPipe, NgIf} from "@angular/common";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {
   CustomNotificationFormComponent
 } from "../user-profile-notification-forms/custom-notification-form/custom-notification-form.component";
@@ -19,8 +17,6 @@ import {
 import {
   CustomNotificationViewModel
 } from "../../models/NotificationPrefAndCustomNotesModels/CustomNotificationViewModel";
-import {Page} from "../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
-import {environment} from "../../../environments/environment";
 import {CustomNotificationChipComponent} from "./custom-notification-chip/custom-notification-chip.component";
 import {
   CustomNoteStateRequest,
@@ -124,7 +120,7 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
 
     const updateRequest = new UpdateNotificationPreferenceRequest(label, val);
 
-    this.noteSettingsApiService.updateExternalNotificationPreference(updateRequest).subscribe(
+    this.noteSettingsApiService.updateDiscordNotificationPreference(updateRequest).subscribe(
       response => {
         this.userService.refreshUser();
         if(response === this.discSysNotesControl.value) {
@@ -146,7 +142,7 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
 
     const updateRequest = new UpdateNotificationPreferenceRequest(label, val);
 
-    this.noteSettingsApiService.updateExternalNotificationPreference(updateRequest).subscribe(
+    this.noteSettingsApiService.updateDiscordNotificationPreference(updateRequest).subscribe(
       response => {
         this.userService.refreshUser();
         if(response === this.discGroupNotesControl.value) {
@@ -168,7 +164,7 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
 
     const updateRequest = new UpdateNotificationPreferenceRequest(label, val);
 
-    this.noteSettingsApiService.updateExternalNotificationPreference(updateRequest).subscribe(
+    this.noteSettingsApiService.updateDiscordNotificationPreference(updateRequest).subscribe(
       response => {
         this.userService.refreshUser();
         if(response === this.discSocialNotesControl.value) {

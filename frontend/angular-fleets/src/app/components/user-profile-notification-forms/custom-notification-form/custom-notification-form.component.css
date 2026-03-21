@@ -1,9 +1,18 @@
 :host {
-  display: block;
+  display: flex;
   overflow: hidden;
   margin-bottom: 20px;
-  background-color: rgba(37, 37, 37, 0.1);
+  background-color: rgba(37, 37, 37, 0.25);
   box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
+}
+
+:host.do-not-show-form .form-wrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(37, 37, 37, 0.25);
+  box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
+  padding-left: 0;
+  margin-left: 0;
 }
 
 h5 {
@@ -18,8 +27,20 @@ h5 {
 .form-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-
   width: 100%;
+}
+
+.do-not-show-dropdown .bullet-container {
+  opacity: 0;
+}
+
+.bullet-container {
+  margin-inline: 20px;
+}
+
+.bullet-container li {
+  margin-top: 10px;
+  font-family: "Exo 2", sans-serif;
 }
 
 :host ::ng-deep .form-container .dropdown-component .ng-select {

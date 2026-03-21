@@ -7,7 +7,7 @@ import {
 import {environment} from "../../../../environments/environment";
 import {NotificationSettingsApiService} from "../../api-services/notification-api/notification-settings-api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {HttpErrorResponse, HttpResponse} from "@angular/common/http";
+import {HttpErrorResponse} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
@@ -34,6 +34,9 @@ export class CustomNotificationService {
 
   private userCustomNotesSubject = new BehaviorSubject<CustomNotificationViewModel[]>([]);
   public userCustomNotes$ = this.userCustomNotesSubject.asObservable();
+
+  private customNoteForEditSubject = new BehaviorSubject<CustomNotificationViewModel | null>(null);
+  public customNoteForEdit$ = this.customNoteForEditSubject.asObservable();
 
   constructor(private noteSettingsApiService: NotificationSettingsApiService,
               private snackBar: MatSnackBar, private dialog: MatDialog) {}
@@ -78,6 +81,18 @@ export class CustomNotificationService {
         }
       }
     );
+  }
+
+  setNoteForEdit(note: CustomNotificationViewModel) {
+    this.customNoteForEditSubject.next(note);
+  }
+
+  get noteForEdit() {
+    return this.customNoteForEditSubject.value;
+  }
+
+  resetNoteForEdit() {
+    this.customNoteForEditSubject.next(null);
   }
 
   openConfirmDeleteCustomNote(noteId: number, noteLabel: string) {

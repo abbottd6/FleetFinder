@@ -12,6 +12,9 @@
       <mat-panel-title class="child-container-header">
         Discord Notification Settings
       </mat-panel-title>
+      <mat-panel-description>
+        Link your Discord to have FleetyBot send your notifications as Discord messages.
+      </mat-panel-description>
     </mat-expansion-panel-header>
     <div class="toggles-container">
       <div class="dynamic-discord-container">
@@ -75,20 +78,25 @@
       <mat-panel-title class="child-container-header">
         Push Notification Settings
       </mat-panel-title>
+      <mat-panel-description>
+        Allow FleetFinder to send notifications to devices of your choosing — without needing to be logged in
+      </mat-panel-description>
     </mat-expansion-panel-header>
   </mat-expansion-panel>
 
   <!-- CUSTOM NOTIFICATIONS ---------------------------------------------------------->
 
-  <mat-expansion-panel
-    class="custom-notes-parent-container"
-    [expanded]="true">
+  <mat-expansion-panel class="custom-notes-parent-container">
     <mat-expansion-panel-header>
       <mat-panel-title class="child-container-header">
         Custom Notifications
       </mat-panel-title>
+      <mat-panel-description>
+        Create custom notifications to be alerted when new listings match your criteria
+      </mat-panel-description>
     </mat-expansion-panel-header>
-    <div class="tab-rules">
+    <div class="bullet-container">
+      <p></p>
       <ul>
         <li>You can create a <span class="fancy-text">total of 10</span> custom notifications.</li>
         <li>You may have <span class="fancy-text">up to 5 enabled</span>.</li>
@@ -134,7 +142,8 @@
   </mat-expansion-panel>
 
   <mat-expansion-panel
-    class="notifications-container">
+    class="notifications-container"
+    [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title class="child-container-header">
         My Notifications

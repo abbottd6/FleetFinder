@@ -85,10 +85,11 @@
         (change)="emitEnabledState()">
       </mat-slide-toggle>
       <div class="button-row">
-        <a id="edit">Edit</a>
+        <a id="edit"
+            (click)="customNoteService.setNoteForEdit(customNoteInput)">Edit</a>
         <span> | </span>
         <a id="delete"
-           (click)="customNoteSettings.openConfirmDeleteCustomNote(
+           (click)="customNoteService.openConfirmDeleteCustomNote(
                       customNoteInput.customNoteId, customNoteInput.tagLabel)">
           Delete
         </a>

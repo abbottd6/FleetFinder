@@ -1,10 +1,10 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild} from '@angular/core';
 import {DropdownModule} from "../../dropdowns/dropdown-module/dropdown.module";
 import {
   CustomNoteFormService,
   CustomNotificationFormShape
 } from "../../../services/custom-notification-form-service/custom-note-form.service";
-import {BehaviorSubject, Subject} from "rxjs";
+import {BehaviorSubject, distinctUntilChanged, filter, Subject, takeUntil} from "rxjs";
 import { FormGroup } from '@angular/forms';
 import {
   CustomNotificationViewModel
@@ -27,6 +27,9 @@ import {
 } from "../../../services/api-services/notification-api/notification-settings-api.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {
+  CustomNotificationService
+} from "../../../services/facade-services/custom-notification-service/custom-notification.service";
 
 @Component({
   selector: 'app-custom-notification-form',
@@ -42,6 +45,8 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 })
 export class CustomNotificationFormComponent implements OnInit, OnDestroy {
   @Output() closeForm = new EventEmitter<boolean>();
+  @Input() noteForEdit?: CustomNotificationViewModel;
+  @ViewChild('noteForm') noteForm!: ElementRef;
 
   private destroy$ = new Subject<void>();
   public customNoteFormSubmitted: boolean = false;
@@ -52,12 +57,28 @@ export class CustomNotificationFormComponent implements OnInit, OnDestroy {
   customNoteForm!: FormGroup<CustomNotificationFormShape>;
 
   draft!: CustomNotificationViewModel | undefined;
+  editingId: number | null = null;
 
   customNoteData?: CustomNotificationViewModel | undefined;
 
   constructor(protected noteFormService: CustomNoteFormService,
               private noteSettingsApi: NotificationSettingsApiService,
-              private snackBar: MatSnackBar) {}
+              private customNoteService: CustomNotificationService,
+              private snackBar: MatSnackBar) {
+
+    this.customNoteService.customNoteForEdit$.pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged(),
+      filter(editNote => editNote !== null),
+    ).subscribe(editNote => {
+        if(editNote) {
+          this.closeForm.emit(false);
+          this.noteForm.nativeElement.scrollIntoView({ behavior: "smooth", block: 'start' });
+          this.noteFormService.patchFromExisting(editNote);
+          this.editingId = editNote.customNoteId;
+        }
+      })
+  }
 
   ngOnInit() {
     this.customNoteForm = this.noteFormService.customNotificationForm;
@@ -90,38 +111,72 @@ export class CustomNotificationFormComponent implements OnInit, OnDestroy {
       console.log(newCustomNoteData);
     }
 
-    this.noteSettingsApi.createCustomNotification(newCustomNoteData).subscribe({
-      next: response => {
-        if(!environment.production) {
-          console.log(response.tagLabel);
+    if(!this.editingId) {
+      this.noteSettingsApi.createCustomNotification(newCustomNoteData).subscribe({
+        next: response => {
+          if (!environment.production) {
+            console.log(response.tagLabel);
+          }
+          this.closeForm.emit(true);
+          this.customNoteData = undefined;
+          this.customNoteService.resetNoteForEdit();
+          this.customNoteForm.reset();
+        },
+        error: err => {
+          if (err instanceof HttpErrorResponse && err.status === 403) {
+            this.snackBar.open('Error: There is a limit of 10 custom notifications per user.', 'OK', {
+              duration: 4000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center',
+              panelClass: ['mobile-snackbar']
+            })
+          } else {
+            this.snackBar.open('There was an error creating this custom notification.', 'OK', {
+              duration: 4000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center',
+              panelClass: ['mobile-snackbar']
+            })
+          }
         }
-        this.closeForm.emit(true);
-        this.customNoteData = undefined;
-        this.customNoteForm.reset();
-      },
-      error: err => {
-        if(err instanceof HttpErrorResponse && err.status === 403) {
-          this.snackBar.open('Error: There is a limit of 10 custom notifications per user.', 'OK', {
-            duration: 4000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-            panelClass: ['mobile-snackbar']
-          })
+      })
+    } else {
+      this.noteSettingsApi.editCustomNotificationData(this.editingId,newCustomNoteData).subscribe({
+        next: response => {
+          if (!environment.production) {
+            console.log(response.tagLabel);
+          }
+          this.closeForm.emit(true);
+          this.customNoteData = undefined;
+          this.customNoteService.resetNoteForEdit();
+          this.customNoteForm.reset();
+          this.editingId = null;
+        },
+        error: err => {
+          if (err instanceof HttpErrorResponse && err.status === 403) {
+            this.snackBar.open('Error: There is a limit of 10 custom notifications per user.', 'OK', {
+              duration: 4000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center',
+              panelClass: ['mobile-snackbar']
+            })
+          } else {
+            this.snackBar.open('There was an error creating this custom notification.', 'OK', {
+              duration: 4000,
+              verticalPosition: 'top',
+              horizontalPosition: 'center',
+              panelClass: ['mobile-snackbar']
+            })
+          }
         }
-        else {
-          this.snackBar.open('There was an error creating this custom notification.', 'OK', {
-            duration: 4000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-            panelClass: ['mobile-snackbar']
-          })
-        }
-      }
-    })
+      })
+    }
   }
 
   cancel() {
     this.customNoteForm.reset();
+    this.customNoteService.resetNoteForEdit();
+    this.editingId = null;
     this.closeForm.emit(true);
   }
 

@@ -1,80 +1,91 @@
-<div class="form-container">
-  <h5>New Custom Notification</h5>
-  <div class="form-row">
-    <!-- label control -->
-    <app-generic-small-input-field
-      [label]="'Name:'"
-      [errorLabel]="'Name'"
-      [min]="3"
-      [max]="32"
-      [inputCtrl]="noteFormService.labelCtrl"
-      [placeholder]="'Reference label...'">
-    </app-generic-small-input-field>
-
-    <app-server-dropdown
-      [serverControl]="noteFormService.serverCtrl">
-    </app-server-dropdown>
+<div #noteForm class="form-wrapper">
+  <div class="bullet-container">
+    <h5>New Custom Notification</h5>
+    <ul>
+      <li>All fields are optional, except for Name.</li>
+      <li>
+        Fields left blank will have a value of 'Any', e.g., a notification with 'Environment' set to 'Persistent
+        Universe' and all other fields left blank will match to any listing created with the 'Persistent Universe'
+        tag.
+      </li>
+    </ul>
   </div>
+  <div class="form-container">
+    <div class="form-row">
+      <!-- label control -->
+      <app-generic-small-input-field
+        [label]="'Name:'"
+        [errorLabel]="'Name'"
+        [min]="3"
+        [max]="32"
+        [inputCtrl]="noteFormService.labelCtrl"
+        [placeholder]="'Reference label...'">
+      </app-generic-small-input-field>
 
-  <div class="form-row">
-    <app-environment-dropdown
-      [environmentControl]="noteFormService.environmentCtrl">
-    </app-environment-dropdown>
+      <app-server-dropdown
+        [serverControl]="noteFormService.serverCtrl">
+      </app-server-dropdown>
+    </div>
 
-    <app-experience-dropdown
-      [experienceControl]="noteFormService.experienceCtrl">
-    </app-experience-dropdown>
-  </div>
+    <div class="form-row">
+      <app-environment-dropdown
+        [environmentControl]="noteFormService.environmentCtrl">
+      </app-environment-dropdown>
 
-  <div class="form-row">
-    <app-category-dropdown
-      [categoryControl]="noteFormService.categoryCtrl">
-    </app-category-dropdown>
+      <app-experience-dropdown
+        [experienceControl]="noteFormService.experienceCtrl">
+      </app-experience-dropdown>
+    </div>
 
-    <app-subcategory-dropdown
-      [subcategoryControl]="noteFormService.subcategoryCtrl"
-      [categoryControl]="noteFormService.categoryCtrl"
-      [altLabel]="'Subcategory:'">
-    </app-subcategory-dropdown>
-  </div>
+    <div class="form-row">
+      <app-category-dropdown
+        [categoryControl]="noteFormService.categoryCtrl">
+      </app-category-dropdown>
 
-  <div class="form-row">
-    <app-system-dropdown
-      [planetarySystemControl]="noteFormService.systemCtrl">
-    </app-system-dropdown>
-  </div>
+      <app-subcategory-dropdown
+        [subcategoryControl]="noteFormService.subcategoryCtrl"
+        [categoryControl]="noteFormService.categoryCtrl"
+        [altLabel]="'Subcategory:'">
+      </app-subcategory-dropdown>
+    </div>
 
-  <div class="form-row">
-    <app-pvp-status-dropdown
-      [pvpStatusControl]="noteFormService.pvpStatusCtrl">
-    </app-pvp-status-dropdown>
+    <div class="form-row">
+      <app-system-dropdown
+        [planetarySystemControl]="noteFormService.systemCtrl">
+      </app-system-dropdown>
+    </div>
 
-    <app-legality-dropdown
-      [legalityControl]="noteFormService.legalityCtrl">
-    </app-legality-dropdown>
-  </div>
+    <div class="form-row">
+      <app-pvp-status-dropdown
+        [pvpStatusControl]="noteFormService.pvpStatusCtrl">
+      </app-pvp-status-dropdown>
 
-  <div class="form-row">
-    <app-abstract-string-dropdown
-      [abstractControl]="noteFormService.languageCtrl"
-      [options]="LANGUAGE_OPTIONS"
-      [placeholderLabel]="'Language'">
-    </app-abstract-string-dropdown>
+      <app-legality-dropdown
+        [legalityControl]="noteFormService.legalityCtrl">
+      </app-legality-dropdown>
+    </div>
 
-    <app-group-status-dropdown
-      [groupStatusControl]="noteFormService.groupStatusCtrl">
-    </app-group-status-dropdown>
-  </div>
-  <div class="button-row">
-    <button class="action-buttons"
-            (click)="cancel()">
-      Cancel
-    </button>
-    <button class="action-buttons"
-      (click)="onSubmit()"
-      [disabled]="submitting$ | async">
-      Submit
-    </button>
+    <div class="form-row">
+      <app-abstract-string-dropdown
+        [abstractControl]="noteFormService.languageCtrl"
+        [options]="LANGUAGE_OPTIONS"
+        [placeholderLabel]="'Language'">
+      </app-abstract-string-dropdown>
+
+      <app-group-status-dropdown
+        [groupStatusControl]="noteFormService.groupStatusCtrl">
+      </app-group-status-dropdown>
+    </div>
+    <div class="button-row">
+      <button class="action-buttons"
+              (click)="cancel()">
+        Cancel
+      </button>
+      <button class="action-buttons"
+              (click)="onSubmit()"
+              [disabled]="submitting$ | async">
+        Submit
+      </button>
+    </div>
   </div>
 </div>
-
