@@ -2,6 +2,12 @@
   display: block;
   overflow: hidden;
   margin-bottom: 20px;
+  background-color: rgba(37, 37, 37, 0.1);
+  box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
+}
+
+h5 {
+  margin: 20px 0 20px 20px;
 }
 
 .form-container {

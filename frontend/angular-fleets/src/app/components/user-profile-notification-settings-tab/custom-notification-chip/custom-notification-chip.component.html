@@ -80,9 +80,19 @@
       </div>
     </div>
     <div class="template-column" id="last-column">
-      <mat-slide-toggle>
+      <mat-slide-toggle
+        [formControl]="enabledCtrl"
+        (change)="emitEnabledState()">
       </mat-slide-toggle>
-      <button class="action-buttons">Edit</button>
+      <div class="button-row">
+        <a id="edit">Edit</a>
+        <span> | </span>
+        <a id="delete"
+           (click)="customNoteSettings.openConfirmDeleteCustomNote(
+                      customNoteInput.customNoteId, customNoteInput.tagLabel)">
+          Delete
+        </a>
+      </div>
     </div>
   </div>
 </div>

@@ -6,6 +6,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.Cr
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdatePushSubRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdateUserNotePrefDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetCustomNotificationResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPageOfCustomNotificationsAndEnabledCount;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPushSubDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.CustomNotificationService;
@@ -64,8 +65,8 @@ public class NotificationPrefsAndPushSubController {
 
     @PostMapping("/get_my_custom_notifications")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
-    public Page<GetCustomNotificationResponseDto> getMyCustomNotifications(@AuthenticationPrincipal Jwt jwt,
-                                                      @RequestBody GenericPageRequestDto pageDto) {
+    public GetPageOfCustomNotificationsAndEnabledCount getMyCustomNotifications(@AuthenticationPrincipal Jwt jwt,
+                                                                                @RequestBody GenericPageRequestDto pageDto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 
@@ -105,9 +106,9 @@ public class NotificationPrefsAndPushSubController {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 
-        cns.enablementStateChange(user, id, enabledState);
+        GetCustomNotificationResponseDto result = cns.enablementStateChange(user, id, enabledState);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(result);
     }
 
     @DeleteMapping("/delete_custom_notification/{id}")

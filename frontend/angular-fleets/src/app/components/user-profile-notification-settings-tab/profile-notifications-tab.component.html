@@ -88,14 +88,29 @@
         Custom Notifications
       </mat-panel-title>
     </mat-expansion-panel-header>
+    <div class="tab-rules">
+      <ul>
+        <li>You can create a <span class="fancy-text">total of 10</span> custom notifications.</li>
+        <li>You may have <span class="fancy-text">up to 5 enabled</span>.</li>
+        <li>Manage how you receive these notifications through the
+          <span class="fancy-text">Discord and/or Push Notification Settings</span>
+          panels above.</li>
+      </ul>
+    </div>
     <div class="custom-notes-create-container">
-      <div class="button-row">
-        <button
-          class="action-buttons-with-icons"
-          (click)="showCustomNoteForm()">
-          <mat-icon>add</mat-icon>
-          Create New
-        </button>
+      <div class="button-row-container">
+        <div class="button-row-left">
+          <button
+            class="action-buttons-with-icons"
+            (click)="showCustomNoteForm()">
+            <mat-icon>add</mat-icon>
+            Create New
+          </button>
+        </div>
+        <div class="button-row-right">
+          <span>Total: {{ userCustomNotes.length }} / 10</span>
+          <span>Enabled: {{ customNoteService.userCustomNotesEnabledCount$ | async }} / 5</span>
+        </div>
       </div>
       <app-custom-notification-form
         [class.do-not-show-form]="doNotShowCustomNotesForm"
@@ -107,7 +122,8 @@
       <ng-container *ngIf="!noCustomNotes; else noNotes">
         @for(note of userCustomNotes; track note.customNoteId ?? note.tagLabel) {
           <app-custom-notification-chip
-            [customNoteInput]="note">
+            [customNoteInput]="note"
+            (enabledState)="sendCustomNoteStateChangeRequest($event)">
           </app-custom-notification-chip>
         }
       </ng-container>

@@ -25,6 +25,8 @@ import {AsyncPipe} from "@angular/common";
 import {
   NotificationSettingsApiService
 } from "../../../services/api-services/notification-api/notification-settings-api.service";
+import {HttpErrorResponse} from "@angular/common/http";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-custom-notification-form',
@@ -54,7 +56,8 @@ export class CustomNotificationFormComponent implements OnInit, OnDestroy {
   customNoteData?: CustomNotificationViewModel | undefined;
 
   constructor(protected noteFormService: CustomNoteFormService,
-              private noteSettingsApi: NotificationSettingsApiService) {}
+              private noteSettingsApi: NotificationSettingsApiService,
+              private snackBar: MatSnackBar) {}
 
   ngOnInit() {
     this.customNoteForm = this.noteFormService.customNotificationForm;
@@ -97,12 +100,28 @@ export class CustomNotificationFormComponent implements OnInit, OnDestroy {
         this.customNoteForm.reset();
       },
       error: err => {
-        alert(err.status)
+        if(err instanceof HttpErrorResponse && err.status === 403) {
+          this.snackBar.open('Error: There is a limit of 10 custom notifications per user.', 'OK', {
+            duration: 4000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+            panelClass: ['mobile-snackbar']
+          })
+        }
+        else {
+          this.snackBar.open('There was an error creating this custom notification.', 'OK', {
+            duration: 4000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+            panelClass: ['mobile-snackbar']
+          })
+        }
       }
     })
   }
 
   cancel() {
+    this.customNoteForm.reset();
     this.closeForm.emit(true);
   }
 

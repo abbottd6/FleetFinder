@@ -12,6 +12,10 @@ import {
 } from "../../../models/NotificationPrefAndCustomNotesModels/update-notification-preference-request";
 import {Observable} from "rxjs";
 import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
+import {
+  CustomNotesPageAndEnabledCountResponse,
+  CustomNoteStateRequest
+} from "../../facade-services/custom-notification-service/custom-notification.service";
 
 @Injectable({
   providedIn: 'root'
@@ -22,13 +26,13 @@ export class NotificationSettingsApiService {
 
   constructor(private httpClient: HttpClient) { }
 
-  getMyCustomNotifications(idx: number, page: number): Observable<Page<CustomNotificationViewModel>> {
+  getMyCustomNotifications(idx: number, page: number): Observable<CustomNotesPageAndEnabledCountResponse> {
     const req = {
       pageIdx: idx,
       pageSize: page,
     }
 
-    return this.httpClient.post<Page<CustomNotificationViewModel>>(
+    return this.httpClient.post<CustomNotesPageAndEnabledCountResponse>(
       `${this.notePrefsBaseUrl}/get_my_custom_notifications`, req).pipe(
 
     )
@@ -39,7 +43,18 @@ export class NotificationSettingsApiService {
       `${this.notePrefsBaseUrl}/create_custom_notification`, request);
   }
 
+  deleteCustomNotification(noteId: number) {
+    return this.httpClient.delete(`${this.notePrefsBaseUrl}/delete_custom_notification/${noteId}`);
+  }
+
   updateExternalNotificationPreference(pref: UpdateNotificationPreferenceRequest) {
     return this.httpClient.put(`${this.notePrefsBaseUrl}/update_discord_notification_pref`, pref);
+  }
+
+  customNotificationStateChangeRequest(request: CustomNoteStateRequest) {
+
+    return this.httpClient.patch<CustomNotificationViewModel>(
+      `${this.notePrefsBaseUrl}/custom_notification_state_change/${request.idCustomNote}`, null,
+      {params: { enabledState: request.enabledState }});
   }
 }

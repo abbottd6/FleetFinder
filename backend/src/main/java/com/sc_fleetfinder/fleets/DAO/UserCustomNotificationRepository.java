@@ -22,5 +22,8 @@ public interface UserCustomNotificationRepository extends JpaRepository<UserCust
 
     Integer countByUser(Users user);
 
+    @Query("SELECT COUNT(ucn) FROM UserCustomNotification ucn WHERE ucn.user.userId = :userId AND ucn.enabled = true")
+    Integer countEnabledByUser(@Param("userId") Long userId);
+
     Optional<UserCustomNotification> findByUserAndCustomNoteId(Users user, Long customNoteId);
 }

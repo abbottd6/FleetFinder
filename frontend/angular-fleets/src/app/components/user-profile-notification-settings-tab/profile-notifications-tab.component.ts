@@ -8,7 +8,7 @@ import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {UpdateNotificationPreferenceRequest} from "../../models/NotificationPrefAndCustomNotesModels/update-notification-preference-request";
 import {NotificationApiService} from "../../services/api-services/notification-api/notification-api.service";
 import {MatExpansionModule, MatExpansionPanelTitle} from "@angular/material/expansion";
-import {NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {
   CustomNotificationFormComponent
@@ -22,6 +22,10 @@ import {
 import {Page} from "../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {environment} from "../../../environments/environment";
 import {CustomNotificationChipComponent} from "./custom-notification-chip/custom-notification-chip.component";
+import {
+  CustomNoteStateRequest,
+  CustomNotificationService
+} from "../../services/facade-services/custom-notification-service/custom-notification.service";
 
 @Component({
   selector: 'app-profile-notifications-tab',
@@ -36,7 +40,8 @@ import {CustomNotificationChipComponent} from "./custom-notification-chip/custom
     MatExpansionPanelTitle,
     NgIf,
     CustomNotificationFormComponent,
-    CustomNotificationChipComponent
+    CustomNotificationChipComponent,
+    AsyncPipe
   ],
   styleUrl: './profile-notifications-tab.component.css'
 })
@@ -61,9 +66,11 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
   protected userCustomNotes: CustomNotificationViewModel[] = [];
   protected noCustomNotes: boolean = true;
 
-  constructor(protected userService: UserService, private noteSettingsApiService: NotificationSettingsApiService) {
-    this.getUserNotePrefs();
-    this.getMyCustomNotifications();
+  constructor(protected userService: UserService,
+              private noteSettingsApiService: NotificationSettingsApiService,
+              protected customNoteService: CustomNotificationService,) {
+    this.getUserDiscNotePrefs();
+
 
     this.userService.sessionUser$.pipe(takeUntil(this.destroy$))
       .subscribe(user => {
@@ -80,6 +87,14 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
           this.discSocialNotesControl.enable();
         }
       })
+
+    this.customNoteService.userCustomNotes$.pipe(takeUntil(this.destroy$))
+      .subscribe(notes => {
+        this.userCustomNotes = notes;
+        this.noCustomNotes = this.userCustomNotes.length === 0;
+      })
+
+    this.customNoteService.getMyCustomNotifications();
   }
 
   showCustomNoteForm(){
@@ -88,34 +103,19 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
 
   createOrUpdateSuccess(val: boolean) {
     this.doNotShowCustomNotesForm = val;
+    if(val) {
+      this.customNoteService.getMyCustomNotifications();
+    }
   }
 
-  getUserNotePrefs() {
+  sendCustomNoteStateChangeRequest(state: CustomNoteStateRequest) {
+    this.customNoteService.sendEnabledStateChangeRequest(state);
+  }
+
+  getUserDiscNotePrefs() {
     this.discSysNotesControl.setValue(this.userService.sysNotesEnabled ?? false);
     this.discGroupNotesControl.setValue(this.userService.groupNotesEnabled ?? false);
     this.discSocialNotesControl.setValue(this.userService.socialNotesEnabled ?? false);
-  }
-
-  getMyCustomNotifications() {
-    const IDX: number = 0;
-    const PAGE: number = 20;
-
-    this.noteSettingsApiService.getMyCustomNotifications(IDX, PAGE).pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (page: Page<CustomNotificationViewModel>) => {
-          if(!environment.production) {
-            console.log('custom notes logged: ', page.content);
-          }
-          this.userCustomNotes = page.content;
-        },
-        error: (err) => {
-          console.error('Error fetching user\'s custom notifications', err);
-        },
-        complete: () => {
-          this.noCustomNotes = (this.userCustomNotes.length === 0);
-        }
-      }
-    )
   }
 
   updateDiscordSysNotesPref() {
@@ -134,7 +134,7 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
         else {
           this.discSysNotesSaveError = true;
           setTimeout(() => this.discSysNotesSaved = false, 2000);
-          this.getUserNotePrefs();
+          this.getUserDiscNotePrefs();
         }
       }
     );
@@ -156,7 +156,7 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
         else {
           this.discGroupNotesSaveError = true;
           setTimeout(() => this.discGroupNotesSaved = false, 2000);
-          this.getUserNotePrefs();
+          this.getUserDiscNotePrefs();
         }
       }
     )
@@ -178,7 +178,7 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
         else {
           this.discSocialNotesSaveError = true;
           setTimeout(() => this.discSocialNotesSaved = false, 2000);
-          this.getUserNotePrefs();
+          this.getUserDiscNotePrefs();
         }
       }
     )

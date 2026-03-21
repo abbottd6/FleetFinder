@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.UserCustomNotificationRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.CreateOrEditCustomNotificationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetCustomNotificationResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPageOfCustomNotificationsAndEnabledCount;
 import com.sc_fleetfinder.fleets.entities.UserCustomNotification;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
@@ -31,12 +32,17 @@ public class CustomNotificationServiceImpl implements CustomNotificationService 
     }
 
     @Override
-    public Page<GetCustomNotificationResponseDto> getAllMyCustomNotifications(Users user, GenericPageRequestDto pageDto) {
+    public GetPageOfCustomNotificationsAndEnabledCount getAllMyCustomNotifications(Users user, GenericPageRequestDto pageDto) {
         Pageable pageable = PageRequest.of(pageDto.getPageIdx(), pageDto.getPageSize());
 
         Page<UserCustomNotification> entityPage = cnr.findByUser(user, pageable);
 
-        return entityPage.map(cNote -> modelMapper.map(cNote, GetCustomNotificationResponseDto.class));
+        Page<GetCustomNotificationResponseDto> dtoPage = entityPage.map(cNote ->
+                modelMapper.map(cNote, GetCustomNotificationResponseDto.class));
+
+        Integer enabledCount = cnr.countEnabledByUser(user.getUserId());
+
+        return new GetPageOfCustomNotificationsAndEnabledCount(dtoPage, enabledCount);
     }
 
     @Override
@@ -44,6 +50,7 @@ public class CustomNotificationServiceImpl implements CustomNotificationService 
         int TOTAL_LIMIT = 10;
 
         Integer existingCount = cnr.countByUser(user);
+        Integer enabledCount = cnr.countEnabledByUser(user.getUserId());
 
         if(existingCount >= TOTAL_LIMIT) {
             throw new ContentLimitException(user.getUserId(), "UserCustomNotification", TOTAL_LIMIT);
@@ -51,6 +58,10 @@ public class CustomNotificationServiceImpl implements CustomNotificationService 
 
         UserCustomNotification newCustom = modelMapper.map(dto, UserCustomNotification.class);
         newCustom.setUser(user);
+
+        if(enabledCount >= ENABLED_LIMIT) {
+            newCustom.setEnabled(false);
+        }
 
         UserCustomNotification saved = cnr.save(newCustom);
 
@@ -71,21 +82,25 @@ public class CustomNotificationServiceImpl implements CustomNotificationService 
     }
 
     @Override
-    public void enablementStateChange(Users user, Long customNoteId, Boolean state) {
+    public GetCustomNotificationResponseDto enablementStateChange(Users user, Long customNoteId, Boolean state) {
         UserCustomNotification toChange = cnr.findByUserAndCustomNoteId(user, customNoteId)
                 .orElseThrow(() -> new ActionNotAuthorizedException(user.getUserId(), "state change",
                         "UserCustomNotification", customNoteId));
 
-        Integer enabledCount = cnr.countByUser(user);
+        Integer enabledCount = cnr.countEnabledByUser(user.getUserId());
+
         //noinspection PointlessBooleanExpression is not pointless: clarifying
         if((state == true) && (enabledCount >= ENABLED_LIMIT)) {
             throw new ContentLimitException(user.getUserId(), "UserCustomNotification", ENABLED_LIMIT);
         }
 
+
         toChange.setEnabled(state);
 
         cnr.save(toChange);
         cnr.flush();
+
+        return modelMapper.map(toChange, GetCustomNotificationResponseDto.class);
     }
 
     @Override

@@ -360,14 +360,15 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
         insertCustomNote(userId);
         insertCustomNote(userId);
 
-        mockMvc.perform(get("/api/user_notification_preferences/get_my_custom_notifications")
+        mockMvc.perform(post("/api/user_notification_preferences/get_my_custom_notifications")
                         .with(jwt()
                                 .jwt(j -> j.subject(MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pageIdx\":0,\"pageSize\":10}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page.totalElements").value(2));
+                .andExpect(jsonPath("$.userCustomNotes.page.totalElements").value(2))
+                .andExpect(jsonPath("$.enabledCount").value(2));
     }
 
     @Test
@@ -377,14 +378,15 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
         insertCustomNote(userId);
         insertCustomNote(otherId);
 
-        mockMvc.perform(get("/api/user_notification_preferences/get_my_custom_notifications")
+        mockMvc.perform(post("/api/user_notification_preferences/get_my_custom_notifications")
                         .with(jwt()
                                 .jwt(j -> j.subject(MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pageIdx\":0,\"pageSize\":10}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page.totalElements").value(1));
+                .andExpect(jsonPath("$.userCustomNotes.page.totalElements").value(1))
+                .andExpect(jsonPath("$.enabledCount").value(1));
     }
 
     // ─── POST /create_custom_notification ─────────────────────────────────────

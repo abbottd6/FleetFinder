@@ -425,6 +425,10 @@ app-user {
   margin-bottom: 5rem;
 }
 
+.fancy-text {
+  color: rgba(52, 135, 168, 0.9);
+  font-weight: 600;
+}
 
 @media(max-width: 1700px) {
   .action-buttons {

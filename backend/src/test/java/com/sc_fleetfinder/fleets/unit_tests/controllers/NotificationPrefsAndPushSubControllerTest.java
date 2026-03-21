@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.unit_tests.controllers;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.CreatePushSubRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdatePushSubRequestDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPageOfCustomNotificationsAndEnabledCount;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPushSubDto;
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.NotificationPrefsAndPushSubController;
@@ -335,22 +336,27 @@ class NotificationPrefsAndPushSubControllerTest {
         dto.setCustomNoteId(1L);
         dto.setEnabled(true);
         Page<GetCustomNotificationResponseDto> page = new PageImpl<>(List.of(dto));
+        Integer enabledCount = 1;
 
-        when(customNotificationService.getAllMyCustomNotifications(any(), any())).thenReturn(page);
+        GetPageOfCustomNotificationsAndEnabledCount response = new GetPageOfCustomNotificationsAndEnabledCount(page,
+                enabledCount);
 
-        mockMvc.perform(get("/api/user_notification_preferences/get_my_custom_notifications")
+        when(customNotificationService.getAllMyCustomNotifications(any(), any())).thenReturn(response);
+
+        mockMvc.perform(post("/api/user_notification_preferences/get_my_custom_notifications")
                         .with(jwt()
                                 .jwt(j -> j.claim("sub", MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pageIdx\":0,\"pageSize\":10}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.page.totalElements").value(1));
+                .andExpect(jsonPath("$.userCustomNotes.page.totalElements").value(1))
+                .andExpect(jsonPath("$.enabledCount").value(1));
     }
 
     @Test
     void testGetMyCustomNotifications_NoAuth_Returns401() throws Exception {
-        mockMvc.perform(get("/api/user_notification_preferences/get_my_custom_notifications")
+        mockMvc.perform(post("/api/user_notification_preferences/get_my_custom_notifications")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pageIdx\":0,\"pageSize\":10}"))
                 .andExpect(status().isUnauthorized());
@@ -456,14 +462,20 @@ class NotificationPrefsAndPushSubControllerTest {
 
     @Test
     void testStateChange_Success_Returns200() throws Exception {
-        doNothing().when(customNotificationService).enablementStateChange(any(), eq(1L), eq(true));
+        GetCustomNotificationResponseDto responseDto = new GetCustomNotificationResponseDto();
+        responseDto.setCustomNoteId(1L);
+        responseDto.setEnabled(true);
+
+        when(customNotificationService.enablementStateChange(any(), eq(1L), eq(true))).thenReturn(responseDto);
 
         mockMvc.perform(patch("/api/user_notification_preferences/custom_notification_state_change/1")
                         .with(jwt()
                                 .jwt(j -> j.claim("sub", MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user")))
                         .param("enabledState", "true"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customNoteId").value(1))
+                .andExpect(jsonPath("$.enabled").value(true));
     }
 
     @Test

@@ -179,10 +179,22 @@
   margin-top: 2px;
 }
 
-.button-row {
+.button-row-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.button-row-left {
   display: flex;
   flex-direction: row;
   margin: 10px 10px 20px 50px;
+}
+
+.button-row-right {
+  margin-left: auto;
+  margin-right: 50px;
+  display: flex;
+  flex-direction: column;
 }
 
 .custom-notes-parent-container {
@@ -193,24 +205,30 @@
   border-bottom: 1px solid;
 }
 
+app-custom-notification-form {
+  transform-origin: top left;
+  transition: transform 0.7s ease, max-height 0.7s ease;
+}
+
 .do-not-show-form {
+  transform: scaleY(0) scaleX(0);
   max-height: 0;
   max-width: 0;
   border: 1px solid transparent;
-  overflow: hidden;
   pointer-events: none;
-}
-
-app-custom-notification-form {
-  transition: max-height 0.5s ease, max-width 0.4s ease, border 0.5s ease;
+  overflow: visible;
+  margin-left: 5%;
 }
 
 .show-form {
-  overflow: visible;
-  height: fit-content;
-  overflow-x: hidden;
+  transform: scaleY(1) scaleX(1);
+  max-height: 1000px;
   max-width: 90%;
-  border: 1px solid rgba(136, 138, 143, 0.75);
+  overflow-y: visible;
+  overflow-x: hidden;
+  margin-inline: auto;
+  border: 1px solid rgba(136, 138, 143, 0.5);
+  border-radius: 10px;
 }
 
 .proliferation-container {

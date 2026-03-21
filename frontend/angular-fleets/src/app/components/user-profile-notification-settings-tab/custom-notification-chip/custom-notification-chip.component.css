@@ -34,7 +34,7 @@
 .chip-body {
   width: 100%;
   display: grid;
-  grid-template-columns: 90% 10%;
+  grid-template-columns: 85% 15%;
 }
 
 @media(max-width: 725px) {
@@ -65,8 +65,32 @@
   align-items: center;
 }
 
-#last-column button {
-  padding: 5px 8px 4px 8px !important;
+mat-slide-toggle {
+  margin-right: 18px;
+}
+
+#edit {
+  margin-right: 10px;
+  text-decoration: underline;
+  color: rgba(255, 131, 7, .5);
+  transition: color 0.25s ease;
+}
+
+#edit:hover {
+  color: rgba(255, 131, 7, .75);
+  cursor: pointer;
+}
+
+#delete {
+  margin-left: 10px;
+  text-decoration: underline;
+  color: rgba(255, 131, 7, .5);
+  transition: color 0.25s ease;
+}
+
+#delete:hover {
+  color: rgba(255, 131, 7, .75);
+  cursor: pointer;
 }
 
 .label-val-pair {

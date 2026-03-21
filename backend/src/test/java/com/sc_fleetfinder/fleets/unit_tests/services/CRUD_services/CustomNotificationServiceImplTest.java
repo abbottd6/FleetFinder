@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.UserCustomNotificationRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.CreateOrEditCustomNotificationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetCustomNotificationResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPageOfCustomNotificationsAndEnabledCount;
 import com.sc_fleetfinder.fleets.entities.UserCustomNotification;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
@@ -68,13 +69,14 @@ class CustomNotificationServiceImplTest {
         pageDto.setPageSize(10);
 
         when(cnr.findByUser(eq(mockUser), any())).thenReturn(entityPage);
-        // NOTE: stub matches the BUGGY production code that passes the class literal instead of the entity instance
+        when(cnr.countEnabledByUser(any(Long.class))).thenReturn(1);
         when(modelMapper.map(any(UserCustomNotification.class), eq(GetCustomNotificationResponseDto.class))).thenReturn(dto);
 
-        Page<GetCustomNotificationResponseDto> result = service.getAllMyCustomNotifications(mockUser, pageDto);
+        GetPageOfCustomNotificationsAndEnabledCount result = service.getAllMyCustomNotifications(mockUser, pageDto);
 
-        assertThat(result.getTotalElements()).isEqualTo(1);
-        assertThat(result.getContent().get(0).getCustomNoteId()).isEqualTo(1L);
+        assertThat(result.getUserCustomNotes().getTotalElements()).isEqualTo(1);
+        assertThat(result.getEnabledCount()).isEqualTo(1);
+        assertThat(result.getUserCustomNotes().getContent().get(0).getCustomNoteId()).isEqualTo(1L);
     }
 
     @Test
@@ -85,10 +87,11 @@ class CustomNotificationServiceImplTest {
 
         when(cnr.findByUser(eq(mockUser), any())).thenReturn(new PageImpl<>(List.of()));
 
-        Page<GetCustomNotificationResponseDto> result = service.getAllMyCustomNotifications(mockUser, pageDto);
+        GetPageOfCustomNotificationsAndEnabledCount result = service.getAllMyCustomNotifications(mockUser, pageDto);
 
-        assertThat(result.getTotalElements()).isEqualTo(0);
-        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getUserCustomNotes().getTotalElements()).isEqualTo(0);
+        assertThat(result.getUserCustomNotes().getContent()).isEmpty();
+        assertThat(result.getEnabledCount()).isEqualTo(0);
     }
 
     // ─── createNewCustomNotification ──────────────────────────────────────────
