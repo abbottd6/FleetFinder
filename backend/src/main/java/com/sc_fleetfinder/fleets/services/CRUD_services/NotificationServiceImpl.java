@@ -52,10 +52,32 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public Page<GetNotificationDto> getMyNotifications(Users user, Pageable pageable) {
-        Page<Notification> myNotes = notificationRepo.findAllByUserId(user.getUserId(), pageable);
+    public Page<GetNotificationDto> getMyDropdownNotifications(Users user, Pageable pageable) {
+        Page<Notification> myNotes = notificationRepo.findAllDropdownNotificationsByUserId(user.getUserId(), pageable);
 
         return myNotes.map(note -> modelMapper.map(note , GetNotificationDto.class));
+    }
+
+    @Override
+    public Page<GetNotificationDto> getAllMyNotifications(Users user, Pageable pageable) {
+        Page<Notification> myNotes = notificationRepo.findAllNotificationsByUserId(user.getUserId(), pageable);
+
+        return myNotes.map(note -> modelMapper.map(note , GetNotificationDto.class));
+    }
+
+    @Override
+    @Transactional
+    public void removeDropdownPriority(Users user, Long noteId) {
+        Notification note = notificationRepo.findById(noteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+
+        if(!Objects.equals(note.getUser().getUserId(), user.getUserId())) {
+            throw new ActionNotAuthorizedException(
+                    user.getUserId(), "remove dropdown priority", "Notification", note.getNotificationId());
+        }
+
+        note.setDropdownPriority(false);
+        notificationRepo.save(note);
     }
 
     @Override

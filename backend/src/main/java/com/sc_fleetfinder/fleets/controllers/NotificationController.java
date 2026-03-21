@@ -6,8 +6,6 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.NotificationService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +14,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,21 +29,46 @@ import java.util.Map;
 @PreAuthorize("isAuthenticated() and hasRole('user')")
 public class NotificationController {
 
-    @Autowired
-    UserService userService;
+    private final UserService userService;
 
-    @Autowired
-    NotificationService notificationService;
+    private final NotificationService notificationService;
 
-    @PostMapping("/my_notifications")
-    public Page<GetNotificationDto> getMyNotifications(@AuthenticationPrincipal Jwt jwt,
+    public NotificationController(NotificationService notificationService, UserService userService) {
+        this.notificationService = notificationService;
+        this.userService = userService;
+    }
+
+    @PostMapping("/my_dropdown_notifications")
+    public Page<GetNotificationDto> getMyDropdownNotifications(@AuthenticationPrincipal Jwt jwt,
                                                        @RequestBody GenericPageRequestDto pageDto) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 
         Pageable pageable = PageRequest.of(pageDto.getPageIdx(), pageDto.getPageSize());
 
-        return notificationService.getMyNotifications(user, pageable);
+        return notificationService.getMyDropdownNotifications(user, pageable);
+    }
+
+    @PostMapping("/all_my_notifications")
+    public Page<GetNotificationDto> getAllMyNotifications(@AuthenticationPrincipal Jwt jwt,
+                                                          @RequestBody GenericPageRequestDto pageDto) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        Pageable pageable = PageRequest.of(pageDto.getPageIdx(), pageDto.getPageSize());
+
+        return notificationService.getAllMyNotifications(user, pageable);
+    }
+
+    @PatchMapping("/dropdown_remove/{noteId}")
+    public ResponseEntity<?> removeNotificationDropdownPriority(@AuthenticationPrincipal Jwt jwt,
+                                                                @PathVariable Long noteId) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        notificationService.removeDropdownPriority(user, noteId);
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete/{noteId}")

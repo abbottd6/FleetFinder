@@ -63,7 +63,7 @@ public class WebsocketNotificationController {
 
             messagingTemplate.convertAndSendToUser(
                     userSub,
-                    "queue/system.notify_count",
+                    "/queue/system.notify_count",
                     dto
             );
         }

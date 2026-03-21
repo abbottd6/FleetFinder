@@ -11,10 +11,10 @@ import com.sc_fleetfinder.fleets.utils.NotificationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Map;
-
 public interface NotificationService {
-    Page<GetNotificationDto> getMyNotifications(Users user, Pageable pageable);
+    Page<GetNotificationDto> getMyDropdownNotifications(Users user, Pageable pageable);
+    Page<GetNotificationDto> getAllMyNotifications(Users user, Pageable pageable);
+    void removeDropdownPriority(Users user, Long notificationId);
     void deleteNotification(Users user, Long noteId);
     Integer deleteAllNotifications(Users user);
     void createAndSendDeleteNotification(ListingArchive archive,

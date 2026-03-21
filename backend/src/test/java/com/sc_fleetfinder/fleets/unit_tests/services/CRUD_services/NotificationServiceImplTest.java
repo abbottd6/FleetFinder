@@ -10,6 +10,9 @@ import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.Notification;
 import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
+import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.NotificationServiceImpl;
@@ -32,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -76,29 +80,103 @@ class NotificationServiceImplTest {
     // ─── getMyNotifications ───────────────────────────────────────────────────
 
     @Test
-    void getMyNotifications_Success_ReturnsMappedPage() {
+    void getMyDropdownNotifications_Success_ReturnsMappedPage() {
         Notification note = new Notification();
         GetNotificationDto dto = new GetNotificationDto();
         dto.setNotificationId(1L);
 
         Page<Notification> entityPage = new PageImpl<>(List.of(note));
-        when(notificationRepo.findAllByUserId(eq(1L), any())).thenReturn(entityPage);
+        when(notificationRepo.findAllDropdownNotificationsByUserId(eq(1L), any())).thenReturn(entityPage);
         when(modelMapper.map(note, GetNotificationDto.class)).thenReturn(dto);
 
-        Page<GetNotificationDto> result = notificationService.getMyNotifications(mockUser, PageRequest.of(0, 10));
+        Page<GetNotificationDto> result = notificationService.getMyDropdownNotifications(mockUser, PageRequest.of(0, 10));
 
         assertThat(result.getTotalElements()).isEqualTo(1);
         assertThat(result.getContent().get(0).getNotificationId()).isEqualTo(1L);
     }
 
     @Test
-    void getMyNotifications_EmptyPage_ReturnsEmptyPage() {
-        when(notificationRepo.findAllByUserId(eq(1L), any())).thenReturn(new PageImpl<>(List.of()));
+    void getMyDropdownNotifications_EmptyPage_ReturnsEmptyPage() {
+        when(notificationRepo.findAllDropdownNotificationsByUserId(eq(1L), any())).thenReturn(new PageImpl<>(List.of()));
 
-        Page<GetNotificationDto> result = notificationService.getMyNotifications(mockUser, PageRequest.of(0, 10));
+        Page<GetNotificationDto> result = notificationService.getMyDropdownNotifications(mockUser, PageRequest.of(0, 10));
 
         assertThat(result.getTotalElements()).isEqualTo(0);
         assertThat(result.getContent()).isEmpty();
+    }
+
+    // ─── getAllMyNotifications ────────────────────────────────────────────────
+
+    @Test
+    void getAllMyNotifications_Success_ReturnsMappedPage() {
+        Notification note = new Notification();
+        GetNotificationDto dto = new GetNotificationDto();
+        dto.setNotificationId(1L);
+
+        Page<Notification> entityPage = new PageImpl<>(List.of(note));
+        when(notificationRepo.findAllNotificationsByUserId(eq(1L), any())).thenReturn(entityPage);
+        when(modelMapper.map(note, GetNotificationDto.class)).thenReturn(dto);
+
+        Page<GetNotificationDto> result = notificationService.getAllMyNotifications(mockUser, PageRequest.of(0, 10));
+
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getContent().get(0).getNotificationId()).isEqualTo(1L);
+    }
+
+    @Test
+    void getAllMyNotifications_EmptyPage_ReturnsEmptyPage() {
+        when(notificationRepo.findAllNotificationsByUserId(eq(1L), any())).thenReturn(new PageImpl<>(List.of()));
+
+        Page<GetNotificationDto> result = notificationService.getAllMyNotifications(mockUser, PageRequest.of(0, 10));
+
+        assertThat(result.getTotalElements()).isEqualTo(0);
+        assertThat(result.getContent()).isEmpty();
+    }
+
+    // ─── removeDropdownPriority ───────────────────────────────────────────────
+
+    @Test
+    void removeDropdownPriority_Success_SetsFlagToFalseAndSaves() {
+        Users owner = new Users();
+        owner.setUserId(1L);
+
+        Notification note = new Notification();
+        note.setUser(owner);
+        note.setDropdownPriority(true);
+
+        when(notificationRepo.findById(1L)).thenReturn(Optional.of(note));
+        when(notificationRepo.save(any())).thenReturn(note);
+
+        notificationService.removeDropdownPriority(mockUser, 1L);
+
+        assertThat(note.getDropdownPriority()).isFalse();
+        verify(notificationRepo).save(note);
+    }
+
+    @Test
+    void removeDropdownPriority_NotFound_ThrowsResourceNotFoundException() {
+        when(notificationRepo.findById(99L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> notificationService.removeDropdownPriority(mockUser, 99L))
+                .isInstanceOf(ResourceNotFoundException.class);
+
+        verify(notificationRepo, never()).save(any());
+    }
+
+    @Test
+    void removeDropdownPriority_WrongUser_ThrowsActionNotAuthorizedException() {
+        Users otherUser = new Users();
+        otherUser.setUserId(2L);
+
+        Notification note = new Notification();
+        note.setUser(otherUser);
+
+        when(notificationRepo.findById(1L)).thenReturn(Optional.of(note));
+
+        assertThatThrownBy(() -> notificationService.removeDropdownPriority(mockUser, 1L))
+                .isInstanceOf(ActionNotAuthorizedException.class);
+
+        verify(notificationRepo, never()).save(any());
     }
 
     // ─── deleteNotification ───────────────────────────────────────────────────
@@ -238,6 +316,32 @@ class NotificationServiceImplTest {
     }
 
     @Test
+    void sendOutboxNotification_ModDelete_SkipsLookupAndSendsWsMessages() {
+        Users owner = new Users();
+        owner.setUserId(1L);
+        owner.setKeycloakId("ownerKcId");
+
+        NotificationOutbox outbox = new NotificationOutbox();
+        outbox.setEventType(NotificationType.MOD_DELETE);
+        outbox.setEntityId(10L);
+        outbox.setEntityOwner(owner);
+        outbox.setEntityNewStatus("DELETED");
+
+        Notification savedNote = new Notification();
+        when(notificationRepo.save(any(Notification.class))).thenReturn(savedNote);
+        when(modelMapper.map(any(Notification.class), eq(GetNotificationDto.class))).thenReturn(new GetNotificationDto());
+        when(notificationRepo.countUnreadByUserId(1L)).thenReturn(1);
+
+        notificationService.sendOutboxNotification(outbox);
+
+        verify(groupListingRepository, never()).findById(any());
+        verify(archiveRepo, never()).findByGroupId(any());
+        verify(notificationRepo).save(any(Notification.class));
+        verify(messagingTemplate).convertAndSendToUser(eq("ownerKcId"), eq("/queue/system.notify_count"), any());
+        verify(messagingTemplate).convertAndSendToUser(eq("ownerKcId"), eq("/queue/system.notify"), any());
+    }
+
+    @Test
     void sendOutboxNotification_ListingArchived_ArchiveNotFound_ThrowsResourceNotFoundException() {
         Users owner = new Users();
         owner.setUserId(1L);
@@ -254,5 +358,60 @@ class NotificationServiceImplTest {
                 .isInstanceOf(ResourceNotFoundException.class);
 
         verify(notificationRepo, never()).save(any());
+    }
+
+    // ─── createAndSendDeleteNotification ─────────────────────────────────────
+
+    @Test
+    void createAndSendDeleteNotification_Success_SavesNoteAndSendsTwoWsMessages() {
+        Users owner = new Users();
+        owner.setUserId(1L);
+        owner.setKeycloakId("ownerKcId");
+
+        ListingArchive archive = mock(ListingArchive.class);
+        when(archive.getListingTitle()).thenReturn("Deleted Listing");
+
+        ModerationIssue issue = mock(ModerationIssue.class);
+        when(issue.getUserRef()).thenReturn(owner);
+        when(issue.getMaxReportBasis()).thenReturn("Spam");
+
+        ModListingAction action = mock(ModListingAction.class);
+
+        Notification savedNote = new Notification();
+        when(notificationRepo.save(any(Notification.class))).thenReturn(savedNote);
+        when(modelMapper.map(any(Notification.class), eq(GetNotificationDto.class))).thenReturn(new GetNotificationDto());
+        when(notificationRepo.countUnreadByUserId(1L)).thenReturn(2);
+
+        notificationService.createAndSendDeleteNotification(archive, issue, NotificationType.MOD_DELETE, action);
+
+        verify(notificationRepo).save(any(Notification.class));
+        verify(messagingTemplate).convertAndSendToUser(eq("ownerKcId"), eq("/queue/system.notify_count"), any());
+        verify(messagingTemplate).convertAndSendToUser(eq("ownerKcId"), eq("/queue/system.notify"), any());
+        verify(messagingTemplate, times(2)).convertAndSendToUser(anyString(), anyString(), any());
+    }
+
+    // ─── onUserAccountDeleted ─────────────────────────────────────────────────
+
+    @Test
+    void onUserAccountDeleted_CallsDeleteAllByUserId() {
+        Users deletedUser = new Users();
+        deletedUser.setUserId(5L);
+        UserAccountDeleteEvent event = new UserAccountDeleteEvent(deletedUser);
+
+        notificationService.onUserAccountDeleted(event);
+
+        verify(notificationRepo).deleteAllByUser_userId(5L);
+    }
+
+    @Test
+    void onUserAccountDeleted_RepoThrows_ExceptionSwallowed() {
+        Users deletedUser = new Users();
+        deletedUser.setUserId(5L);
+        UserAccountDeleteEvent event = new UserAccountDeleteEvent(deletedUser);
+
+        when(notificationRepo.deleteAllByUser_userId(5L)).thenThrow(new RuntimeException("DB error"));
+
+        // Exception is caught and logged — must not propagate
+        assertThatNoException().isThrownBy(() -> notificationService.onUserAccountDeleted(event));
     }
 }

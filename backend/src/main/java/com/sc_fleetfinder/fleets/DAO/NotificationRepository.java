@@ -9,15 +9,23 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
+
+    @Query("""
+            SELECT n FROM Notification n
+            WHERE n.user.userId=:userId AND n.dropdownPriority = true
+            ORDER BY n.createdAt DESC
+            """)
+    Page<Notification> findAllDropdownNotificationsByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query("""
             SELECT n FROM Notification n
             WHERE n.user.userId=:userId
             ORDER BY n.createdAt DESC
             """)
-    Page<Notification> findAllByUserId(@Param("userId") Long userId, Pageable pageable);
+    Page<Notification> findAllNotificationsByUserId(@Param("userId") Long userId, Pageable pageable);
 
     Integer deleteAllByUser_userId(Long userId);
 

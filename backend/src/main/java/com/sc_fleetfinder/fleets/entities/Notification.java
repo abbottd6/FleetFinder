@@ -1,8 +1,11 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadataConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -71,6 +74,13 @@ public class Notification {
     @OneToOne
     @JoinColumn(name="id_action", nullable=true)
     private ModListingAction action;
+
+    @Column(name="dropdown_priority", nullable = false)
+    private Boolean dropdownPriority = true;
+
+    @Convert(converter = NotificationTargetMetadataConverter.class)
+    @Column(name="target_metadata", nullable = true)
+    private NotificationTargetMetadata targetMetadata;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

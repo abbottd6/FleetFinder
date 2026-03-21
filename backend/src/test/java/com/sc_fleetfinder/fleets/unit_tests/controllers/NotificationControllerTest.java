@@ -33,6 +33,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -81,9 +82,9 @@ class NotificationControllerTest {
         dto.setNotificationId(1L);
         Page<GetNotificationDto> page = new PageImpl<>(List.of(dto));
 
-        when(notificationService.getMyNotifications(any(), any())).thenReturn(page);
+        when(notificationService.getMyDropdownNotifications(any(), any())).thenReturn(page);
 
-        mockMvc.perform(post("/api/notify/my_notifications")
+        mockMvc.perform(post("/api/notify/my_dropdown_notifications")
                         .with(jwt()
                                 .jwt(j -> j.claim("sub", MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user")))
@@ -95,7 +96,7 @@ class NotificationControllerTest {
 
     @Test
     void testGetMyNotifications_NoAuth_Returns401() throws Exception {
-        mockMvc.perform(post("/api/notify/my_notifications")
+        mockMvc.perform(post("/api/notify/all_my_notifications")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pageIdx\":0,\"pageSize\":10}"))
                 .andExpect(status().isUnauthorized());
@@ -103,9 +104,9 @@ class NotificationControllerTest {
 
     @Test
     void testGetMyNotifications_EmptyPage_Returns200() throws Exception {
-        when(notificationService.getMyNotifications(any(), any())).thenReturn(new PageImpl<>(List.of()));
+        when(notificationService.getMyDropdownNotifications(any(), any())).thenReturn(new PageImpl<>(List.of()));
 
-        mockMvc.perform(post("/api/notify/my_notifications")
+        mockMvc.perform(post("/api/notify/my_dropdown_notifications")
                         .with(jwt()
                                 .jwt(j -> j.claim("sub", MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user")))
@@ -113,6 +114,69 @@ class NotificationControllerTest {
                         .content("{\"pageIdx\":0,\"pageSize\":10}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.page.totalElements").value(0));
+    }
+
+    // ─── POST /all_my_notifications ──────────────────────────────────────────
+
+    @Test
+    void testGetAllMyNotifications_Success_Returns200() throws Exception {
+        GetNotificationDto dto = new GetNotificationDto();
+        dto.setNotificationId(1L);
+        Page<GetNotificationDto> page = new PageImpl<>(List.of(dto));
+
+        when(notificationService.getAllMyNotifications(any(), any())).thenReturn(page);
+
+        mockMvc.perform(post("/api/notify/all_my_notifications")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"pageIdx\":0,\"pageSize\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
+    }
+
+    // ─── PATCH /dropdown_remove/{noteId} ─────────────────────────────────────
+
+    @Test
+    void testRemoveDropdownPriority_Success_Returns200() throws Exception {
+        doNothing().when(notificationService).removeDropdownPriority(any(), eq(1L));
+
+        mockMvc.perform(patch("/api/notify/dropdown_remove/1")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testRemoveDropdownPriority_NoAuth_Returns401() throws Exception {
+        mockMvc.perform(patch("/api/notify/dropdown_remove/1"))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void testRemoveDropdownPriority_NotFound_Returns404() throws Exception {
+        doThrow(new ResourceNotFoundException("Notification not found"))
+                .when(notificationService).removeDropdownPriority(any(), eq(1L));
+
+        mockMvc.perform(patch("/api/notify/dropdown_remove/1")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testRemoveDropdownPriority_NotOwner_Returns401() throws Exception {
+        doThrow(new ActionNotAuthorizedException(1L, "remove dropdown priority", "Notification", 1L))
+                .when(notificationService).removeDropdownPriority(any(), eq(1L));
+
+        mockMvc.perform(patch("/api/notify/dropdown_remove/1")
+                        .with(jwt()
+                                .jwt(j -> j.claim("sub", MOCK_KCID))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isUnauthorized());
     }
 
     // ─── DELETE /delete/{noteId} ──────────────────────────────────────────────
