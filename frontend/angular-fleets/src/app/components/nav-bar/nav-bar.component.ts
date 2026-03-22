@@ -2,7 +2,7 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {UserService} from "../../services/user-services/user.service";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
-import {filter, map, Observable, shareReplay, Subject, Subscription, take, takeUntil} from "rxjs";
+import {distinctUntilChanged, filter, map, Observable, shareReplay, Subject, Subscription, take, takeUntil} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {WsGatewayService} from "../../services/websocket-messaging/ws-gateway.service";
 import {MatBadgePosition} from "@angular/material/badge";
@@ -36,9 +36,11 @@ export class NavBarComponent implements OnInit, OnDestroy {
       .subscribe(isLoggedIn => {
         if(isLoggedIn && (this.userService.sessionUser === null)) {
           this.userService.refreshUser();
-          this.notificationService.loadNotifications();
+          this.notificationService.loadDropdownNotifications();
+          this.subscribeToNoteChanges();
         }
       });
+
 
     this.wsConnectSub = this.ws.isConnected$.pipe(
       takeUntil(this.destroy$),
@@ -55,6 +57,16 @@ export class NavBarComponent implements OnInit, OnDestroy {
       null)
 
     console.warn("note unread:", this.ws.notificationUnread$.pipe(take(1)))
+  }
+
+  subscribeToNoteChanges() {
+    this.notificationService.myNotifications$.pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged(),
+    ).subscribe(change => {
+      this.notificationService.loadDropdownNotifications();
+    })
+
   }
 
   closeDropdown() {

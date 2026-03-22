@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
@@ -29,6 +30,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Instant;
 import java.util.Collections;
@@ -517,6 +524,71 @@ class GroupListingServiceImplTest {
                         .anyMatch(log -> log.contains("GetGroupListingById failed to find an entity with the " +
                                 "given group Id: "))));
 
+    }
+
+    // --- searchGroupListings tests ---
+
+    @Test
+    void searchGroupListings_Anonymous_ReturnsPage() {
+        // given
+        SearchListingsDto dto = new SearchListingsDto(); // all nulls — no filters
+        Pageable pageable = PageRequest.of(0, 10);
+
+        GroupListing entity = new GroupListing();
+        entity.setGroupId(1L);
+        entity.setListingTitle("Test title");
+
+        GroupListingResponseDto responseDto = new GroupListingResponseDto();
+        responseDto.setGroupId(1L);
+        responseDto.setListingTitle("Test title");
+
+        when(groupListingRepository.findAll(any(Specification.class), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(entity)));
+        when(groupListingConversionService.convertListingToResponseDto(entity)).thenReturn(responseDto);
+
+        // when
+        Page<GroupListingResponseDto> result = groupListingService.searchGroupListings(dto, pageable, Optional.empty());
+
+        // then
+        assertAll("searchGroupListings anonymous assertions:",
+                () -> assertNotNull(result),
+                () -> assertEquals(1, result.getTotalElements()),
+                () -> assertEquals("Test title", result.getContent().get(0).getListingTitle()),
+                () -> verify(groupListingRepository).findAll(any(Specification.class), any(Pageable.class))
+        );
+    }
+
+    @Test
+    void searchGroupListings_Authenticated_ReturnsPage() {
+        // given
+        SearchListingsDto dto = new SearchListingsDto(); // all nulls — no filters
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Users user = new Users();
+        user.setUserId(1L);
+
+        GroupListing entity = new GroupListing();
+        entity.setGroupId(1L);
+        entity.setListingTitle("Auth test title");
+
+        GroupListingResponseDto responseDto = new GroupListingResponseDto();
+        responseDto.setGroupId(1L);
+        responseDto.setListingTitle("Auth test title");
+
+        when(groupListingRepository.findAll(any(Specification.class), any(Pageable.class)))
+                .thenReturn(new PageImpl<>(List.of(entity)));
+        when(groupListingConversionService.convertListingToResponseDto(entity)).thenReturn(responseDto);
+
+        // when
+        Page<GroupListingResponseDto> result = groupListingService.searchGroupListings(dto, pageable, Optional.of(user));
+
+        // then
+        assertAll("searchGroupListings authenticated assertions:",
+                () -> assertNotNull(result),
+                () -> assertEquals(1, result.getTotalElements()),
+                () -> assertEquals("Auth test title", result.getContent().get(0).getListingTitle()),
+                () -> verify(groupListingRepository).findAll(any(Specification.class), any(Pageable.class))
+        );
     }
 
 }

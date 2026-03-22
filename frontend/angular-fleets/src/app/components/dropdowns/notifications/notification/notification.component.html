@@ -21,7 +21,7 @@
   <div class="remove-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
     <button
       id="remove-button"
-      (click)="noteService.removeNotification(note.notificationId)">
+      (click)="noteService.removeNotificationDropdownPriority(note.notificationId)">
       <mat-icon>close</mat-icon>
     </button>
   </div>

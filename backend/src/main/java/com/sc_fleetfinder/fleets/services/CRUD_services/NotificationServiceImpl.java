@@ -81,6 +81,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional
     public void deleteNotification(Users user, Long noteId) {
         Notification note = notificationRepo.findById(noteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Notification", noteId));
@@ -94,6 +95,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional
     public Integer deleteAllNotifications(Users user) {
         return notificationRepo.deleteAllByUser_userId(user.getUserId());
     }

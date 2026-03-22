@@ -7,6 +7,13 @@
   margin: 1rem 0 1rem 1rem;
 }
 
+.header-notice {
+  width: 95%;
+  margin-inline: 1rem;
+  font-family: "Exo 2", sans-serif;
+  font-size: 105%;
+}
+
 .settings-container {
   display: flex;
   flex-direction: column;
@@ -132,7 +139,7 @@ mat-panel-description.mat-expansion-panel-header-description {
 
 .toggle-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 0.5fr;
   margin-left: 50px;
   max-width: 425px;
   min-width: 275px;
@@ -145,6 +152,12 @@ mat-panel-description.mat-expansion-panel-header-description {
   grid-template-columns: 1fr 1fr 1fr !important;
 }
 
+.toggle-row mat-slide-toggle {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: right;
+}
+
 .expanded-toggle-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -153,6 +166,11 @@ mat-panel-description.mat-expansion-panel-header-description {
   min-width: 275px;
   width: fit-content;
   align-content: center;
+}
+
+#long-name-toggle-push-left {
+  margin-right: 22%;
+  margin-left: 0;
 }
 
 :host ::ng-deep .mat-mdc-slide-toggle {
@@ -193,6 +211,16 @@ mat-panel-description.mat-expansion-panel-header-description {
   --mdc-switch-selected-icon-color: rgba(52, 58, 64, 1);
 }
 
+@media(max-width: 1200px) {
+  mat-panel-description.mat-expansion-panel-header-description {
+    font-size: 0.9rem;
+  }
+
+  mat-panel-title.mat-expansion-panel-header-title {
+    font-size: 1rem;
+  }
+}
+
 @media(max-width: 800px) {
   .mat-expansion-panel {
     font-size: 1rem;
@@ -207,10 +235,44 @@ mat-panel-description.mat-expansion-panel-header-description {
     margin-left: 20px;
     max-width: 300px;
   }
+
+  mat-panel-description.mat-expansion-panel-header-description {
+    display: none;
+  }
+
+  #long-name-toggle-push-left {
+    margin-right: 12%;
+    margin-left: 0;
+  }
+
+  .button-row-container {
+    font-size: 0.8rem;
+  }
+
+  .button-row-container .button-row-right {
+    margin-right: 10px;
+  }
+
+  .button-row-container .button-row-left {
+    margin-left: 10px;
+  }
+}
+
+@media(max-width: 450px) {
+  #long-name-toggle-push-left {
+    margin-right: 0 !important;
+  }
+
+  mat-slide-toggle {
+    margin-left: 0;
+  }
 }
 
 .toggle-label {
-  width: 200px;
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 auto;
+  max-width: 220px;
   margin-top: 2px;
 }
 

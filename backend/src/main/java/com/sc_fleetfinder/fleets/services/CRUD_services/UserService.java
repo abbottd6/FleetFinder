@@ -9,6 +9,7 @@ import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -41,6 +42,8 @@ public interface UserService {
     void deleteUser(String kcId);
 
     PrivateUserResponseDto getUserByKeycloakIdAndCheckDiscord(String kcId, String discId, String discName);
+
+    Optional<Users> getUserByKeycloakIdDoNotThrow(String kcId);
 
     Users verifyUser(String kcId);
 }

@@ -1,5 +1,5 @@
-import {Component, OnDestroy} from '@angular/core';
-import {Subject, takeUntil} from "rxjs";
+import {Component, inject, OnDestroy} from '@angular/core';
+import {map, shareReplay, Subject, takeUntil} from "rxjs";
 import {UserService} from "../../services/user-services/user.service";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {MatLabel} from "@angular/material/input";
@@ -22,6 +22,11 @@ import {
   CustomNoteStateRequest,
   CustomNotificationService
 } from "../../services/facade-services/custom-notification-service/custom-notification.service";
+import {MatTooltip} from "@angular/material/tooltip";
+import {BreakpointObserver} from "@angular/cdk/layout";
+import {
+  MyNotificationsAccordionBodyComponent
+} from "./my-notifications-accordion-body/my-notifications-accordion-body.component";
 
 @Component({
   selector: 'app-profile-notifications-tab',
@@ -37,7 +42,9 @@ import {
     NgIf,
     CustomNotificationFormComponent,
     CustomNotificationChipComponent,
-    AsyncPipe
+    AsyncPipe,
+    MatTooltip,
+    MyNotificationsAccordionBodyComponent,
   ],
   styleUrl: './profile-notifications-tab.component.css'
 })

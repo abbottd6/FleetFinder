@@ -1,5 +1,18 @@
 <div class="title-container">
   <h5>Notifications:</h5>
+
+  <div class="header-notice">
+    <p>
+      SCFleetFinder uses account links and emails for user verification and notification purposes only. This
+      <span class="fancy-text">
+        user information is secure, private, and will never be shared with third parties or other users without
+        your explicit consent.
+      </span>
+      Notifications are customizable so that you can receive only the notifications you
+      are interested in. You can disable notifications or remove linked accounts and push notification
+      configurations at any time.
+    </p>
+  </div>
 </div>
 <mat-accordion
   class="settings-container"
@@ -16,6 +29,13 @@
         Link your Discord to have FleetyBot send your notifications as Discord messages.
       </mat-panel-description>
     </mat-expansion-panel-header>
+    <div class="header-notice">
+      <p>
+        Discord link enables you to log in to FleetFinder using your Discord account and configure notification
+        settings to receive your notifications as direct messages from the FleetFinder Discord bot, FleetyBot.
+        Notifications are divided into three categories, which you can enable/disable for Discord individually.
+      </p>
+    </div>
     <div class="toggles-container">
       <div class="dynamic-discord-container">
         <ng-container *ngIf="!userService.discordUsername; else hasDisc">
@@ -39,8 +59,16 @@
         </ng-template>
       </div>
       <div class="toggle-row" [class.three-col-toggle-row]="discSysNotesSaved">
-        <mat-label class="toggle-label">System Notifications:</mat-label>
+        <mat-label class="toggle-label">
+          System Notifications:
+          <mat-icon class="tooltip-icon"
+                    matTooltip="Low priority. Periodic status changes for your listings and moderator
+                                actions on your listings.">
+            help_outline
+          </mat-icon>
+        </mat-label>
         <mat-slide-toggle
+          id="long-name-toggle-push-left"
           [formControl]="discSysNotesControl"
           (change)="updateDiscordSysNotesPref()">
         </mat-slide-toggle>
@@ -49,7 +77,14 @@
         </ng-container>
       </div>
       <div class="toggle-row" [class.three-col-toggle-row]="discGroupNotesSaved">
-        <mat-label class="toggle-label">Group Notifications:</mat-label>
+        <mat-label class="toggle-label">
+          Group Notifications:
+          <mat-icon class="tooltip-icon"
+                    matTooltip="Medium priority: Your custom notifications. Coming Soon: group membership and
+                                group management feature notifications will be included here.">
+            help_outline
+          </mat-icon>
+        </mat-label>
         <mat-slide-toggle
           [formControl]="discGroupNotesControl"
           (change)="updateDiscordGroupNotesPref()">
@@ -59,7 +94,13 @@
         </ng-container>
       </div>
       <div class="toggle-row" [class.three-col-toggle-row]="discSocialNotesSaved">
-        <mat-label class="toggle-label">Social Notifications:</mat-label>
+        <mat-label class="toggle-label">
+          Social Notifications:
+          <mat-icon class="tooltip-icon"
+                    matTooltip="Highest priority: New message notifications. Coming soon: group invites.">
+            help_outline
+          </mat-icon>
+        </mat-label>
         <mat-slide-toggle
           [formControl]="discSocialNotesControl"
           (change)="updateDiscordSocialNotesPref()">
@@ -128,7 +169,7 @@
     </div>
     <div class="proliferation-container">
       <ng-container *ngIf="!noCustomNotes; else noNotes">
-        @for(note of userCustomNotes; track note.customNoteId ?? note.tagLabel) {
+        @for(note of userCustomNotes; track note.customNoteId) {
           <app-custom-notification-chip
             [customNoteInput]="note"
             (enabledState)="sendCustomNoteStateChangeRequest($event)">
@@ -149,6 +190,11 @@
         My Notifications
       </mat-panel-title>
     </mat-expansion-panel-header>
+    <div class="my-notifications-container">
+      <app-my-notifications-accordion-body>
+
+      </app-my-notifications-accordion-body>
+    </div>
   </mat-expansion-panel>
 </mat-accordion>
 

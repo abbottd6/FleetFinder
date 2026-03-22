@@ -18,7 +18,7 @@ describe('NotificationService', () => {
     wsSpy.getNotesArray.and.returnValue([]);
 
     noteApiSpy = jasmine.createSpyObj('NotificationApiService', ['getMyNotifications', 'deleteNotification']);
-    noteApiSpy.getMyNotifications.and.returnValue(NEVER);
+    noteApiSpy.getMyDropdownNotifications.and.returnValue(NEVER);
     noteApiSpy.deleteNotification.and.returnValue(NEVER);
 
     TestBed.configureTestingModule({

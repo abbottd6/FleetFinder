@@ -29,6 +29,7 @@ import org.springframework.validation.annotation.Validated;
 import java.time.Instant;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -296,6 +297,11 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return userConversionService.convertToPrivateDto(user);
+    }
+
+    @Override
+    public Optional<Users> getUserByKeycloakIdDoNotThrow(String kcId) {
+        return userRepository.findByKeycloakId(kcId);
     }
 
     @Override

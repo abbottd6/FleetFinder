@@ -1,13 +1,14 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
-import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.GroupListingsController;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import org.junit.jupiter.api.Test;
 
 import tools.jackson.databind.ObjectMapper;
@@ -27,6 +28,9 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -63,7 +67,7 @@ class GroupListingsControllerTest {
     private GroupListingService groupListingService;
 
     @MockitoBean
-    private UserRepository userRepository;
+    private UserService userService;
 
     @MockitoBean
     private JwtDecoder jwtDecoder;
@@ -248,7 +252,7 @@ class GroupListingsControllerTest {
         mockUser.setUsername("mock user");
         mockUser.setKeycloakId("someKeycloakId");
         mockUser.setEmail("mockuser@gmail.com");
-        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+        when(userService.verifyUser("someKeycloakId")).thenReturn(mockUser);
 
         doAnswer(invocation -> {
             invocation.getArgument(0);
@@ -302,7 +306,7 @@ class GroupListingsControllerTest {
         mockUser.setUsername("mock user");
         mockUser.setKeycloakId("someKeycloakId");
         mockUser.setEmail("mockuser@gmail.com");
-        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+        when(userService.verifyUser("someKeycloakId")).thenReturn(mockUser);
 
         doAnswer(invocation -> {
             invocation.getArgument(0);
@@ -353,7 +357,7 @@ class GroupListingsControllerTest {
         mockUser.setUsername("mock user");
         mockUser.setKeycloakId("someKeycloakId");
         mockUser.setEmail("mockuser@gmail.com");
-        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+        when(userService.verifyUser("someKeycloakId")).thenReturn(mockUser);
 
         doAnswer(invocation -> {
             invocation.getArgument(0);
@@ -469,7 +473,7 @@ class GroupListingsControllerTest {
         mockUser.setUsername("TestUser");
         mockUser.setKeycloakId("someKeycloakId");
         mockUser.setEmail("test@test.com");
-        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+        when(userService.verifyUser("someKeycloakId")).thenReturn(mockUser);
 
         Map<String, String> response = new HashMap<>();
         response.put("listingTitle", "Updated listing title");
@@ -510,7 +514,7 @@ class GroupListingsControllerTest {
         mockUser.setUsername("TestUser");
         mockUser.setKeycloakId("someKeycloakId");
         mockUser.setEmail("test@test.com");
-        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+        when(userService.verifyUser("someKeycloakId")).thenReturn(mockUser);
 
         doAnswer(inv -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group listing not found."))
                 .when(groupListingService).updateGroupListing(any(UpdateGroupListingDto.class), any(Users.class));
@@ -548,7 +552,7 @@ class GroupListingsControllerTest {
         mockUser.setUsername("DifferentUser");
         mockUser.setKeycloakId("someKeycloakId");
         mockUser.setEmail("different@test.com");
-        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+        when(userService.verifyUser("someKeycloakId")).thenReturn(mockUser);
 
         doAnswer(inv -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authorized to update this listing."))
                 .when(groupListingService).updateGroupListing(any(UpdateGroupListingDto.class), any(Users.class));
@@ -583,7 +587,7 @@ class GroupListingsControllerTest {
         mockUser.setUsername("mock user");
         mockUser.setKeycloakId("someKeycloakId");
         mockUser.setEmail("mockuser@gmail.com");
-        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+        when(userService.verifyUser("someKeycloakId")).thenReturn(mockUser);
 
         Map<String, String> response = new HashMap<>();
         response.put("listingId", "1");
@@ -605,7 +609,7 @@ class GroupListingsControllerTest {
         mockUser.setUsername("mock user");
         mockUser.setKeycloakId("someKeycloakId");
         mockUser.setEmail("mockuser@gmail.com");
-        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+        when(userService.verifyUser("someKeycloakId")).thenReturn(mockUser);
 
         doAnswer(inv -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Group listing not found."))
                 .when(groupListingService).deleteGroupListing(anyLong(), any(Users.class));
@@ -624,7 +628,7 @@ class GroupListingsControllerTest {
         mockUser.setUsername("different user");
         mockUser.setKeycloakId("someKeycloakId");
         mockUser.setEmail("different@gmail.com");
-        when(userRepository.findByKeycloakId("someKeycloakId")).thenReturn(Optional.of(mockUser));
+        when(userService.verifyUser("someKeycloakId")).thenReturn(mockUser);
 
         doAnswer(inv -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Not authorized to delete this listing."))
                 .when(groupListingService).deleteGroupListing(anyLong(), any(Users.class));
@@ -634,5 +638,60 @@ class GroupListingsControllerTest {
                                 .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user"))))
                 .andExpect(status().isUnauthorized());
+    }
+
+    // --- searchGroupListings tests ---
+
+    @Test
+    void searchGroupListings_Anonymous_Returns200() throws Exception {
+        PageImpl<GroupListingResponseDto> pageResult = new PageImpl<>(mockGroupListings);
+        when(groupListingService.searchGroupListings(
+                any(SearchListingsDto.class), any(Pageable.class), any(Optional.class)))
+                .thenReturn(pageResult);
+
+        mockMvc.perform(post("/api/group-listings/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(2))
+                .andExpect(jsonPath("$.content[0].listingTitle").value("Test listing1 title"));
+    }
+
+    @Test
+    void searchGroupListings_Authenticated_Returns200() throws Exception {
+        Users mockUser = new Users();
+        mockUser.setUserId(1L);
+        mockUser.setUsername("TestUser");
+        mockUser.setKeycloakId("someKeycloakId");
+        mockUser.setEmail("test@test.com");
+        when(userService.getUserByKeycloakIdDoNotThrow("someKeycloakId")).thenReturn(Optional.of(mockUser));
+
+        PageImpl<GroupListingResponseDto> pageResult = new PageImpl<>(List.of(mockGroupListings.get(0)));
+        when(groupListingService.searchGroupListings(
+                any(SearchListingsDto.class), any(Pageable.class), any(Optional.class)))
+                .thenReturn(pageResult);
+
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
+    }
+
+    @Test
+    void searchGroupListings_WithSort_Returns200() throws Exception {
+        PageImpl<GroupListingResponseDto> emptyPage = new PageImpl<>(List.of());
+        when(groupListingService.searchGroupListings(
+                any(SearchListingsDto.class), any(Pageable.class), any(Optional.class)))
+                .thenReturn(emptyPage);
+
+        mockMvc.perform(post("/api/group-listings/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"page\":0,\"size\":10,\"sortField\":\"creationTimestamp\",\"sortDirection\":\"desc\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
     }
 }

@@ -60,7 +60,7 @@ public class NotificationController {
         return notificationService.getAllMyNotifications(user, pageable);
     }
 
-    @PatchMapping("/dropdown_remove/{noteId}")
+    @DeleteMapping("/dropdown_remove/{noteId}")
     public ResponseEntity<?> removeNotificationDropdownPriority(@AuthenticationPrincipal Jwt jwt,
                                                                 @PathVariable Long noteId) {
         String kcId = jwt.getSubject();

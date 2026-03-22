@@ -190,7 +190,7 @@ public class GroupListingServiceImpl implements GroupListingService {
                 GroupListing listing = groupListingRepository.findById(groupId)
                     .orElseThrow(() -> new ResourceNotFoundException("GroupListing", groupId));
 
-                if (Objects.equals(listing.getUsers(), user)) {
+                if (Objects.equals(listing.getUsers().getUserId(), user.getUserId())) {
 
                     archiveService.prepareUserDeleteRecords(listing, user);
 
@@ -347,14 +347,13 @@ public class GroupListingServiceImpl implements GroupListingService {
                         criteriaBuilder.equal(root.get(fieldName), tempOption));
             }
 
-            if(fieldName.equals("languageCode")) {
+            else if(fieldName.equals("languageCode")) {
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.equal(root.get(fieldName), value));
             }
 
             else if(fieldName.equals("dateStart")) {
                 LocalDate date = (LocalDate) value;
-                System.out.println("Start Date: " + date);
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.greaterThanOrEqualTo(root.get("eventSchedule"), date)
                 );
@@ -363,7 +362,6 @@ public class GroupListingServiceImpl implements GroupListingService {
                 LocalDate date = (LocalDate) value;
                 //add one day to the filter date so that anything with a time on the last day of filter end is included
                 LocalDate datePlus = date.plusDays(1);
-                System.out.println("End Date: " + datePlus);
                 spec = spec.and((root, query, criteriaBuilder) ->
                         criteriaBuilder.lessThan(root.get("eventSchedule"), datePlus)
                 );

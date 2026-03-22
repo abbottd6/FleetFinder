@@ -25,7 +25,10 @@ import java.time.Instant;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import org.junit.jupiter.api.Disabled;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -345,5 +348,82 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                                 .jwt(jwt -> jwt.claim("sub", "anotherKeycloakId"))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user"))))
                 .andExpect(status().isUnauthorized());
+    }
+
+    // --- searchGroupListings integration tests ---
+
+    @Test
+    void testSearchGroupListings_NoFilters_ReturnsSeedListing() throws Exception {
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].listingTitle").value("Integration testing title"));
+    }
+
+    @Test
+    void testSearchGroupListings_ServerFilter_Matching_ReturnsSeedListing() throws Exception {
+        // seed listing has server_id=1 (USA)
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"server\":1,\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
+    }
+
+    @Test
+    void testSearchGroupListings_ServerFilter_NonMatching_ReturnsEmpty() throws Exception {
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"server\":99,\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
+    }
+
+    @Test
+    void testSearchGroupListings_TextSearch_MatchesTitle() throws Exception {
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"search\":\"Integration\",\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].listingTitle").value("Integration testing title"));
+    }
+
+    @Test
+    void testSearchGroupListings_TextSearch_NoMatch_ReturnsEmpty() throws Exception {
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"search\":\"zzznomatch\",\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
+    }
+
+    @Test
+    void testSearchGroupListings_LanguageCode_ReturnsFiltered() throws Exception {
+        // seed listing has language_code='English'
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"languageCode\":\"English\",\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
+    }
+
+    @Test
+    void testSearchGroupListings_CommsOptionFilter_BugExposed() throws Exception {
+        // seed listing has comms_options='Optional' — CommsOption.getById(2) = "Optional"
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"commsOption\":2,\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
     }
 }

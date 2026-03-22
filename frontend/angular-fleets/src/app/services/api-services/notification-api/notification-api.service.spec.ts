@@ -25,7 +25,7 @@ describe('NotificationApiService', () => {
   it('getMyNotifications() should POST to /api/notify/my_notifications with page params', () => {
     const mockResponse: any = { content: [], page: { size: 10, number: 0, totalElements: 0, totalPages: 0 } };
 
-    service.getMyNotifications(0, 10).subscribe(response => {
+    service.getMyDropdownNotifications(0, 10).subscribe(response => {
       expect(response).toEqual(mockResponse);
     });
 

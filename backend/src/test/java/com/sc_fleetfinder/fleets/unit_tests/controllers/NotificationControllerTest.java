@@ -142,7 +142,7 @@ class NotificationControllerTest {
     void testRemoveDropdownPriority_Success_Returns200() throws Exception {
         doNothing().when(notificationService).removeDropdownPriority(any(), eq(1L));
 
-        mockMvc.perform(patch("/api/notify/dropdown_remove/1")
+        mockMvc.perform(delete("/api/notify/dropdown_remove/1")
                         .with(jwt()
                                 .jwt(j -> j.claim("sub", MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user"))))
@@ -151,7 +151,7 @@ class NotificationControllerTest {
 
     @Test
     void testRemoveDropdownPriority_NoAuth_Returns401() throws Exception {
-        mockMvc.perform(patch("/api/notify/dropdown_remove/1"))
+        mockMvc.perform(delete("/api/notify/dropdown_remove/1"))
                 .andExpect(status().isUnauthorized());
     }
 
@@ -160,7 +160,7 @@ class NotificationControllerTest {
         doThrow(new ResourceNotFoundException("Notification not found"))
                 .when(notificationService).removeDropdownPriority(any(), eq(1L));
 
-        mockMvc.perform(patch("/api/notify/dropdown_remove/1")
+        mockMvc.perform(delete("/api/notify/dropdown_remove/1")
                         .with(jwt()
                                 .jwt(j -> j.claim("sub", MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user"))))
@@ -172,7 +172,7 @@ class NotificationControllerTest {
         doThrow(new ActionNotAuthorizedException(1L, "remove dropdown priority", "Notification", 1L))
                 .when(notificationService).removeDropdownPriority(any(), eq(1L));
 
-        mockMvc.perform(patch("/api/notify/dropdown_remove/1")
+        mockMvc.perform(delete("/api/notify/dropdown_remove/1")
                         .with(jwt()
                                 .jwt(j -> j.claim("sub", MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user"))))
