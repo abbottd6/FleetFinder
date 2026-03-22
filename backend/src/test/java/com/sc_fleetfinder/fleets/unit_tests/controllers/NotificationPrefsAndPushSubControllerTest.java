@@ -105,7 +105,7 @@ class NotificationPrefsAndPushSubControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pageIdx\":0,\"pageSize\":10}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").exists());
+                .andExpect(jsonPath("$.page").exists());
     }
 
     @Test

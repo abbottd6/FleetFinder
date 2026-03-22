@@ -103,7 +103,7 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pageIdx\":0,\"pageSize\":10}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.page.totalElements").value(2));
+                .andExpect(jsonPath("$.page.totalElements").value(2));
     }
 
     @Test
@@ -127,7 +127,7 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"pageIdx\":0,\"pageSize\":10}"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response.page.totalElements").value(1));
+                .andExpect(jsonPath("$.page.totalElements").value(1));
     }
 
     // ─── POST /create_push_sub ────────────────────────────────────────────────
