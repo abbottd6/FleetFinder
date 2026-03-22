@@ -65,6 +65,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
       distinctUntilChanged(),
     ).subscribe(change => {
       this.notificationService.loadDropdownNotifications();
+      this.pingForNotificationCount();
     })
 
   }

@@ -27,6 +27,12 @@ import {BreakpointObserver} from "@angular/cdk/layout";
 import {
   MyNotificationsAccordionBodyComponent
 } from "./my-notifications-accordion-body/my-notifications-accordion-body.component";
+import {
+  PushNotificationFormComponent
+} from "../user-profile-notification-forms/push-notification-form/push-notification-form.component";
+import {PushSubViewModel} from "../../models/NotificationPrefAndCustomNotesModels/PushSubViewModel";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {PushSubscriptionChipComponent} from "./push-subscription-chip/push-subscription-chip.component";
 
 @Component({
   selector: 'app-profile-notifications-tab',
@@ -45,6 +51,8 @@ import {
     AsyncPipe,
     MatTooltip,
     MyNotificationsAccordionBodyComponent,
+    PushNotificationFormComponent,
+    PushSubscriptionChipComponent,
   ],
   styleUrl: './profile-notifications-tab.component.css'
 })
@@ -53,6 +61,11 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
 
   public hasDiscordAcct!: boolean;
   public doNotShowCustomNotesForm: boolean = true;
+
+  protected myPushSubscriptions: PushSubViewModel[] = [];
+  protected noPushSubs: boolean = false;
+
+  public doNotShowPushNotesForm: boolean = true;
 
   public discSysNotesControl: FormControl<boolean> = new FormControl();
   public discSysNotesSaved: boolean = false;
@@ -71,9 +84,11 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
 
   constructor(protected userService: UserService,
               private noteSettingsApiService: NotificationSettingsApiService,
-              protected customNoteService: CustomNotificationService,) {
-    this.getUserDiscNotePrefs();
+              protected customNoteService: CustomNotificationService,
+              private snackBar: MatSnackBar) {
 
+    this.getUserDiscNotePrefs();
+    this.getMyPushSubs();
 
     this.userService.sessionUser$.pipe(takeUntil(this.destroy$))
       .subscribe(user => {
@@ -98,6 +113,42 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
       })
 
     this.customNoteService.getMyCustomNotifications();
+  }
+
+  showSubscribeOnThisDevice() {
+    this.doNotShowPushNotesForm = !this.doNotShowPushNotesForm;
+  }
+
+  createPushSubSuccessTrigger(val: boolean) {
+    if(val) {
+      this.showSubscribeOnThisDevice();
+
+      this.snackBar.open('Push subscription created successfully', 'OK', {
+        duration: 3000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']
+      })
+
+      this.getMyPushSubs();
+    }
+    else {
+      this.snackBar.open('There was an error creating your push subscription.', 'OK', {
+        duration: 3000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']
+      })
+    }
+  }
+
+  getMyPushSubs() {
+    this.noteSettingsApiService.getMyPushSubs().pipe(takeUntil(this.destroy$))
+      .subscribe(page => {
+        console.log(page.content);
+        this.myPushSubscriptions = page.content;
+        this.noPushSubs = page.content.length === 0;
+      });
   }
 
   showCustomNoteForm(){

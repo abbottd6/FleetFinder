@@ -11,11 +11,19 @@ import {
   UpdateNotificationPreferenceRequest
 } from "../../../models/NotificationPrefAndCustomNotesModels/update-notification-preference-request";
 import {Observable} from "rxjs";
-import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
 import {
   CustomNotesPageAndEnabledCountResponse,
   CustomNoteStateRequest
 } from "../../facade-services/custom-notification-service/custom-notification.service";
+import {PushSubViewModel} from "../../../models/NotificationPrefAndCustomNotesModels/PushSubViewModel";
+import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
+
+export interface NewPushSubscription {
+  userLabel: string,
+  deviceUrl: string,
+  publicKey: string,
+  browserSecret: string
+}
 
 @Injectable({
   providedIn: 'root'
@@ -52,6 +60,19 @@ export class NotificationSettingsApiService {
     return this.httpClient.patch<CustomNotificationViewModel>(
       `${this.notePrefsBaseUrl}/custom_notification_state_change/${request.idCustomNote}`, null,
       {params: { enabledState: request.enabledState }});
+  }
+
+  getMyPushSubs() {
+    const pageRequest = {
+      pageIdx: 0,
+      pageSize: 10
+    }
+
+    return this.httpClient.post<Page<PushSubViewModel>>(`${this.notePrefsBaseUrl}/get_my_push_subs`, pageRequest);
+  }
+
+  savePushSubscription(payload: NewPushSubscription): Observable<PushSubViewModel> {
+    return this.httpClient.post<PushSubViewModel>(`${this.notePrefsBaseUrl}/create_push_sub`, payload);
   }
 
   deleteCustomNotification(noteId: number) {

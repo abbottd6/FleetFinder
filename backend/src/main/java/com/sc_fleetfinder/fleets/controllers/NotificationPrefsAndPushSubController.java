@@ -131,10 +131,7 @@ public class NotificationPrefsAndPushSubController {
 
         Page<GetPushSubDto> responseDtos = pushSubService.getAllMyPushSubs(user, pageDto);
 
-        Map<String, Page<GetPushSubDto>> response = new HashMap<>();
-        response.put("response", responseDtos);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(responseDtos);
     }
 
     @PostMapping("/create_push_sub")

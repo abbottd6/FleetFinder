@@ -1,0 +1,8 @@
+.bullet-container {
+  margin-inline: 20px;
+}
+
+.bullet-container li {
+  margin-top: 10px;
+  font-family: "Exo 2", sans-serif;
+}

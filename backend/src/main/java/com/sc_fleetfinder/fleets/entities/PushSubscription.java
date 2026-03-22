@@ -38,6 +38,7 @@ public class PushSubscription {
         this.sysNotesEnabled = false;
         this.groupNotesEnabled = true;
         this.socialNotesEnabled = true;
+        this.dailyFailureCount = 0;
     }
 
     @Id
@@ -78,6 +79,10 @@ public class PushSubscription {
     @Column(name="social_notes_enabled")
     @NotNull(message="PushSubscription entity field 'socialNotesEnabled' cannot be null.")
     private Boolean socialNotesEnabled;
+
+    @Column(name="daily_failure_count")
+    @NotNull(message="PushSubscription entity field 'dailyFailureCount' cannot be null.")
+    private Integer dailyFailureCount;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

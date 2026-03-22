@@ -9,6 +9,7 @@ CREATE TABLE push_subscription
     sys_notes_enabled    TINYINT(1)   NOT NULL DEFAULT 0,
     group_notes_enabled  TINYINT(1)   NOT NULL DEFAULT 1,
     social_notes_enabled TINYINT(1)   NOT NULL DEFAULT 1,
+    daily_failure_count  INT          NOT NULL DEFAULT 0,
     created_at           TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_push_sub_to_users

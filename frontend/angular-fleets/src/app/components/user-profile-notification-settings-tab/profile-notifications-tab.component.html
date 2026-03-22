@@ -29,12 +29,13 @@
         Link your Discord to have FleetyBot send your notifications as Discord messages.
       </mat-panel-description>
     </mat-expansion-panel-header>
-    <div class="header-notice">
-      <p>
-        Discord link enables you to log in to FleetFinder using your Discord account and configure notification
-        settings to receive your notifications as direct messages from the FleetFinder Discord bot, FleetyBot.
-        Notifications are divided into three categories, which you can enable/disable for Discord individually.
-      </p>
+    <div class="bullet-container">
+      <ul>
+        <li>Discord link enables you to log in to FleetFinder using your Discord account</li>
+        <li>You can also sign up for <span class="fancy-text">notifications through Discord</span>
+          — which are sent as direct messages from the FleetFinder Discord bot, FleetyBot.</li>
+        <li>Notifications are divided into three categories, which you can enable/disable individually.</li>
+      </ul>
     </div>
     <div class="toggles-container">
       <div class="dynamic-discord-container">
@@ -80,7 +81,7 @@
         <mat-label class="toggle-label">
           Group Notifications:
           <mat-icon class="tooltip-icon"
-                    matTooltip="Medium priority: Your custom notifications. Coming Soon: group membership and
+                    matTooltip="Your custom notifications. Coming Soon: group membership and
                                 group management feature notifications will be included here.">
             help_outline
           </mat-icon>
@@ -97,7 +98,7 @@
         <mat-label class="toggle-label">
           Social Notifications:
           <mat-icon class="tooltip-icon"
-                    matTooltip="Highest priority: New message notifications. Coming soon: group invites.">
+                    matTooltip="New message notifications. Coming soon: group invites.">
             help_outline
           </mat-icon>
         </mat-label>
@@ -123,6 +124,46 @@
         Allow FleetFinder to send notifications to devices of your choosing — without needing to be logged in
       </mat-panel-description>
     </mat-expansion-panel-header>
+    <div class="bullet-container">
+      <ul>
+        <li>Configure notifications for your devices and <span class="fancy-text">customize which types of
+          notifications are sent to each device.</span></li>
+        <li>FleetFinder stores a unique token for each browser or device you enable. This token
+            identifies where to deliver your notifications but <span class="fancy-text">contains no personal
+            or account information</span> — it cannot be used to identify you.</li>
+        <li>You can manage or remove any device's notification settings at any time.</li>
+      </ul>
+    </div>
+    <div class="custom-notes-create-container">
+      <div class="button-row-container">
+        <div class="button-row-left">
+          <button
+            class="action-buttons-with-icons"
+            (click)="showSubscribeOnThisDevice()">
+            <mat-icon>notification_add</mat-icon>
+            Enable this device
+          </button>
+        </div>
+      </div>
+      <app-push-notification-form
+        [class.do-not-show-form]="doNotShowPushNotesForm"
+        [class.show-form]="!doNotShowPushNotesForm"
+        (cancelForm)="showSubscribeOnThisDevice()"
+        (formSuccess)="createPushSubSuccessTrigger($event)">
+      </app-push-notification-form>
+    </div>
+    <div class="proliferation-container">
+      <ng-container *ngIf="!noPushSubs; else noSubs">
+        @for(sub of myPushSubscriptions; track sub.idPushSub) {
+          <app-push-subscription-chip
+            [inputSub]="sub">
+          </app-push-subscription-chip>
+        }
+      </ng-container>
+      <ng-template #noSubs>
+        <span>You do not have any devices subscribed for push notifications.</span>
+      </ng-template>
+    </div>
   </mat-expansion-panel>
 
   <!-- CUSTOM NOTIFICATIONS ---------------------------------------------------------->
@@ -137,7 +178,6 @@
       </mat-panel-description>
     </mat-expansion-panel-header>
     <div class="bullet-container">
-      <p></p>
       <ul>
         <li>You can create a <span class="fancy-text">total of 10</span> custom notifications.</li>
         <li>You may have <span class="fancy-text">up to 5 enabled</span>.</li>

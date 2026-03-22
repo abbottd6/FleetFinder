@@ -13,5 +13,6 @@ public class GetPushSubDto {
     private Boolean sysNotesEnabled;
     private Boolean groupNotesEnabled;
     private Boolean socialNotesEnabled;
+    private Integer dailyFailureCount;
     private Instant createdAt;
 }
