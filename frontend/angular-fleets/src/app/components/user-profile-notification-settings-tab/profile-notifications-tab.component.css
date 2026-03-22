@@ -222,6 +222,11 @@ mat-panel-description.mat-expansion-panel-header-description {
 }
 
 @media(max-width: 800px) {
+  .settings-container {
+    margin-inline: auto;
+    width: 100%;
+  }
+
   .mat-expansion-panel {
     font-size: 1rem;
   }
@@ -238,6 +243,14 @@ mat-panel-description.mat-expansion-panel-header-description {
 
   mat-panel-description.mat-expansion-panel-header-description {
     display: none;
+  }
+
+  :host ::ng-deep .mat-expansion-panel-content {
+    width: 100%;
+  }
+  :host ::ng-deep .mat-expansion-panel-body {
+    padding-inline: 0;
+    margin-inline: auto;
   }
 
   #long-name-toggle-push-left {
@@ -342,10 +355,20 @@ app-push-notification-form {
 
 .proliferation-container {
   display: grid;
-  grid-template-rows: repeat(auto-fill, 1fr);
+  grid-template-rows: repeat(auto-fill, minmax(171px, 1fr));
   width: 95%;
   margin-inline: auto;
   min-height: 100px;
   margin-top: 20px;
   gap: 20px;
+}
+
+.push-sub-proliferation-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(425px, 1fr));
+  width: 95%;
+  margin-inline: auto;
+  min-height: 100px;
+  margin-top: 20px;
+  gap: 10px;
 }

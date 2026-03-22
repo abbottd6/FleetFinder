@@ -17,6 +17,9 @@ import {
 } from "../../facade-services/custom-notification-service/custom-notification.service";
 import {PushSubViewModel} from "../../../models/NotificationPrefAndCustomNotesModels/PushSubViewModel";
 import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
+import {
+  PushSubPrefChangeRequest
+} from "../../../components/user-profile-notification-settings-tab/push-subscription-chip/push-subscription-chip.component";
 
 export interface NewPushSubscription {
   userLabel: string,
@@ -62,6 +65,10 @@ export class NotificationSettingsApiService {
       {params: { enabledState: request.enabledState }});
   }
 
+  deleteCustomNotification(noteId: number) {
+    return this.httpClient.delete(`${this.notePrefsBaseUrl}/delete_custom_notification/${noteId}`);
+  }
+
   getMyPushSubs() {
     const pageRequest = {
       pageIdx: 0,
@@ -75,11 +82,12 @@ export class NotificationSettingsApiService {
     return this.httpClient.post<PushSubViewModel>(`${this.notePrefsBaseUrl}/create_push_sub`, payload);
   }
 
-  deleteCustomNotification(noteId: number) {
-    return this.httpClient.delete(`${this.notePrefsBaseUrl}/delete_custom_notification/${noteId}`);
+  updatePushSubNotificationPreference(pref: PushSubPrefChangeRequest): Observable<PushSubViewModel> {
+    return this.httpClient.put<PushSubViewModel>(`${this.notePrefsBaseUrl}/update_push_sub`, pref);
   }
 
   updateDiscordNotificationPreference(pref: UpdateNotificationPreferenceRequest) {
     return this.httpClient.put(`${this.notePrefsBaseUrl}/update_discord_notification_pref`, pref);
   }
+
 }

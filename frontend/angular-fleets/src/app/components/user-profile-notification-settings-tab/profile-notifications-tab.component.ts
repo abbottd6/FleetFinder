@@ -1,5 +1,5 @@
-import {Component, inject, OnDestroy} from '@angular/core';
-import {map, shareReplay, Subject, takeUntil} from "rxjs";
+import {Component, OnDestroy} from '@angular/core';
+import {Subject, takeUntil} from "rxjs";
 import {UserService} from "../../services/user-services/user.service";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
 import {MatLabel} from "@angular/material/input";
@@ -23,7 +23,7 @@ import {
   CustomNotificationService
 } from "../../services/facade-services/custom-notification-service/custom-notification.service";
 import {MatTooltip} from "@angular/material/tooltip";
-import {BreakpointObserver} from "@angular/cdk/layout";
+
 import {
   MyNotificationsAccordionBodyComponent
 } from "./my-notifications-accordion-body/my-notifications-accordion-body.component";
@@ -33,6 +33,7 @@ import {
 import {PushSubViewModel} from "../../models/NotificationPrefAndCustomNotesModels/PushSubViewModel";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {PushSubscriptionChipComponent} from "./push-subscription-chip/push-subscription-chip.component";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-profile-notifications-tab',
@@ -142,6 +143,26 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
     }
   }
 
+  showPushSubFormError(err: HttpErrorResponse) {
+
+    if(err.status === 409) {
+      this.snackBar.open(`You already have a subscription for this device.`, 'OK', {
+        duration: 4000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']
+      })
+    }
+    else {
+      this.snackBar.open(`Error: check your browser notification permissions.`, 'OK', {
+        duration: 4000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']
+      })
+    }
+  }
+
   getMyPushSubs() {
     this.noteSettingsApiService.getMyPushSubs().pipe(takeUntil(this.destroy$))
       .subscribe(page => {
@@ -155,7 +176,7 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
     this.doNotShowCustomNotesForm = !this.doNotShowCustomNotesForm;
   }
 
-  createOrUpdateSuccess(val: boolean) {
+  createOrUpdateCustomNoteSuccess(val: boolean) {
     this.doNotShowCustomNotesForm = val;
     if(val) {
       this.customNoteService.getMyCustomNotifications();
@@ -236,6 +257,24 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
         }
       }
     )
+  }
+
+  updateTargetSubOnStateChangeSuccess(updated: PushSubViewModel) {
+    const idx = this.myPushSubscriptions.findIndex(
+      sub => sub.idPushSub === updated.idPushSub);
+
+    if(idx !== -1) {
+      this.myPushSubscriptions[idx] = updated;
+    }
+  }
+
+  errorMessageOnSubscriptionStateChangeFailure(err: HttpErrorResponse) {
+    this.snackBar.open(`There was an error updating the preference for this subscription: ${ err.status }`, 'OK', {
+      duration: 4000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+      panelClass: ['mobile-snackbar']
+    })
   }
 
   ngOnDestroy() {

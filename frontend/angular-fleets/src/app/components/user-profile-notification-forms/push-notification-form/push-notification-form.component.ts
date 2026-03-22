@@ -10,6 +10,7 @@ import {
   NotificationSettingsApiService
 } from "../../../services/api-services/notification-api/notification-settings-api.service";
 import {NgIf} from "@angular/common";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Component({
   selector: 'app-push-notification-form',
@@ -25,6 +26,7 @@ export class PushNotificationFormComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
   @Output() cancelForm= new EventEmitter<boolean>();
   @Output() formSuccess = new EventEmitter<boolean>();
+  @Output() formError = new EventEmitter<HttpErrorResponse>();
 
   protected showFormErrorMessage: string | null = null;
 
@@ -80,8 +82,8 @@ export class PushNotificationFormComponent implements OnDestroy {
           this.showFormErrorMessage = null;
           this.formSuccess.emit(true);
         },
-        error: (e) => {
-          this.formSuccess.emit(false);
+        error: (err) => {
+          this.formError.emit(err);
         }
       });
   }

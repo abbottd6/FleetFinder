@@ -149,14 +149,17 @@
         [class.do-not-show-form]="doNotShowPushNotesForm"
         [class.show-form]="!doNotShowPushNotesForm"
         (cancelForm)="showSubscribeOnThisDevice()"
-        (formSuccess)="createPushSubSuccessTrigger($event)">
+        (formSuccess)="createPushSubSuccessTrigger($event)"
+        (formError)="showPushSubFormError($event)">
       </app-push-notification-form>
     </div>
-    <div class="proliferation-container">
+    <div class="push-sub-proliferation-container">
       <ng-container *ngIf="!noPushSubs; else noSubs">
         @for(sub of myPushSubscriptions; track sub.idPushSub) {
           <app-push-subscription-chip
-            [inputSub]="sub">
+            [inputSub]="sub"
+            (subStateChangeSuccess)="updateTargetSubOnStateChangeSuccess($event)"
+            (subStateChangeFailure)="errorMessageOnSubscriptionStateChangeFailure($event)">
           </app-push-subscription-chip>
         }
       </ng-container>
@@ -204,7 +207,7 @@
       <app-custom-notification-form
         [class.do-not-show-form]="doNotShowCustomNotesForm"
         [class.show-form]="!doNotShowCustomNotesForm"
-        (closeForm)="createOrUpdateSuccess($event)">
+        (closeForm)="createOrUpdateCustomNoteSuccess($event)">
       </app-custom-notification-form>
     </div>
     <div class="proliferation-container">
