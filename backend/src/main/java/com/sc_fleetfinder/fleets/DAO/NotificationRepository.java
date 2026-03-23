@@ -46,4 +46,54 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             """)
     int markAsRead(@Param("userId") Long userId,
                                   @Param("readIds")Collection<Long> readIds);
+
+    @Modifying
+    @Query(value = """
+            INSERT INTO notification_outbox (
+            event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
+            parent_entity_id, parent_entity_type, payload_json, status,
+            delivery_channel, created_at
+            )
+            SELECT
+                'MOD_DELETE'                AS event_type,
+                'LISTING_ARCHIVE'           AS entity_type,
+                action.id_archive           AS entity_id,
+                action.id_user              AS entity_owner_id,
+                'ARCHIVED'                  AS entity_new_status,
+                action.id_action            AS parent_entity_id,
+                'MOD_LISTING_ACTION'        AS parent_entity_type,
+                JSON_OBJECT(
+                    'noteTopic',        SUBSTRING(archive.listing_title, 1, 100),
+                    'targetId',         action.id_action,
+                    'targetLabel',      action.action_type,
+                    'targetCreatedAt',  action.action_ts,
+                    'addContext',       action.action_note
+                )                           AS payload_json,
+                'PENDING'                   AS status,
+                channels.delivery_channel   AS delivery_channel,
+                NOW()                       as created_at
+                FROM mod_listing_action action
+                JOIN listing_archive archive ON action.id_archive = archive.id_archive
+                JOIN users u ON action.id_user = u.id_user
+                CROSS JOIN (
+                    SELECT 'IN_APP' AS delivery_channel UNION ALL
+                    SELECT 'DISCORD' UNION ALL
+                    SELECT 'PUSH'
+                ) AS channels
+                LEFT JOIN push_subscription push
+                    ON push.user_id = action.id_user
+                    AND channels.delivery_channel = 'PUSH'
+                    AND push.sys_notes_enabled = 1
+                WHERE action.id_action = :actionId
+                    AND (
+                        channels.delivery_channel = 'IN_APP'
+                        OR (channels.delivery_channel = 'DISCORD'
+                            AND u.discord_user_id IS NOT NULL
+                            AND u.external_sys_notes_enabled = 1)
+                        OR (channels.delivery_channel = 'PUSH'
+                            AND push.sys_notes_enabled = 1)
+                    )
+                ON DUPLICATE KEY UPDATE outbox_id = outbox_id
+            """, nativeQuery = true)
+    int generateOutboxNotificationsOnModListingDelete(@Param("actionId") Long modActionId);
 }

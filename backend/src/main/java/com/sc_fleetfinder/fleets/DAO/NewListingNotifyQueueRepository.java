@@ -14,26 +14,30 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
     @Query(value = """
             INSERT INTO notification_outbox (
                         event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
-                        payload_json, status, delivery_channel, created_at
+                        parent_entity_id, parent_entity_type, payload_json, status,
+                        delivery_channel, created_at
                     )
             SELECT
                 'NEW_LISTING_MATCH'             AS event_type,
-                'UserCustomNotification'        AS entity_type,
+                'GROUP_LISTING'                 AS entity_type,
                 gl.id_group                     AS entity_id,
                 customNote.user_id              AS entity_owner_id,
                 'MATCHED'                       AS entity_new_status,
+                customNote.id_custom_note       AS parent_entity_id,
+                'USER_CUSTOM_NOTIFICATION'      AS parent_entity_type,
                 JSON_OBJECT(
                     'noteTopic',        customNote.tag_label,
                     'targetId',         gl.id_group,
                     'targetLabel',      gl.listing_title,
                     'targetCreatedAt',  gl.creation_timestamp,
-                    'addContext',       gl.group_status_id
+                    'addContext',       group_status.group_status
                 )                               AS payload_json,
                 'PENDING'                       AS status,
                 channels.delivery_channel       AS delivery_channel,
                 NOW()                           AS created_at
             FROM new_listing_notify_queue queue
             JOIN group_listing gl ON queue.id_group = gl.id_group
+            JOIN group_status ON gl.group_status_id = group_status.group_status_id
             JOIN user_custom_notification customNote ON
                 customNote.enabled = 1
                 AND (customNote.user_id != gl.id_user)

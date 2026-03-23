@@ -98,39 +98,8 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public void createAndSendDeleteNotification(ListingArchive archive,
-                                                ModerationIssue issue,
-                                                NotificationType type,
-                                                ModListingAction action) {
-        String title = archive.getListingTitle();
-        String basis = issue.getMaxReportBasis();
-
-        Notification newNote = new Notification(issue.getUserRef(),
-                NotificationType.MOD_DELETE, title, basis, action);
-
-        newNote = notificationRepo.save(newNote);
-
-        GetNotificationDto noteDto = modelMapper.map(newNote, GetNotificationDto.class);
-
-        NotificationUnreadCountDto unreadCount = new NotificationUnreadCountDto(
-                notificationRepo.countUnreadByUserId(
-                issue.getUserRef().getUserId()
-                )
-        );
-
-        String recipPrincipal = issue.getUserRef().getKeycloakId();
-
-        messagingTemplate.convertAndSendToUser(
-                recipPrincipal,
-                "/queue/system.notify_count",
-                unreadCount
-        );
-
-        messagingTemplate.convertAndSendToUser(
-                recipPrincipal,
-                "/queue/system.notify",
-                noteDto
-        );
+    public void generateOutboxNotificationForModAction(ModListingAction action) {
+        notificationRepo.generateOutboxNotificationsOnModListingDelete(action.getActionId());
     }
 
     @Override

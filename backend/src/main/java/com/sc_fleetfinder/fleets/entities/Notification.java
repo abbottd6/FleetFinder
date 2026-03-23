@@ -1,18 +1,18 @@
 package com.sc_fleetfinder.fleets.entities;
 
-import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
+import com.sc_fleetfinder.fleets.utils.ParentEntityReference;
 import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadataConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -32,12 +32,12 @@ public class Notification {
 
     public Notification(Users user, NotificationType type,
                         String title, String message,
-                        ModListingAction modAction) {
+                        Long parentEntityId, String parentEntityType) {
         this.user = user;
         this.type = type;
         this.title = title;
         this.message = message;
-        this.action = modAction;
+        this.parentEntity = new ParentEntityReference(parentEntityId, parentEntityType);
     }
 
     public Notification(Users user,
@@ -71,9 +71,8 @@ public class Notification {
     @NotNull(message="Notification field 'message' cannot be null.")
     private String message;
 
-    @OneToOne
-    @JoinColumn(name="id_action", nullable=true)
-    private ModListingAction action;
+    @Embedded
+    private ParentEntityReference parentEntity;
 
     @Column(name="dropdown_priority", nullable = false)
     private Boolean dropdownPriority = true;

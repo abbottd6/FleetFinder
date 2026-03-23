@@ -5,4 +5,5 @@ public enum NotificationType {
     LISTING_ARCHIVED,
     MOD_DELETE,
     NEW_LISTING_MATCH,
+    NEW_MESSAGE
 }

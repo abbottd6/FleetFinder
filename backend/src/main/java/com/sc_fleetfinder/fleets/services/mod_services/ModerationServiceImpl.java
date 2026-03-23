@@ -19,7 +19,6 @@ import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBa
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.UserModerationRecord;
-import com.sc_fleetfinder.fleets.entities.Notification;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.events.ListingModDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -307,12 +306,12 @@ public class ModerationServiceImpl implements ModerationService {
     @Transactional
     protected void recordModeratorAction(ModerationIssue issue, String note,
                                          ListingArchive archive) {
+
         ModListingAction modAction = new ModListingAction(issue, note, archive);
 
         mlar.save(modAction);
 
-        noteService.createAndSendDeleteNotification(
-                archive, issue, NotificationType.MOD_DELETE, modAction);
+        noteService.generateOutboxNotificationForModAction(modAction);
 
         log.info("Moderator action recorded under actionId: {}", modAction.getActionId());
     }
@@ -326,8 +325,7 @@ public class ModerationServiceImpl implements ModerationService {
         mlar.save(modAction);
         log.info("Manual moderator action recorded under actionId: {}", modAction.getActionId());
 
-        noteService.createAndSendDeleteNotification(
-                archive, issue, NotificationType.MOD_DELETE, modAction);
+        noteService.generateOutboxNotificationForModAction(modAction);
     }
 
     //For manual mod clear issue report counts

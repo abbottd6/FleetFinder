@@ -17,10 +17,7 @@ public interface NotificationService {
     void removeDropdownPriority(Users user, Long notificationId);
     void deleteNotification(Users user, Long noteId);
     Integer deleteAllNotifications(Users user);
-    void createAndSendDeleteNotification(ListingArchive archive,
-                                         ModerationIssue issue,
-                                         NotificationType type,
-                                         ModListingAction action);
+    void generateOutboxNotificationForModAction(ModListingAction action);
     Integer updateRead(Users user, ReceiveReadNotesDto dto);
     Integer countUnread(Long userId);
     void sendOutboxNotification(NotificationOutbox single);

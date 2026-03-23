@@ -363,7 +363,7 @@ class NotificationServiceImplTest {
     // ─── createAndSendDeleteNotification ─────────────────────────────────────
 
     @Test
-    void createAndSendDeleteNotification_Success_SavesNoteAndSendsTwoWsMessages() {
+    void createAndSendDeleteNotification_Success_SavesNoteAndSendsTwoWsMessagesForModAction() {
         Users owner = new Users();
         owner.setUserId(1L);
         owner.setKeycloakId("ownerKcId");
@@ -382,7 +382,7 @@ class NotificationServiceImplTest {
         when(modelMapper.map(any(Notification.class), eq(GetNotificationDto.class))).thenReturn(new GetNotificationDto());
         when(notificationRepo.countUnreadByUserId(1L)).thenReturn(2);
 
-        notificationService.createAndSendDeleteNotification(archive, issue, NotificationType.MOD_DELETE, action);
+        notificationService.generateOutboxNotificationForModAction(archive, issue, NotificationType.MOD_DELETE, action);
 
         verify(notificationRepo).save(any(Notification.class));
         verify(messagingTemplate).convertAndSendToUser(eq("ownerKcId"), eq("/queue/system.notify_count"), any());

@@ -13,6 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -367,5 +369,288 @@ public class GroupListingRepositoryScheduledQueriesIntegrationTest extends Abstr
                 Integer.class, id);
         assertEquals(0, outboxCount,
                 "No outbox entry should be created when vis_status already matches computed status");
+    }
+
+    // ─── Helper methods for multi-channel tests ───────────────────────────────
+
+    // Inserts a fresh test user with configurable discord_user_id and external_sys_notes_enabled.
+    private Long insertUserWithSysNotesConfig(boolean withDiscord, boolean sysNotesEnabled) {
+        String uuid = UUID.randomUUID().toString();
+        jdbcTemplate.update(
+                "INSERT INTO users (keycloak_id, user_name, email, external_sys_notes_enabled, " +
+                "external_group_notes_enabled, external_social_notes_enabled, discord_user_id) " +
+                "VALUES (?, ?, ?, ?, 0, 0, ?)",
+                uuid,
+                "testuser_" + uuid.substring(0, 8),
+                uuid.substring(0, 8) + "@test.com",
+                sysNotesEnabled ? 1 : 0,
+                withDiscord ? "123456789012345678" : null
+        );
+        return jdbcTemplate.queryForObject("SELECT MAX(id_user) FROM users", Long.class);
+    }
+
+    // Inserts a push_subscription for the given user with specific sys_notes_enabled.
+    private void insertPushSubscription(Long userId, boolean sysNotesEnabled) {
+        jdbcTemplate.update(
+                "INSERT INTO push_subscription (user_id, user_label, device_url, public_key, browser_secret, sys_notes_enabled) " +
+                "VALUES (?, 'Test Device', 'https://push.example.com/token', 'pk123', 'sec123', ?)",
+                userId, sysNotesEnabled ? 1 : 0
+        );
+    }
+
+    // Inserts a listing owned by the given user.
+    private Long insertListingForUser(Long userId, String visStatus, String lastUpdatedExpr) {
+        jdbcTemplate.update(
+                "INSERT INTO group_listing (id_user, server_id, environment_id, experience_id, " +
+                "listing_title, legality_id, group_status_id, category_id, pvp_status_id, system_id, " +
+                "current_party_size, desired_party_size, comms_options, language_code, " +
+                "vis_status, last_updated, listing_description) " +
+                "VALUES (?, 1, 1, 1, 'Multi-channel test', 1, 1, 1, 1, 1, " +
+                "1, 2, 'Optional', 'English', ?, " + lastUpdatedExpr + ", 'Test description.')",
+                userId, visStatus
+        );
+        return jdbcTemplate.queryForObject("SELECT MAX(id_group) FROM group_listing", Long.class);
+    }
+
+    // ─── createOutboxEntriesForArchiveNotifications() — multi-channel ─────────
+
+    @Test
+    void createOutboxEntries_Archive_DefaultUser_CreatesExactlyOneInAppEntry() {
+        // given: seed user 1 has no discord_user_id and no push subscriptions
+        Long id = insertListing("ARCHIVED", "DATE_SUB(NOW(), INTERVAL 30 DAY)");
+
+        listingRepo.createOutboxEntriesForArchiveNotifications();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED'",
+                Integer.class, id);
+        String channel = jdbcTemplate.queryForObject(
+                "SELECT delivery_channel FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED'",
+                String.class, id);
+        assertAll(
+                () -> assertEquals(1, count, "Default user should get exactly 1 IN_APP outbox entry"),
+                () -> assertEquals("IN_APP", channel)
+        );
+    }
+
+    @Test
+    void createOutboxEntries_Archive_UserWithDiscordEnabled_CreatesInAppAndDiscord() {
+        // given: user has discord_user_id and external_sys_notes_enabled = 1
+        Long userId = insertUserWithSysNotesConfig(true, true);
+        Long id = insertListingForUser(userId, "ARCHIVED", "DATE_SUB(NOW(), INTERVAL 30 DAY)");
+
+        listingRepo.createOutboxEntriesForArchiveNotifications();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED'",
+                Integer.class, id);
+        Integer discordCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED' AND delivery_channel = 'DISCORD'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(2, count, "Discord-enabled user should get IN_APP + DISCORD entries"),
+                () -> assertEquals(1, discordCount)
+        );
+    }
+
+    @Test
+    void createOutboxEntries_Archive_UserWithDiscordId_SysNotesDisabled_NoDiscordEntry() {
+        // given: user has discord_user_id but external_sys_notes_enabled = 0
+        Long userId = insertUserWithSysNotesConfig(true, false);
+        Long id = insertListingForUser(userId, "ARCHIVED", "DATE_SUB(NOW(), INTERVAL 30 DAY)");
+
+        listingRepo.createOutboxEntriesForArchiveNotifications();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED'",
+                Integer.class, id);
+        Integer discordCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED' AND delivery_channel = 'DISCORD'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(1, count, "Discord user with sys_notes disabled should get only IN_APP"),
+                () -> assertEquals(0, discordCount, "No DISCORD entry when external_sys_notes_enabled = 0")
+        );
+    }
+
+    @Test
+    void createOutboxEntries_Archive_UserWithPushSysNotesEnabled_CreatesInAppAndPush() {
+        // given: user has a push_subscription with sys_notes_enabled = 1
+        Long userId = insertUserWithSysNotesConfig(false, false);
+        insertPushSubscription(userId, true);
+        Long id = insertListingForUser(userId, "ARCHIVED", "DATE_SUB(NOW(), INTERVAL 30 DAY)");
+
+        listingRepo.createOutboxEntriesForArchiveNotifications();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED'",
+                Integer.class, id);
+        Integer pushCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED' AND delivery_channel = 'PUSH'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(2, count, "User with push (sys_notes_enabled=1) should get IN_APP + PUSH"),
+                () -> assertEquals(1, pushCount)
+        );
+    }
+
+    @Test
+    void createOutboxEntries_Archive_UserWithPushSysNotesDisabled_NoPushEntry() {
+        // given: user has a push_subscription with sys_notes_enabled = 0
+        Long userId = insertUserWithSysNotesConfig(false, false);
+        insertPushSubscription(userId, false);
+        Long id = insertListingForUser(userId, "ARCHIVED", "DATE_SUB(NOW(), INTERVAL 30 DAY)");
+
+        listingRepo.createOutboxEntriesForArchiveNotifications();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED'",
+                Integer.class, id);
+        Integer pushCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED' AND delivery_channel = 'PUSH'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(1, count, "Push with sys_notes disabled should get only IN_APP"),
+                () -> assertEquals(0, pushCount, "No PUSH entry when push.sys_notes_enabled = 0")
+        );
+    }
+
+    @Test
+    void createOutboxEntries_Archive_UserWithMultiplePushSubs_DeduplicatedToOnePushEntry() {
+        // given: user has 2 push subscriptions both with sys_notes_enabled = 1
+        // ON DUPLICATE KEY UPDATE should deduplicate to a single PUSH outbox entry
+        Long userId = insertUserWithSysNotesConfig(false, false);
+        insertPushSubscription(userId, true);
+        insertPushSubscription(userId, true);
+        Long id = insertListingForUser(userId, "ARCHIVED", "DATE_SUB(NOW(), INTERVAL 30 DAY)");
+
+        listingRepo.createOutboxEntriesForArchiveNotifications();
+
+        Integer totalCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED'",
+                Integer.class, id);
+        Integer pushCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED' AND delivery_channel = 'PUSH'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(2, totalCount, "2 push subs should still yield only 2 total entries (1 IN_APP + 1 PUSH deduped)"),
+                () -> assertEquals(1, pushCount, "Exactly 1 PUSH entry despite 2 subscriptions (ON DUPLICATE KEY)")
+        );
+    }
+
+    @Test
+    void createOutboxEntries_Archive_NonArchivedListing_PushUserGetsNoEntry() {
+        // given: user has push subscription, but listing is FRESH (not ARCHIVED)
+        // PUSH channel must be subject to the same vis_status + age conditions as other channels
+        Long userId = insertUserWithSysNotesConfig(false, false);
+        insertPushSubscription(userId, true);
+        Long id = insertListingForUser(userId, "FRESH", "DATE_SUB(NOW(), INTERVAL 30 DAY)");
+
+        listingRepo.createOutboxEntriesForArchiveNotifications();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED'",
+                Integer.class, id);
+        assertEquals(0, count, "PUSH entry must NOT be created for non-ARCHIVED listings");
+    }
+
+    // ─── createNotificationOutboxEntriesForStatusUpdates() — multi-channel ────
+
+    @Test
+    void createOutboxEntriesForStatusUpdates_DefaultUser_CreatesExactlyOneInAppEntry() {
+        // given: seed user 1 has no discord/push
+        Long id = insertListing("FRESH", "DATE_SUB(NOW(), INTERVAL 4 DAY)");
+
+        listingRepo.createNotificationOutboxEntriesForStatusUpdates();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED'",
+                Integer.class, id);
+        String channel = jdbcTemplate.queryForObject(
+                "SELECT delivery_channel FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED'",
+                String.class, id);
+        assertAll(
+                () -> assertEquals(1, count, "Default user should get exactly 1 IN_APP outbox entry"),
+                () -> assertEquals("IN_APP", channel)
+        );
+    }
+
+    @Test
+    void createOutboxEntriesForStatusUpdates_UserWithDiscordEnabled_CreatesInAppAndDiscord() {
+        Long userId = insertUserWithSysNotesConfig(true, true);
+        Long id = insertListingForUser(userId, "FRESH", "DATE_SUB(NOW(), INTERVAL 4 DAY)");
+
+        listingRepo.createNotificationOutboxEntriesForStatusUpdates();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED'",
+                Integer.class, id);
+        Integer discordCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED' AND delivery_channel = 'DISCORD'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(2, count, "Discord-enabled user should get IN_APP + DISCORD"),
+                () -> assertEquals(1, discordCount)
+        );
+    }
+
+    @Test
+    void createOutboxEntriesForStatusUpdates_UserWithDiscordId_SysNotesDisabled_NoDiscord() {
+        Long userId = insertUserWithSysNotesConfig(true, false);
+        Long id = insertListingForUser(userId, "FRESH", "DATE_SUB(NOW(), INTERVAL 4 DAY)");
+
+        listingRepo.createNotificationOutboxEntriesForStatusUpdates();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED'",
+                Integer.class, id);
+        Integer discordCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED' AND delivery_channel = 'DISCORD'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(1, count, "Discord with sys_notes disabled → only IN_APP"),
+                () -> assertEquals(0, discordCount)
+        );
+    }
+
+    @Test
+    void createOutboxEntriesForStatusUpdates_UserWithPushSysNotesEnabled_CreatesPushEntry() {
+        Long userId = insertUserWithSysNotesConfig(false, false);
+        insertPushSubscription(userId, true);
+        Long id = insertListingForUser(userId, "FRESH", "DATE_SUB(NOW(), INTERVAL 4 DAY)");
+
+        listingRepo.createNotificationOutboxEntriesForStatusUpdates();
+
+        Integer count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED'",
+                Integer.class, id);
+        Integer pushCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED' AND delivery_channel = 'PUSH'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(2, count, "Push (sys_notes_enabled=1) → IN_APP + PUSH"),
+                () -> assertEquals(1, pushCount)
+        );
+    }
+
+    @Test
+    void createOutboxEntriesForStatusUpdates_UserWithMultiplePushSubs_OnlyOnePushEntry() {
+        Long userId = insertUserWithSysNotesConfig(false, false);
+        insertPushSubscription(userId, true);
+        insertPushSubscription(userId, true);
+        Long id = insertListingForUser(userId, "FRESH", "DATE_SUB(NOW(), INTERVAL 4 DAY)");
+
+        listingRepo.createNotificationOutboxEntriesForStatusUpdates();
+
+        Integer totalCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED'",
+                Integer.class, id);
+        Integer pushCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED' AND delivery_channel = 'PUSH'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(2, totalCount, "2 push subs → 1 IN_APP + 1 PUSH (deduped)"),
+                () -> assertEquals(1, pushCount, "ON DUPLICATE KEY dedup → exactly 1 PUSH entry")
+        );
     }
 }
