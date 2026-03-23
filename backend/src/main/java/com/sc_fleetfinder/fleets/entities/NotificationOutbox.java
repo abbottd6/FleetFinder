@@ -1,8 +1,11 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadataConverter;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -63,9 +66,9 @@ public class NotificationOutbox {
     @Column(name="entity_new_status", nullable = true)
     private String entityNewStatus;
 
-    @JdbcTypeCode(SqlTypes.JSON)
+    @Convert(converter = NotificationTargetMetadataConverter.class)
     @Column(name="payload_json", nullable = true)
-    private JsonNode payloadJson;
+    private NotificationTargetMetadata payloadJson;
 
     @Column(name="status")
     @NotNull(message="NotificationOutbox field 'status' cannot be null.")

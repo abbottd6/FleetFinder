@@ -1,8 +1,10 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingArchiveRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
+import com.sc_fleetfinder.fleets.DAO.UserCustomNotificationRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationUnreadCountDto;
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
@@ -12,11 +14,16 @@ import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingActio
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
 import com.sc_fleetfinder.fleets.entities.Notification;
 import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
+import com.sc_fleetfinder.fleets.entities.UserCustomNotification;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadataConverter;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -31,6 +38,7 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepo;
@@ -38,18 +46,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final SimpMessagingTemplate messagingTemplate;
     private final ListingArchiveRepository archiveRepo;
     private final GroupListingRepository groupListingRepository;
-
-    NotificationServiceImpl(NotificationRepository notificationRepo,
-                            ModelMapper modelMapper,
-                            SimpMessagingTemplate messagingTemplate,
-                            GroupListingRepository groupListingRepository,
-                            ListingArchiveRepository archiveRepo) {
-        this.notificationRepo = notificationRepo;
-        this.modelMapper = modelMapper;
-        this.messagingTemplate = messagingTemplate;
-        this.groupListingRepository = groupListingRepository;
-        this.archiveRepo = archiveRepo;
-    }
 
     @Override
     public Page<GetNotificationDto> getMyDropdownNotifications(Users user, Pageable pageable) {
@@ -153,24 +149,54 @@ public class NotificationServiceImpl implements NotificationService {
     @Transactional
     public void sendOutboxNotification(NotificationOutbox obEntity) {
         String title = "";
+        boolean hasMetadata = false;
 
-        if(obEntity.getEventType() == NotificationType.LISTING_VIS_STATUS_CHANGED) {
-            title = groupListingRepository.findById(obEntity.getEntityId())
-                    .map(GroupListing::getListingTitle)
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "GroupListing", obEntity.getEntityId()));
-        } else if(obEntity.getEventType() == NotificationType.LISTING_ARCHIVED) {
-            title = archiveRepo.findByGroupId(obEntity.getEntityId())
-                    .map(ListingArchive::getListingTitle)
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "ListingArchive", obEntity.getEntityId()));
+        //TODO REMOVE THIS
+        if(obEntity.getDeliveryChannel() != DeliveryChannel.IN_APP) {
+            return;
         }
+
+        switch (obEntity.getEventType()) {
+            case NotificationType.LISTING_VIS_STATUS_CHANGED:
+                title = groupListingRepository.findById(obEntity.getEntityId())
+                        .map(GroupListing::getListingTitle)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "GroupListing", obEntity.getEntityId()));
+                break;
+            case NotificationType.LISTING_ARCHIVED:
+                title = archiveRepo.findByGroupId(obEntity.getEntityId())
+                        .map(ListingArchive::getListingTitle)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                "ListingArchive", obEntity.getEntityId()));
+                break;
+            case NotificationType.NEW_LISTING_MATCH:
+                title = groupListingRepository.findById(obEntity.getEntityId())
+                        .map(GroupListing::getListingTitle)
+                        .orElseThrow(() -> new ResourceNotFoundException(
+                                obEntity.getEntityType(), obEntity.getEntityId()
+                        ));
+                hasMetadata = true;
+                break;
+            default:
+                log.info("Attempted to process an outbox notification with an unmatched notification type." +
+                        " obEntityId: {} obEntity: {}", obEntity.getEntityId(), obEntity.getEntityType());
+                return;
+        }
+
+        //TODO break this off into separate helper methods for each one to create Notifications with the correct fields for the note type.
 
         Notification newNote = new Notification(
                 obEntity.getEntityOwner(),
                 obEntity.getEventType(),
                 title,
                 obEntity.getEntityNewStatus());
+
+
+        //TODO the 'addContext' string that is carrying group_status_id for the new listing updates is
+        // the id and needs to be converted to a number and return the name.
+        if(hasMetadata) {
+            newNote.setTargetMetadata(obEntity.getPayloadJson());
+        }
 
         notificationRepo.save(newNote);
 

@@ -4,5 +4,5 @@ public enum NotificationType {
     LISTING_VIS_STATUS_CHANGED,
     LISTING_ARCHIVED,
     MOD_DELETE,
-    CUSTOM_NOTIFICATION,
+    NEW_LISTING_MATCH,
 }

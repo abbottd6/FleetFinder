@@ -47,6 +47,6 @@ public class OutboxSenderTask {
         }
 
         log.info("Sent: {} outbox notifications were sent.", sentCount);
-        log.info("Failed: {} outbox notificatinos failed to send.", failedCount);
+        log.info("Failed: {} outbox notifications failed to send.", failedCount);
     }
 }

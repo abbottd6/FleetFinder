@@ -17,11 +17,23 @@ public class NewListingNotificationQueueTask {
     @Scheduled(fixedDelayString = "PT2M")
     @Transactional
     public void matchNewListingsToCustomNotifications() {
+        int batchSize = 100;
+
+        long claimStartTime = System.currentTimeMillis();
+        queueRepository.claimForProcessing(100);
+        log.info("Claim duration: {} ms", System.currentTimeMillis() - claimStartTime);
+
+        long generationStartTime = System.currentTimeMillis();
         int newOutboxEntries = queueRepository.generateNotificationOutboxEntriesForNewListingQueueOnCustomNoteMatches();
+        log.info("Matching and outbox notification generation duration: {} ms",
+                System.currentTimeMillis() - generationStartTime);
 
         log.info("The NewListingQueue created {} outbox entries for custom " +
                 "notifications on all channels.", newOutboxEntries);
 
 
+        int markedAs = this.queueRepository.markProcessed();
+        log.info("Custom note matching task finished by marking {} new listings as " +
+                "processed.", markedAs);
     }
 }

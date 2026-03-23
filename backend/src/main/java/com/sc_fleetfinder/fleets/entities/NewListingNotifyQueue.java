@@ -29,7 +29,6 @@ import java.time.Instant;
 public class NewListingNotifyQueue {
 
     public NewListingNotifyQueue(GroupListing listing) {
-        this.groupId = listing.getGroupId();
         this.groupListing = listing;
         this.status = ListingNotificationQueueStatus.IN_QUEUE;
     }
