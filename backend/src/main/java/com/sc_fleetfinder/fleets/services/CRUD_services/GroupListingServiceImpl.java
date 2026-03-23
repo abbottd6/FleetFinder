@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingReportRepository;
+import com.sc_fleetfinder.fleets.DAO.NewListingNotifyQueueRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
@@ -10,6 +11,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.CommsOption;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.NewListingNotifyQueue;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -63,6 +65,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final HiddenListingService hls;
     private final ListingReportRepository lrr;
     private final NotificationOutboxRepository outboxRepo;
+    private final NewListingNotifyQueueRepository listingNotifyQueueRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -73,7 +76,8 @@ public class GroupListingServiceImpl implements GroupListingService {
                                    ArchiveService archiveService,
                                    HiddenListingService hls,
                                    ListingReportRepository lrr,
-                                   NotificationOutboxRepository outboxRepo) {
+                                   NotificationOutboxRepository outboxRepo,
+                                   NewListingNotifyQueueRepository listingNotifyQueueRepository) {
 
         this.groupListingRepository = groupListingRepository;
         this.groupListingConversionService = groupListingConversionService;
@@ -82,6 +86,7 @@ public class GroupListingServiceImpl implements GroupListingService {
         this.hls = hls;
         this.lrr = lrr;
         this.outboxRepo = outboxRepo;
+        this.listingNotifyQueueRepository = listingNotifyQueueRepository;
     }
 
     @Override
@@ -131,6 +136,11 @@ public class GroupListingServiceImpl implements GroupListingService {
                 groupListing.setLastUpdated(Instant.now());
 
                 groupListingRepository.save(groupListing);
+                groupListingRepository.flush();
+
+                NewListingNotifyQueue queued = new NewListingNotifyQueue(groupListing);
+
+                listingNotifyQueueRepository.save(queued);
 
                 Map<String, String> response = new HashMap<>();
                 response.put("listingTitle", groupListing.getListingTitle());

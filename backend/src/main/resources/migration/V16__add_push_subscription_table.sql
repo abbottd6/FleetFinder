@@ -1,4 +1,4 @@
-CREATE TABLE push_subscription
+CREATE TABLE IF NOT EXISTS push_subscription
 (
     id_push_sub          BIGINT AUTO_INCREMENT PRIMARY KEY,
     user_id              BIGINT       NOT NULL,

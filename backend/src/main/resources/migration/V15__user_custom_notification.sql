@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS user_custom_notification
 CREATE TABLE IF NOT EXISTS new_listing_notify_queue
 (
     id_group     BIGINT      NOT NULL PRIMARY KEY,
-    status       VARCHAR(10) NOT NULL DEFAULT 'inQueue',
+    status       VARCHAR(10) NOT NULL,
     queued_at    TIMESTAMP            DEFAULT CURRENT_TIMESTAMP NOT NULL,
     locked_at    TIMESTAMP   NULL,
     processed_at TIMESTAMP   NULL,

@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,6 +38,11 @@ public class NotificationOutbox {
     @Column(name="event_type")
     @NotNull(message="NotificationOutbox field 'eventType' cannot be null.")
     private NotificationType eventType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="delivery_channel")
+    @NotNull(message="NotificationOutbox entity field 'delivery_channel' cannot be null.")
+    private DeliveryChannel deliveryChannel;
 
     //name of entity type
     @Column(name="entity_type")

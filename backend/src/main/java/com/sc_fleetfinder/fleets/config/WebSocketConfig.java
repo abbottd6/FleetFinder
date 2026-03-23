@@ -1,14 +1,11 @@
 package com.sc_fleetfinder.fleets.config;
 
-import com.sc_fleetfinder.fleets.messaging.websocket.JwtQueryParamHandshakeInterceptor;
-import com.sc_fleetfinder.fleets.messaging.websocket.JwtSubHandshakeHandler;
 import com.sc_fleetfinder.fleets.messaging.websocket.StompJwtChannelInterceptor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
@@ -23,11 +20,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private String wsAppUrl;
 
     private final StompJwtChannelInterceptor stompJwtChannelInterceptor;
-    private final JwtDecoder jwtDecoder;
 
-    public WebSocketConfig(StompJwtChannelInterceptor stompJwtChannelInterceptor, JwtDecoder jwtDecoder) {
+    public WebSocketConfig(StompJwtChannelInterceptor stompJwtChannelInterceptor) {
         this.stompJwtChannelInterceptor = stompJwtChannelInterceptor;
-        this.jwtDecoder = jwtDecoder;
     }
 
     @Override
@@ -44,8 +39,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
                 .addEndpoint("/websocket")
-                .setHandshakeHandler(new JwtSubHandshakeHandler(jwtDecoder))
-                .addInterceptors(new JwtQueryParamHandshakeInterceptor())
                 .setAllowedOriginPatterns(wsAppUrl);
     }
 
