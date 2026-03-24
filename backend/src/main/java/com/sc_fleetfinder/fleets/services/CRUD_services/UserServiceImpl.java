@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -310,6 +311,12 @@ public class UserServiceImpl implements UserService {
                     .filter(u -> !u.getIsDeleted())
                     .orElseThrow(() -> new ResourceNotFoundException("User with keycloakId "
                             + kcId + " not found"));
+    }
+
+    @Override
+    @Transactional
+    public void updateLastActive(HashMap<String, Instant> toUpdate) {
+        toUpdate.forEach(userRepository::updateUserLastAccess);
     }
 
     //helper method for normalizing emails. isolated for testing.

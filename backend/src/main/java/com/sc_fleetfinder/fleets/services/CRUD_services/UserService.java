@@ -8,6 +8,8 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import jakarta.validation.Valid;
 
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,4 +48,6 @@ public interface UserService {
     Optional<Users> getUserByKeycloakIdDoNotThrow(String kcId);
 
     Users verifyUser(String kcId);
+
+    void updateLastActive(HashMap<String, Instant> toUpdate);
 }
