@@ -121,8 +121,8 @@ class ArchiveServiceImplTest {
                 () -> assertTrue(logCaptor.getInfoLogs().stream()
                         .anyMatch(log -> log.contains("Archive records generated for listing:")),
                         "Expected info log for archive creation"),
-                () -> assertEquals("Auto", capturedArchive.getActionType(),
-                        "Archive actionType should be 'Auto' for user-initiated delete"),
+                () -> assertEquals("None", capturedArchive.getActionType(),
+                        "Archive actionType should be 'None' for user-initiated delete"),
                 () -> assertNull(capturedArchive.getModId(),
                         "modId should be null for non-manual archive")
         );
@@ -159,8 +159,8 @@ class ArchiveServiceImplTest {
                 () -> assertTrue(logCaptor.getInfoLogs().stream()
                         .anyMatch(log -> log.contains("Archive records generated for listing:")),
                         "Expected info log for archive creation"),
-                () -> assertEquals("Auto", capturedArchive.getActionType(),
-                        "Archive actionType should be 'Auto' for user-initiated delete")
+                () -> assertEquals("None", capturedArchive.getActionType(),
+                        "Archive actionType should be 'None' for user-initiated delete")
         );
     }
 
@@ -174,7 +174,7 @@ class ArchiveServiceImplTest {
         when(lar.save(any(ListingArchive.class))).thenAnswer(inv -> inv.getArgument(0));
 
         // when
-        ListingArchive result = archiveService.archiveListing(listing, issue, note);
+        ListingArchive result = archiveService.archiveListing(listing, issue, "AutoMod", note);
 
         // then
         ArgumentCaptor<ListingArchive> archiveCaptor = ArgumentCaptor.forClass(ListingArchive.class);
@@ -183,8 +183,8 @@ class ArchiveServiceImplTest {
 
         assertAll("archiveListing auto variant assertions:",
                 () -> assertNotNull(result, "archiveListing should return a non-null archive"),
-                () -> assertEquals("Auto", capturedArchive.getActionType(),
-                        "Auto variant should set actionType to 'Auto'"),
+                () -> assertEquals("AutoMod", capturedArchive.getActionType(),
+                        "Auto variant should set actionType to 'AutoMod'"),
                 () -> assertNull(capturedArchive.getModId(),
                         "Auto variant should have null modId")
         );

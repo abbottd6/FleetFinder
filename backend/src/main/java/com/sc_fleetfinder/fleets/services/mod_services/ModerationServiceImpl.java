@@ -236,8 +236,10 @@ public class ModerationServiceImpl implements ModerationService {
                 issue.getReportTotalCount() +", " +
                 "Corresponding issueId: " + issue.getIssueId();
 
+        String actionType = "AutoMod";
+
         //archive listing issue/reports data and user input fields from listing
-        ListingArchive archive = archiveService.archiveListing(condemned, issue, note);
+        ListingArchive archive = archiveService.archiveListing(condemned, issue, actionType, note);
 
         recordModeratorAction(issue, note, archive);
 

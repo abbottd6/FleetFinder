@@ -8,6 +8,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -62,6 +64,7 @@ public class Notification {
 
     @Column(name="type")
     @NotNull(message="Notification field 'type' cannot be null.")
+    @Enumerated(EnumType.STRING)
     private NotificationType type;
 
     @Column(name="title", nullable=true)

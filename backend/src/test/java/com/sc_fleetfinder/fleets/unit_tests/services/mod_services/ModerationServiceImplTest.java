@@ -407,7 +407,7 @@ class ModerationServiceImplTest {
         when(lrr.findByModIssueRef(issue)).thenReturn(reports);
         when(lrr.saveAll(any())).thenReturn(List.of(report));
         when(archiveService.archiveListing(any(GroupListing.class), any(ModerationIssue.class),
-                any(String.class))).thenReturn(archive);
+                any(String.class),any(String.class))).thenReturn(archive);
         when(mlar.save(any(ModListingAction.class))).thenReturn(mock(ModListingAction.class));
         when(umrr.findByUser(any(Users.class))).thenReturn(Optional.of(record));
 
@@ -418,7 +418,7 @@ class ModerationServiceImplTest {
         assertAll("prepareAutoModRemovalRecords side-effects:",
                 () -> verify(lrr, times(1)).saveAll(any()),
                 () -> verify(archiveService, times(1)).archiveListing(
-                        any(GroupListing.class), any(ModerationIssue.class), any(String.class)),
+                        any(GroupListing.class), any(ModerationIssue.class), any(String.class), any(String.class)),
                 () -> verify(eventPublisher, times(1)).publishEvent(any(ListingModDeleteEvent.class))
         );
     }

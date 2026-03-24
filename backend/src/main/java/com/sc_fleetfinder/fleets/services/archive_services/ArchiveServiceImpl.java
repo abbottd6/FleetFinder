@@ -56,7 +56,9 @@ public class ArchiveServiceImpl implements ArchiveService {
             note = "User deleted listing with no recorded moderation issue.";
         }
 
-        archive = archiveListing(listing, issue, note);
+        String actionType = "None";
+
+        archive = archiveListing(listing, issue, actionType, note);
         lar.save(archive);
 
         log.info("Archive records generated for listing: {}, in response to user delete.",
@@ -100,9 +102,9 @@ public class ArchiveServiceImpl implements ArchiveService {
     @Override
     @Transactional
     public ListingArchive archiveListing(GroupListing listing, ModerationIssue issue,
-                               String note) {
+                               String actionType, String note) {
 
-        ListingArchive archive = new ListingArchive(listing, issue, note);
+        ListingArchive archive = new ListingArchive(listing, issue, actionType, note);
         lar.save(archive);
 
         return archive;

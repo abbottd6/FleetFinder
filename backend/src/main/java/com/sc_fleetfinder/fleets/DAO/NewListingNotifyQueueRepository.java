@@ -12,7 +12,7 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
 
     @Modifying
     @Query(value = """
-            INSERT INTO notification_outbox (
+            INSERT IGNORE INTO notification_outbox (
                         event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
                         parent_entity_id, parent_entity_type, payload_json, status,
                         delivery_channel, created_at
@@ -70,7 +70,6 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
                 OR (channels.delivery_channel = 'PUSH'
                     AND push.group_notes_enabled = 1)
               )
-            ON DUPLICATE KEY UPDATE outbox_id = outbox_id
             """, nativeQuery = true)
     int generateNotificationOutboxEntriesForNewListingQueueOnCustomNoteMatches();
             // Joins new_listing_notify_queue → group_listing → user_custom_notification → users.
@@ -90,7 +89,7 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
             // The push_subscription LEFT JOIN is conditioned on channels.delivery_channel = 'PUSH',
             // so it only fires for PUSH rows. IN_APP and DISCORD rows produce exactly 1 row per match
             // regardless of how many push subscriptions a user has (avoiding row multiplication).
-            // Users with multiple push subscriptions produce multiple PUSH rows; ON DUPLICATE KEY UPDATE
+            // Users with multiple push subscriptions produce multiple PUSH rows; INSERT IGNORE
             // deduplicates them — the single PUSH outbox entry is then sent to all their subscriptions.
 
     @Modifying

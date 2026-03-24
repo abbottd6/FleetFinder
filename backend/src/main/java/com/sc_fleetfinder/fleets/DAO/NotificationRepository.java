@@ -49,7 +49,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Modifying
     @Query(value = """
-            INSERT INTO notification_outbox (
+            INSERT IGNORE INTO notification_outbox (
             event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
             parent_entity_id, parent_entity_type, payload_json, status,
             delivery_channel, created_at
@@ -93,7 +93,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
                         OR (channels.delivery_channel = 'PUSH'
                             AND push.sys_notes_enabled = 1)
                     )
-                ON DUPLICATE KEY UPDATE outbox_id = outbox_id
             """, nativeQuery = true)
     int generateOutboxNotificationsOnModListingDelete(@Param("actionId") Long modActionId);
 }

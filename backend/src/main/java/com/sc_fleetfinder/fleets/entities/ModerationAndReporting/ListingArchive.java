@@ -40,7 +40,7 @@ public class ListingArchive {
 
     protected ListingArchive(){}
     //constructor for AutoMod deletions and user deletions
-    public ListingArchive(GroupListing listing, ModerationIssue issue, String note) {
+    public ListingArchive(GroupListing listing, ModerationIssue issue, String actionType, String note) {
         this.groupId = listing.getGroupId();
         this.userId = listing.getUsers().getUserId();
         this.username = listing.getUsers().getUsername();
@@ -78,7 +78,7 @@ public class ListingArchive {
         this.cheatCount = issue.getCheatCount();
         this.otherCount = issue.getOtherCount();
         this.status = issue.getStatus();
-        this.actionType = "Auto";
+        this.actionType = actionType;
         this.actionNote = note;
     }
 

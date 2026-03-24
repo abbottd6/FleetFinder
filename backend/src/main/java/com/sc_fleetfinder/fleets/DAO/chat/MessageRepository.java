@@ -27,7 +27,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Modifying
     @Query(value = """
-            INSERT INTO notification_outbox (
+            INSERT IGNORE INTO notification_outbox (
             event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
             parent_entity_id, parent_entity_type, payload_json, status,
             delivery_channel, created_at
@@ -76,7 +76,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                     OR (channels.delivery_channel = 'PUSH'
                         AND push.social_notes_enabled = 1)
                 )
-            ON DUPLICATE KEY UPDATE outbox_id = outbox_id
             """, nativeQuery = true)
     int generateExternalDeliveryOutboxNotifications(@Param("recipientId") Long recipientId, @Param("msgId") Long msgId);
 }

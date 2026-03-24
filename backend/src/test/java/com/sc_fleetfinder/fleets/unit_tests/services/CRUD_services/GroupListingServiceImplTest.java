@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.unit_tests.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.NewListingNotifyQueueRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
@@ -79,6 +80,9 @@ class GroupListingServiceImplTest {
 
     @Mock
     private NotificationOutboxRepository notificationOutboxRepository;
+
+    @Mock
+    private NewListingNotifyQueueRepository listingNotifyQueueRepository;
 
     private static Validator validator;
 
@@ -271,6 +275,7 @@ class GroupListingServiceImplTest {
                 () -> assertEquals("This is a valid listing title",  responseBody.get("listingTitle")),
                 () -> verify(groupListingConversionService, times(1)).convertToEntity(validDto),
                 () -> verify(groupListingRepository, times(1)).save(any(GroupListing.class)),
+                () -> verify(groupListingRepository, times(1)).flush(),
                 () -> verify(mapperLookupService, times(1)).findUserById(validDto.getUserId()),
                 () -> verifyNoMoreInteractions(createGroupListingModelMapper, groupListingRepository));
     }

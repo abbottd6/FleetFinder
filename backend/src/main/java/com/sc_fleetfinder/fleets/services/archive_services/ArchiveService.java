@@ -10,7 +10,7 @@ public interface ArchiveService {
 
     void prepareUserDeleteRecords(GroupListing groupListing, Users user);
     ListingArchive archiveListing(GroupListing listing, ModerationIssue issue,
-                                  String note);
+                                  String actionType, String note);
     ListingArchive archiveListing(GroupListing listing, ModerationIssue issue,
                                   String modNote, Users mod);
 }
