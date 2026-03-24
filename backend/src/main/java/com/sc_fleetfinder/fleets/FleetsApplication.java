@@ -12,7 +12,6 @@ import static org.springframework.data.web.config.EnableSpringDataWebSupport.Pag
 @SpringBootApplication
 @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
 @EnableScheduling
-@EnableAsync
 public class FleetsApplication {
 
 	public static void main(String[] args) {

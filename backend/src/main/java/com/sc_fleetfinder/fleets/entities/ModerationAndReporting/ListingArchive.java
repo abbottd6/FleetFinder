@@ -222,7 +222,7 @@ public class ListingArchive {
     @NotNull(message="ListingArchive field 'desiredPartySize' cannot be null.")
     private Integer desiredPartySize;
 
-    @Column(name="comms_options")
+    @Column(name="comms_options", columnDefinition = "ENUM ('Required', 'Optional', 'No Comms')")
     @NotNull(message = "ListingArchive field 'commsOptions' cannot be null.")
     private String commsOption;
 
@@ -281,7 +281,7 @@ public class ListingArchive {
     @Column(name="other_count")
     private Integer otherCount;
 
-    @Column(name="status")
+    @Column(name="status", columnDefinition = "ENUM ('Pending', 'No Reports', 'Cleared', 'Actioned')")
     private String status;
 
     @Column(name="id_mod")
@@ -291,8 +291,8 @@ public class ListingArchive {
     private String modname;
 
     @NotNull(message="ListingArchive field 'actionType' cannot be null.")
-    @Column(name="action_type")
-    private String actionType;
+    @Column(name="action_type", columnDefinition="ENUM('None', 'AutoMod', 'Manual')")
+    private String actionType = "None";
 
     @Column(name="action_note")
     private String actionNote;

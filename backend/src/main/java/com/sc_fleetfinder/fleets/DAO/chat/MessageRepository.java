@@ -52,7 +52,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                 NOW()                       AS created_at
             FROM message msg
             JOIN conversation conv ON msg.id_conversation = conv.id_conversation
-            JOIN notification noti ON conv.id_conversation = noti.parent_entity_id
+            LEFT JOIN notification noti ON conv.id_conversation = noti.parent_entity_id
                 AND noti.id_user = :recipientId
                 AND noti.parent_entity_type = 'CONVERSATION'
             JOIN conversation_participant parti ON conv.id_conversation = parti.id_conversation
@@ -67,7 +67,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                 AND channels.delivery_channel = 'PUSH'
                 AND push.social_notes_enabled = 1
             WHERE msg.id_msg = :msgId
-                AND (noti.created_at < (NOW() - INTERVAL 5 MINUTE))
+                AND (noti.created_at IS NULL OR noti.created_at < (NOW() - INTERVAL 5 MINUTE))
                 AND (parti.last_read_message_id IS NULL OR parti.last_read_message_id < :msgId)
                 AND (
                     (channels.delivery_channel = 'DISCORD'

@@ -58,9 +58,9 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
                 "(id_group, id_user, username, listing_title, listing_description, " +
                 "server_id, environment_id, experience_id, legality_id, group_status_id, " +
                 "category_id, pvp_status_id, system_id, current_party_size, desired_party_size, " +
-                "comms_options, language_code, listing_creation_ts, listing_last_updated, action_type) " +
+                "comms_options, language_code, listing_creation_ts, listing_last_updated) " +
                 "VALUES (?, ?, 'testuser', 'Test Archived Listing', 'A description.', " +
-                "1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 'Optional', 'English', NOW(), NOW(), 'None')",
+                "1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 'Optional', 'English', NOW(), NOW())",
                 ownerId * 1000, ownerId
         );
         return jdbcTemplate.queryForObject("SELECT MAX(id_archive) FROM listing_archive", Long.class);

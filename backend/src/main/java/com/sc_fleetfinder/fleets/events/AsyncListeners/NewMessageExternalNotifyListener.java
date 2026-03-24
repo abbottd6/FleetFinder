@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.events.AsyncListeners;
 import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.MessageRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.ParticipantRepository;
+import com.sc_fleetfinder.fleets.config.WebSocketSessionTracker;
 import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
@@ -23,7 +24,7 @@ public class NewMessageExternalNotifyListener {
 
     private final ParticipantRepository participantRepo;
     private final MessageRepository messageRepo;
-    private final NotificationOutboxRepository obRepo;
+    private final WebSocketSessionTracker sessionTracker;
 
     @Async
     @EventListener
@@ -31,6 +32,10 @@ public class NewMessageExternalNotifyListener {
     public void handleNewMessageExternalNotify(NewMessageExternalNotifyEvent event) {
         Users recipient = event.recipient();
         Conversation conv = event.message().getConversation();
+
+        if (sessionTracker.isUserConnected(recipient.getUserId())) {
+            return;
+        }
 
         Participant participantProfile = participantRepo.findByConversationAndUser(
                 conv.getConversationId(), recipient.getUserId())
@@ -41,14 +46,10 @@ public class NewMessageExternalNotifyListener {
             return;
         }
 
-        if(participantProfile.isArchived()) {
-            participantProfile.setArchived(false);
-        }
-
         int outboxNotesGenerated = messageRepo.generateExternalDeliveryOutboxNotifications(
                 recipient.getUserId(), event.message().getMsgId());
 
-        log.debug("Generated {} notification outbox entries for user, '{}' for message ID: {}",
+        log.warn("Generated {} notification outbox entries for user, '{}' for message ID: {}",
                 outboxNotesGenerated, recipient.getUsername(), event.message().getMsgId());
     }
 }

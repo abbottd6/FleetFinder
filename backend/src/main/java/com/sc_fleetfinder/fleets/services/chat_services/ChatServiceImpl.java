@@ -15,6 +15,7 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
 import com.sc_fleetfinder.fleets.entities.chat.Message;
 import com.sc_fleetfinder.fleets.entities.chat.Participant;
+import com.sc_fleetfinder.fleets.events.NewMessageExternalNotifyEvent;
 import com.sc_fleetfinder.fleets.exceptions.ConfirmationRequiredException;
 import com.sc_fleetfinder.fleets.exceptions.ConversationIntegrityException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -23,7 +24,9 @@ import com.sc_fleetfinder.fleets.services.conversion_services.ChatDataConversion
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ConvUnreadMap;
 import com.sc_fleetfinder.fleets.utils.ConversationParticipantRole;
 import com.sc_fleetfinder.fleets.utils.MessageUserRoles;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,6 +50,7 @@ import static com.sc_fleetfinder.fleets.utils.DmKeyUtil.sha256DmKey;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
 
 
@@ -59,24 +63,7 @@ public class ChatServiceImpl implements ChatService {
     private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
-
-    ChatServiceImpl(ConversationConversionService ccs,
-                    ParticipantRepository participantRepo,
-                    MessageRepository msgRepo,
-                    MessageConversionService msgConvSrv,
-                    ConversationRepository convRepo,
-                    MessageRepository messageRepository,
-                    UserRepository userRepository,
-                    SimpMessagingTemplate messagingTemplate) {
-        this.ccs = ccs;
-        this.msgRepo = msgRepo;
-        this.msgConvSrv = msgConvSrv;
-        this.participantRepo = participantRepo;
-        this.convRepo = convRepo;
-        this.messageRepository = messageRepository;
-        this.userRepository = userRepository;
-        this.messagingTemplate = messagingTemplate;
-    }
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
@@ -158,17 +145,19 @@ public class ChatServiceImpl implements ChatService {
 
         Message newMsg = new Message(currentConv, senderPart.getUser(), repliedToMessage, dto);
 
-        messageRepository.save(newMsg);
+        Message saved = messageRepository.save(newMsg);
 
         currentConv.setLastMsg(newMsg);
         convRepo.save(currentConv);
+
+        eventPublisher.publishEvent(new NewMessageExternalNotifyEvent(recipientPart.getUser(), saved));
 
         GetMessageDto msgDto = msgConvSrv.convertToDto(newMsg);
 
         UserUnreadResponseDto recipientUnreadDto = this.getUserUnreadCounts(recipientPart.getUser().getUserId());
 
         for(ConvUnreadMap conv : recipientUnreadDto.unreadByConv()){
-            log.info("ConvId: {}, Unread: {}", conv.conversationId(), conv.unreadCount());
+            log.debug("ConvId: {}, Unread: {}", conv.conversationId(), conv.unreadCount());
         }
 
         if(isFirstMsg) {

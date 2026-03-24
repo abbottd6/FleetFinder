@@ -70,7 +70,7 @@ public class Participant {
 
     @Column(name="role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private ConversationParticipantRole role;
+    private ConversationParticipantRole role = ConversationParticipantRole.MEMBER;
 
     @CreationTimestamp
     @Column(name="joined_at", nullable = false)
