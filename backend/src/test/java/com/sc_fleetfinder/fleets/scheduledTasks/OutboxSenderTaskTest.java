@@ -47,7 +47,7 @@ class OutboxSenderTaskTest {
 
         // then
         assertAll("empty batch — early return assertions:",
-                () -> verify(notificationService, never()).sendOutboxNotification(any()),
+                () -> verify(notificationService, never()).prepareAndSendOutboxNotification(any()),
                 () -> verify(outboxService, never()).markSent(anyLong()),
                 () -> verify(outboxService, never()).markFailed(anyLong(), any()),
                 () -> assertTrue(logCaptor.getInfoLogs().stream()
@@ -69,14 +69,14 @@ class OutboxSenderTaskTest {
 
         when(outboxService.claimPendingBatch(100)).thenReturn(2);
         when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox1, outbox2));
-        doNothing().when(notificationService).sendOutboxNotification(any());
+        doNothing().when(notificationService).prepareAndSendOutboxNotification(any());
 
         // when
         outboxSenderTask.sendOutboxNotifications();
 
         // then
         assertAll("all-success assertions:",
-                () -> verify(notificationService, times(2)).sendOutboxNotification(any()),
+                () -> verify(notificationService, times(2)).prepareAndSendOutboxNotification(any()),
                 () -> verify(outboxService, times(1)).markSent(1L),
                 () -> verify(outboxService, times(1)).markSent(2L),
                 () -> verify(outboxService, never()).markFailed(anyLong(), any()),
@@ -100,9 +100,9 @@ class OutboxSenderTaskTest {
 
         when(outboxService.claimPendingBatch(100)).thenReturn(3);
         when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox1, outbox2, outbox3));
-        doNothing().when(notificationService).sendOutboxNotification(outbox1);
-        doThrow(new RuntimeException("db error")).when(notificationService).sendOutboxNotification(outbox2);
-        doNothing().when(notificationService).sendOutboxNotification(outbox3);
+        doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox1);
+        doThrow(new RuntimeException("db error")).when(notificationService).prepareAndSendOutboxNotification(outbox2);
+        doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox3);
 
         // when
         outboxSenderTask.sendOutboxNotifications();
@@ -127,7 +127,7 @@ class OutboxSenderTaskTest {
 
         when(outboxService.claimPendingBatch(100)).thenReturn(1);
         when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox));
-        doThrow(new RuntimeException("x".repeat(1000))).when(notificationService).sendOutboxNotification(outbox);
+        doThrow(new RuntimeException("x".repeat(1000))).when(notificationService).prepareAndSendOutboxNotification(outbox);
 
         // when
         outboxSenderTask.sendOutboxNotifications();
@@ -150,7 +150,7 @@ class OutboxSenderTaskTest {
 
         when(outboxService.claimPendingBatch(100)).thenReturn(1);
         when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox));
-        doThrow(new RuntimeException((String) null)).when(notificationService).sendOutboxNotification(outbox);
+        doThrow(new RuntimeException((String) null)).when(notificationService).prepareAndSendOutboxNotification(outbox);
 
         // when
         outboxSenderTask.sendOutboxNotifications();

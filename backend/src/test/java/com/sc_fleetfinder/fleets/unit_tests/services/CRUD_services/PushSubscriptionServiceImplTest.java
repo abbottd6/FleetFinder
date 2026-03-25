@@ -64,7 +64,7 @@ class PushSubscriptionServiceImplTest {
         pageDto.setPageIdx(0);
         pageDto.setPageSize(10);
 
-        when(pushSubRepository.getPushSubscriptionsByUser(eq(mockUser), any())).thenReturn(entityPage);
+        when(pushSubRepository.getPageOfPushSubscriptionsByUser(eq(mockUser), any())).thenReturn(entityPage);
         when(modelMapper.map(entity, GetPushSubDto.class)).thenReturn(dto);
 
         Page<GetPushSubDto> result = pushSubscriptionService.getAllMyPushSubs(mockUser, pageDto);
@@ -80,7 +80,7 @@ class PushSubscriptionServiceImplTest {
         pageDto.setPageIdx(0);
         pageDto.setPageSize(10);
 
-        when(pushSubRepository.getPushSubscriptionsByUser(eq(mockUser), any())).thenReturn(emptyPage);
+        when(pushSubRepository.getPageOfPushSubscriptionsByUser(eq(mockUser), any())).thenReturn(emptyPage);
 
         Page<GetPushSubDto> result = pushSubscriptionService.getAllMyPushSubs(mockUser, pageDto);
 

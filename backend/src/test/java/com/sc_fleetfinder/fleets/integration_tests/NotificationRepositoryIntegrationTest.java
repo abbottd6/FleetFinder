@@ -13,6 +13,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -31,6 +33,8 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
 
     @MockitoBean
     private JwtDecoder jwtDecoder;
+
+    private static final String TEST_SIBLING_KEY = "a".repeat(64);
 
     // ─── Helpers ─────────────────────────────────────────────────────────────
 
@@ -82,6 +86,16 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
                 "VALUES (?, 'Test Device', 'https://push.example.com/token', 'pk123', 'sec123', ?)",
                 userId, sysNotesEnabled ? 1 : 0
         );
+    }
+
+    // readAtExpr is a raw SQL expression: "NOW()" for read, "NULL" for unread.
+    private Long insertNotification(Long userId, String siblingKey, String deliveryChannel, String readAtExpr) {
+        jdbcTemplate.update(
+                "INSERT INTO notification (id_user, type, message, delivery_channel, sibling_key, read_at) " +
+                "VALUES (?, 'LISTING_VIS_STATUS_CHANGED', 'Test notification.', ?, ?, " + readAtExpr + ")",
+                userId, deliveryChannel, siblingKey
+        );
+        return jdbcTemplate.queryForObject("SELECT MAX(id_notification) FROM notification", Long.class);
     }
 
     // ─── generateOutboxNotificationsOnModListingDelete() ─────────────────────
@@ -271,5 +285,75 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
                 () -> assertEquals(0, inserted, "Non-existent action ID should insert 0 rows"),
                 () -> assertEquals(0, count)
         );
+    }
+
+    // ─── checkSiblingNotificationReadStatus() ────────────────────────────────
+
+    @Test
+    void checkSiblingNotificationReadStatus_InAppRead_ReturnsReadAtInstant() {
+        // given: an IN_APP notification that has been read (read_at = NOW())
+        Long userId = insertUser(false, false);
+        Long noteId = insertNotification(userId, TEST_SIBLING_KEY, "IN_APP", "NOW()");
+
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId, TEST_SIBLING_KEY);
+
+        Long expectedEpoch = jdbcTemplate.queryForObject(
+                "SELECT UNIX_TIMESTAMP(read_at) FROM notification WHERE id_notification = ?",
+                Long.class, noteId);
+        assertAll(
+                () -> assertTrue(result.isPresent(), "Read IN_APP sibling should return a non-empty Optional"),
+                () -> assertEquals(expectedEpoch, result.get().getEpochSecond(),
+                        "Returned Instant epoch should match the stored read_at timestamp")
+        );
+    }
+
+    @Test
+    void checkSiblingNotificationReadStatus_InAppUnread_ReturnsEmpty() {
+        // given: an IN_APP notification that exists but has NOT been read (read_at IS NULL)
+        // Spring Data JPA 3.x maps a null scalar result to Optional.empty() for Optional<T> return types.
+        Long userId = insertUser(false, false);
+        insertNotification(userId, TEST_SIBLING_KEY, "IN_APP", "NULL");
+
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId, TEST_SIBLING_KEY);
+
+        assertTrue(result.isEmpty(),
+                "Unread IN_APP sibling (read_at IS NULL) should return Optional.empty()");
+    }
+
+    @Test
+    void checkSiblingNotificationReadStatus_NoMatchingSiblingKey_ReturnsEmpty() {
+        // given: a notification exists but with a different sibling_key
+        Long userId = insertUser(false, false);
+        insertNotification(userId, "b".repeat(64), "IN_APP", "NOW()");
+
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId, TEST_SIBLING_KEY);
+
+        assertTrue(result.isEmpty(),
+                "No notification with TEST_SIBLING_KEY should return Optional.empty()");
+    }
+
+    @Test
+    void checkSiblingNotificationReadStatus_DifferentUser_ReturnsEmpty() {
+        // given: a read IN_APP notification with TEST_SIBLING_KEY owned by a different user
+        Long userId1 = insertUser(false, false);
+        Long userId2 = insertUser(false, false);
+        insertNotification(userId1, TEST_SIBLING_KEY, "IN_APP", "NOW()");
+
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId2, TEST_SIBLING_KEY);
+
+        assertTrue(result.isEmpty(),
+                "Notification belonging to a different user should return Optional.empty()");
+    }
+
+    @Test
+    void checkSiblingNotificationReadStatus_ExternalChannelOnly_ReturnsEmpty() {
+        // given: a read notification with TEST_SIBLING_KEY but delivery_channel = 'DISCORD' (not IN_APP)
+        Long userId = insertUser(false, false);
+        insertNotification(userId, TEST_SIBLING_KEY, "DISCORD", "NOW()");
+
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId, TEST_SIBLING_KEY);
+
+        assertTrue(result.isEmpty(),
+                "Non-IN_APP delivery channel should be excluded — query filters to delivery_channel = 'IN_APP'");
     }
 }

@@ -36,7 +36,7 @@ public class PushSubscriptionServiceImpl implements PushSubscriptionService {
     public Page<GetPushSubDto> getAllMyPushSubs(Users user, GenericPageRequestDto pageDto) {
         Pageable pageable = PageRequest.of(pageDto.getPageIdx(), pageDto.getPageSize());
 
-        Page<PushSubscription> entityPage = pushSubRepo.getPushSubscriptionsByUser(user, pageable);
+        Page<PushSubscription> entityPage = pushSubRepo.getPageOfPushSubscriptionsByUser(user, pageable);
         return entityPage.map(pushSub -> modelMapper.map(pushSub, GetPushSubDto.class));
     }
 

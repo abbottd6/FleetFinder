@@ -13,9 +13,10 @@ self.addEventListener('push', event => {
     }
   }
 
-  const data = event.data?.json();
-  self.registration.showNotification(title, {
-    body: body,
-    icon: '/assets/icons/icon-192x192.png'
-  });
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: body,
+      icon: '/assets/icons/icon-192x192.png'
+    })
+  );
 });

@@ -15,7 +15,7 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
             INSERT IGNORE INTO notification_outbox (
                         event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
                         parent_entity_id, parent_entity_type, payload_json, status,
-                        delivery_channel, created_at
+                        delivery_channel, sibling_key, created_at
                     )
             SELECT
                 'NEW_LISTING_MATCH'             AS event_type,
@@ -34,6 +34,7 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
                 )                               AS payload_json,
                 'PENDING'                       AS status,
                 channels.delivery_channel       AS delivery_channel,
+                SHA2(CONCAT('NEW_LISTING_MATCH', '|', 'GROUP_LISTING', '|', gl.id_group, '|', customNote.user_id, '|', 'MATCHED'), 256) AS sibling_key,
                 NOW()                           AS created_at
             FROM new_listing_notify_queue queue
             JOIN group_listing gl ON queue.id_group = gl.id_group

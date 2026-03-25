@@ -262,7 +262,7 @@ class NotificationServiceImplTest {
 
     @Test
     @Disabled("sendOutboxNotification is being reworked")
-    void sendOutboxNotification_VisStatusChanged_LooksUpListingAndSendsWsMessages() {
+    void prepareAndSendOutboxNotification_VisStatusChanged_LooksUpListingAndSendsWsMessages() {
         Users owner = new Users();
         owner.setUserId(1L);
         owner.setKeycloakId("ownerKcId");
@@ -282,7 +282,7 @@ class NotificationServiceImplTest {
         when(modelMapper.map(any(Notification.class), eq(GetNotificationDto.class))).thenReturn(new GetNotificationDto());
         when(notificationRepo.countUnreadByUserId(1L)).thenReturn(3);
 
-        notificationService.sendOutboxNotification(outbox);
+        notificationService.prepareAndSendOutboxNotification(outbox);
 
         verify(messagingTemplate).convertAndSendToUser(eq("ownerKcId"), eq("/queue/system.notify_count"), any());
         verify(messagingTemplate).convertAndSendToUser(eq("ownerKcId"), eq("/queue/system.notify"), any());
@@ -291,7 +291,7 @@ class NotificationServiceImplTest {
 
     @Test
     @Disabled("sendOutboxNotification is being reworked")
-    void sendOutboxNotification_ListingArchived_LooksUpArchiveAndSendsWsMessages() {
+    void prepareAndSendOutboxNotification_ListingArchived_LooksUpArchiveAndSendsWsMessages() {
         Users owner = new Users();
         owner.setUserId(1L);
         owner.setKeycloakId("ownerKcId");
@@ -311,7 +311,7 @@ class NotificationServiceImplTest {
         when(modelMapper.map(any(Notification.class), eq(GetNotificationDto.class))).thenReturn(new GetNotificationDto());
         when(notificationRepo.countUnreadByUserId(1L)).thenReturn(2);
 
-        notificationService.sendOutboxNotification(outbox);
+        notificationService.prepareAndSendOutboxNotification(outbox);
 
         verify(messagingTemplate).convertAndSendToUser(eq("ownerKcId"), eq("/queue/system.notify_count"), any());
         verify(messagingTemplate).convertAndSendToUser(eq("ownerKcId"), eq("/queue/system.notify"), any());
@@ -319,7 +319,7 @@ class NotificationServiceImplTest {
 
     @Test
     @Disabled("sendOutboxNotification is being reworked")
-    void sendOutboxNotification_ModDelete_SkipsLookupAndSendsWsMessages() {
+    void prepareAndSendOutboxNotification_ModDelete_SkipsLookupAndSendsWsMessages() {
         Users owner = new Users();
         owner.setUserId(1L);
         owner.setKeycloakId("ownerKcId");
@@ -335,7 +335,7 @@ class NotificationServiceImplTest {
         when(modelMapper.map(any(Notification.class), eq(GetNotificationDto.class))).thenReturn(new GetNotificationDto());
         when(notificationRepo.countUnreadByUserId(1L)).thenReturn(1);
 
-        notificationService.sendOutboxNotification(outbox);
+        notificationService.prepareAndSendOutboxNotification(outbox);
 
         verify(groupListingRepository, never()).findById(any());
         verify(archiveRepo, never()).findByGroupId(any());
@@ -346,7 +346,7 @@ class NotificationServiceImplTest {
 
     @Test
     @Disabled("sendOutboxNotification is being reworked")
-    void sendOutboxNotification_ListingArchived_ArchiveNotFound_ThrowsResourceNotFoundException() {
+    void prepareAndSendOutboxNotification_ListingArchived_ArchiveNotFound_ThrowsResourceNotFoundException() {
         Users owner = new Users();
         owner.setUserId(1L);
         owner.setKeycloakId("ownerKcId");
@@ -358,7 +358,7 @@ class NotificationServiceImplTest {
 
         when(archiveRepo.findByGroupId(999L)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> notificationService.sendOutboxNotification(outbox))
+        assertThatThrownBy(() -> notificationService.prepareAndSendOutboxNotification(outbox))
                 .isInstanceOf(ResourceNotFoundException.class);
 
         verify(notificationRepo, never()).save(any());

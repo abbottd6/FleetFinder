@@ -20,7 +20,7 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
     @Query(value = """
             INSERT IGNORE INTO notification_outbox (
                 event_type, entity_type, entity_id, entity_owner_id,
-                entity_new_status, payload_json, status, delivery_channel, created_at
+                entity_new_status, payload_json, status, delivery_channel, sibling_key, created_at
                 )
             SELECT
                 'LISTING_ARCHIVED'                      AS event_type,
@@ -37,6 +37,7 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 )                                       AS payload_json,
                 'PENDING'                               AS status,
                 channels.delivery_channel               AS delivery_channel,
+                SHA2(CONCAT('LISTING_ARCHIVED', '|', 'GROUP_LISTING', '|', gl.id_group, '|', gl.id_user, '|', 'ARCHIVED'), 256) AS sibling_key,
                 NOW()                                   AS created_at
             FROM group_listing gl
             JOIN users u ON gl.id_user = u.id_user
@@ -86,7 +87,7 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
     @Query(value = """
             INSERT IGNORE INTO notification_outbox (
                 event_type, entity_type, entity_id, entity_owner_id,
-                entity_new_status, payload_json, status, delivery_channel, created_at
+                entity_new_status, payload_json, status, delivery_channel, sibling_key, created_at
                 )
             SELECT
                 'LISTING_VIS_STATUS_CHANGED'                AS event_type,
@@ -103,6 +104,7 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 )                                           AS payload_json,
                 'PENDING'                                   AS status,
                 channels.delivery_channel                   AS delivery_channel,
+                SHA2(CONCAT('LISTING_VIS_STATUS_CHANGED', '|', 'GROUP_LISTING', '|', gl.id_group, '|', gl.id_user, '|', COALESCE(computed.entity_new_status, '')), 256) AS sibling_key,
                 NOW()                                       AS created_at
             FROM group_listing gl
             JOIN users u ON gl.id_user = u.id_user

@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
 import com.sc_fleetfinder.fleets.utils.ParentEntityReference;
 import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
@@ -32,24 +33,33 @@ import java.time.Instant;
 @NoArgsConstructor
 public class Notification {
 
-    public Notification(Users user, NotificationType type,
-                        String title, String message,
-                        Long parentEntityId, String parentEntityType) {
-        this.user = user;
-        this.type = type;
+    //LISTING ARCHIVE/STATUS CHANGE NOTIFICATION CONSTRUCTOR
+    public Notification(NotificationOutbox outbox, String title, String message) {
+        this.user = outbox.getEntityOwner();
+        this.type = outbox.getEventType();
+        this.outbox = outbox;
         this.title = title;
-        this.message = message;
-        this.parentEntity = new ParentEntityReference(parentEntityId, parentEntityType);
+        this.deliveryChannel = outbox.getDeliveryChannel();
+        this.parentEntity = new ParentEntityReference(outbox.getParentEntityId(),
+                outbox.getParentEntityType());
+        this.siblingKey = outbox.getSiblingKey();
     }
 
-    public Notification(Users user,
-                        NotificationType type,
-                        String displayTitle,
-                        String notificationOfStatus) {
-        this.user = user;
-        this.type = type;
-        this.title = displayTitle;
-        this.message = notificationOfStatus;
+    //NEW MESSAGE NOTIFICATION CONSTRUCTOR
+    public Notification(NotificationOutbox outbox,
+                        String title, String message, boolean dropdownPriority) {
+
+        this.user = outbox.getEntityOwner();
+        this.outbox = outbox;
+        this.type = outbox.getEventType();
+        this.title = title;
+        this.message = message;
+        this.deliveryChannel = outbox.getDeliveryChannel();
+        this.parentEntity = new ParentEntityReference(
+                outbox.getParentEntityId(), outbox.getParentEntityType());
+        this.targetMetadata = outbox.getPayloadJson();
+        this.siblingKey = outbox.getSiblingKey();
+        this.dropdownPriority = dropdownPriority;
     }
 
     @Id
@@ -74,8 +84,20 @@ public class Notification {
     @NotNull(message="Notification field 'message' cannot be null.")
     private String message;
 
+    @ManyToOne
+    @JoinColumn(name = "outbox_id", nullable = true)
+    private NotificationOutbox outbox;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "delivery_channel", nullable = false)
+    @NotNull(message = "Notification field 'deliveryChannel' cannot be null.")
+    private DeliveryChannel deliveryChannel = DeliveryChannel.IN_APP;
+
     @Embedded
     private ParentEntityReference parentEntity;
+
+    @Column(name = "sibling_key", nullable = true)
+    private String siblingKey;
 
     @Column(name="dropdown_priority", nullable = false)
     private Boolean dropdownPriority = true;

@@ -30,7 +30,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             INSERT IGNORE INTO notification_outbox (
             event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
             parent_entity_id, parent_entity_type, payload_json, status,
-            delivery_channel, created_at
+            delivery_channel, sibling_key, created_at
             )
             SELECT
                 'NEW_CHAT_MESSAGE'          AS event_type,
@@ -41,7 +41,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                 conv.id_conversation        AS parent_entity_id,
                 'CONVERSATION'              AS parent_entity_type,
                 JSON_OBJECT(
-                    'noteTopic',        conv.title,
+                    'noteTopic',        msg.id_sender,
                     'targetId',         conv.id_conversation,
                     'targetLabel',      SUBSTRING(msg.msg_body, 1, 100),
                     'targetCreatedAt',  msg.created_at,
@@ -49,6 +49,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                 )                           AS payload_json,
                 'PENDING'                   AS status,
                 channels.delivery_channel   AS delivery_channel,
+                SHA2(CONCAT('NEW_CHAT_MESSAGE', '|', 'MESSAGE', '|', msg.id_msg, '|', :recipientId, '|', 'NEW MESSAGE'), 256) AS sibling_key,
                 NOW()                       AS created_at
             FROM message msg
             JOIN conversation conv ON msg.id_conversation = conv.id_conversation
@@ -78,4 +79,12 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                 )
             """, nativeQuery = true)
     int generateExternalDeliveryOutboxNotifications(@Param("recipientId") Long recipientId, @Param("msgId") Long msgId);
+        //OUTBOX ENTRY for NEW MESSAGE sets payload_json.noteTopic during send to the sender's name
+
+    @Query(value = """
+            SELECT p.lastReadMessage.msgId FROM Participant p
+            WHERE p.conversation.conversationId = :convId
+                AND p.user.userId = :userId
+            """)
+    Optional<Long> findRecipientLastReadByConvIdAndUserId(@Param("convId") Long convId, @Param("userId") Long userId);
 }

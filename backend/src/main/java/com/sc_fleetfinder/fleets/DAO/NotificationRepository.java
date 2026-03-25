@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -52,7 +53,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             INSERT IGNORE INTO notification_outbox (
             event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
             parent_entity_id, parent_entity_type, payload_json, status,
-            delivery_channel, created_at
+            delivery_channel, sibling_key, created_at
             )
             SELECT
                 'MOD_DELETE'                AS event_type,
@@ -71,6 +72,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
                 )                           AS payload_json,
                 'PENDING'                   AS status,
                 channels.delivery_channel   AS delivery_channel,
+                SHA2(CONCAT('MOD_DELETE', '|', 'LISTING_ARCHIVE', '|', action.id_archive, '|', action.id_user, '|', 'ARCHIVED'), 256) AS sibling_key,
                 NOW()                       as created_at
                 FROM mod_listing_action action
                 JOIN listing_archive archive ON action.id_archive = archive.id_archive
@@ -95,4 +97,13 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
                     )
             """, nativeQuery = true)
     int generateOutboxNotificationsOnModListingDelete(@Param("actionId") Long modActionId);
+
+    @Query(value = """
+            SELECT read_at
+            FROM notification n
+            WHERE n.id_user = :userId
+                AND n.sibling_key = :siblingKey
+                AND n.delivery_channel = 'IN_APP'
+            """, nativeQuery = true)
+    Optional<Instant> checkSiblingNotificationReadStatus(@Param("userId") Long userId, @Param("siblingKey") String siblingKey);
 }

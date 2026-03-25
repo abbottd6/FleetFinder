@@ -66,6 +66,15 @@ public class NotificationOutbox {
     @Column(name="entity_new_status", nullable = true)
     private String entityNewStatus;
 
+    @Column(name="parent_entity_id")
+    private Long parentEntityId;
+
+    @Column(name="parent_entity_type")
+    private String parentEntityType;
+
+    @Column(name = "sibling_key", nullable = true)
+    private String siblingKey;
+
     @Convert(converter = NotificationTargetMetadataConverter.class)
     @Column(name="payload_json", nullable = true)
     private NotificationTargetMetadata payloadJson;
@@ -78,7 +87,7 @@ public class NotificationOutbox {
     @NotNull(message="NotificationOutbox field 'attemptCount' cannot be null.")
     private Integer attemptCount = 0;
 
-    @Column(name="last_error", nullable = true)
+    @Column(name="last_error", nullable = true, columnDefinition = "TEXT")
     private String lastError;
 
     @CreationTimestamp

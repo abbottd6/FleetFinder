@@ -51,6 +51,15 @@ public interface NotificationOutboxRepository extends JpaRepository<Notification
 
     @Modifying
     @Query(value = """
+            UPDATE notification_outbox
+            SET status = 'SKIPPED',
+                last_error = :error
+            WHERE outbox_id = :outboxId
+            """, nativeQuery = true)
+    int markSkipped(@Param("outboxId") long outboxId, @Param("error") String error);
+
+    @Modifying
+    @Query(value = """
             DELETE FROM notification_outbox ob
             WHERE ob.entity_owner_id = :userId
                 AND ob.entity_id = :eId

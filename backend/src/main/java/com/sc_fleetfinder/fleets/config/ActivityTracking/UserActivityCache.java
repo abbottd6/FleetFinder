@@ -23,7 +23,7 @@ public class UserActivityCache {
 
         Users user = userService.verifyUser(kcId);
 
-        log.info("Updated: {}'s last access: {}.", kcId, ts );
+        log.debug("Updated: {}'s last access: {}.", kcId, ts );
     }
 
     public boolean hasRecentAccess(String kcId, int secondsThreshold) {
@@ -49,8 +49,8 @@ public class UserActivityCache {
             userService.updateLastActive(toRemove);
         }
 
-        toRemove.forEach((key, value) -> log.info("Removed user: {} with ts: {}", key, value));
-        lastAccess.forEach((key, value) -> log.info("Removed user: {} with ts: {}", key, value));
+        toRemove.forEach((key, value) -> log.debug("Removed user: {} with ts: {}", key, value));
+        lastAccess.forEach((key, value) -> log.debug("Removed user: {} with ts: {}", key, value));
 
         toRemove.clear();
     }

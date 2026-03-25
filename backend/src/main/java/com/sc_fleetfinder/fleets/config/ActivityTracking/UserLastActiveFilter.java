@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Component
 @Slf4j
@@ -35,8 +34,7 @@ public class UserLastActiveFilter extends OncePerRequestFilter {
         if(auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
             filterChain.doFilter(request, response);
         } else {
-            Optional<Users> user = userService.getUserByKeycloakIdDoNotThrow(auth.getName());
-            user.ifPresent( u -> log.warn(user.get().getUsername()));
+            log.debug(auth.getName());
             userActivityCache.recordAccess(auth.getName());
             filterChain.doFilter(request, response);
         }

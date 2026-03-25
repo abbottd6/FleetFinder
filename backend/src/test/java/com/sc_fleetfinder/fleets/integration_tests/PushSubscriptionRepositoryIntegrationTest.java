@@ -83,12 +83,12 @@ public class PushSubscriptionRepositoryIntegrationTest extends AbstractIntegrati
     // ─── getPushSubscriptionsByUser ───────────────────────────────────────────
 
     @Test
-    void getPushSubscriptionsByUser_ReturnsOnlyOwnedSubs() {
+    void getPageOfPushSubscriptionsByUser_ReturnsOnlyOwnedSubs() {
         insertPushSub(testUser.getUserId(), "https://push.example.com/sub/1");
         insertPushSub(testUser.getUserId(), "https://push.example.com/sub/2");
         insertPushSub(otherUser.getUserId(), "https://push.example.com/sub/3");
 
-        Page<PushSubscription> result = repo.getPushSubscriptionsByUser(testUser, PageRequest.of(0, 10));
+        Page<PushSubscription> result = repo.getPageOfPushSubscriptionsByUser(testUser, PageRequest.of(0, 10));
 
         assertThat(result.getTotalElements()).isEqualTo(2);
         result.getContent().forEach(sub ->
@@ -96,9 +96,9 @@ public class PushSubscriptionRepositoryIntegrationTest extends AbstractIntegrati
     }
 
     @Test
-    void getPushSubscriptionsByUser_EmptyPage_WhenNone() {
+    void getPageOfPushSubscriptionsByUser_EmptyPage_WhenNone() {
         // no subs inserted for testUser
-        Page<PushSubscription> result = repo.getPushSubscriptionsByUser(testUser, PageRequest.of(0, 10));
+        Page<PushSubscription> result = repo.getPageOfPushSubscriptionsByUser(testUser, PageRequest.of(0, 10));
 
         assertThat(result.getTotalElements()).isEqualTo(0);
         assertThat(result.getContent()).isEmpty();

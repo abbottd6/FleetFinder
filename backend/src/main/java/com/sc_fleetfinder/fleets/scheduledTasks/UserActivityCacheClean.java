@@ -17,7 +17,7 @@ public class UserActivityCacheClean {
     @Scheduled(fixedDelayString = "PT5M")
     @Transactional
     public void cleanNotRecentlyActive() {
-        int threshold = 2000;
+        int threshold = 300;
 
         activityCache.scheduledClean(threshold);
     }

@@ -33,4 +33,9 @@ public class OutboxTaskService {
     protected int markFailed(long outboxId, String msg) {
         return outboxRepo.markFailed(outboxId, msg);
     }
+
+    @Transactional
+    protected int markSkipped(Long outboxId, String msg) {
+        return outboxRepo.markSkipped(outboxId, msg);
+    }
 }
