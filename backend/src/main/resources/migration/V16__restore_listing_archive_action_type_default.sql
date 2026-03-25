@@ -7,7 +7,10 @@ ALTER TABLE listing_archive
     ALTER COLUMN action_type SET DEFAULT 'None';
 
 ALTER TABLE notification_outbox
-    MODIFY COLUMN last_error TEXT NULL;
+    MODIFY COLUMN last_error VARCHAR(2048);
+
+ALTER TABLE push_subscription
+    MODIFY COLUMN device_url VARCHAR(2048) NOT NULL;
 
 
 ALTER TABLE notification

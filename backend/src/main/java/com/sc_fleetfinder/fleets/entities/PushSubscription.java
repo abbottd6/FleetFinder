@@ -56,7 +56,7 @@ public class PushSubscription {
     @Size(min = 2, max = 32, message = "PushSubscription entity field 'userLabel' must be between 2 and 32 characters.")
     private String userLabel;
 
-    @Column(name="device_url")
+    @Column(name="device_url", columnDefinition = "VARCHAR(2048) NOT NULL")
     @NotBlank(message="PushSubscription entity field 'deviceUrl' cannot be blank or null.")
     private String deviceUrl;
 
