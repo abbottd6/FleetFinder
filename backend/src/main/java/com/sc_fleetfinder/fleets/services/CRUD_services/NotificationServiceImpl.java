@@ -23,23 +23,25 @@ import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.SkipExternalNotificationProcessingException;
 import com.sc_fleetfinder.fleets.messaging.push.PushNotificationService;
 import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
+import com.sc_fleetfinder.fleets.utils.ExternalNotifcationResult;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @Slf4j
@@ -120,7 +122,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional(readOnly = true)
     public Integer countUnread(Long userId) {
-        return notificationRepo.countUnreadByUserId(userId);
+        NotificationType excluded = NotificationType.NEW_CHAT_MESSAGE;
+
+        return notificationRepo.countUnreadByUserId(userId, excluded);
     }
 
     @Override
@@ -178,10 +182,10 @@ public class NotificationServiceImpl implements NotificationService {
     private void sendInAppNotification(Notification note) {
         GetNotificationDto noteDto = modelMapper.map(note, GetNotificationDto.class);
 
+        NotificationType noteUnreadCountExcludes = NotificationType.NEW_CHAT_MESSAGE;
         NotificationUnreadCountDto unreadCount = new NotificationUnreadCountDto(
-                notificationRepo.countUnreadByUserId(
-                        note.getUser().getUserId()
-                )
+                notificationRepo.countUnreadByUserId(note.getUser().getUserId(),
+                        noteUnreadCountExcludes)
         );
 
         String recipPrincipal = note.getUser().getKeycloakId();
@@ -208,7 +212,14 @@ public class NotificationServiceImpl implements NotificationService {
         String payload = note.getTitle() + ". " + note.getMessage();
 
         try {
-            pushNotificationService.sendPushNotification(pushSub, payload);
+            Map<ExternalNotifcationResult, HttpStatus> pushResult = pushNotificationService.sendPushNotification(pushSub, payload);
+
+            if (pushResult.containsKey(ExternalNotifcationResult.SUCCESS)) {
+                note.setReadAt(Instant.now());
+                notificationRepo.save(note);
+            } else {
+                throw new ResponseStatusException(pushResult.get(ExternalNotifcationResult.FAILURE));
+            }
         } catch (Exception e) {
             note.getOutbox().setLastError("Failed to send push notification for push subscription with ID: "
                     + pushSub.getIdPushSub() + ", and notification outbox ID: " + note.getOutbox().getOutboxId()

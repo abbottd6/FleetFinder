@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.DAO;
 
 import com.sc_fleetfinder.fleets.entities.Notification;
+import com.sc_fleetfinder.fleets.utils.NotificationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -33,9 +34,12 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     @Query("""
             SELECT COUNT(n)
             FROM Notification n
-            WHERE n.user.userId = :userId AND n.readAt IS NULL
+            WHERE n.user.userId = :userId
+                AND n.readAt IS NULL
+                AND n.type <> :excludedType
             """)
-    Integer countUnreadByUserId(@Param("userId") Long userId);
+    Integer countUnreadByUserId(@Param("userId") Long userId,
+                                @Param("excludedType") NotificationType excludedType);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""

@@ -251,7 +251,9 @@ class NotificationServiceImplTest {
 
     @Test
     void countUnread_ReturnsCountFromRepo() {
-        when(notificationRepo.countUnreadByUserId(1L)).thenReturn(7);
+        NotificationType notificationUnreadCountExcludesNewChatMessage = NotificationType.NEW_CHAT_MESSAGE;
+
+        when(notificationRepo.countUnreadByUserId(1L, notificationUnreadCountExcludesNewChatMessage)).thenReturn(7);
 
         Integer result = notificationService.countUnread(1L);
 
@@ -277,10 +279,11 @@ class NotificationServiceImplTest {
         when(mockListing.getListingTitle()).thenReturn("Test Listing");
         when(groupListingRepository.findById(10L)).thenReturn(Optional.of(mockListing));
 
+        NotificationType noteUnreadCountExcludesNewMessages = NotificationType.NEW_CHAT_MESSAGE;
         Notification savedNote = new Notification();
         when(notificationRepo.save(any(Notification.class))).thenReturn(savedNote);
         when(modelMapper.map(any(Notification.class), eq(GetNotificationDto.class))).thenReturn(new GetNotificationDto());
-        when(notificationRepo.countUnreadByUserId(1L)).thenReturn(3);
+        when(notificationRepo.countUnreadByUserId(1L, noteUnreadCountExcludesNewMessages)).thenReturn(3);
 
         notificationService.prepareAndSendOutboxNotification(outbox);
 
@@ -306,10 +309,11 @@ class NotificationServiceImplTest {
         when(mockArchive.getListingTitle()).thenReturn("Archived Listing");
         when(archiveRepo.findByGroupId(10L)).thenReturn(Optional.of(mockArchive));
 
+        NotificationType noteUnreadCountExcludesNewMessages = NotificationType.NEW_CHAT_MESSAGE;
         Notification savedNote = new Notification();
         when(notificationRepo.save(any(Notification.class))).thenReturn(savedNote);
         when(modelMapper.map(any(Notification.class), eq(GetNotificationDto.class))).thenReturn(new GetNotificationDto());
-        when(notificationRepo.countUnreadByUserId(1L)).thenReturn(2);
+        when(notificationRepo.countUnreadByUserId(1L, noteUnreadCountExcludesNewMessages)).thenReturn(2);
 
         notificationService.prepareAndSendOutboxNotification(outbox);
 
@@ -330,10 +334,11 @@ class NotificationServiceImplTest {
         outbox.setEntityOwner(owner);
         outbox.setEntityNewStatus("DELETED");
 
+        NotificationType noteUnreadCountExcludesNewMessages = NotificationType.NEW_CHAT_MESSAGE;
         Notification savedNote = new Notification();
         when(notificationRepo.save(any(Notification.class))).thenReturn(savedNote);
         when(modelMapper.map(any(Notification.class), eq(GetNotificationDto.class))).thenReturn(new GetNotificationDto());
-        when(notificationRepo.countUnreadByUserId(1L)).thenReturn(1);
+        when(notificationRepo.countUnreadByUserId(1L, noteUnreadCountExcludesNewMessages)).thenReturn(1);
 
         notificationService.prepareAndSendOutboxNotification(outbox);
 

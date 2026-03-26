@@ -79,7 +79,7 @@ public class NotificationOutbox {
     @Column(name="payload_json", nullable = true)
     private NotificationTargetMetadata payloadJson;
 
-    @Column(name="status")
+    @Column(name="status", nullable = false)
     @NotNull(message="NotificationOutbox field 'status' cannot be null.")
     private String status;
 
@@ -87,14 +87,14 @@ public class NotificationOutbox {
     @JoinColumn(name="push_sub_id", nullable = true)
     private PushSubscription targetPushSub;
 
-    @Column(name="attempt_count")
+    @Column(name="attempt_count", nullable = false)
     @NotNull(message="NotificationOutbox field 'attemptCount' cannot be null.")
     private Integer attemptCount = 0;
 
-    @Column(name="last_error", nullable = true, columnDefinition = "TEXT")
+    @Column(name="last_error", nullable = true, columnDefinition = "VARCHAR(2048)")
     private String lastError;
 
-    @Column(name="error_count")
+    @Column(name="error_count", nullable = false)
     @NotNull(message="NotificationOutbox entity field 'errorCount' should not be null.")
     private Integer errorCount = 0;
 

@@ -20,7 +20,8 @@ ALTER TABLE notification
     ADD CONSTRAINT fk_note_references_outbox_note
         FOREIGN KEY (outbox_id) REFERENCES notification_outbox (outbox_id)
             ON DELETE SET NULL,
-    ADD INDEX idx_note_on_sibling_key (sibling_key, id_user);
+    ADD INDEX idx_note_on_sibling_key (sibling_key, id_user),
+    ADD UNIQUE KEY uq_note_on_outbox_note (outbox_id);
 
 ALTER TABLE push_subscription
     MODIFY COLUMN device_url VARCHAR(2048) NOT NULL;
