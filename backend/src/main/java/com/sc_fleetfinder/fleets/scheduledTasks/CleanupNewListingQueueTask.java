@@ -14,8 +14,7 @@ public class CleanupNewListingQueueTask {
 
     private final NewListingNotifyQueueRepository queueRepository;
 
-    //TODO CHANGE THIS TO ONCE DAILY AT LIKE 3 AM. just doing it for testing now
-    @Scheduled(fixedDelayString = "PT3M")
+    @Scheduled(cron = "0 0 3 * * *")
     @Transactional
     public void removeProcessedNewListingQueueEntries() {
         int deleted = this.queueRepository.deleteOldProcessedEntries();

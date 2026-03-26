@@ -53,11 +53,11 @@ public class DiscordBotServiceImpl implements DiscordBotService {
     }
 
     private ResponseEntity<?> sendDmNotification(String channelId, Notification note) {
-        String field1 = null;
-        String value1 = null;
+        String field1;
+        String value1;
 
-        String field2 = null;
-        String value2 = null;
+        String field2;
+        String value2;
 
         switch (note.getType()) {
             case NotificationType.NEW_LISTING_MATCH:
@@ -81,7 +81,7 @@ public class DiscordBotServiceImpl implements DiscordBotService {
                 field1 = "Action performed by a(n): ";
                 value1 = note.getTargetMetadata().getTargetLabel();
 
-                field2 = "Mod note: ";
+                field2 = "Moderator note: ";
                 value2 = note.getTargetMetadata().getAddContext();
                 break;
             default:

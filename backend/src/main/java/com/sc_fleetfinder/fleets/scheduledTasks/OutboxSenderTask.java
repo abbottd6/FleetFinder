@@ -30,7 +30,7 @@ public class OutboxSenderTask {
         int skippedCount = 0;
         int failedCount = 0;
 
-        final int BATCH_SIZE = 100;
+        final int BATCH_SIZE = 200;
 
         int claimed = outboxService.claimPendingBatch(BATCH_SIZE);
 
@@ -64,6 +64,7 @@ public class OutboxSenderTask {
                 String msg = e.getMessage();
                 if(msg != null && msg.length() > 900) msg = msg.substring(0, 900);
                 outboxService.markFailed(outbox.getOutboxId(), msg);
+                ++failedCount;
             } catch (Exception e) {
                 String msg = e.getMessage();
                 if(msg != null && msg.length() > 900) msg = msg.substring(0,900);

@@ -65,7 +65,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
                 'LISTING_ARCHIVE'           AS entity_type,
                 action.id_archive           AS entity_id,
                 action.id_user              AS entity_owner_id,
-                'ARCHIVED'                  AS entity_new_status,
+                'Actioned'                  AS entity_new_status,
                 action.id_action            AS parent_entity_id,
                 'MOD_LISTING_ACTION'        AS parent_entity_type,
                 JSON_OBJECT(

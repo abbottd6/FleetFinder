@@ -207,9 +207,9 @@ public class ModerationServiceImpl implements ModerationService {
         );
 
         // create a moderator action for deletion
-        recordModeratorAction(issue, dto.getNote(), archive, mod);
+        recordModeratorAction(issue, dto.getNote(), dto.getReportBasis(), archive, mod);
 
-        // recording the users content moderation history for possibly bans
+        // recording the users content moderation history for possible bans
         updateOrCreateUserModerationRecord(condemned);
 
         eventPublisher.publishEvent(new ListingModDeleteEvent(condemned, owner));
@@ -309,7 +309,9 @@ public class ModerationServiceImpl implements ModerationService {
     protected void recordModeratorAction(ModerationIssue issue, String note,
                                          ListingArchive archive) {
 
-        ModListingAction modAction = new ModListingAction(issue, note, archive);
+        Integer actionBasis = mir.findAutoModActionBasis_MostCommonReportBasis(issue.getIssueId());
+
+        ModListingAction modAction = new ModListingAction(issue, note, actionBasis, archive);
 
         mlar.save(modAction);
 
@@ -320,10 +322,10 @@ public class ModerationServiceImpl implements ModerationService {
 
     //for manual moderator actions
     @Transactional
-    protected void recordModeratorAction(ModerationIssue issue, String note,
+    protected void recordModeratorAction(ModerationIssue issue, String note, Integer actionBasis,
                                          ListingArchive archive, Users mod) {
 
-        ModListingAction modAction = new ModListingAction(issue, note, archive, mod);
+        ModListingAction modAction = new ModListingAction(issue, note, actionBasis, archive, mod);
         mlar.save(modAction);
         log.info("Manual moderator action recorded under actionId: {}", modAction.getActionId());
 

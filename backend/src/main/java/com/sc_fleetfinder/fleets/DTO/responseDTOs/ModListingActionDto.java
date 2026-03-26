@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBasis;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -28,6 +29,10 @@ public class ModListingActionDto {
 
     @NotNull(message="ModListingActionDto field 'actionType' cannot be null.")
     private String actionType;
+
+    //TODO check how this is being converted so it can send just the basis label
+//    @NotNull(message="ModListingActionDto field 'actionBasis' cannot be null.")
+//    private ListingReportBasis actionBasis;
 
     private String actionNote;
 

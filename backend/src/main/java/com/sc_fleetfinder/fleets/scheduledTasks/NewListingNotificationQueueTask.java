@@ -20,7 +20,7 @@ public class NewListingNotificationQueueTask {
         int batchSize = 100;
 
         long claimStartTime = System.currentTimeMillis();
-        queueRepository.claimForProcessing(100);
+        queueRepository.claimForProcessing(batchSize);
         log.info("Claim duration: {} ms", System.currentTimeMillis() - claimStartTime);
 
         long generationStartTime = System.currentTimeMillis();

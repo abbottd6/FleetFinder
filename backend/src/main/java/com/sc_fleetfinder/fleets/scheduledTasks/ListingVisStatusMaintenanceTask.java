@@ -14,7 +14,7 @@ public class ListingVisStatusMaintenanceTask {
 
     private final GroupListingRepository listingRepo;
 
-    @Scheduled(fixedDelayString= "PT5M")
+    @Scheduled(fixedDelayString= "PT10M")
     @Transactional
     public void updateListingVisStatuses() {
         int newOutboxEntities = listingRepo.createNotificationOutboxEntriesForStatusUpdates();

@@ -76,10 +76,10 @@ public class NotificationOutbox {
     private String siblingKey;
 
     @Convert(converter = NotificationTargetMetadataConverter.class)
-    @Column(name="payload_json", nullable = true)
+    @Column(name="payload_json", nullable = true, columnDefinition = "JSON DEFAULT NULL")
     private NotificationTargetMetadata payloadJson;
 
-    @Column(name="status", nullable = false)
+    @Column(name="status", nullable = false, columnDefinition = "VARCHAR(16) NOT NULL DEFAULT 'PENDING'")
     @NotNull(message="NotificationOutbox field 'status' cannot be null.")
     private String status;
 

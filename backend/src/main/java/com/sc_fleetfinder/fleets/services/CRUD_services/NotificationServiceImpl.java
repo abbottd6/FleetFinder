@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingArchiveRepository;
+import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ModListingActionRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.MessageRepository;
@@ -11,6 +12,7 @@ import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
 import com.sc_fleetfinder.fleets.config.discord.DiscordBotService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBasis;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.Notification;
 import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
@@ -52,6 +54,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final ModelMapper modelMapper;
     private final SimpMessagingTemplate messagingTemplate;
     private final ListingArchiveRepository archiveRepo;
+    private final ModListingActionRepository modActionRepo;
     private final GroupListingRepository groupListingRepository;
     private final NotificationOutboxRepository outboxRepo;
     private final MessageRepository msgRepo;
@@ -153,6 +156,11 @@ public class NotificationServiceImpl implements NotificationService {
                 identifyDeliveryChannel_andSend(savedArchiveNote, outboxEntity);
                 break;
 
+            case NotificationType.MOD_DELETE:
+                Notification savedModActionNote = buildModDeleteNotification(outboxEntity);
+                identifyDeliveryChannel_andSend(savedModActionNote, outboxEntity);
+                break;
+
             default:
                 log.debug("Attempted to process an outbox notification with an unmatched notification type." +
                         " obEntityId: {} obEntity: {}", outboxEntity.getEntityId(), outboxEntity.getEntityType());
@@ -167,13 +175,16 @@ public class NotificationServiceImpl implements NotificationService {
         switch (note.getDeliveryChannel()) {
             case DeliveryChannel.IN_APP:
                 sendInAppNotification(note);
+                outboxEntity.setSentAt(Instant.now());
                 break;
             case DeliveryChannel.DISCORD:
                 String discordUserId = note.getUser().getDiscordId();
                 discordBotService.sendDiscordNotification(discordUserId, note);
+                outboxEntity.setSentAt(Instant.now());
                 break;
             case DeliveryChannel.PUSH:
                 sendPushNotification(note, outboxEntity.getTargetPushSub());
+                outboxEntity.setSentAt(Instant.now());
                 break;
             default:
                 throw new IllegalArgumentException("DeliveryChannel: " + note.getDeliveryChannel() +
@@ -304,6 +315,28 @@ public class NotificationServiceImpl implements NotificationService {
                         "ListingArchive", outboxEntity.getEntityId()));
 
         String title = "One of your listing has expired and been archived.";
+
+        Notification newNote = new Notification(outboxEntity, title, msg);
+
+        Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
+                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey());
+
+        if (readAt.isPresent()) {
+            throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
+        }
+
+        return notificationRepo.save(newNote);
+    }
+
+    private Notification buildModDeleteNotification(NotificationOutbox outboxEntity) {
+        String title = "One of your listings was removed by a moderator.";
+        String msg = modActionRepo.findById(outboxEntity.getParentEntityId())
+                .map(ModListingAction::getActionBasis)
+                .map(ListingReportBasis::getBasisLabel)
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "ModerationIssue", outboxEntity.getParentEntityId()));
+
+        msg = "The basis for this action was: " + msg;
 
         Notification newNote = new Notification(outboxEntity, title, msg);
 

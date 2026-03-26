@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.scheduledTasks;
 import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.SkipExternalNotificationProcessingException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.NotificationService;
 import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
@@ -59,14 +60,26 @@ class OutboxSenderTaskTest {
         return outbox;
     }
 
+    // PUSH channel variant of the external outbox helper
+    private NotificationOutbox buildMockPushOutbox(long id, String kcId, int attemptCount) {
+        NotificationOutbox outbox = mock(NotificationOutbox.class);
+        when(outbox.getOutboxId()).thenReturn(id);
+        when(outbox.getDeliveryChannel()).thenReturn(DeliveryChannel.PUSH);
+        Users owner = mock(Users.class);
+        when(owner.getKeycloakId()).thenReturn(kcId);
+        when(outbox.getEntityOwner()).thenReturn(owner);
+        when(outbox.getAttemptCount()).thenReturn(attemptCount);
+        return outbox;
+    }
+
     @Test
     void sendOutboxNotifications_WhenBatchIsEmpty_ReturnsEarlyWithoutSending() {
         LogCaptor logCaptor = LogCaptor.forClass(OutboxSenderTask.class);
         logCaptor.setLogLevelToDebug();
 
         // given
-        when(outboxService.claimPendingBatch(100)).thenReturn(0);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(Collections.emptyList());
+        when(outboxService.claimPendingBatch(200)).thenReturn(0);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(Collections.emptyList());
 
         // when
         outboxSenderTask.sendOutboxNotifications();
@@ -96,8 +109,8 @@ class OutboxSenderTaskTest {
         NotificationOutbox outbox1 = buildMockOutbox(1L);
         NotificationOutbox outbox2 = buildMockOutbox(2L);
 
-        when(outboxService.claimPendingBatch(100)).thenReturn(2);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox1, outbox2));
+        when(outboxService.claimPendingBatch(200)).thenReturn(2);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox1, outbox2));
         doNothing().when(notificationService).prepareAndSendOutboxNotification(any());
 
         // when
@@ -128,8 +141,8 @@ class OutboxSenderTaskTest {
         NotificationOutbox outbox2 = buildMockOutbox(2L);
         NotificationOutbox outbox3 = buildMockOutbox(3L);
 
-        when(outboxService.claimPendingBatch(100)).thenReturn(3);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox1, outbox2, outbox3));
+        when(outboxService.claimPendingBatch(200)).thenReturn(3);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox1, outbox2, outbox3));
         doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox1);
         doThrow(new RuntimeException("db error")).when(notificationService).prepareAndSendOutboxNotification(outbox2);
         doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox3);
@@ -155,8 +168,8 @@ class OutboxSenderTaskTest {
         // given
         NotificationOutbox outbox = buildMockOutbox(10L);
 
-        when(outboxService.claimPendingBatch(100)).thenReturn(1);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox));
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
         doThrow(new RuntimeException("x".repeat(1000))).when(notificationService).prepareAndSendOutboxNotification(outbox);
 
         // when
@@ -178,8 +191,8 @@ class OutboxSenderTaskTest {
         // given
         NotificationOutbox outbox = buildMockOutbox(7L);
 
-        when(outboxService.claimPendingBatch(100)).thenReturn(1);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox));
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
         doThrow(new RuntimeException((String) null)).when(notificationService).prepareAndSendOutboxNotification(outbox);
 
         // when
@@ -194,8 +207,8 @@ class OutboxSenderTaskTest {
         // given — external channel, user recently active, attemptCount < 10 → delay
         NotificationOutbox outbox = buildMockExternalOutbox(5L, "kc-1", 2);
 
-        when(outboxService.claimPendingBatch(100)).thenReturn(1);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox));
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
         when(activityCache.hasRecentAccess("kc-1", 300)).thenReturn(true);
 
         // when
@@ -215,8 +228,8 @@ class OutboxSenderTaskTest {
         // given — attemptCount >= 10 bypasses the activity delay even when user is active
         NotificationOutbox outbox = buildMockExternalOutbox(5L, "kc-1", 10);
 
-        when(outboxService.claimPendingBatch(100)).thenReturn(1);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox));
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
         when(activityCache.hasRecentAccess("kc-1", 300)).thenReturn(true);
         doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox);
 
@@ -236,8 +249,8 @@ class OutboxSenderTaskTest {
         // given — user is not recently active, so no delay
         NotificationOutbox outbox = buildMockExternalOutbox(6L, "kc-2", 1);
 
-        when(outboxService.claimPendingBatch(100)).thenReturn(1);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox));
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
         when(activityCache.hasRecentAccess("kc-2", 300)).thenReturn(false);
         doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox);
 
@@ -257,8 +270,8 @@ class OutboxSenderTaskTest {
         // given — IN_APP channel: the activity guard block is never entered
         NotificationOutbox outbox = buildMockOutbox(8L); // IN_APP delivery channel
 
-        when(outboxService.claimPendingBatch(100)).thenReturn(1);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox));
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
         doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox);
 
         // when
@@ -273,6 +286,161 @@ class OutboxSenderTaskTest {
         );
     }
 
+    // ─── NullPointerException / ResourceNotFoundException branch ─────────────
+
+    @Test
+    void sendOutboxNotifications_NullPointerException_CallsMarkFailedDirectly_NotIncrementAndCheck() {
+        LogCaptor logCaptor = LogCaptor.forClass(OutboxSenderTask.class);
+        logCaptor.setLogLevelToDebug();
+
+        // given — NPE hits the NullPointerException | ResourceNotFoundException catch block → markFailed directly
+        NotificationOutbox outbox = buildMockOutbox(11L);
+
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        doThrow(new NullPointerException("npe error")).when(notificationService).prepareAndSendOutboxNotification(outbox);
+
+        // when
+        outboxSenderTask.sendOutboxNotifications();
+
+        // then
+        assertAll("NPE → markFailed directly:",
+                () -> verify(outboxService).markFailed(11L, "npe error"),
+                () -> verify(outboxService, never()).incrementAndCheckFailureCounter(any(NotificationOutbox.class), any()),
+                () -> assertTrue(logCaptor.getDebugLogs().stream()
+                        .anyMatch(log -> log.contains("Failed: 1")),
+                        "NPE should increment failedCount — 'Failed: 1' expected in log")
+        );
+    }
+
+    @Test
+    void sendOutboxNotifications_ResourceNotFoundException_CallsMarkFailedDirectly_NotIncrementAndCheck() {
+        LogCaptor logCaptor = LogCaptor.forClass(OutboxSenderTask.class);
+        logCaptor.setLogLevelToDebug();
+
+        // given — ResourceNotFoundException hits the same terminal catch block
+        NotificationOutbox outbox = buildMockOutbox(12L);
+
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        doThrow(new ResourceNotFoundException("Resource gone")).when(notificationService).prepareAndSendOutboxNotification(outbox);
+
+        // when
+        outboxSenderTask.sendOutboxNotifications();
+
+        // then
+        assertAll("ResourceNotFoundException → markFailed directly:",
+                () -> verify(outboxService).markFailed(12L, "Resource gone"),
+                () -> verify(outboxService, never()).incrementAndCheckFailureCounter(any(NotificationOutbox.class), any()),
+                () -> assertTrue(logCaptor.getDebugLogs().stream()
+                        .anyMatch(log -> log.contains("Failed: 1")),
+                        "'Failed: 1' expected in log for ResourceNotFoundException")
+        );
+    }
+
+    @Test
+    void sendOutboxNotifications_NullPointerException_LongMessage_TruncatesTo900() {
+        // given — NPE with message > 900 chars → truncated before passing to markFailed
+        NotificationOutbox outbox = buildMockOutbox(13L);
+
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        doThrow(new NullPointerException("x".repeat(1000))).when(notificationService).prepareAndSendOutboxNotification(outbox);
+
+        // when
+        outboxSenderTask.sendOutboxNotifications();
+
+        // then
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(outboxService).markFailed(eq(13L), captor.capture());
+        String captured = captor.getValue();
+
+        assertAll("NPE long message truncation:",
+                () -> assertEquals(900, captured.length(), "Error message should be truncated to 900 chars"),
+                () -> assertEquals("x".repeat(900), captured)
+        );
+    }
+
+    @Test
+    void sendOutboxNotifications_NullPointerException_NullMessage_PassesNullToMarkFailed() {
+        // given — NPE with null message → null passed through to markFailed
+        NotificationOutbox outbox = buildMockOutbox(14L);
+
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        doThrow(new NullPointerException((String) null)).when(notificationService).prepareAndSendOutboxNotification(outbox);
+
+        // when
+        outboxSenderTask.sendOutboxNotifications();
+
+        // then
+        verify(outboxService).markFailed(eq(14L), isNull());
+    }
+
+    // ─── Activity-delay edge cases ────────────────────────────────────────────
+
+    @Test
+    void sendOutboxNotifications_PushChannel_UserRecentlyActive_AttemptCountLow_Delays() {
+        // given — PUSH channel (not just DISCORD) also triggers the activity-delay check
+        NotificationOutbox outbox = buildMockPushOutbox(15L, "kc-push", 1);
+
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(activityCache.hasRecentAccess("kc-push", 300)).thenReturn(true);
+
+        // when
+        outboxSenderTask.sendOutboxNotifications();
+
+        // then
+        assertAll("PUSH channel: activity delay applies just like DISCORD:",
+                () -> verify(outboxService, times(1)).markForUserActive_Delayed(15L),
+                () -> verify(notificationService, never()).prepareAndSendOutboxNotification(any()),
+                () -> verify(outboxService, never()).markSent(anyLong())
+        );
+    }
+
+    @Test
+    void sendOutboxNotifications_ExternalChannel_AttemptCount9_UserActive_Delays() {
+        // given — attemptCount=9 is still < 10, so delay still applies (boundary check)
+        NotificationOutbox outbox = buildMockExternalOutbox(16L, "kc-3", 9);
+
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(activityCache.hasRecentAccess("kc-3", 300)).thenReturn(true);
+
+        // when
+        outboxSenderTask.sendOutboxNotifications();
+
+        // then
+        assertAll("attemptCount=9 (boundary: still < 10) → delay still applied:",
+                () -> verify(outboxService, times(1)).markForUserActive_Delayed(16L),
+                () -> verify(notificationService, never()).prepareAndSendOutboxNotification(any()),
+                () -> verify(outboxService, never()).markSent(anyLong())
+        );
+    }
+
+    @Test
+    void sendOutboxNotifications_ExternalChannel_PreviouslyDeferred_UserNowInactive_Sends() {
+        // given — outbox was deferred several times (attemptCount=6) while user was active;
+        //         user is now inactive (hasRecentAccess=false) → notification should proceed
+        NotificationOutbox outbox = buildMockExternalOutbox(17L, "kc-4", 6);
+
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(activityCache.hasRecentAccess("kc-4", 300)).thenReturn(false);
+        doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox);
+
+        // when
+        outboxSenderTask.sendOutboxNotifications();
+
+        // then
+        assertAll("previously deferred notification sends once user is inactive:",
+                () -> verify(outboxService, never()).markForUserActive_Delayed(anyLong()),
+                () -> verify(notificationService, times(1)).prepareAndSendOutboxNotification(outbox),
+                () -> verify(outboxService, times(1)).markSent(17L)
+        );
+    }
+
     @Test
     void sendOutboxNotifications_SkipException_MarksSkippedAndContinuesProcessing() {
         LogCaptor logCaptor = LogCaptor.forClass(OutboxSenderTask.class);
@@ -282,8 +450,8 @@ class OutboxSenderTaskTest {
         NotificationOutbox outbox1 = buildMockOutbox(1L);
         NotificationOutbox outbox2 = buildMockOutbox(2L);
 
-        when(outboxService.claimPendingBatch(100)).thenReturn(2);
-        when(outboxService.findStatus_Claimed(100)).thenReturn(List.of(outbox1, outbox2));
+        when(outboxService.claimPendingBatch(200)).thenReturn(2);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox1, outbox2));
         doThrow(new SkipExternalNotificationProcessingException("already read"))
                 .when(notificationService).prepareAndSendOutboxNotification(outbox1);
         doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox2);

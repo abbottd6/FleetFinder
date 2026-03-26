@@ -27,23 +27,26 @@ public class ModListingAction {
     protected ModListingAction() {}
 
     // for auto mod deletions
-    public ModListingAction(ModerationIssue issue, String note, ListingArchive archive) {
+    public ModListingAction(ModerationIssue issue, String note, Integer actionBasis,
+                            ListingArchive archive) {
         this.archive = archive;
         this.userId = issue.getUserRef().getUserId();
         this.username = issue.getUserRef().getUsername();
         this.actionType = "Auto";
+        this.actionBasis.setBasisId(actionBasis);
         this.actionNote = note;
     }
 
     // for manual mod deletions
-    public ModListingAction(ModerationIssue issue, String modNote, ListingArchive archive,
-                            Users mod) {
+    public ModListingAction(ModerationIssue issue, String modNote, Integer actionBasis,
+                            ListingArchive archive, Users mod) {
         this.archive = archive;
         this.userId = issue.getUserRef().getUserId();
         this.username = issue.getUserRef().getUsername();
         this.modId = mod.getUserId();
         this.modName = mod.getUsername();
         this.actionType = "Manual";
+        this.actionBasis.setBasisId(actionBasis);
         this.actionNote = modNote;
     }
 
@@ -90,6 +93,10 @@ public class ModListingAction {
 
     @Column(name="action_note")
     private String actionNote;
+
+    @ManyToOne(fetch= FetchType.LAZY)
+    @JoinColumn(name="action_basis", nullable = false)
+    private ListingReportBasis actionBasis;
 
     @Column(name="action_ts")
     @CreationTimestamp
