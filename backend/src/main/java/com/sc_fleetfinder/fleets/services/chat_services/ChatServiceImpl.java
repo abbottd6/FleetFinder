@@ -101,6 +101,10 @@ public class ChatServiceImpl implements ChatService {
                 })
                 .orElseGet(() -> generateNewConversation(user, dto, dmKey));
 
+        if(!(conv.getTitle().equals(dto.getTitle()))) {
+            conv.setTitle(dto.getTitle());
+        }
+
         convRepo.save(conv);
 
         return ccs.convertToDto(conv, user.getUserId());

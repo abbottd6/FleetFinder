@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.DAO;
 
 import com.sc_fleetfinder.fleets.entities.Notification;
-import com.sc_fleetfinder.fleets.utils.NotificationType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,31 +14,33 @@ import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    @Query("""
-            SELECT n FROM Notification n
-            WHERE n.user.userId=:userId AND n.dropdownPriority = true
-            ORDER BY n.createdAt DESC
-            """)
+    @Query(value = """
+            SELECT * FROM notification n
+            WHERE n.id_user = :userId
+                AND n.dropdown_priority = true
+                AND n.delivery_channel = 'IN_APP'
+            ORDER BY n.created_at DESC
+            """, nativeQuery = true)
     Page<Notification> findAllDropdownNotificationsByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    @Query("""
-            SELECT n FROM Notification n
-            WHERE n.user.userId=:userId
-            ORDER BY n.createdAt DESC
-            """)
-    Page<Notification> findAllNotificationsByUserId(@Param("userId") Long userId, Pageable pageable);
+    @Query(value = """
+            SELECT * FROM notification n
+            WHERE n.id_user =: userId
+                AND n.delivery_channel = 'IN_APP'
+            ORDER BY n.created_at DESC
+            """, nativeQuery = true)
+    Page<Notification> findAllInAppNotificationsByUserId(@Param("userId") Long userId, Pageable pageable);
 
     Integer deleteAllByUser_userId(Long userId);
 
-    @Query("""
-            SELECT COUNT(n)
-            FROM Notification n
-            WHERE n.user.userId = :userId
-                AND n.readAt IS NULL
-                AND n.type <> :excludedType
-            """)
-    Integer countUnreadByUserId(@Param("userId") Long userId,
-                                @Param("excludedType") NotificationType excludedType);
+    @Query(value = """
+            SELECT COUNT(*)
+            FROM notification n
+            WHERE n.id_user = :userId
+                AND n.read_at IS NULL
+                AND n.delivery_channel = 'IN_APP'
+            """, nativeQuery = true)
+    Integer countUnreadByUserId(@Param("userId") Long userId);
 
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("""

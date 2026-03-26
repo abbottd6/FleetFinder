@@ -4,7 +4,6 @@ import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingArchiveRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
-import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.MessageRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationUnreadCountDto;
@@ -56,7 +55,6 @@ public class NotificationServiceImpl implements NotificationService {
     private final GroupListingRepository groupListingRepository;
     private final NotificationOutboxRepository outboxRepo;
     private final MessageRepository msgRepo;
-    private final PushSubscriptionRepository pushSubRepo;
     private final PushNotificationService pushNotificationService;
     private final DiscordBotService discordBotService;
 
@@ -69,7 +67,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public Page<GetNotificationDto> getAllMyNotifications(Users user, Pageable pageable) {
-        Page<Notification> myNotes = notificationRepo.findAllNotificationsByUserId(user.getUserId(), pageable);
+        Page<Notification> myNotes = notificationRepo.findAllInAppNotificationsByUserId(user.getUserId(), pageable);
 
         return myNotes.map(note -> modelMapper.map(note , GetNotificationDto.class));
     }
@@ -126,7 +124,7 @@ public class NotificationServiceImpl implements NotificationService {
     public Integer countUnread(Long userId) {
         NotificationType excluded = NotificationType.NEW_CHAT_MESSAGE;
 
-        return notificationRepo.countUnreadByUserId(userId, excluded);
+        return notificationRepo.countUnreadByUserId(userId);
     }
 
     @Override
@@ -186,10 +184,8 @@ public class NotificationServiceImpl implements NotificationService {
     private void sendInAppNotification(Notification note) {
         GetNotificationDto noteDto = modelMapper.map(note, GetNotificationDto.class);
 
-        NotificationType noteUnreadCountExcludes = NotificationType.NEW_CHAT_MESSAGE;
         NotificationUnreadCountDto unreadCount = new NotificationUnreadCountDto(
-                notificationRepo.countUnreadByUserId(note.getUser().getUserId(),
-                        noteUnreadCountExcludes)
+                notificationRepo.countUnreadByUserId(note.getUser().getUserId())
         );
 
         String recipPrincipal = note.getUser().getKeycloakId();
@@ -205,11 +201,6 @@ public class NotificationServiceImpl implements NotificationService {
                 "/queue/system.notify",
                 noteDto
         );
-    }
-
-    private void sendDiscordNotification(Notification note) {
-        GetNotificationDto noteDto = modelMapper.map(note, GetNotificationDto.class);
-        //todo
     }
 
     private void sendPushNotification(Notification note, PushSubscription pushSub) {
@@ -232,6 +223,8 @@ public class NotificationServiceImpl implements NotificationService {
             outboxRepo.save(note.getOutbox());
         }
     }
+
+    // SEND DISCORD NOTIFICATION is in config/discord/DiscordBotService
 
     private Notification buildNewMessageNotification(NotificationOutbox obEntity) {
         String title = "You have a new message from ";
