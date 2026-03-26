@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.DAO.chat;
 
-import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ConvUnreadMap;
 import com.sc_fleetfinder.fleets.entities.chat.Message;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +8,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message, Long> {
@@ -29,7 +27,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     @Query(value = """
             INSERT IGNORE INTO notification_outbox (
             event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
-            parent_entity_id, parent_entity_type, payload_json, status,
+            parent_entity_id, parent_entity_type, payload_json, status, push_sub_id,
             delivery_channel, sibling_key, created_at
             )
             SELECT
@@ -48,6 +46,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                     'addContext',       'Social Notification'
                 )                           AS payload_json,
                 'PENDING'                   AS status,
+                push.id_push_sub            AS push_sub_id,
                 channels.delivery_channel   AS delivery_channel,
                 SHA2(CONCAT('NEW_CHAT_MESSAGE', '|', 'MESSAGE', '|', msg.id_msg, '|', :recipientId, '|', 'NEW MESSAGE'), 256) AS sibling_key,
                 NOW()                       AS created_at

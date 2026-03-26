@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.scheduledTasks;
 
 import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.SkipExternalNotificationProcessingException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.NotificationService;
 import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
@@ -33,8 +34,7 @@ public class OutboxSenderTask {
 
         int claimed = outboxService.claimPendingBatch(BATCH_SIZE);
 
-        log.info("claimed {} outbox notifications for processing.", claimed);
-
+        log.debug("claimed {} outbox notifications for processing.", claimed);
         List<NotificationOutbox> batch = outboxService.findStatus_Claimed(BATCH_SIZE);
 
         if(batch.isEmpty()) {
@@ -45,10 +45,8 @@ public class OutboxSenderTask {
                 if(!outbox.getDeliveryChannel().equals(DeliveryChannel.IN_APP)) {
                     String kcId = outbox.getEntityOwner().getKeycloakId();
                     if (activityCache.hasRecentAccess(kcId, RECENT_THRESHOLD) && (outbox.getAttemptCount() < 10)) {
-                        outbox.setStatus("PENDING");
-                        outbox.setLastError("User recently active.");
-                        outbox.setAttemptCount(outbox.getAttemptCount() + 1);
-                        log.warn("INCREMENTED");
+                        outboxService.markForUserActive_Delayed(outbox.getOutboxId());
+                        log.debug("Delay counter incremented");
                         continue;
                     }
                 }
@@ -57,14 +55,19 @@ public class OutboxSenderTask {
                 outboxService.markSent(outbox.getOutboxId());
                 ++sentCount;
 
+                // this is thrown when the user no longer needs the notification, i.e., they viewed the content already.
             } catch (SkipExternalNotificationProcessingException e) {
                 String msg = e.getMessage();
                 outboxService.markSkipped(outbox.getOutboxId(), msg);
                 ++skippedCount;
+            } catch (NullPointerException | ResourceNotFoundException e) {
+                String msg = e.getMessage();
+                if(msg != null && msg.length() > 900) msg = msg.substring(0, 900);
+                outboxService.markFailed(outbox.getOutboxId(), msg);
             } catch (Exception e) {
                 String msg = e.getMessage();
                 if(msg != null && msg.length() > 900) msg = msg.substring(0,900);
-                outboxService.markFailed(outbox.getOutboxId(), msg);
+                outboxService.incrementAndCheckFailureCounter(outbox, msg);
                 ++failedCount;
             }
         }

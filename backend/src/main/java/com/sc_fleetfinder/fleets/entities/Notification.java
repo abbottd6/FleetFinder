@@ -39,6 +39,7 @@ public class Notification {
         this.type = outbox.getEventType();
         this.outbox = outbox;
         this.title = title;
+        this.message = message;
         this.deliveryChannel = outbox.getDeliveryChannel();
         this.parentEntity = new ParentEntityReference(outbox.getParentEntityId(),
                 outbox.getParentEntityType());

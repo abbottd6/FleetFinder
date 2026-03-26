@@ -83,12 +83,20 @@ public class NotificationOutbox {
     @NotNull(message="NotificationOutbox field 'status' cannot be null.")
     private String status;
 
+    @ManyToOne
+    @JoinColumn(name="push_sub_id", nullable = true)
+    private PushSubscription targetPushSub;
+
     @Column(name="attempt_count")
     @NotNull(message="NotificationOutbox field 'attemptCount' cannot be null.")
     private Integer attemptCount = 0;
 
     @Column(name="last_error", nullable = true, columnDefinition = "TEXT")
     private String lastError;
+
+    @Column(name="error_count")
+    @NotNull(message="NotificationOutbox entity field 'errorCount' should not be null.")
+    private Integer errorCount = 0;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

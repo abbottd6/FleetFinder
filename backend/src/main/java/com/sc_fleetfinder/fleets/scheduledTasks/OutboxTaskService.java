@@ -25,17 +25,35 @@ public class OutboxTaskService {
     }
 
     @Transactional
+    protected int markForUserActive_Delayed(Long outboxId) {
+        return outboxRepo.markForUserActive_Delayed(outboxId);
+    }
+
+    @Transactional
     protected int markSent(long outboxId) {
         return outboxRepo.markSent(outboxId);
     }
 
     @Transactional
-    protected int markFailed(long outboxId, String msg) {
-        return outboxRepo.markFailed(outboxId, msg);
+    protected int incrementAndCheckFailureCounter(NotificationOutbox outbox, String errorMessage) {
+        outbox.setErrorCount(outbox.getErrorCount() + 1);
+
+        if(outbox.getErrorCount() >= 3) {
+            return outboxRepo.markFailed(outbox.getOutboxId(), errorMessage);
+        }
+
+        outboxRepo.save(outbox);
+
+        return outboxRepo.stageFailureForRetry(outbox.getOutboxId(), errorMessage);
     }
 
     @Transactional
     protected int markSkipped(Long outboxId, String msg) {
         return outboxRepo.markSkipped(outboxId, msg);
+    }
+
+    @Transactional
+    protected void markFailed(Long outboxId, String errorMsg) {
+        outboxRepo.markFailed(outboxId, errorMsg);
     }
 }

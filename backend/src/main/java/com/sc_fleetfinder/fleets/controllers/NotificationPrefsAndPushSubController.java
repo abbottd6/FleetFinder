@@ -173,9 +173,6 @@ public class NotificationPrefsAndPushSubController {
 
         Integer deleted = pushSubService.deletePushSub(user, subId);
 
-        Map<String, Integer> response = new HashMap<>();
-        response.put("response", deleted);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(deleted);
     }
 }

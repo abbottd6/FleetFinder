@@ -86,6 +86,10 @@ export class NotificationSettingsApiService {
     return this.httpClient.put<PushSubViewModel>(`${this.notePrefsBaseUrl}/update_push_sub`, pref);
   }
 
+  deletePushSub(subId: number) {
+    return this.httpClient.delete(`${this.notePrefsBaseUrl}/delete_push_sub/${subId}`);
+  }
+
   updateDiscordNotificationPreference(pref: UpdateNotificationPreferenceRequest) {
     return this.httpClient.put(`${this.notePrefsBaseUrl}/update_discord_notification_pref`, pref);
   }

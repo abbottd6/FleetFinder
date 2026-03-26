@@ -101,11 +101,11 @@ public class NotificationOutboxRepositoryIntegrationTest extends AbstractIntegra
 
     @Test
     void claimStatus_Pending_StaleProcessingEntry_IsReclaimed() {
-        // given: entry in PROCESSING state with a stale locked_at (3 minutes ago)
+        // given: entry in PENDING state with a stale locked_at (5 minutes ago — exceeds 4-minute threshold)
         Long id = insertPendingOutboxEntry();
         jdbcTemplate.update(
                 "UPDATE notification_outbox SET status = 'PENDING', " +
-                "locked_at = DATE_SUB(NOW(), INTERVAL 3 MINUTE), attempt_count = 1 " +
+                "locked_at = DATE_SUB(NOW(), INTERVAL 5 MINUTE), attempt_count = 1 " +
                 "WHERE outbox_id = ?",
                 id
         );
@@ -136,8 +136,8 @@ public class NotificationOutboxRepositoryIntegrationTest extends AbstractIntegra
         // when
         int count = outboxRepo.claimStatus_Pending(100);
 
-        // then: the WHERE clause requires (locked_at IS NULL OR locked_at < NOW() - 2 MINUTES)
-        // locked_at = NOW() does not satisfy locked_at < NOW() - 2 MINUTES
+        // then: the WHERE clause requires (locked_at IS NULL OR locked_at < NOW() - 4 MINUTES)
+        // locked_at = NOW() does not satisfy locked_at < NOW() - 4 MINUTES
         String status = jdbcTemplate.queryForObject(
                 "SELECT status FROM notification_outbox WHERE outbox_id = ?", String.class, id);
         assertEquals("PENDING", status, "Entry with fresh locked_at should not be reclaimed");
@@ -147,11 +147,11 @@ public class NotificationOutboxRepositoryIntegrationTest extends AbstractIntegra
 
     @Test
     void findStatus_Claimed_StaleProcessingEntry_IsReturned() {
-        // given: PROCESSING entry with locked_at 3 minutes ago (stale — exceeds 2-minute threshold)
+        // given: PROCESSING entry with locked_at 5 minutes ago (stale — exceeds 4-minute threshold)
         Long id = insertPendingOutboxEntry();
         jdbcTemplate.update(
                 "UPDATE notification_outbox SET status = 'PROCESSING', " +
-                "locked_at = DATE_SUB(NOW(), INTERVAL 3 MINUTE) " +
+                "locked_at = DATE_SUB(NOW(), INTERVAL 5 MINUTE) " +
                 "WHERE outbox_id = ?",
                 id
         );
@@ -244,6 +244,110 @@ public class NotificationOutboxRepositoryIntegrationTest extends AbstractIntegra
         assertAll(
                 () -> assertEquals("FAILED", status),
                 () -> assertEquals(1, lastErrorNull, "last_error should be NULL")
+        );
+    }
+
+    // ─── stageFailureForRetry() ───────────────────────────────────────────────
+
+    @Test
+    void stageFailureForRetry_SetsStatusToPendingAndAppendsError() {
+        // given
+        Long id = insertPendingOutboxEntry();
+
+        // when
+        int count = outboxRepo.stageFailureForRetry(id, "connect timeout");
+
+        // then
+        String status = jdbcTemplate.queryForObject(
+                "SELECT status FROM notification_outbox WHERE outbox_id = ?", String.class, id);
+        Integer lockedAtNull = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE outbox_id = ? AND locked_at IS NULL",
+                Integer.class, id);
+        String lastError = jdbcTemplate.queryForObject(
+                "SELECT last_error FROM notification_outbox WHERE outbox_id = ?", String.class, id);
+        assertAll(
+                () -> assertEquals(1, count),
+                () -> assertEquals("PENDING", status, "status should remain PENDING for retry"),
+                () -> assertEquals(0, lockedAtNull, "locked_at should be set after stageFailureForRetry"),
+                () -> assertNotNull(lastError, "last_error should not be null"),
+                () -> assertTrue(lastError.contains("connect timeout"), "last_error should contain the error message")
+        );
+    }
+
+    @Test
+    void stageFailureForRetry_AppendsToPriorError() {
+        // given — entry already has a previous error logged
+        Long id = insertPendingOutboxEntry();
+        jdbcTemplate.update(
+                "UPDATE notification_outbox SET last_error = 'first error' WHERE outbox_id = ?", id);
+
+        // when
+        outboxRepo.stageFailureForRetry(id, "second error");
+
+        // then
+        String lastError = jdbcTemplate.queryForObject(
+                "SELECT last_error FROM notification_outbox WHERE outbox_id = ?", String.class, id);
+        assertAll(
+                () -> assertNotNull(lastError),
+                () -> assertTrue(lastError.contains("first error"), "last_error should retain prior error"),
+                () -> assertTrue(lastError.contains("second error"), "last_error should append new error")
+        );
+    }
+
+    // ─── markSkipped() ───────────────────────────────────────────────────────
+
+    @Test
+    void markSkipped_SetsStatusToSkippedAndStoresError() {
+        // given
+        Long id = insertPendingOutboxEntry();
+
+        // when
+        int count = outboxRepo.markSkipped(id, "user already read content");
+
+        // then
+        String status = jdbcTemplate.queryForObject(
+                "SELECT status FROM notification_outbox WHERE outbox_id = ?", String.class, id);
+        String lastError = jdbcTemplate.queryForObject(
+                "SELECT last_error FROM notification_outbox WHERE outbox_id = ?", String.class, id);
+        assertAll(
+                () -> assertEquals(1, count),
+                () -> assertEquals("SKIPPED", status),
+                () -> assertEquals("user already read content", lastError)
+        );
+    }
+
+    // ─── markForUserActive_Delayed() ─────────────────────────────────────────
+
+    @Test
+    void markForUserActive_Delayed_SetsStatusPendingWithActivityError() {
+        // given — entry in PROCESSING with a fresh lock
+        Long id = insertPendingOutboxEntry();
+        jdbcTemplate.update(
+                "UPDATE notification_outbox SET status = 'PROCESSING', locked_at = NOW() " +
+                "WHERE outbox_id = ?", id);
+
+        // when
+        int count = outboxRepo.markForUserActive_Delayed(id);
+
+        // then
+        String status = jdbcTemplate.queryForObject(
+                "SELECT status FROM notification_outbox WHERE outbox_id = ?", String.class, id);
+        String lastError = jdbcTemplate.queryForObject(
+                "SELECT last_error FROM notification_outbox WHERE outbox_id = ?", String.class, id);
+        // locked_at should be set to approximately NOW() - 190 seconds
+        Long lockedAtEpoch = jdbcTemplate.queryForObject(
+                "SELECT UNIX_TIMESTAMP(locked_at) FROM notification_outbox WHERE outbox_id = ?",
+                Long.class, id);
+        Long nowEpoch = jdbcTemplate.queryForObject("SELECT UNIX_TIMESTAMP(NOW())", Long.class);
+        assertAll(
+                () -> assertEquals(1, count),
+                () -> assertEquals("PENDING", status),
+                () -> assertEquals("User recently active", lastError),
+                () -> assertNotNull(lockedAtEpoch, "locked_at should be set"),
+                () -> assertTrue(
+                        Math.abs((nowEpoch - 190) - lockedAtEpoch) <= 5,
+                        "locked_at should be approximately NOW() - 190 seconds (within ±5s), " +
+                        "expected ~" + (nowEpoch - 190) + " but was " + lockedAtEpoch)
         );
     }
 }

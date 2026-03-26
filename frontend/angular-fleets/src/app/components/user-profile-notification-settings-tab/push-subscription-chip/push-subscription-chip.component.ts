@@ -40,6 +40,7 @@ export class PushSubscriptionChipComponent implements OnDestroy, OnInit {
   @Input() inputSub!: PushSubViewModel;
   @Output() subStateChangeSuccess = new EventEmitter<PushSubViewModel>();
   @Output() subStateChangeFailure = new EventEmitter<HttpErrorResponse>();
+  @Output() deleteThisPushSub = new EventEmitter<PushSubViewModel>;
 
   public inputSubSysNotesControl: FormControl<boolean> = new FormControl();
 
@@ -112,6 +113,10 @@ export class PushSubscriptionChipComponent implements OnDestroy, OnInit {
           this.subStateChangeFailure.emit(err as HttpErrorResponse);
         }
       })
+  }
+
+  deletePushSubscription() {
+    this.deleteThisPushSub.emit(this.inputSub);
   }
 
   ngOnDestroy() {

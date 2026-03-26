@@ -34,6 +34,10 @@ import {PushSubViewModel} from "../../models/NotificationPrefAndCustomNotesModel
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {PushSubscriptionChipComponent} from "./push-subscription-chip/push-subscription-chip.component";
 import {HttpErrorResponse} from "@angular/common/http";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmDeleteComponent} from "../pop-ups/confirm-delete/confirm-delete.component";
+import {ConfirmGenericComponent} from "../pop-ups/confirm-generic/confirm-generic.component";
+import {NotificationService} from "../../services/facade-services/notifications/notification.service";
 
 @Component({
   selector: 'app-profile-notifications-tab',
@@ -86,6 +90,8 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
   constructor(protected userService: UserService,
               private noteSettingsApiService: NotificationSettingsApiService,
               protected customNoteService: CustomNotificationService,
+              protected noteService: NotificationService,
+              private dialog: MatDialog,
               private snackBar: MatSnackBar) {
 
     this.getUserDiscNotePrefs();
@@ -266,6 +272,46 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
     if(idx !== -1) {
       this.myPushSubscriptions[idx] = updated;
     }
+  }
+
+  confirmDeletePushSubscription(pushSub: PushSubViewModel) {
+    const message: string = "Please confirm deletion of:";
+
+    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
+      data: {
+        message: message,
+        title: pushSub.userLabel
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.deletePushSub(pushSub.idPushSub);
+      }
+    })
+  }
+
+  deletePushSub(pushSubId: number) {
+    this.noteSettingsApiService.deletePushSub(pushSubId).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: data => {
+          this.myPushSubscriptions = this.myPushSubscriptions.filter(subs => subs.idPushSub !== pushSubId);
+          this.snackBar.open('Push subscription deleted.', 'OK', {
+            duration: 3000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+            panelClass: ['mobile-snackbar']
+          })
+        },
+        error: (HttpErrorResponse) => {
+          this.snackBar.open('Error deleting this push subscription, try again later.', 'OK', {
+            duration: 4000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+            panelClass: ['mobile-snackbar']
+          })
+        }
+      });
   }
 
   errorMessageOnSubscriptionStateChangeFailure(err: HttpErrorResponse) {

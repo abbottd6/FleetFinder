@@ -2,7 +2,8 @@
   <div class="button-row-container">
     <div class="button-row-right">
       <button class="action-buttons"
-        (click)="confirmDeleteAllNotifications()">
+        (click)="confirmDeleteAllNotifications()"
+        [disabled]="noNotifications">
         Delete All
       </button>
     </div>

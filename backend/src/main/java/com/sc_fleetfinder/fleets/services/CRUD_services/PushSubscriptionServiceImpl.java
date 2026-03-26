@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -41,6 +42,7 @@ public class PushSubscriptionServiceImpl implements PushSubscriptionService {
     }
 
     @Override
+    @Transactional
     public GetPushSubDto createNewPushSub(Users user, CreatePushSubRequestDto dto) {
 
         if(pushSubRepo.findByUserAndDeviceUrl(user, dto.getDeviceUrl()).isPresent()) {
@@ -55,6 +57,7 @@ public class PushSubscriptionServiceImpl implements PushSubscriptionService {
     }
 
     @Override
+    @Transactional
     public GetPushSubDto updatePushSub(Users user, UpdatePushSubRequestDto dto) {
 
         PushSubscription toUpdate = pushSubRepo.findByUserAndIdPushSub(user, dto.getIdPushSub())
@@ -85,6 +88,7 @@ public class PushSubscriptionServiceImpl implements PushSubscriptionService {
     }
 
     @Override
+    @Transactional
     public Integer deletePushSub(Users user, Long idPushSub) {
         Integer deletedCount = pushSubRepo.deleteByUserAndIdPushSub(user, idPushSub);
 

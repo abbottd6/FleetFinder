@@ -131,21 +131,22 @@ public class NotificationServiceImpl implements NotificationService {
 
             case NotificationType.NEW_CHAT_MESSAGE:
                 Notification savedMsgNote = buildNewMessageNotification(outboxEntity);
-                identifyDeliveryChannel_andSend(savedMsgNote);
+                identifyDeliveryChannel_andSend(savedMsgNote, outboxEntity);
                 break;
 
             case NotificationType.NEW_LISTING_MATCH:
-
+                Notification savedMatchNote = buildNewListingMatchNotification(outboxEntity);
+                identifyDeliveryChannel_andSend(savedMatchNote, outboxEntity);
                 break;
 
             case NotificationType.LISTING_VIS_STATUS_CHANGED:
                 Notification savedVisNote = buildListingStatusChangeNotification(outboxEntity);
-                identifyDeliveryChannel_andSend(savedVisNote);
+                identifyDeliveryChannel_andSend(savedVisNote, outboxEntity);
                 break;
 
             case NotificationType.LISTING_ARCHIVED:
                 Notification savedArchiveNote = buildListingArchiveNotification(outboxEntity);
-                identifyDeliveryChannel_andSend(savedArchiveNote);
+                identifyDeliveryChannel_andSend(savedArchiveNote, outboxEntity);
                 break;
 
             default:
@@ -158,7 +159,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
 
-    private void identifyDeliveryChannel_andSend(Notification note) {
+    private void identifyDeliveryChannel_andSend(Notification note, NotificationOutbox outboxEntity) {
         switch (note.getDeliveryChannel()) {
             case DeliveryChannel.IN_APP:
                 sendInAppNotification(note);
@@ -166,7 +167,7 @@ public class NotificationServiceImpl implements NotificationService {
             case DeliveryChannel.DISCORD:
                 break;
             case DeliveryChannel.PUSH:
-                sendPushNotification(note);
+                sendPushNotification(note, outboxEntity.getTargetPushSub());
                 break;
             default:
                 throw new IllegalArgumentException("DeliveryChannel: " + note.getDeliveryChannel() +
@@ -203,23 +204,17 @@ public class NotificationServiceImpl implements NotificationService {
         //todo
     }
 
-    private void sendPushNotification(Notification note) {
+    private void sendPushNotification(Notification note, PushSubscription pushSub) {
         String payload = note.getTitle() + ". " + note.getMessage();
 
-        Set<PushSubscription> pushSubscriptions = pushSubRepo.getSetOfPushSubscriptionsByUser(note.getUser());
-        log.warn("REACHED THE SEND METHOD");
-
-        for (PushSubscription sub : pushSubscriptions) {
-            try {
-                pushNotificationService.sendPushNotification(sub, payload);
-            } catch (Exception e) {
-                note.getOutbox().setLastError("Failed to send push notification for push subscription with ID: "
-                        + sub.getIdPushSub() + ", and notification outbox ID: " + note.getOutbox().getOutboxId()
-                        + ", and notification ID: " + note.getNotificationId() + " \n" + e.getMessage());
-                log.error("HIT THE CATCH BLOCK IN SEND METHOD.");
-                note.getOutbox().setStatus("PARTIAL_FAILURE");
-                outboxRepo.save(note.getOutbox());
-            }
+        try {
+            pushNotificationService.sendPushNotification(pushSub, payload);
+        } catch (Exception e) {
+            note.getOutbox().setLastError("Failed to send push notification for push subscription with ID: "
+                    + pushSub.getIdPushSub() + ", and notification outbox ID: " + note.getOutbox().getOutboxId()
+                    + ", and notification ID: " + note.getNotificationId() + " \n" + e.getMessage());
+            note.getOutbox().setStatus("PARTIAL_FAILURE");
+            outboxRepo.save(note.getOutbox());
         }
     }
 
@@ -251,6 +246,24 @@ public class NotificationServiceImpl implements NotificationService {
         String noteMsg = obEntity.getPayloadJson().getTargetLabel();
 
         Notification newNote = new Notification(obEntity, title, noteMsg, false);
+
+        return notificationRepo.save(newNote);
+    }
+
+    private Notification buildNewListingMatchNotification(NotificationOutbox outboxEntity) {
+        String title = "Your custom notification '" + outboxEntity.getPayloadJson().getNoteTopic() + "' " +
+                "matched a new listing:";
+
+        String message = outboxEntity.getPayloadJson().getTargetLabel();
+
+        Notification newNote = new Notification(outboxEntity, title, message);
+
+        Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
+                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey());
+
+        if (readAt.isPresent()) {
+            throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
+        }
 
         return notificationRepo.save(newNote);
     }
