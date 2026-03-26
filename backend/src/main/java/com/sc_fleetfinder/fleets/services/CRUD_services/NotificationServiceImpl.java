@@ -9,6 +9,7 @@ import com.sc_fleetfinder.fleets.DAO.chat.MessageRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationUnreadCountDto;
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
+import com.sc_fleetfinder.fleets.config.discord.DiscordBotService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
@@ -57,6 +58,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final MessageRepository msgRepo;
     private final PushSubscriptionRepository pushSubRepo;
     private final PushNotificationService pushNotificationService;
+    private final DiscordBotService discordBotService;
 
     @Override
     public Page<GetNotificationDto> getMyDropdownNotifications(Users user, Pageable pageable) {
@@ -169,6 +171,8 @@ public class NotificationServiceImpl implements NotificationService {
                 sendInAppNotification(note);
                 break;
             case DeliveryChannel.DISCORD:
+                String discordUserId = note.getUser().getDiscordId();
+                discordBotService.sendDiscordNotification(discordUserId, note);
                 break;
             case DeliveryChannel.PUSH:
                 sendPushNotification(note, outboxEntity.getTargetPushSub());
@@ -280,13 +284,13 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private Notification buildListingStatusChangeNotification(NotificationOutbox outboxEntity) {
-        String title = groupListingRepository.findById(outboxEntity.getEntityId())
+        String title = "The status of one of your listings has changed to: " +
+                outboxEntity.getEntityNewStatus();
+
+        String msg = groupListingRepository.findById(outboxEntity.getEntityId())
                 .map(GroupListing::getListingTitle)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "GroupListing", outboxEntity.getEntityId()));
-
-        String msg = "The status of your listing '" + outboxEntity.getPayloadJson().getTargetLabel()
-                + "' has changed to: " + outboxEntity.getEntityNewStatus();
 
         Notification newNote = new Notification(outboxEntity, title, msg);
 
@@ -301,13 +305,12 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private Notification buildListingArchiveNotification(NotificationOutbox outboxEntity) {
-        String title = archiveRepo.findByGroupId(outboxEntity.getEntityId())
+        String msg = archiveRepo.findByGroupId(outboxEntity.getEntityId())
                 .map(ListingArchive::getListingTitle)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "ListingArchive", outboxEntity.getEntityId()));
 
-        String msg = "Your listing with title: '" + outboxEntity.getPayloadJson().getTargetLabel()
-                + " has been archived.";
+        String title = "One of your listing has expired and been archived.";
 
         Notification newNote = new Notification(outboxEntity, title, msg);
 

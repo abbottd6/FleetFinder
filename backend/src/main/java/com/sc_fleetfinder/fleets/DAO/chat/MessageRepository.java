@@ -43,7 +43,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                     'targetId',         conv.id_conversation,
                     'targetLabel',      SUBSTRING(msg.msg_body, 1, 100),
                     'targetCreatedAt',  msg.created_at,
-                    'addContext',       'Social Notification'
+                    'addContext',       SUBSTRING(conv.title, 1, 64)
                 )                           AS payload_json,
                 'PENDING'                   AS status,
                 push.id_push_sub            AS push_sub_id,

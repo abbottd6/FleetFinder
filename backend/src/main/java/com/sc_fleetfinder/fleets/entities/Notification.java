@@ -16,6 +16,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -43,6 +44,7 @@ public class Notification {
         this.deliveryChannel = outbox.getDeliveryChannel();
         this.parentEntity = new ParentEntityReference(outbox.getParentEntityId(),
                 outbox.getParentEntityType());
+        this.targetMetadata = outbox.getPayloadJson();
         this.siblingKey = outbox.getSiblingKey();
     }
 
@@ -85,7 +87,7 @@ public class Notification {
     @NotNull(message="Notification field 'message' cannot be null.")
     private String message;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "outbox_id", nullable = true)
     private NotificationOutbox outbox;
 
