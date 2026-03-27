@@ -1,0 +1,246 @@
+<div class="title-container">
+  <h5>Notifications:</h5>
+
+  <div class="header-notice">
+    <p>
+      SCFleetFinder uses account links and emails for user verification and notification purposes only. This
+      <span class="fancy-text">
+        user information is secure, private, and will never be shared with third parties or other users without
+        your explicit consent.
+      </span>
+      Notifications are customizable so that you can receive only the notifications you
+      are interested in. You can disable notifications or remove linked accounts and push notification
+      configurations at any time.
+    </p>
+  </div>
+</div>
+<mat-accordion
+  class="settings-container"
+  [multi]="true">
+
+  <!-- DISCORD NOTIFICATIONS ------------------------------------------------------------->
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Discord Notification Settings
+      </mat-panel-title>
+      <mat-panel-description>
+        Link your Discord to have FleetyBot send your notifications as Discord messages.
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div class="bullet-container">
+      <ul>
+        <li>Discord link enables you to log in to FleetFinder using your Discord account</li>
+        <li>You can also sign up for <span class="fancy-text">notifications through Discord</span>
+          — which are sent as direct messages from the FleetFinder Discord bot, FleetyBot.</li>
+        <li>Discord requires FleetyBot to share a server with you in order for you to receive messages from it,
+            so be sure to join the <a href="https://discord.gg/X2QskC5DG9">SCFleetFinder Discord</a></li>
+        <li>Notifications are divided into three categories, which you can enable/disable individually.</li>
+      </ul>
+    </div>
+    <div class="toggles-container">
+      <div class="dynamic-discord-container">
+        <ng-container *ngIf="!userService.discordUsername; else hasDisc">
+          <div class="toggle-row">
+            <mat-label class="toggle-label">Discord User:</mat-label>
+            <a class="disc-account-link"
+               (click)="userService.userLinkDiscord()">
+              <span class="bracky">[</span> Link Discord <span class="bracky">]</span>
+            </a>
+          </div>
+        </ng-container>
+        <ng-template #hasDisc>
+          <div class="expanded-toggle-row">
+            <mat-label class="toggle-label">Discord User:</mat-label>
+            <span id="discUsername">{{ userService.discordUsername }}</span>
+            <a class="disc-account-unlink"
+               (click)="userService.confirmRemoveDiscord()">
+              <span class="bracky">[</span> Remove Discord <span class="bracky">]</span>
+            </a>
+          </div>
+        </ng-template>
+      </div>
+      <div class="toggle-row" [class.three-col-toggle-row]="discSysNotesSaved">
+        <mat-label class="toggle-label">
+          System Notifications:
+          <mat-icon class="tooltip-icon"
+                    matTooltip="Low priority. Periodic status changes for your listings and moderator
+                                actions on your listings.">
+            help_outline
+          </mat-icon>
+        </mat-label>
+        <mat-slide-toggle
+          id="long-name-toggle-push-left"
+          [formControl]="discSysNotesControl"
+          (change)="updateDiscordSysNotesPref()">
+        </mat-slide-toggle>
+        <ng-container *ngIf="discSysNotesSaved">
+          <span>Saved!</span>
+        </ng-container>
+      </div>
+      <div class="toggle-row" [class.three-col-toggle-row]="discGroupNotesSaved">
+        <mat-label class="toggle-label">
+          Group Notifications:
+          <mat-icon class="tooltip-icon"
+                    matTooltip="Your custom notifications. Coming Soon: group membership and
+                                group management feature notifications will be included here.">
+            help_outline
+          </mat-icon>
+        </mat-label>
+        <mat-slide-toggle
+          [formControl]="discGroupNotesControl"
+          (change)="updateDiscordGroupNotesPref()">
+        </mat-slide-toggle>
+        <ng-container *ngIf="discGroupNotesSaved">
+          <span>Saved!</span>
+        </ng-container>
+      </div>
+      <div class="toggle-row" [class.three-col-toggle-row]="discSocialNotesSaved">
+        <mat-label class="toggle-label">
+          Social Notifications:
+          <mat-icon class="tooltip-icon"
+                    matTooltip="New message notifications. Coming soon: group invites.">
+            help_outline
+          </mat-icon>
+        </mat-label>
+        <mat-slide-toggle
+          [formControl]="discSocialNotesControl"
+          (change)="updateDiscordSocialNotesPref()">
+        </mat-slide-toggle>
+        <ng-container *ngIf="discSocialNotesSaved">
+          <span>Saved!</span>
+        </ng-container>
+      </div>
+    </div>
+  </mat-expansion-panel>
+
+  <!-- PUSH NOTIFICATIONS ------------------------------------------------------------>
+
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Push Notification Settings
+      </mat-panel-title>
+      <mat-panel-description>
+        Allow FleetFinder to send notifications to devices of your choosing — without needing to be logged in
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div class="bullet-container">
+      <ul>
+        <li>Configure notifications for your devices and <span class="fancy-text">customize which types of
+          notifications are sent to each device.</span></li>
+        <li>FleetFinder stores a unique token for each browser or device you enable. This token
+            identifies where to deliver your notifications but <span class="fancy-text">contains no personal
+            or account information</span> — it cannot be used to identify you.</li>
+        <li>You can manage or remove any device's notification settings at any time.</li>
+      </ul>
+    </div>
+    <div class="custom-notes-create-container">
+      <div class="button-row-container">
+        <div class="button-row-left">
+          <button
+            class="action-buttons-with-icons"
+            (click)="showSubscribeOnThisDevice()">
+            <mat-icon>notification_add</mat-icon>
+            Enable this device
+          </button>
+        </div>
+      </div>
+      <app-push-notification-form
+        [class.do-not-show-form]="doNotShowPushNotesForm"
+        [class.show-form]="!doNotShowPushNotesForm"
+        (cancelForm)="showSubscribeOnThisDevice()"
+        (formSuccess)="createPushSubSuccessTrigger($event)"
+        (formError)="showPushSubFormError($event)">
+      </app-push-notification-form>
+    </div>
+    <div class="push-sub-proliferation-container">
+      <ng-container *ngIf="!noPushSubs; else noSubs">
+        @for(sub of myPushSubscriptions; track sub.idPushSub) {
+          <app-push-subscription-chip
+            [inputSub]="sub"
+            (subStateChangeSuccess)="updateTargetSubOnStateChangeSuccess($event)"
+            (subStateChangeFailure)="errorMessageOnSubscriptionStateChangeFailure($event)"
+            (deleteThisPushSub)="confirmDeletePushSubscription($event)">
+          </app-push-subscription-chip>
+        }
+      </ng-container>
+      <ng-template #noSubs>
+        <span>You do not have any devices subscribed for push notifications.</span>
+      </ng-template>
+    </div>
+  </mat-expansion-panel>
+
+  <!-- CUSTOM NOTIFICATIONS ---------------------------------------------------------->
+
+  <mat-expansion-panel class="custom-notes-parent-container">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Custom Notifications
+      </mat-panel-title>
+      <mat-panel-description>
+        Create custom notifications to be alerted when new listings match your criteria
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <div class="bullet-container">
+      <ul>
+        <li>You can create a <span class="fancy-text">total of 10</span> custom notifications.</li>
+        <li>You may have <span class="fancy-text">up to 5 enabled</span>.</li>
+        <li>Manage how you receive these notifications through the
+          <span class="fancy-text">Discord and/or Push Notification Settings</span>
+          panels above.</li>
+      </ul>
+    </div>
+    <div class="custom-notes-create-container">
+      <div class="button-row-container">
+        <div class="button-row-left">
+          <button
+            class="action-buttons-with-icons"
+            (click)="showCustomNoteForm()">
+            <mat-icon>add</mat-icon>
+            Create New
+          </button>
+        </div>
+        <div class="button-row-right">
+          <span>Total: {{ userCustomNotes.length }} / 10</span>
+          <span>Enabled: {{ customNoteService.userCustomNotesEnabledCount$ | async }} / 5</span>
+        </div>
+      </div>
+      <app-custom-notification-form
+        [class.do-not-show-form]="doNotShowCustomNotesForm"
+        [class.show-form]="!doNotShowCustomNotesForm"
+        (closeForm)="createOrUpdateCustomNoteSuccess($event)">
+      </app-custom-notification-form>
+    </div>
+    <div class="proliferation-container">
+      <ng-container *ngIf="!noCustomNotes; else noNotes">
+        @for(note of userCustomNotes; track note.customNoteId) {
+          <app-custom-notification-chip
+            [customNoteInput]="note"
+            (enabledState)="sendCustomNoteStateChangeRequest($event)">
+          </app-custom-notification-chip>
+        }
+      </ng-container>
+      <ng-template #noNotes>
+        <span>You do not have any custom notifications configured.</span>
+      </ng-template>
+    </div>
+  </mat-expansion-panel>
+
+  <mat-expansion-panel
+    class="notifications-container"
+    [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        My Notifications
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="my-notifications-container">
+      <app-my-notifications-accordion-body>
+
+      </app-my-notifications-accordion-body>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+

@@ -14,6 +14,10 @@ import {UserApiService} from "./userApi.service";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {WsGatewayService} from "../websocket-messaging/ws-gateway.service";
+import {
+  ConfirmDelinkDiscordPopupComponent
+} from "../../components/pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component";
+import {MatDialog} from "@angular/material/dialog";
 
 export enum UserRole {
   admin = 'admin',
@@ -28,6 +32,10 @@ export interface SessionUser {
   server: string,
   org: string,
   about: string,
+  discordUsername: string,
+  externalSysNotesEnabled: boolean,
+  externalGroupNotesEnabled: boolean,
+  externalSocialNotesEnabled: boolean,
   acctCreated: Date,
   lastAccess: Date,
   primaryRole: UserRole,
@@ -47,10 +55,12 @@ export class UserService {
   private readonly userSubject = new BehaviorSubject<SessionUser | null>(null);
   readonly sessionUser$ = this.userSubject.asObservable();
 
-  private kcProfile$ = this.auth.authClaims$.pipe(
-    filter(data => !!data && !!data.userData)
-  );
+  get debugUserSubj() {
+    return this.userSubject.value;
+  }
 
+  private kcProfileSubject = new BehaviorSubject<any>(null);
+  private kcProfile$ = this.kcProfileSubject.asObservable();
 
 
   private refreshTrigger$ = new BehaviorSubject<void>(undefined);
@@ -64,7 +74,12 @@ export class UserService {
       shareReplay({bufferSize: 1, refCount: true})
   );
 
-  constructor() {
+  constructor(private dialog: MatDialog, private userApiService: UserApiService) {
+
+    this.auth.authClaims$.pipe(
+      filter(data => !!data && !!data.userData)
+    ).subscribe(data => this.kcProfileSubject.next(data));
+
     this.auth.isLoggedIn$.pipe(
       takeUntilDestroyed(this.destroyRef),
 
@@ -75,11 +90,15 @@ export class UserService {
           filter(([, ffPrivate]) => !!ffPrivate),
           map(([kcClaims, ffPrivate]) => {
             const primaryRole = this.extractRole(kcClaims.userData.roles) ?? UserRole.user;
-            const email = kcClaims.userData.email;
+            const email = ffPrivate.email;
             return {...ffPrivate, primaryRole, email} satisfies SessionUser;
           }),
           distinctUntilChanged((a, b) =>
             a?.userId === b?.userId &&
+            a?.discordUsername === b?.discordUsername &&
+            a?.externalSysNotesEnabled === b?.externalSysNotesEnabled &&
+            a?.externalGroupNotesEnabled === b?.externalGroupNotesEnabled &&
+            a?.externalSocialNotesEnabled === b?.externalSocialNotesEnabled &&
             a?.primaryRole === b?.primaryRole &&
             a?.groupListingsDto === b?.groupListingsDto &&
             a?.lastAccess === b?.lastAccess
@@ -102,20 +121,16 @@ export class UserService {
       takeUntilDestroyed(this.destroyRef)
     ).subscribe();
 
-    this.ws.isConnected$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.ws.isConnected$.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {});
 
-    }
-    );
+  }
 
-    // this.auth.tokenReady$.pipe(
-    //   takeUntilDestroyed(this.destroyRef),
-    // ).subscribe(token => {
-    //     console.log("connect token: ", token.substring(0,20));
-    //     if(token && !this.ws.isConnected()) {
-    //       this.ws.connect();
-    //       console.log('connect triggered');
-    //     }
-    // });
+  kcProfileRefresh() {
+    this.auth.forceNewToken().pipe(
+      tap(loginResp => {
+          this.kcProfileSubject.next(loginResp);
+      })
+    ).subscribe();
   }
 
   extractRole(roles: string[]) {
@@ -132,12 +147,40 @@ export class UserService {
     return role;
   }
 
+  userLinkDiscord() {
+    this.userApiService.discordMe().subscribe(url => {
+      sessionStorage.setItem('pendingDiscordLink', 'true');
+      window.location.href = url;
+    })
+  }
+
+  confirmRemoveDiscord() {
+    const dialogRef = this.dialog.open(ConfirmDelinkDiscordPopupComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.removeDiscordLink();
+      }
+    })
+  }
+
+  removeDiscordLink() {
+    this.userApiService.removeDiscord().subscribe( response => {
+        this.kcProfileRefresh();
+      }
+    )
+  }
+
   get sessionUser(): SessionUser | null { return this.userSubject.value ?? null; }
   get userId(): number | null { return this.userSubject.value?.userId ?? null; }
   get username(): string | null { return this.userSubject.value?.username ?? null; }
   get server(): string | null { return this.userSubject.value?.server ?? null; }
   get org(): string | null { return this.userSubject.value?.org ?? null; }
   get about(): string | null { return this.userSubject.value?.about ?? null; }
+  get discordUsername(): string | null { return this.userSubject.value?.discordUsername ?? null; }
+  get sysNotesEnabled(): boolean | null { return this.userSubject.value?.externalSysNotesEnabled ?? null; }
+  get groupNotesEnabled(): boolean | null { return this.userSubject.value?.externalGroupNotesEnabled ?? null; }
+  get socialNotesEnabled(): boolean | null { return this.userSubject.value?.externalSocialNotesEnabled ?? null; }
   get acctCreated(): Date | null { return this.userSubject.value?.acctCreated ?? null; }
   get lastAccess(): Date | null { return this.userSubject.value?.lastAccess ?? null; }
   get primaryRole(): UserRole | null { return this.userSubject.value?.primaryRole ?? null; }

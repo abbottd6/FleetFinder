@@ -1,7 +1,7 @@
-import { AddBookmark } from './add-bookmark-request';
+import { AddBookmarkRequest } from './add-bookmark-request';
 
 describe('AddBookmark', () => {
   it('should create an instance', () => {
-    expect(new AddBookmark()).toBeTruthy();
+    expect(new AddBookmarkRequest(1)).toBeTruthy();
   });
 });

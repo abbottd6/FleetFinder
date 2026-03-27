@@ -1,0 +1,25 @@
+<div class="form-wrapper">
+  <app-generic-small-input-field
+    class="form-row"
+    [label]="'Device Name:'"
+    [errorLabel]="'Device Name'"
+    [min]="3"
+    [max]="32"
+    [inputCtrl]="pushSubInputCtrl"
+    [placeholder]="'Name your device...'">
+  </app-generic-small-input-field>
+  <ng-container *ngIf="showFormErrorMessage as message">
+    <span>Error: your browser is blocking the request.</span>
+    <span>{{ message }}</span>
+  </ng-container>
+  <div class="button-row">
+    <button class="action-buttons"
+      (click)="(emitCancelClick())">
+      Cancel
+    </button>
+    <button class="action-buttons"
+      (click)="enablePushNotifications()">
+      Subscribe
+    </button>
+  </div>
+</div>

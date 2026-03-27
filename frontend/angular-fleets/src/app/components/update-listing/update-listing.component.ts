@@ -11,6 +11,10 @@ import {AsyncPipe, NgIf} from "@angular/common";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {UpdateListingRequest} from "../../models/group-listing/update-listing-request";
 import {BehaviorSubject, Subject, takeUntil} from "rxjs";
+import {LANGUAGE_OPTIONS} from "../../models/language-options";
+import {
+  AbstractStringDropdownComponent
+} from "../dropdowns/abstract-string-string-map-dropdown/abstract-string-dropdown.component";
 
 @Component({
   selector: 'app-update-listing',
@@ -24,7 +28,8 @@ import {BehaviorSubject, Subject, takeUntil} from "rxjs";
     MatError,
     NgIf,
     RouterLink,
-    AsyncPipe
+    AsyncPipe,
+    AbstractStringDropdownComponent
   ]
 })
 export class UpdateListingComponent implements OnInit, OnDestroy {
@@ -96,4 +101,6 @@ export class UpdateListingComponent implements OnInit, OnDestroy {
 
     this.router.navigateByUrl("/listing-success")
   }
+
+    protected readonly LANGUAGE_OPTIONS = LANGUAGE_OPTIONS;
 }

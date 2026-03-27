@@ -10,7 +10,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import java.sql.Types;
 
 @Data
-public class CreateOrUpdateUserDto {
+public class CreateUserDto {
 
     //##TODO should not include a keycloakid nor a userid, should be derived from token
     @NotNull(message= "Create User DTO keycloak_id cannot be null")
@@ -25,6 +25,12 @@ public class CreateOrUpdateUserDto {
     @NotBlank(message = "Create user DTO field 'email' cannot be blank")
     @Email(message = "Create user field 'email' must be a valid email address")
     private String email;
+
+    @Size(max = 20, message = "CreateUserDto field 'discordId' cannot exceed 20 characters.")
+    private String discordId;
+
+    @Size(min = 2, max = 32, message = "CreateUserDto field 'discordUsername' violates size constraints.")
+    private String discordUsername;
 
     private String server;
 

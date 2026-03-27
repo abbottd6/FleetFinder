@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.LegalityDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.LegalityController;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.LegalityService;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class LegalityControllerTest {
 
     @MockitoBean
     private LegalityService legalityService;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private List<LegalityDto> mockLegalities;
 

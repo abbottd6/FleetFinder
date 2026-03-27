@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.services.conversion_services;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrEditListingTemplateDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingTemplate;
 import org.modelmapper.ModelMapper;
@@ -10,22 +11,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class TemplateConversionServiceImpl implements TemplateConversionService {
 
-    private final ModelMapper templateDtoMapper;
-    private final ModelMapper templateEntityMapper;
+    private final ModelMapper templatesMapper;
 
-    public TemplateConversionServiceImpl(@Qualifier("templateDtoMapper") ModelMapper templateDtoMapper,
-                                         @Qualifier("templateEntityMapper") ModelMapper templateEntityMapper) {
-        this.templateDtoMapper = templateDtoMapper;
-        this.templateEntityMapper = templateEntityMapper;
+    public TemplateConversionServiceImpl(@Qualifier("listingTemplateMapper") ModelMapper templatesMapper) {
+        this.templatesMapper = templatesMapper;
     }
 
     @Override
     public ListingTemplateResponseDto convertToDto(ListingTemplate entity) {
-        return templateDtoMapper.map(entity, ListingTemplateResponseDto.class);
+        return templatesMapper.map(entity, ListingTemplateResponseDto.class);
     }
 
     @Override
-    public ListingTemplate convertToEntity(CreateGroupListingDto dto) {
-        return templateEntityMapper.map(dto, ListingTemplate.class);
+    public ListingTemplate convertToEntity(CreateOrEditListingTemplateDto dto) {
+        return templatesMapper.map(dto, ListingTemplate.class);
     }
 }

@@ -19,7 +19,6 @@ import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBa
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.UserModerationRecord;
-import com.sc_fleetfinder.fleets.entities.Notification;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.events.ListingModDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -207,10 +206,13 @@ public class ModerationServiceImpl implements ModerationService {
                 condemned, issue, dto.getNote(), mod
         );
 
-        // create a moderator action for deletion
-        recordModeratorAction(issue, dto.getNote(), archive, mod);
+        ListingReportBasis basis = lrbr.findById(dto.getReportBasis())
+                .orElseThrow(() -> new ResourceNotFoundException("ListingReportBasis", dto.getReportBasis()));
 
-        // recording the users content moderation history for possibly bans
+        // create a moderator action for deletion
+        recordModeratorAction(issue, dto.getNote(), basis, archive, mod);
+
+        // recording the users content moderation history for possible bans
         updateOrCreateUserModerationRecord(condemned);
 
         eventPublisher.publishEvent(new ListingModDeleteEvent(condemned, owner));
@@ -237,8 +239,10 @@ public class ModerationServiceImpl implements ModerationService {
                 issue.getReportTotalCount() +", " +
                 "Corresponding issueId: " + issue.getIssueId();
 
+        String actionType = "AutoMod";
+
         //archive listing issue/reports data and user input fields from listing
-        ListingArchive archive = archiveService.archiveListing(condemned, issue, note);
+        ListingArchive archive = archiveService.archiveListing(condemned, issue, actionType, note);
 
         recordModeratorAction(issue, note, archive);
 
@@ -307,27 +311,31 @@ public class ModerationServiceImpl implements ModerationService {
     @Transactional
     protected void recordModeratorAction(ModerationIssue issue, String note,
                                          ListingArchive archive) {
-        ModListingAction modAction = new ModListingAction(issue, note, archive);
+
+        ListingReportBasis actionBasis = mir.findAutoModActionBasis_MostCommonReportBasis(issue.getIssueId());
+        if (actionBasis == null) {
+            throw new ResourceNotFoundException("ListingReportBasis for issueId", issue.getIssueId());
+        }
+
+        ModListingAction modAction = new ModListingAction(issue, note, actionBasis, archive);
 
         mlar.save(modAction);
 
-        noteService.createAndSendDeleteNotification(
-                archive, issue, NotificationType.MOD_DELETE, modAction);
+        noteService.generateOutboxNotificationForModAction(modAction);
 
         log.info("Moderator action recorded under actionId: {}", modAction.getActionId());
     }
 
     //for manual moderator actions
     @Transactional
-    protected void recordModeratorAction(ModerationIssue issue, String note,
+    protected void recordModeratorAction(ModerationIssue issue, String note, ListingReportBasis actionBasis,
                                          ListingArchive archive, Users mod) {
 
-        ModListingAction modAction = new ModListingAction(issue, note, archive, mod);
+        ModListingAction modAction = new ModListingAction(issue, note, actionBasis, archive, mod);
         mlar.save(modAction);
         log.info("Manual moderator action recorded under actionId: {}", modAction.getActionId());
 
-        noteService.createAndSendDeleteNotification(
-                archive, issue, NotificationType.MOD_DELETE, modAction);
+        noteService.generateOutboxNotificationForModAction(modAction);
     }
 
     //For manual mod clear issue report counts

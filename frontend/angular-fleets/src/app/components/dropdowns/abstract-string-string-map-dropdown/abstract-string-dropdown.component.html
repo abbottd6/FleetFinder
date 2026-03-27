@@ -1,0 +1,14 @@
+<div class="dropdown-component">
+  <label id="abstract-dropdown">Language:</label>
+  <ng-select
+    [items]="options"
+    bindLabel="label"
+    bindValue="code"
+    [formControl]="abstractControl"
+    placeholder="{{ placeholder }}"
+    [attr.aria-labelledby]="'abstract-form-dropdown'">
+  </ng-select>
+</div>
+<mat-error *ngIf="abstractControl?.hasError?.('required') && (abstractControl.dirty || !abstractControl.untouched)">
+  <span>{{ errorMessage }}</span>
+</mat-error>

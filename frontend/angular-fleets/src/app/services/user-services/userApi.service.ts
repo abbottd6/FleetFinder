@@ -2,8 +2,8 @@ import {Injectable} from "@angular/core";
 import {HttpClient} from "@angular/common/http";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {catchError, map, Observable, throwError} from "rxjs";
-import {AuthService} from "../auth/auth-services/auth.service";
 import {UserDataResult} from "angular-auth-oidc-client";
+import {UpdateUserRequest} from "../../models/private-user/update-user-request";
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ import {UserDataResult} from "angular-auth-oidc-client";
 
 export class UserApiService {
 
-  constructor(private http: HttpClient, private readonly auth: AuthService) {}
+  constructor(private http: HttpClient) {}
 
   public getMe(profile: UserDataResult): Observable<PrivateUser> {
     return this.http.get<Partial<PrivateUser>>('/api/users/me').pipe(
@@ -30,14 +30,37 @@ export class UserApiService {
         return new PrivateUser(
           raw.userId!,
           raw.username!,
+          raw.email!,
           raw.server!,
           raw.org!,
           raw.about!,
           raw.acctCreated!,
           raw.lastAccess!,
+          raw.discordUsername!,
+          raw.externalSysNotesEnabled!,
+          raw.externalGroupNotesEnabled!,
+          raw.externalSocialNotesEnabled!,
           raw.groupListingsDto!
         );
       })
     );
+  }
+
+  public updateMe(userData: UpdateUserRequest) {
+    return this.http.put('/api/users/update_me', userData);
+  }
+
+  public discordMe() {
+    return this.http.get<{ url: string }>('/api/users/discord_me').pipe(
+      map(response => response.url)
+    );
+  }
+
+  public removeDiscord() {
+    return this.http.delete('/api/users/remove_discord');
+  }
+
+  public deleteUser() {
+    return this.http.delete<Partial<PrivateUser>>('/api/users/delete_me');
   }
 }

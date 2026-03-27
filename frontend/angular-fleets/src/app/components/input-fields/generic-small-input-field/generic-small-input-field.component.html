@@ -1,0 +1,25 @@
+<div class="generic-input">
+  <mat-label>{{ label }}</mat-label>
+  <mat-form-field>
+    <mat-error *ngIf="inputCtrl?.hasError && (inputCtrl.dirty || !inputCtrl.untouched)">
+        <span *ngIf="inputCtrl?.hasError?.('minlength')">
+          {{ errorLabel }} must be at least {{ min }} characters
+        </span>
+        <span *ngIf="inputCtrl?.hasError?.('maxlength')">
+          {{ errorLabel }} cannot be more than {{ max }} characters
+        </span>
+      <span *ngIf="inputCtrl?.hasError?.('required')">
+          {{ errorLabel }} is Required
+        </span>
+    </mat-error>
+    <input
+      matInput
+      [formControl]="inputCtrl"
+      (input)="updateCharacterCount()"
+      [attr.maxlength]="max"
+      [attr.minlength]="min"
+      placeholder="{{ placeholder }}"
+      [attr.aria-labelledby]="label">
+    <mat-hint align="start">{{ characterCount }}/{{ max }}</mat-hint>
+  </mat-form-field>
+</div>

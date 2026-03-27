@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplayCategoryDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.GameplayCategoryController;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GameplayCategoryService;
@@ -30,6 +31,9 @@ class GameplayCategoryControllerTest {
 
     @MockitoBean
     private GameplayCategoryService gameplayCategoryService;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private List<GameplayCategoryDto> mockCategories;
 

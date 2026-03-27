@@ -9,6 +9,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,10 +40,13 @@ import java.util.Optional;
 @Slf4j
 public class GroupListingsController {
 
-    @Autowired
-    private GroupListingService groupListingService;
-    @Autowired
-    private UserRepository userRepository;
+    private final GroupListingService groupListingService;
+    private final UserService userService;
+
+    public GroupListingsController(UserService userService, GroupListingService groupListingService) {
+        this.userService = userService;
+        this.groupListingService = groupListingService;
+    }
 
 
     @PostMapping("/search")
@@ -57,7 +61,7 @@ public class GroupListingsController {
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         Optional<Users> userOpt = Optional.ofNullable(jwt)
-                .flatMap(auth -> userRepository.findByKeycloakId(auth.getSubject()));
+                .flatMap(auth -> userService.getUserByKeycloakIdDoNotThrow(auth.getSubject()));
 
         return groupListingService.searchGroupListings(request, pageable, userOpt);
     }
@@ -73,8 +77,7 @@ public class GroupListingsController {
                                                 @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
 
-        Users requestingUser = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found. Try refreshing the page."));
+        Users requestingUser = userService.verifyUser(keycloakId);
 
         dto.setUserId(requestingUser.getUserId());
 
@@ -86,8 +89,7 @@ public class GroupListingsController {
     public ResponseEntity<?> updateGroupListing(@AuthenticationPrincipal Jwt jwt, @Valid @RequestBody UpdateGroupListingDto dto) {
         String keycloakId = jwt.getSubject();
 
-        Users requestingUser = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new RuntimeException("User with Keycloak ID: " + keycloakId + " not found"));
+        Users requestingUser = userService.verifyUser(keycloakId);
 
         return groupListingService.updateGroupListing(dto, requestingUser);
     }
@@ -98,8 +100,7 @@ public class GroupListingsController {
                                                    @AuthenticationPrincipal Jwt jwt) {
         String keycloakId = jwt.getSubject();
 
-        Users requestingUser = userRepository.findByKeycloakId(keycloakId)
-                .orElseThrow(() -> new RuntimeException("User with Keycloak ID: " + keycloakId + " not found"));
+        Users requestingUser = userService.verifyUser(keycloakId);
 
         return groupListingService.deleteGroupListing(groupId, requestingUser);
     }

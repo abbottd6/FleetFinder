@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {map, shareReplay, Subject, takeUntil} from "rxjs";
-import {RouterModule} from "@angular/router";
+import {Router, RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {MatSidenavModule} from "@angular/material/sidenav";
 import {MatListItem, MatNavList} from "@angular/material/list";
@@ -13,7 +13,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButtonModule} from "@angular/material/button";
-import {UserRole, UserService} from "../../services/user-services/user.service";
+import {SessionUser, UserRole, UserService} from "../../services/user-services/user.service";
 import {CloseValue, GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
 import {UserProfileBookmarksComponent} from "../user-profile-bookmarks/user-profile-bookmarks.component";
@@ -32,6 +32,20 @@ import {
   ListingTemplateModalComponent
 } from "../group-listing-modal/listing-template-modal/listing-template-modal.component";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
+import {UserApiService} from "../../services/user-services/userApi.service";
+import {MatDialog} from "@angular/material/dialog";
+import {
+  UserDeleteAccountPopupComponent
+} from "../pop-ups/user-delete-account-popup/user-delete-account-popup.component";
+import {DropdownModule} from "../dropdowns/dropdown-module/dropdown.module";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {MatFormField, MatInput, MatLabel} from "@angular/material/input";
+import {MatError, MatHint} from "@angular/material/form-field";
+import {UpdateUserFormService} from "../../services/user-services/update-user-form.service";
+import {UpdateUserRequest} from "../../models/private-user/update-user-request";
+import {
+  ProfileNotificationsTabComponent
+} from "../user-profile-notification-settings-tab/profile-notifications-tab.component";
 
 @Component({
     selector: 'app-user',
@@ -41,7 +55,8 @@ import {ChatHostService} from "../../services/facade-services/chat/chat-host.ser
     ],
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
     UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent,
-    UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent, ListingTemplateModalComponent],
+    UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent, ListingTemplateModalComponent,
+    DropdownModule, FormsModule, MatError, MatFormField, MatHint, MatInput, MatLabel, MatFormField, ReactiveFormsModule, ProfileNotificationsTabComponent],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {
@@ -55,14 +70,20 @@ export class UserComponent implements OnInit, OnDestroy {
   selectedTemplate: ListingTemplateViewModel | null = null;
 
   groupListings: GroupListingViewModel[] = []
-  selectedTab: 'listings'|'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
+  selectedTab: 'listings' | 'notifications' |'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
   shouldDisplayMod$: boolean = false;
+
+  protected editing: boolean = false;
 
   constructor(public userService: UserService,
               protected auth: AuthService,
               protected listingInteract: ListingViewInteractionsService,
               protected templatesModal: TemplatesModalService,
-              private chatHostSrv: ChatHostService) {
+              private chatHostSrv: ChatHostService,
+              private userApiSrv: UserApiService,
+              private router: Router,
+              private dialog: MatDialog,
+              protected userFormSrv: UpdateUserFormService) {
 
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
       if(reason != null) {
@@ -115,8 +136,46 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   userComponentLogout() {
-    this.chatHostSrv.closeChat()
+    this.chatHostSrv.closeChat();
     this.auth.logout().subscribe();
+  }
+
+  openConfirmUserDelete(): void {
+    const dialogRef = this.dialog.open(UserDeleteAccountPopupComponent);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result) {
+        this.userDelete();
+      }
+    });
+  }
+
+  userDelete() {
+    this.userApiSrv.deleteUser().subscribe(
+      result => {
+        this.userComponentLogout();
+      }
+    );
+  }
+
+  userProfileEdit() {
+    this.editing = true;
+  }
+
+  cancelEdit() {
+    this.editing = false;
+  }
+
+  saveProfileEdit() {
+    const server = this.userFormSrv.serverControl.value;
+    const org = this.userFormSrv.orgControl.value;
+
+    const request = new UpdateUserRequest(server, org);
+    this.userApiSrv.updateMe(request).subscribe(response => {
+          this.userService.refreshUser();
+          this.editing = false;
+      }
+    )
   }
 
   isMobile$ = this.breakpointObserver

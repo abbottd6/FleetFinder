@@ -40,6 +40,7 @@ export class FilterDropdownsComponent implements OnInit, OnDestroy {
     { value: 'experience', label: 'Experience' },
     { value: 'category', label: 'Gameplay Category' },
     { value: 'groupStatus', label: 'Date/Current' },
+    { value: 'language', label: 'Language' },
     { value: 'pvpStatus', label: 'PvP Status' },
     { value: 'legality', label: 'Legality' },
     { value: 'system', label: 'Star System' },
@@ -154,6 +155,10 @@ export class FilterDropdownsComponent implements OnInit, OnDestroy {
         break;
       case 'playStyle':
         this.parentFilters$ = this.filter.filterPlayStyles();
+        this.parentCtrl.enable();
+        break;
+      case 'language':
+        this.parentFilters$ = this.filter.filterLanguages();
         this.parentCtrl.enable();
         break;
       default:

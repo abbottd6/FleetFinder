@@ -20,6 +20,8 @@ public class PrivateUserResponseDto {
     @Size(min = 1, max = 32, message = "Username must be between 1 and 32 characters")
     private String username;
 
+    private String email;
+
     private String server;
 
     private String org;
@@ -31,6 +33,14 @@ public class PrivateUserResponseDto {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime lastAccessed;
+
+    private String discordUsername;
+
+    private Boolean externalSysNotesEnabled;
+
+    private Boolean externalGroupNotesEnabled;
+
+    private Boolean externalSocialNotesEnabled;
 
     private Set<GroupListingResponseDto> groupListingsDto = new HashSet<>();
 

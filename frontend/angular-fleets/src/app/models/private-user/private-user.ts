@@ -4,10 +4,15 @@ export class PrivateUser {
 
   constructor(public userId: number,
               public username: string,
+              public email: string,
               public server: string,
               public org: string,
               public about: string,
               public acctCreated: Date,
               public lastAccess: Date,
+              public discordUsername: string,
+              public externalSysNotesEnabled: boolean,
+              public externalGroupNotesEnabled: boolean,
+              public externalSocialNotesEnabled: boolean,
               public groupListingsDto: GroupListingViewModel[]) {}
 }

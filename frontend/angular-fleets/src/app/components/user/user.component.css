@@ -1,3 +1,11 @@
+@import '../input-fields/input-field/input-field-styles.css';
+
+
+.body-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
 .page-title {
   display: inline-block;
   font-size: clamp(1.1rem, 3vw, 2rem);
@@ -13,8 +21,8 @@
   width: 95%;
   align-self: center;
   /*padding-bottom: 1rem;*/
-  overflow-y: scroll;
-  scrollbar-width: none;
+  /*overflow-y: visible;*/
+  /*scrollbar-width: none;*/
   /*scrollbar-color: #2c2c2c transparent;*/
   /*scrollbar-arrow-color: transparent !important;*/
 }
@@ -22,7 +30,7 @@
 .mat-drawer {
   min-width: 12%;
   max-width: 15%;
-  max-height: 70vh;
+  height: 100%;
   overflow-y: scroll;
   scrollbar-width: none;
   background-color: rgba(136, 138, 143, 0.1);
@@ -78,7 +86,16 @@
   clear: both;
   padding-left: 0.2rem;
   border-bottom: 3px solid rgba(65, 103, 142, 1);
-  clip-path: polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%);
+  clip-path: polygon(
+    7px 0%,        /* top-left: start */
+    calc(100% - 7px) 0%,   /* top-right: start */
+    100% 7px,      /* top-right: end */
+    100% calc(100% - 7px), /* bottom-right: start */
+    calc(100% - 12px) 100%, /* bottom-right: end */
+    12px 100%,      /* bottom-left: start */
+    0% calc(100% - 7px),   /* bottom-left: end */
+    0% 7px         /* top-left: end */
+  );
   width: 85%;
   margin: 0.7rem auto 0 0;
   transition: 0.2s ease;
@@ -90,15 +107,24 @@
   cursor: pointer;
 }
 
+.active {
+  background-color: rgba(65, 103, 142, 0.2);
+}
+
 .side-nav-main-body {
-  height: 100vh;
+  height: 100%;
   max-width: 95vw;
-  overflow-y: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #2c2c2c transparent;
+  scrollbar-arrow-color: transparent !important;
+  padding-bottom: 5rem;
 }
 
 .account-window-body {
   padding: 0.5rem 0.5rem 2rem 0.5rem;
   max-width: 95%;
+  overflow: hidden;
 }
 
 .user-profile-list {
@@ -128,6 +154,88 @@
   line-height: 1.6rem;
 }
 
+.server-dd-container {
+  width: 300px;
+}
+
+.server-dd-container ::ng-deep #server-dropdown {
+  margin-left: 0 !important;
+}
+
+.server-dd-container ::ng-deep label {
+  color: rgba(65, 103, 142, 1);
+  font-weight: 600;
+}
+
+.org-input {
+  display: flex;
+  width: 400px;
+}
+
+.org-input input {
+  font-size: 0.9rem;
+}
+
+#org-label {
+  display: flex;
+  color: rgba(65, 103, 142, 1);
+  margin-right: 6px;
+  margin-bottom: 20px;
+  font-weight: 600;
+  align-self: center !important;
+}
+
+.disc-account-link {
+  color: rgb(53, 114, 163);
+  margin-left: 20px;
+  text-decoration: none;
+  border-bottom: 1px solid rgb(53, 114, 163);
+  transition: color 0.5s ease, font-size 0.5s ease, border-bottom-color 0.5s ease;
+}
+
+.disc-account-link:hover {
+  color: rgba(52, 135, 168, 0.9);
+  font-size: 101%;
+  cursor: pointer;
+  border-bottom-color: rgba(52, 135, 168, 0.9);
+}
+
+.disc-account-link .bracky {
+  font-size: 120%;
+}
+
+@media(min-width: 725px) {
+  .mat-mdc-form-field {
+    min-width: 75%;
+    font-family: 'Orbitron', sans-serif;
+    transition: color 0.5s ease, font-size 0.5s ease;
+    /*color: rgba(33, 37, 41, .75);*/
+    font-size: clamp(0.8rem, 1vw, 1rem);
+  }
+}
+
+@media(max-width: 724px) {
+  .mat-mdc-form-field {
+    min-width: 95%;
+    font-family: 'Orbitron', sans-serif;
+    transition: color 0.5s ease, font-size 0.5s ease;
+    /*color: rgba(33, 37, 41, .75);*/
+    font-size: 0.8rem;
+  }
+}
+
+@media(max-width: 724px) {
+  :host ::ng-deep .mat-mdc-text-field-wrapper.mdc-text-field.mdc-text-field--outlined {
+    max-height: 7.25vh;
+    margin-right: 0.25rem;
+    /*background-color: hotpink;*/
+  }
+}
+@media(max-width: 724px) {
+  :host ::ng-deep .mat-mdc-text-field-wrapper .mat-mdc-form-field-flex .mat-mdc-floating-label {
+    top: 3.5vh;
+  }
+}
 @media(max-width: 1450px) and (min-width: 1201px) {
   .mat-drawer {
     min-width: 15%;
@@ -241,7 +349,7 @@
   }
 
   .side-nav-main-body {
-    height: 100%;
+    height: 75vh;
     width: 100%;
   }
 

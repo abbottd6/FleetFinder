@@ -1,0 +1,66 @@
+<div class="chip-self">
+
+  <div class="header-row">
+    <h5 id="header-left">{{ inputSub.userLabel }}</h5>
+    <div id="header-right">
+      <span class="field-label">
+        Created: {{ inputSub.createdAt | date: 'MM/dd/yyyy'}}
+      </span>
+    </div>
+  </div>
+
+  <div class="chip-body">
+    <div class="toggles-container">
+      <div class="toggle-row">
+        <mat-label class="toggle-label">
+          System Notifications:
+          <mat-icon class="tooltip-icon"
+                    matTooltip="Low priority. Periodic status changes for your listings and moderator
+                                actions on your listings.">
+            help_outline
+          </mat-icon>
+        </mat-label>
+        <mat-slide-toggle
+          [formControl]="inputSubSysNotesControl"
+          (change)="updateInputSubSysNotePref()">
+        </mat-slide-toggle>
+      </div>
+      <div class="toggle-row" [class.three-col-toggle-row]="inputSubPrefsSaved">
+        <mat-label class="toggle-label">
+          Group Notifications:
+          <mat-icon class="tooltip-icon"
+                    matTooltip="Your custom notifications. Coming Soon: group membership and
+                                group management feature notifications will be included here.">
+            help_outline
+          </mat-icon>
+        </mat-label>
+        <mat-slide-toggle
+          [formControl]="inputSubGroupNotesControl"
+          (change)="updateInputSubGroupNotesPref()">
+        </mat-slide-toggle>
+        <ng-container *ngIf="inputSubPrefsSaved">
+          <span class="saved-notice">Saved!</span>
+        </ng-container>
+      </div>
+      <div class="toggle-row">
+        <mat-label class="toggle-label">
+          Social Notifications:
+          <mat-icon class="tooltip-icon"
+                    matTooltip="New message notifications. Coming soon: group invites.">
+            help_outline
+          </mat-icon>
+        </mat-label>
+        <mat-slide-toggle
+          [formControl]="inputSubSocialNotesControl"
+          (change)="updateInputSubSocialNotesPref()">
+        </mat-slide-toggle>
+      </div>
+    </div>
+    <div class="action-column">
+      <a id="delete-sub"
+        (click)="deletePushSubscription()">
+        <mat-icon>delete</mat-icon>
+      </a>
+    </div>
+  </div>
+</div>

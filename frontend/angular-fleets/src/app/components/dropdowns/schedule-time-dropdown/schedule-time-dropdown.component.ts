@@ -1,8 +1,9 @@
 import {
   Component,
-  Input, OnInit,
+  Input, OnDestroy, OnInit,
 } from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-schedule-time-dropdown',
@@ -11,7 +12,9 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './schedule-time-dropdown.component.html',
   styleUrl: './schedule-time-dropdown.component.css'
 })
-export class ScheduleTimeDropdownComponent implements OnInit{
+export class ScheduleTimeDropdownComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   @Input() eventScheduleTimeControl!: FormControl;
   @Input() groupStatusControl!: FormControl;
   timeOptions: string[] = [];
@@ -37,5 +40,10 @@ export class ScheduleTimeDropdownComponent implements OnInit{
       this.timeOptions.push(`${paddedHour}:00`);
       this.timeOptions.push(`${paddedHour}:30`);
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

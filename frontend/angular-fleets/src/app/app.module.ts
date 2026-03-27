@@ -80,6 +80,8 @@ import {
 import {NotificationComponent} from "./components/dropdowns/notifications/notification/notification.component";
 import { ListingSuccessComponent } from './components/listing-success/listing-success.component';
 import { HowToComponent } from './components/how-to/how-to.component';
+import { UserDeleteAccountPopupComponent } from './components/pop-ups/user-delete-account-popup/user-delete-account-popup.component';
+import { ConfirmDelinkDiscordPopupComponent } from './components/pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component';
 
 @NgModule({
   declarations: [
@@ -101,6 +103,8 @@ import { HowToComponent } from './components/how-to/how-to.component';
     ModIssueDetailedComponent,
     ListingSuccessComponent,
     HowToComponent,
+    UserDeleteAccountPopupComponent,
+    ConfirmDelinkDiscordPopupComponent,
   ],
   imports: [
     BrowserModule,

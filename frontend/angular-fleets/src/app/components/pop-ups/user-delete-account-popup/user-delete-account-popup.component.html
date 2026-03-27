@@ -1,0 +1,61 @@
+<mat-dialog-content class="message-container">
+  <div class="header-container">
+    <h3>Confirm Account Deletion</h3>
+  </div>
+  <div class="message-body">
+    <div class="subheader-container">
+      <span>Confirm that you would like to <span class="fancy-text">delete your SCFleetFinder account</span>.</span>
+    </div>
+    <ul>
+      <li>
+        Any personal information like <span class="bold-text">email or Discord account links will be removed.</span>
+      </li>
+
+      <li>
+        You will no longer receive notifications from SCFleetFinder.
+      </li>
+
+      <li>
+        <span class="bold-text">Shared content</span>, such as chat messages will
+        <span class="bold-text">still be visible</span> to other users.
+      </li>
+
+      <li>
+        Personal content, such as group listings, templates, and custom notifications
+        <span class="bold-text">will be removed.</span>
+      </li>
+
+      <li>
+        Removed content <span class="bold-text">CANNOT be recovered.</span>
+      </li>
+    </ul>
+    <div class="alt-text">
+      <span>
+        If you would prefer to disable third-party notifications, unlink your Discord, or remove other profile
+        information, you can do this by editing your profile from the 'Profile' page.
+      </span>
+    </div>
+  </div>
+  <div>
+    <mat-checkbox
+      class="checkbox-element"
+      [formControl]="confirmDeleteAccount">
+      Confirm account deletion.
+    </mat-checkbox>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button
+    class="action-buttons"
+    (click)="onCancel()">
+    Cancel
+  </button>
+
+  <button
+    mat-button class="action-buttons"
+    (click)="onConfirm()"
+    [disabled]="confirmDeleteAccount.value === false">
+    Confirm
+  </button>
+</mat-dialog-actions>

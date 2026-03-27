@@ -1,0 +1,38 @@
+<div class="accordion-panel-wrapper">
+  <div class="button-row-container">
+    <div class="button-row-right">
+      <button class="action-buttons"
+        (click)="confirmDeleteAllNotifications()"
+        [disabled]="noNotifications">
+        Delete All
+      </button>
+    </div>
+  </div>
+  <div class="note-chips-container">
+    <div class="proliferation-container">
+      <ng-container *ngIf="!noNotifications; else noNotes">
+        <ng-container *ngIf="notesService.myNotifications$ | async as myNotifications">
+          @for(note of myNotifications; track note.notificationId) {
+            <ng-container *ngIf="NOTE_TYPES_WITH_METADATA.includes(note.type); else noMetaData">
+              <app-notification-chip-with-metadata
+                [inputNote]="note">
+              <!-- TODO DEFINE THE LAYOUT AND PRINT STUFF FOR THESE -->
+              </app-notification-chip-with-metadata>
+            </ng-container>
+            <ng-template #noMetaData>
+              <app-notification-chip-generic
+                [inputNote]="note"
+                (deleteNoteEvent)="deleteSingleNoteEvent($event)">
+              </app-notification-chip-generic>
+            </ng-template>
+          }
+        </ng-container>
+      </ng-container>
+      <ng-template #noNotes>
+        <div id="no-notes-message">
+          <span>You do not have any notifications.</span>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</div>

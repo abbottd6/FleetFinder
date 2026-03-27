@@ -1,9 +1,10 @@
-import {Component, Input, OnInit, ChangeDetectorRef, AfterViewInit} from '@angular/core';
+import {Component, Input, OnInit, ChangeDetectorRef, AfterViewInit, OnDestroy} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
+import {catchError, of, Subject} from "rxjs";
 import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
 import {ListingFormService} from "../../../services/listing-form-service/listing-form.service";
+import {ServerRegion} from "../../../models/reference-data/reference-data.models";
 
 @Component({
     selector: 'app-server-dropdown',
@@ -11,15 +12,17 @@ import {ListingFormService} from "../../../services/listing-form-service/listing
     styleUrl: './server-dropdown.component.css',
     standalone: false
 })
-export class ServerDropdownComponent implements AfterViewInit {
+export class ServerDropdownComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   @Input() serverControl!: FormControl;
-  servers: {serverId: number, servername: string}[] = [];
+  servers: ServerRegion[] = [];
 
   constructor(private lookupService: LookupService,
               private cdr: ChangeDetectorRef,
               private formService: ListingFormService) {}
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.fetchServerRegions();
   }
 
@@ -90,4 +93,9 @@ export class ServerDropdownComponent implements AfterViewInit {
     { label: 'South Africa Standard Time', value: 'Africa/Johannesburg' },
     { label: 'Eastern European Time (EET)', value: 'Africa/Cairo' }
   ]
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

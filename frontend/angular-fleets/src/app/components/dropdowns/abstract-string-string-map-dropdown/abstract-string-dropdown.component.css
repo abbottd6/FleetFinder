@@ -1,0 +1,5 @@
+@import '../dropdown-module/dropdown-styles.css';
+
+.dropdown-component ng-select {
+  min-width: 14rem;
+}

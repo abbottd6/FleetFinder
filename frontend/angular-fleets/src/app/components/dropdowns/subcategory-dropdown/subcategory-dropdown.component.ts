@@ -1,9 +1,9 @@
-import {AfterViewInit, Component, Input} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
+import {catchError, of, Subject} from "rxjs";
 import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
-import {ListingFormService} from "../../../services/listing-form-service/listing-form.service";
+import {GameplaySubcategory} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-subcategory-dropdown',
@@ -12,17 +12,18 @@ import {ListingFormService} from "../../../services/listing-form-service/listing
   templateUrl: './subcategory-dropdown.component.html',
   styleUrl: './subcategory-dropdown.component.css'
 })
-export class SubcategoryDropdownComponent implements AfterViewInit{
+export class SubcategoryDropdownComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
+  @Input() altLabel: string | null = null;
   @Input() subcategoryControl!: FormControl;
   @Input() categoryControl!: FormControl;
-  subcategories: {subcategoryId: number, subcategoryName: string,
-    gameplayCategoryId: number, gameplayCategoryName: string}[] = [];
-  filteredSubcategories: {subcategoryId: number, subcategoryName: string,
-    gameplayCategoryId: number, gameplayCategoryName: string}[] = [];
+  subcategories: GameplaySubcategory[] = [];
+  filteredSubcategories: GameplaySubcategory[] = [];
 
   constructor(private lookupService: LookupService) { }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.categoryControl?.valueChanges.subscribe(value => {
       this.subcategoryControl.reset();
       this.applySubcatFilter(value);
@@ -80,5 +81,10 @@ export class SubcategoryDropdownComponent implements AfterViewInit{
       this.subcategoryControl?.reset();
       this.subcategoryControl?.disable();
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

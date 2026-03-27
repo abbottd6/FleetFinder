@@ -5,7 +5,7 @@ import {UserService} from "../../services/user-services/user.service";
 import {MatIconModule} from "@angular/material/icon";
 import {RouterLink} from "@angular/router";
 import {map, Observable} from "rxjs";
-import {PrivateUser} from "../../models/private-user/private-user";
+import {LANGUAGE_OPTIONS, LanguageCode} from "../../models/language-options";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -43,6 +43,7 @@ export class GroupListingModalComponent implements OnInit {
 
   constructor(private userService: UserService, protected chatHostSrv: ChatHostService) {
     this.userService = userService;
+    console.log("LANGUAGE CODE: ", this.selectedListing?.languageCode)
 
     this.userService.sessionUser$.pipe(takeUntilDestroyed(this.modalDestroyRef)).pipe(
       map(user => user?.groupListingsDto ?? [])

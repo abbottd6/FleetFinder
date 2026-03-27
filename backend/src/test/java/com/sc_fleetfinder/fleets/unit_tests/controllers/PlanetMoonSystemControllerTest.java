@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlanetMoonSystemDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.PlanetMoonSystemController;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.PlanetMoonSystemService;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class PlanetMoonSystemControllerTest {
 
     @MockitoBean
     private PlanetMoonSystemService planetMoonSystemService;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private List<PlanetMoonSystemDto> mockPlanetDtos;
 

@@ -1,8 +1,9 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
-import {FormControl, FormGroup} from "@angular/forms";
+import {catchError, of, Subject} from "rxjs";
+import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {PvpStatus} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-pvp-status-dropdown',
@@ -12,13 +13,15 @@ import {environment} from "../../../../environments/environment";
   styleUrl: './pvp-status-dropdown.component.css'
 })
 
-export class PvpStatusDropdownComponent implements AfterViewInit{
+export class PvpStatusDropdownComponent implements OnInit, OnDestroy {
+  private destroy$: Subject<void> = new Subject<void>();
+
   @Input() pvpStatusControl!: FormControl;
-  pvpStatuses: {pvpStatusId: number, pvpStatus: string}[] = [];
+  pvpStatuses: PvpStatus[] = [];
 
   constructor(private lookupService: LookupService) { }
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.fetchPvpStatuses();
   }
 
@@ -34,5 +37,10 @@ export class PvpStatusDropdownComponent implements AfterViewInit{
         if(!environment.production) {
           console.log('Pvp status dropdown options fetched:', this.pvpStatuses);
         }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

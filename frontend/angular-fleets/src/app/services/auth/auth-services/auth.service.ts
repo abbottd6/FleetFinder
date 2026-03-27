@@ -59,6 +59,12 @@ export class AuthService {
     });
   }
 
+  forceNewToken() {
+    const user = this.oidc.forceRefreshSession();
+    this.authClaims$ = this.oidc.getUserData();
+    return user;
+  }
+
   logout() {
     sessionStorage.setItem('post_logout_msg', 'true');
 

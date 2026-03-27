@@ -1,15 +1,12 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.lang.Nullable;
-
-import java.time.Instant;
 
 @Data
 public class CreateGroupListingDto {
@@ -31,7 +28,6 @@ public class CreateGroupListingDto {
             "between 2 and 65 characters.")
     private String listingTitle;
 
-    @Nullable
     private Integer playStyleId;
 
     @NotNull(message = "Create group listing DTO field 'legalityId' cannot be null")
@@ -40,19 +36,15 @@ public class CreateGroupListingDto {
     @NotNull(message = "Create group listing DTO field 'groupStatusId' cannot be null")
     private Integer groupStatusId;
 
-    @Nullable
     private String eventDate;
 
-    @Nullable
     private String eventTime;
 
-    @Nullable
     private String eventTimeZone;
 
     @NotNull(message = "Create group listing DTO field 'categoryId' cannot be null")
     private Integer categoryId;
 
-    @Nullable
     private Integer subcategoryId;
 
     @NotNull(message = "Create group listing DTO field 'pvpStatusId' cannot be null")
@@ -61,7 +53,6 @@ public class CreateGroupListingDto {
     @NotNull(message = "Create group listing DTO field 'systemId' cannot be null")
     private Integer systemId;
 
-    @Nullable
     private Integer planetId;
 
     @NotBlank(message = "Create group listing DTO field 'listingDescription' cannot be blank")
@@ -79,13 +70,14 @@ public class CreateGroupListingDto {
     private Integer currentPartySize;
 
     @Size(max = 255, message = "Create listing DTO field 'availableRoles' cannot exceed 255 characters")
-    @Nullable
     private String availableRoles;
 
     @NotNull(message = "Create listing DTO field 'commsOption' cannot be null")
     private String commsOption;
 
     @Size(max = 50, message = "Create listing DTO field 'listingCommsService' cannot exceed 50 characters")
-    @Nullable
     private String commsService;
+
+    @NotNull(message = "CreateGroupListingDto field 'languageCode' cannot be null")
+    private LanguageOptions languageCode;
 }
