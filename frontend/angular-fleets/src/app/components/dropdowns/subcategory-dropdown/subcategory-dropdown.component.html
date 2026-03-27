@@ -1,10 +1,15 @@
 <div class="dropdown-component">
   <label id="subcategories-dropdown">
-    Subcategory:
-    <mat-icon class="tooltip-icon"
-              matTooltip="Optional">
-      help_outline
-    </mat-icon>
+    <ng-container *ngIf="!altLabel; else hasAltLabel">
+      Subcategory:
+      <mat-icon class="tooltip-icon"
+                matTooltip="Optional">
+        help_outline
+      </mat-icon>
+    </ng-container>
+    <ng-template #hasAltLabel>
+      {{ altLabel }}
+    </ng-template>
   </label>
   <ng-select
     [items]="filteredSubcategories"

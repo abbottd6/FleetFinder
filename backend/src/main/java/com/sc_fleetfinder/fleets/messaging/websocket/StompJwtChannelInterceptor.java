@@ -40,7 +40,7 @@ public class StompJwtChannelInterceptor implements ChannelInterceptor {
 
             String authHeader = firstNativeHeader(accessor, "Authorization");
 
-            if (!StringUtils.hasText(authHeader) && !authHeader.startsWith("Bearer ")) {
+            if (!StringUtils.hasText(authHeader) || !authHeader.startsWith("Bearer ")) {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Message is missing Bearer token.");
             }
 

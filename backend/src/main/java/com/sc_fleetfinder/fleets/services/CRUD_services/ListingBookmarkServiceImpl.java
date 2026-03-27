@@ -9,17 +9,21 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingBookmarkDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ListingBookmark;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.conversion_services.BookmarkConversionService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.Collections;
@@ -199,6 +203,18 @@ public class ListingBookmarkServiceImpl implements ListingBookmarkService {
             log.error("DeleteMultipleBookmarks failed. {}", e.getMessage());
             response.put("message", "An error occurred while deleting these bookmarks.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void onUserAccountDeleted(UserAccountDeleteEvent event) {
+        try {
+            bmr.deleteAllByUser(event.getDeletedUser());
+        }
+        catch (Exception e) {
+            log.error("User account delete event threw an error trying to delete the users " +
+                    "bookmarks:\n{}", e.getMessage());
         }
     }
 }

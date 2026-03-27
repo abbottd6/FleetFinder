@@ -1,7 +1,11 @@
 package com.sc_fleetfinder.fleets.entities;
 
+import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadataConverter;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -38,6 +42,11 @@ public class NotificationOutbox {
     @NotNull(message="NotificationOutbox field 'eventType' cannot be null.")
     private NotificationType eventType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name="delivery_channel")
+    @NotNull(message="NotificationOutbox entity field 'delivery_channel' cannot be null.")
+    private DeliveryChannel deliveryChannel;
+
     //name of entity type
     @Column(name="entity_type")
     @NotNull(message="NotificationOutbox field 'entityType' cannot be null.")
@@ -57,20 +66,37 @@ public class NotificationOutbox {
     @Column(name="entity_new_status", nullable = true)
     private String entityNewStatus;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name="payload_json", nullable = true)
-    private JsonNode payloadJson;
+    @Column(name="parent_entity_id")
+    private Long parentEntityId;
 
-    @Column(name="status")
+    @Column(name="parent_entity_type")
+    private String parentEntityType;
+
+    @Column(name = "sibling_key", nullable = true)
+    private String siblingKey;
+
+    @Convert(converter = NotificationTargetMetadataConverter.class)
+    @Column(name="payload_json", nullable = true, columnDefinition = "JSON DEFAULT NULL")
+    private NotificationTargetMetadata payloadJson;
+
+    @Column(name="status", nullable = false, columnDefinition = "VARCHAR(16) NOT NULL DEFAULT 'PENDING'")
     @NotNull(message="NotificationOutbox field 'status' cannot be null.")
     private String status;
 
-    @Column(name="attempt_count")
+    @ManyToOne
+    @JoinColumn(name="push_sub_id", nullable = true)
+    private PushSubscription targetPushSub;
+
+    @Column(name="attempt_count", nullable = false)
     @NotNull(message="NotificationOutbox field 'attemptCount' cannot be null.")
     private Integer attemptCount = 0;
 
-    @Column(name="last_error", nullable = true)
+    @Column(name="last_error", nullable = true, columnDefinition = "VARCHAR(2048)")
     private String lastError;
+
+    @Column(name="error_count", nullable = false, columnDefinition = "TINYINT NOT NULL DEFAULT 0")
+    @NotNull(message="NotificationOutbox entity field 'errorCount' should not be null.")
+    private Integer errorCount = 0;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

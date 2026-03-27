@@ -18,6 +18,7 @@ export class ListingFilterRequest {
       dateStart: filterData.dateStart ?? null,
       dateEnd: filterData.dateEnd ?? null,
       commsOption: filterData.commsOption?.id ?? null,
+      languageCode: filterData.language?.option ?? null,
     })
   }
 }

@@ -6,7 +6,6 @@ import {MessageViewModel} from "../../models/chat/message-view-model";
 import {ConversationViewModel} from "../../models/chat/conversation-view-model";
 import {NotificationViewModel} from "../../models/NotificationViewModel";
 import {AuthService} from "../auth/auth-services/auth.service";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 export interface UnreadSummaryDto {
   totalUnread: number;

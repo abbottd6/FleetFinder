@@ -1,5 +1,6 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormControl, FormGroup} from "@angular/forms";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'app-schedule-time-zone-dropdown',
@@ -8,7 +9,9 @@ import {FormControl, FormGroup} from "@angular/forms";
   templateUrl: './schedule-time-zone-dropdown.component.html',
   styleUrl: './schedule-time-zone-dropdown.component.css'
 })
-export class ScheduleTimeZoneDropdownComponent implements AfterViewInit{
+export class ScheduleTimeZoneDropdownComponent implements AfterViewInit, OnDestroy {
+  private destroy$: Subject<void> = new Subject<void>();
+
   @Input() eventScheduleZoneControl!: FormControl;
   @Input() groupStatusControl!: FormControl;
 
@@ -58,5 +61,10 @@ export class ScheduleTimeZoneDropdownComponent implements AfterViewInit{
     if (optionsMatchedTimeZone) {
       this.eventScheduleZoneControl.setValue(optionsMatchedTimeZone.value);
     }
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

@@ -1,0 +1,34 @@
+<div class="chip-self">
+
+  <div class="header-row">
+    <h5 id="header-left">{{ header }}</h5>
+    <span id="header-right">
+      <span class="field-label">
+        Created: {{ inputNote.createdAt | date:'MMM d, h:mm a'}}</span>
+    </span>
+  </div>
+
+  <div class="content-body">
+    <div class="title-column">
+      <p>{{ inputNote.title }}
+        @if (isExpired) {
+          <span class="note-msg">{{ inputNote.message }}</span>
+        }
+      </p>
+    </div>
+    <div class="message-column">
+      <div>
+        <span
+          [class.archive-date]="isExpired">{{ message }} {{ archiveDate ? (archiveDate | date: 'MMM d') : '' }}</span>
+        @if (!isExpired) {
+          <span class="note-msg">{{ inputNote.message }}</span>
+        }
+      </div>
+    </div>
+    <div class="action-column">
+      <a (click)="deleteThisNotification()">
+        <mat-icon id="delete-note">delete</mat-icon>
+      </a>
+    </div>
+  </div>
+</div>

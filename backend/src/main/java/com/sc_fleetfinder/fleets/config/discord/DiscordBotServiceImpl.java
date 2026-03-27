@@ -1,0 +1,119 @@
+package com.sc_fleetfinder.fleets.config.discord;
+
+import com.sc_fleetfinder.fleets.entities.Notification;
+import com.sc_fleetfinder.fleets.utils.ExternalNotifcationResult;
+import com.sc_fleetfinder.fleets.utils.NotificationType;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class DiscordBotServiceImpl implements DiscordBotService {
+
+    private final RestClient discordRestClient;
+
+    @Override
+    public void sendDiscordNotification(String discordUserId, Notification note) {
+        String channelId = openDmChannel(discordUserId);
+        ResponseEntity<?> response = sendDmNotification(channelId, note);
+
+        Map<ExternalNotifcationResult, HttpStatus> messageStatus = new HashMap<>();
+
+        if(response.getStatusCode() == HttpStatus.OK) {
+            messageStatus.put(ExternalNotifcationResult.SUCCESS, HttpStatus.OK);
+            note.setReadAt(Instant.now());
+        } else {
+            throw new ResponseStatusException(response.getStatusCode());
+        }
+    }
+
+    private String openDmChannel(String discordUserId) {
+        Map<String, String> body = Map.of("recipient_id", discordUserId);
+
+        Map response = discordRestClient.post()
+                .uri("/users/@me/channels")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body)
+                .retrieve()
+                .body(Map.class);
+        return (String) response.get("id");
+    }
+
+    private ResponseEntity<?> sendDmNotification(String channelId, Notification note) {
+        String field1;
+        String value1;
+
+        String field2;
+        String value2;
+
+        switch (note.getType()) {
+            case NotificationType.NEW_LISTING_MATCH:
+                field1 = "Group Status";
+                value1 = note.getTargetMetadata().getAddContext();
+
+                //TODO add this page and routing
+                field2 = "Check it out: ";
+                value2 = "https://scfleetfinder.com/listing_details/" + note.getTargetMetadata().getTargetId();
+
+                break;
+            case NotificationType.NEW_CHAT_MESSAGE:
+                field1 = "Conversation: ";
+                value1 = note.getTargetMetadata().getAddContext();
+
+                field2 = "Check it out: ";
+                value2 = "https://scfleetfinder.com";
+
+                break;
+            case NotificationType.MOD_DELETE:
+                field1 = "Action performed by a(n): ";
+                value1 = note.getTargetMetadata().getTargetLabel();
+
+                field2 = "Moderator note: ";
+                value2 = note.getTargetMetadata().getAddContext();
+                break;
+            default:
+                field1 = "New Status: ";
+                value1 = note.getTargetMetadata().getAddContext();
+
+                field2 = "You can visit the How To page to learn more about status meanings:";
+                value2 = "https://scfleetfinder.com";
+        }
+
+        Map<String, Object> embed = Map.of(
+                "title", note.getTitle(),
+                "description", note.getMessage(),
+                "color", 0x5865F2,
+                "fields", List.of(
+                        Map.of("name", field1, "value", value1, "inline", true),
+                        Map.of("name", field2, "value", value2, "inline", true)
+                ),
+                "timestamp", Instant.now().toString()
+        );
+        Map<String, Object> body = Map.of(
+                "embeds", List.of(embed)
+        );
+
+        ResponseEntity<?> response = discordRestClient.post()
+                .uri("/channels/{channelId}/messages", channelId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body)
+                .retrieve()
+                .toBodilessEntity();
+
+        log.info(response.toString());
+        return response;
+    }
+}

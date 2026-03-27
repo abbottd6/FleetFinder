@@ -1,0 +1,41 @@
+@import "../custom-notification-chip/custom-notification-chip.component.css";
+
+:host .chip-self {
+  min-height: 50px;
+}
+
+.content-body {
+  display: flex;
+  flex-direction: row;
+  margin-inline: 2%;
+}
+
+.title-column {
+  flex: 0 0 auto;
+}
+
+.message-column {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.action-column {
+  flex: 0 0 auto;
+}
+
+#delete-note {
+  scale: 1.25;
+  transition: 0.25s ease;
+}
+
+#delete-note:hover {
+  cursor: pointer;
+  color: rgba(255, 131, 7, .5);
+}
+
+TEMP {
+  background-color: rgba(53, 114, 163, 0.5);
+  border: 1px solid rgba(52, 58, 64, 0.85);
+  color: rgb(53, 114, 163);
+  fill: rgba(255, 131, 7, .3);
+}

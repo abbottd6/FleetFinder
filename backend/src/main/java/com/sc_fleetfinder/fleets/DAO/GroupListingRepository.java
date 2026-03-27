@@ -18,9 +18,10 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
 
     @Modifying
     @Query(value = """
-            INSERT INTO notification_outbox (
+            INSERT IGNORE INTO notification_outbox (
                 event_type, entity_type, entity_id, entity_owner_id,
-                entity_new_status, payload_json, status, created_at
+                entity_new_status, payload_json, status, push_sub_id,
+                delivery_channel, sibling_key, created_at
                 )
             SELECT
                 'LISTING_ARCHIVED'                      AS event_type,
@@ -29,17 +30,39 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 gl.id_user                              AS entity_owner_id,
                 'ARCHIVED'                              AS entity_new_status,
                 JSON_OBJECT(
-                    'groupId', gl.id_group,
-                    'oldStatus', gl.vis_status,
-                    'newStatus', 'ARCHIVED'
+                    'noteTopic',        null,
+                    'targetId',         gl.id_group,
+                    'targetLabel',      gl.listing_title,
+                    'targetCreatedAt',  gl.creation_timestamp,
+                    'addContext',       null
                 )                                       AS payload_json,
                 'PENDING'                               AS status,
+                push.id_push_sub                        AS push_sub_id,
+                channels.delivery_channel               AS delivery_channel,
+                SHA2(CONCAT('LISTING_ARCHIVED', '|', 'GROUP_LISTING', '|', gl.id_group, '|', gl.id_user, '|', 'ARCHIVED'), 256) AS sibling_key,
                 NOW()                                   AS created_at
             FROM group_listing gl
+            JOIN users u ON gl.id_user = u.id_user
+            CROSS JOIN (
+                SELECT 'IN_APP' AS delivery_channel UNION ALL
+                SELECT 'DISCORD' UNION ALL
+                SELECT 'PUSH'
+            ) AS channels
+            LEFT JOIN push_subscription push
+                ON push.user_id = gl.id_user
+                AND channels.delivery_channel = 'PUSH'
+                AND push.sys_notes_enabled = 1
             WHERE gl.vis_status = 'ARCHIVED'
               AND gl.last_updated < (NOW() - INTERVAL 14 DAY)
               AND (gl.event_schedule IS NULL OR gl.event_schedule < (NOW() - INTERVAL 14 DAY))
-            ON DUPLICATE KEY UPDATE outbox_id = outbox_id
+              AND (
+                channels.delivery_channel = 'IN_APP'
+                OR (channels.delivery_channel = 'DISCORD'
+                    AND u.discord_user_id IS NOT NULL
+                    AND u.external_sys_notes_enabled = 1)
+                OR (channels.delivery_channel = 'PUSH'
+                    AND push.sys_notes_enabled = 1)
+              )
             """, nativeQuery = true)
     int createOutboxEntriesForArchiveNotifications();
 
@@ -64,9 +87,10 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
 
     @Modifying
     @Query(value = """
-            INSERT INTO notification_outbox (
+            INSERT IGNORE INTO notification_outbox (
                 event_type, entity_type, entity_id, entity_owner_id,
-                entity_new_status, payload_json, status, created_at
+                entity_new_status, payload_json, status, push_sub_id,
+                delivery_channel, sibling_key, created_at
                 )
             SELECT
                 'LISTING_VIS_STATUS_CHANGED'                AS event_type,
@@ -75,13 +99,19 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 gl.id_user                                  AS entity_owner_id,
                 computed.entity_new_status                  AS entity_new_status,
                 JSON_OBJECT(
-                    'groupId', gl.id_group,
-                    'oldStatus', gl.vis_status,
-                    'newStatus', computed.entity_new_status
+                    'noteTopic',        'LISTING_VIS_STATUS_CHANGED',
+                    'targetId',         gl.id_group,
+                    'targetLabel',      gl.listing_title,
+                    'targetCreatedAt',  gl.creation_timestamp,
+                    'addContext',       computed.entity_new_status
                 )                                           AS payload_json,
                 'PENDING'                                   AS status,
+                push.id_push_sub                            AS push_sub_id,
+                channels.delivery_channel                   AS delivery_channel,
+                SHA2(CONCAT('LISTING_VIS_STATUS_CHANGED', '|', 'GROUP_LISTING', '|', gl.id_group, '|', gl.id_user, '|', COALESCE(computed.entity_new_status, '')), 256) AS sibling_key,
                 NOW()                                       AS created_at
             FROM group_listing gl
+            JOIN users u ON gl.id_user = u.id_user
             JOIN (
                 SELECT
                     id_group,
@@ -98,8 +128,24 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                     END AS entity_new_status
                 FROM group_listing
             ) computed ON computed.id_group = gl.id_group
+            CROSS JOIN (
+                SELECT 'IN_APP' AS delivery_channel UNION ALL
+                SELECT 'DISCORD' UNION ALL
+                SELECT 'PUSH'
+            ) AS channels
+            LEFT JOIN push_subscription push
+                ON push.user_id = gl.id_user
+                AND channels.delivery_channel = 'PUSH'
+                AND push.sys_notes_enabled = 1
             WHERE computed.entity_new_status <> gl.vis_status
-            ON DUPLICATE KEY UPDATE outbox_id = outbox_id
+                AND (
+                    channels.delivery_channel = 'IN_APP'
+                    OR (channels.delivery_channel = 'DISCORD'
+                        AND u.discord_user_id IS NOT NULL
+                        AND u.external_sys_notes_enabled = 1)
+                    OR (channels.delivery_channel = 'PUSH'
+                        AND push.sys_notes_enabled = 1)
+                )
             """, nativeQuery = true)
     int createNotificationOutboxEntriesForStatusUpdates();
 
@@ -132,4 +178,12 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 END
             """, nativeQuery = true)
     int updateListingVisStatuses();
+
+    @Modifying
+    @Query(value = """
+            UPDATE group_listing gl
+            SET gl.vis_status = 'EXPIRED'
+            WHERE gl.id_user = :userId
+            """, nativeQuery = true)
+    void expireAllUserListingsOnDelete(@Param("userId") Long userId);
 }

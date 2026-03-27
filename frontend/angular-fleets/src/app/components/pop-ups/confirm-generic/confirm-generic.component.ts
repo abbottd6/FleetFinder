@@ -1,7 +1,5 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
-import {reportOption} from "../../../services/api-services/listing-reports-api/listing-report-api.service";
 
 @Component({
   selector: 'app-confirm-generic',

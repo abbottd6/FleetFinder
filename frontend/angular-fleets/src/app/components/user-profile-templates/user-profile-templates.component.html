@@ -1,5 +1,11 @@
 <div class="title-container">
   <h5>Templates:</h5>
+
+  <div class="header-notice">
+    <p>
+      Save templates for listings that you create so you can reuse them to simplify the listing creation process.
+    </p>
+  </div>
 </div>
 <ng-container *ngIf="(layoutMode$ | async) !== 'handheld'; else feedview">
   <div class="button-row">
@@ -95,8 +101,9 @@
     </table>
   </div>
 </ng-container>
-<div class="user-table">
-  <ng-template #feedview>
+<ng-template #feedview>
+  <div class="user-table">
+
     <table mat-table
            [dataSource]="dataSource">
 
@@ -160,12 +167,11 @@
         <tr mat-row *matRowDef="let row; columns: columns"></tr>
       </ng-container>
     </table>
-  </ng-template>
-</div>
-
+  </div>
+</ng-template>
 
 <div class="no-results-container" *ngIf="noResults">
-  <p>No active listings bookmarked</p>
+  <p>You don't have any templates saved</p>
 </div>
 
 <!-- Paginator -->

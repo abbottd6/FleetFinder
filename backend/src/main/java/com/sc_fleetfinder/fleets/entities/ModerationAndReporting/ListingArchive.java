@@ -14,8 +14,11 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,7 +40,7 @@ public class ListingArchive {
 
     protected ListingArchive(){}
     //constructor for AutoMod deletions and user deletions
-    public ListingArchive(GroupListing listing, ModerationIssue issue, String note) {
+    public ListingArchive(GroupListing listing, ModerationIssue issue, String actionType, String note) {
         this.groupId = listing.getGroupId();
         this.userId = listing.getUsers().getUserId();
         this.username = listing.getUsers().getUsername();
@@ -60,6 +63,8 @@ public class ListingArchive {
         this.currentPartySize = listing.getCurrentPartySize();
         this.desiredPartySize = listing.getDesiredPartySize();
         this.commsOption = listing.getCommsOption();
+        this.languageCode = listing.getLanguageCode();
+
         this.listingCreationTs = listing.getCreationTimestamp();
         this.listingLastUpdated = listing.getLastUpdated();
         this.reportTotalCount = issue.getReportTotalCount();
@@ -73,7 +78,7 @@ public class ListingArchive {
         this.cheatCount = issue.getCheatCount();
         this.otherCount = issue.getOtherCount();
         this.status = issue.getStatus();
-        this.actionType = "Auto";
+        this.actionType = actionType;
         this.actionNote = note;
     }
 
@@ -102,6 +107,7 @@ public class ListingArchive {
         this.currentPartySize = listing.getCurrentPartySize();
         this.desiredPartySize = listing.getDesiredPartySize();
         this.commsOption = listing.getCommsOption();
+        this.languageCode = listing.getLanguageCode();
         this.listingCreationTs = listing.getCreationTimestamp();
         this.listingLastUpdated = listing.getLastUpdated();
         this.reportTotalCount = issue.getReportTotalCount();
@@ -143,7 +149,7 @@ public class ListingArchive {
     private String listingTitle;
 
     @NotNull(message="ListingArchive field 'listingDescription' cannot be null.")
-    @Column(name="listing_description", length=550, nullable = false)
+    @Column(name="listing_description", length=2000, nullable = false)
     private String listingDescription;
 
     @Column(name="listing_roles")
@@ -168,8 +174,7 @@ public class ListingArchive {
     private GameExperience experience;
 
     @ManyToOne
-    @Nullable
-    @JoinColumn(name="style_id")
+    @JoinColumn(name="style_id", nullable = true)
     private PlayStyle playStyle;
 
     @ManyToOne
@@ -182,8 +187,7 @@ public class ListingArchive {
     @NotNull(message = "GroupListing entity field 'groupStatus' cannot be null")
     private GroupStatus groupStatus;
 
-    @Column(name="event_schedule")
-    @Nullable
+    @Column(name="event_schedule", nullable = true)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant eventSchedule;
 
@@ -193,8 +197,7 @@ public class ListingArchive {
     private GameplayCategory category;
 
     @ManyToOne
-    @JoinColumn(name="subcategory_id")
-    @Nullable
+    @JoinColumn(name="subcategory_id", nullable = true)
     private GameplaySubcategory subcategory;
 
     @ManyToOne
@@ -208,8 +211,7 @@ public class ListingArchive {
     private PlanetarySystem system;
 
     @ManyToOne
-    @JoinColumn(name="planet_id")
-    @Nullable
+    @JoinColumn(name="planet_id", nullable = true)
     private PlanetMoonSystem planetMoonSystem;
 
     @Column(name="current_party_size")
@@ -220,9 +222,14 @@ public class ListingArchive {
     @NotNull(message="ListingArchive field 'desiredPartySize' cannot be null.")
     private Integer desiredPartySize;
 
-    @Column(name="comms_options")
-    @NotNull(message = "GroupListing entity field 'commsOptions' cannot be null")
+    @Column(name="comms_options", columnDefinition = "ENUM ('Required', 'Optional', 'No Comms')")
+    @NotNull(message = "ListingArchive field 'commsOptions' cannot be null.")
     private String commsOption;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="language_code")
+    @NotNull(message="ListingArchive field 'languageCode' cannot be null.")
+    private LanguageOptions languageCode;
 
     @Column(name="listing_creation_ts")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
@@ -274,7 +281,7 @@ public class ListingArchive {
     @Column(name="other_count")
     private Integer otherCount;
 
-    @Column(name="status")
+    @Column(name="status", columnDefinition = "ENUM ('Pending', 'No Reports', 'Cleared', 'Actioned')")
     private String status;
 
     @Column(name="id_mod")
@@ -284,8 +291,8 @@ public class ListingArchive {
     private String modname;
 
     @NotNull(message="ListingArchive field 'actionType' cannot be null.")
-    @Column(name="action_type")
-    private String actionType;
+    @Column(name="action_type", columnDefinition="ENUM('None', 'AutoMod', 'Manual')")
+    private String actionType = "None";
 
     @Column(name="action_note")
     private String actionNote;

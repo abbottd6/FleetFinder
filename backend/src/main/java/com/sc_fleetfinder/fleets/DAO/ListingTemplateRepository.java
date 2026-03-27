@@ -17,4 +17,8 @@ public interface ListingTemplateRepository extends JpaRepository<ListingTemplate
     @Modifying
     @Query("DELETE FROM ListingTemplate lt WHERE lt.user = :user and lt.templateId = :id")
     int deleteByUserAndId(@Param("user") Users user, @Param("id") Long templateId);
+
+    @Modifying
+    @Query("DELETE FROM ListingTemplate lt WHERE lt.user.userId = :userId")
+    void deleteAllByUserId(@Param("userId") Long userId);
 }

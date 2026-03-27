@@ -1,9 +1,16 @@
 package com.sc_fleetfinder.fleets.entities;
 
-import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
+import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
+import com.sc_fleetfinder.fleets.utils.ParentEntityReference;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
+import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadataConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,24 +34,35 @@ import java.time.Instant;
 @NoArgsConstructor
 public class Notification {
 
-    public Notification(Users user, NotificationType type,
-                        String title, String message,
-                        ModListingAction modAction) {
-        this.user = user;
-        this.type = type;
+    //LISTING ARCHIVE/STATUS CHANGE NOTIFICATION CONSTRUCTOR
+    public Notification(NotificationOutbox outbox, String title, String message) {
+        this.user = outbox.getEntityOwner();
+        this.type = outbox.getEventType();
+        this.outbox = outbox;
         this.title = title;
         this.message = message;
-        this.action = modAction;
+        this.deliveryChannel = outbox.getDeliveryChannel();
+        this.parentEntity = new ParentEntityReference(outbox.getParentEntityId(),
+                outbox.getParentEntityType());
+        this.targetMetadata = outbox.getPayloadJson();
+        this.siblingKey = outbox.getSiblingKey();
     }
 
-    public Notification(Users user,
-                        NotificationType type,
-                        String displayTitle,
-                        String notificationOfStatus) {
-        this.user = user;
-        this.type = type;
-        this.title = displayTitle;
-        this.message = notificationOfStatus;
+    //NEW MESSAGE NOTIFICATION CONSTRUCTOR
+    public Notification(NotificationOutbox outbox,
+                        String title, String message, boolean dropdownPriority) {
+
+        this.user = outbox.getEntityOwner();
+        this.outbox = outbox;
+        this.type = outbox.getEventType();
+        this.title = title;
+        this.message = message;
+        this.deliveryChannel = outbox.getDeliveryChannel();
+        this.parentEntity = new ParentEntityReference(
+                outbox.getParentEntityId(), outbox.getParentEntityType());
+        this.targetMetadata = outbox.getPayloadJson();
+        this.siblingKey = outbox.getSiblingKey();
+        this.dropdownPriority = dropdownPriority;
     }
 
     @Id
@@ -59,6 +77,7 @@ public class Notification {
 
     @Column(name="type")
     @NotNull(message="Notification field 'type' cannot be null.")
+    @Enumerated(EnumType.STRING)
     private NotificationType type;
 
     @Column(name="title", nullable=true)
@@ -69,8 +88,26 @@ public class Notification {
     private String message;
 
     @OneToOne
-    @JoinColumn(name="id_action", nullable=true)
-    private ModListingAction action;
+    @JoinColumn(name = "outbox_id", nullable = true)
+    private NotificationOutbox outbox;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "delivery_channel", nullable = false)
+    @NotNull(message = "Notification field 'deliveryChannel' cannot be null.")
+    private DeliveryChannel deliveryChannel = DeliveryChannel.IN_APP;
+
+    @Embedded
+    private ParentEntityReference parentEntity;
+
+    @Column(name = "sibling_key", nullable = true)
+    private String siblingKey;
+
+    @Column(name="dropdown_priority", nullable = false)
+    private Boolean dropdownPriority = true;
+
+    @Convert(converter = NotificationTargetMetadataConverter.class)
+    @Column(name="target_metadata", nullable = true)
+    private NotificationTargetMetadata targetMetadata;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

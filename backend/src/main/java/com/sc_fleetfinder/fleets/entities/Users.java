@@ -13,6 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -77,6 +78,26 @@ public class Users {
 
     @Column(name="is_deleted")
     private Boolean isDeleted;
+
+    @Column(name="discord_user_id")
+    @Size(max = 20)
+    private String discordId;
+
+    @Column(name="discord_username")
+    @Size(min=2, max=32)
+    private String discordUsername;
+
+    @Column(name="external_sys_notes_enabled")
+    @NotNull(message = "Users entity field 'externalSysNotesEnabled' cannot be null.")
+    private Boolean externalSysNotesEnabled = Boolean.FALSE;
+
+    @Column(name="external_group_notes_enabled")
+    @NotNull(message = "Users entity field 'externalGroupNotesEnabled' cannot be null.")
+    private Boolean externalGroupNotesEnabled = Boolean.FALSE;
+
+    @Column(name="external_social_notes_enabled")
+    @NotNull(message = "Users entity field 'externalSocialNotesEnabled' cannot be null.")
+    private Boolean externalSocialNotesEnabled = Boolean.FALSE;
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true, mappedBy="users")
     @JsonManagedReference

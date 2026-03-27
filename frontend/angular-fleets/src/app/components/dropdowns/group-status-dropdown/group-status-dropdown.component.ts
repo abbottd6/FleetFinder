@@ -1,8 +1,9 @@
-import {AfterViewInit, Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {LookupService} from "../../../services/api-services/reference-data-api/lookup.service";
-import {catchError, of} from "rxjs";
-import {FormControl, FormGroup} from "@angular/forms";
+import {catchError, of, Subject} from "rxjs";
+import {FormControl} from "@angular/forms";
 import {environment} from "../../../../environments/environment";
+import {GroupStatus} from "../../../models/reference-data/reference-data.models";
 
 @Component({
   selector: 'app-group-status-dropdown',
@@ -11,13 +12,15 @@ import {environment} from "../../../../environments/environment";
   templateUrl: './group-status-dropdown.component.html',
   styleUrl: './group-status-dropdown.component.css'
 })
-export class GroupStatusDropdownComponent implements AfterViewInit{
+export class GroupStatusDropdownComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   @Input() groupStatusControl!: FormControl;
-  groupStatuses: {groupStatusId: number, groupStatus: string}[] = [];
+  groupStatuses: GroupStatus[] = [];
 
   constructor(private lookupService: LookupService) {}
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.fetchGroupStatuses()
   }
 
@@ -34,5 +37,10 @@ export class GroupStatusDropdownComponent implements AfterViewInit{
           console.log('Group status dropdown options fetched:', this.groupStatuses);
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

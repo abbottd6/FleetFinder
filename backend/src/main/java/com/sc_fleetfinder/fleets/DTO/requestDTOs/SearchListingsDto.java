@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import lombok.Data;
 import java.time.LocalDate;
 
@@ -20,6 +21,7 @@ public class SearchListingsDto {
     private LocalDate dateStart;
     private LocalDate dateEnd;
     private Integer commsOption;
+    private LanguageOptions languageCode;
     private int page;
     private int size;
     private String sortField;

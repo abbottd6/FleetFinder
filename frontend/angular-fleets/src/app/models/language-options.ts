@@ -1,0 +1,33 @@
+export const LANGUAGE_OPTIONS: string[] = [
+  'Arabic',
+  'Chinese',
+  'Czech',
+  'Danish',
+  'Dutch',
+  'English',
+  'Finnish',
+  'French',
+  'German',
+  'Greek',
+  'Hindi',
+  'Hungarian',
+  'Indonesian',
+  'Italian',
+  'Japanese',
+  'Korean',
+  'Malay',
+  'Norwegian',
+  'Polish',
+  'Portuguese',
+  'Romanian',
+  'Russian',
+  'Spanish',
+  'Swedish',
+  'Thai',
+  'Turkish',
+  'Ukrainian',
+  'Vietnamese',
+] as const;
+
+export type LanguageCode = typeof LANGUAGE_OPTIONS[number];
+

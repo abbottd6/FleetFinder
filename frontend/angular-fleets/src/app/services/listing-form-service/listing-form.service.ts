@@ -5,27 +5,28 @@ import {BehaviorSubject, catchError, forkJoin, of, Subscription} from "rxjs";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {LookupService} from "../api-services/reference-data-api/lookup.service";
 import {environment} from "../../../environments/environment";
+import {LanguageCode} from "../../models/language-options";
 
 type TitleGroup = {
   listingTitle: FormControl<string>;
 };
 type SessionEnvInfoGroup = {
-  serverRegion: FormControl<any>;
-  gameEnvironment: FormControl<any>;
-  gameExperience: FormControl<any>;
+  serverRegion: FormControl<number | null>;
+  gameEnvironment: FormControl<number | null>;
+  gameExperience: FormControl<number | null>;
 };
 type GameplayInfoGroup = {
-  playStyle: FormControl<any>;
-  category: FormControl<any>;
-  subcategory: FormControl<any>;
-  legality: FormControl<any>;
-  pvpStatus: FormControl<any>;
-  planetarySystem: FormControl<any>;
-  planetMoon: FormControl<any>;
+  playStyle: FormControl<number | null>;
+  category: FormControl<number | null>;
+  subcategory: FormControl<number | null>;
+  legality: FormControl<number | null>;
+  pvpStatus: FormControl<number | null>;
+  planetarySystem: FormControl<number | null>;
+  planetMoon: FormControl<number | null>;
   listingDescription: FormControl<string>;
 };
 type GroupSpecInfoGroup = {
-  groupStatus: FormControl<any>;
+  groupStatus: FormControl<number | null>;
   eventScheduleDate: FormControl<string | null>;
   eventScheduleTime: FormControl<string | null>;
   eventScheduleZone: FormControl<string | null>;
@@ -34,6 +35,7 @@ type GroupSpecInfoGroup = {
   availableRoles: FormControl<string | null>;
   commsOption: FormControl<string | null>;
   commsService: FormControl<string | null>;
+  language: FormControl<LanguageCode | null>;
 };
 
 export type ListingFormShape = {
@@ -116,6 +118,7 @@ export class ListingFormService implements OnDestroy{
         availableRoles: new FormControl(null, [Validators.minLength(3)]),
         commsOption: new FormControl('Optional', [Validators.required]),
         commsService: new FormControl({value: null, disabled: false}),
+        language: new FormControl(null, [Validators.required]),
       })
     });
   }
@@ -156,7 +159,8 @@ export class ListingFormService implements OnDestroy{
           desiredPartySize: draft.desiredPartySize,
           availableRoles: draft.availableRoles,
           commsOption: draft.commsOption,
-          commsService: draft.commsService
+          commsService: draft.commsService,
+          language: draft.languageCode
         }
       });
       this.category?.setValue(draft.categoryId);
@@ -179,17 +183,16 @@ export class ListingFormService implements OnDestroy{
 
       const parsedDate = new Date(`${this.padDateString(month)}/${this.padDateString(day)}/${year}`);
 
-      console.log("Parsed date: ", parsedDate)
-
       const parsedTime = `${this.padDateString(hours)}:${this.padDateString(minutes)}`;
-      console.log("Parsed time: ", parsedTime);
 
       this.eventScheduleDate?.setValue(parsedDate);
       this.eventScheduleTime?.setValue(parsedTime);
 
       [this.eventScheduleDate, this.eventScheduleTime, this.eventScheduleZone].forEach(ctrl => {
         ctrl?.updateValueAndValidity({onlySelf: true, emitEvent: false});
-        console.log('value:', ctrl?.value, 'errors:', ctrl?.errors);
+        if(!environment.production) {
+          console.log('value:', ctrl?.value, 'errors:', ctrl?.errors);
+        }
         ctrl?.markAsPristine();
         ctrl?.markAsUntouched();
       });
@@ -229,4 +232,5 @@ export class ListingFormService implements OnDestroy{
   get availableRoles(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.availableRoles') as FormControl }
   get commsOption(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.commsOption') as FormControl }
   get commsService(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.commsService') as FormControl }
+  get language(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.language') as FormControl }
 }

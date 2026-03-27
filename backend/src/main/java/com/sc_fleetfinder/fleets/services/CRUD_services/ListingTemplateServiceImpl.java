@@ -2,9 +2,11 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.ListingTemplateRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrEditListingTemplateDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingTemplate;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.services.conversion_services.TemplateConversionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -12,7 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +42,7 @@ public class ListingTemplateServiceImpl implements ListingTemplateService {
 
     @Override
     @Transactional
-    public ResponseEntity<?> createTemplate(Users user, CreateGroupListingDto dto) {
+    public ResponseEntity<?> createTemplate(Users user, CreateOrEditListingTemplateDto dto) {
         Map<String, String> response = new HashMap<>();
 
         try {
@@ -79,6 +83,18 @@ public class ListingTemplateServiceImpl implements ListingTemplateService {
             log.error("Template could not be deleted: {}", e.getMessage());
             response.put("message", "There was an error deleting this template.");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @TransactionalEventListener
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void onUserAccountDeleted(UserAccountDeleteEvent event) {
+        try {
+            ltr.deleteAllByUserId(event.getDeletedUser().getUserId());
+        }
+        catch (Exception e) {
+            log.error("User account delete event threw an error trying to delete the users " +
+                    "listing templates:\n{}", e.getMessage());
         }
     }
 }

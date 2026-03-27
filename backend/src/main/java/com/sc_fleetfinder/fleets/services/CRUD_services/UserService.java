@@ -1,17 +1,17 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdateUserNotePrefDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
-import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -30,15 +30,24 @@ public interface UserService {
      * @return newly created userDto
      * @throws UserConflictException if email or userName is already in use by another user
      */
-    @Validated
-    PrivateUserResponseDto createUser(String kcId, String rawUsername, String rawEmail);
+    PrivateUserResponseDto createUser(String kcId, String rawUsername, String rawEmail,
+                                      String discordId, String discordUsername);
 
-    @Validated
     PrivateUserResponseDto updateUser(String kcId, @Valid UpdateUserDto updateUserDto);
+
+    Boolean updateUserNotificationPreference(Users user, UpdateUserNotePrefDto dto);
+
+    String generateUserDiscordLink(String kcId);
+
+    PrivateUserResponseDto removeDiscordAccountLink(String kcId);
 
     void deleteUser(String kcId);
 
-    PrivateUserResponseDto getUserByKeycloakId(String kcId);
+    PrivateUserResponseDto getUserByKeycloakIdAndCheckDiscord(String kcId, String discId, String discName);
+
+    Optional<Users> getUserByKeycloakIdDoNotThrow(String kcId);
 
     Users verifyUser(String kcId);
+
+    void updateLastActive(HashMap<String, Instant> toUpdate);
 }

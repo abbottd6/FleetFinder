@@ -2,6 +2,7 @@
 deployment_cmds.txt
 *.env.prod
 *.env
+backend/.env.dev
 *init.keycloak.prod.tpl.sql
 *prod-realm-export.json
 

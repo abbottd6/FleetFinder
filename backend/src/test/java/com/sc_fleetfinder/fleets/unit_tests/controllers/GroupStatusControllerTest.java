@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GroupStatusDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.GroupStatusController;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GroupStatusService;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,9 @@ class GroupStatusControllerTest {
 
     @MockitoBean
     private GroupStatusService groupStatusService;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private List<GroupStatusDto> mockGroupStatuses;
 

@@ -77,6 +77,7 @@ export class MessageInputComponent {
     if(input) {
       this.sendMessage.emit(input);
       this.inputCtrl.reset();
+      this.characterCount = 0;
     }
   }
   inputEnter(event: Event) {

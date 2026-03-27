@@ -8,4 +8,10 @@ import {Component} from '@angular/core';
 })
 export class AppComponent {
   title = 'angular-fleets';
+
+  constructor() {
+    if('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/service-worker.js');
+    }
+  }
 }

@@ -38,7 +38,12 @@
                 "input": "public",
                 "output": "/"
               },
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "service-worker.js",
+                "input": "src",
+                "output": "/"
+              }
             ],
             "styles": [
               "node_modules/@ng-select/ng-select/themes/material.theme.css",

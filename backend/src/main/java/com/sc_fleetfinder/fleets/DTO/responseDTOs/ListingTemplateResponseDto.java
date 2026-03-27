@@ -1,5 +1,7 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
+import com.sun.tools.xjc.Language;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -55,6 +57,7 @@ public class ListingTemplateResponseDto {
     private String availableRoles;
     private String commsOption;
     private String commsService;
+    private LanguageOptions languageCode;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant creationTimestamp;

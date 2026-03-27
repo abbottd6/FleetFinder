@@ -14,6 +14,11 @@
             My Listings
           </a>
           <a mat-list-item class="mat-nav-list-item"
+             [class.active]="selectedTab==='notifications'"
+             (click)="selectTab('notifications')">
+            Notifications
+          </a>
+          <a mat-list-item class="mat-nav-list-item"
             [class.active]="selectedTab==='bookmarks'"
             (click)="selectTab('bookmarks')">
             Bookmarks
@@ -67,6 +72,12 @@
             </app-user-acct-listings-table>
           </ng-container>
 
+          <!-- NOTIFICATIONS TAB -->
+          <ng-container *ngIf="selectedTab === 'notifications'">
+            <app-profile-notifications-tab>
+            </app-profile-notifications-tab>
+          </ng-container>
+
           <!-- USER BOOKMARKED LISTINGS TAB -->
           <ng-container *ngIf="selectedTab === 'bookmarks'">
             <app-user-bookmarks-table
@@ -92,23 +103,86 @@
                 <span class="user-profile-field-name">Email: </span>
                 <span class="user-profile-field-val"> {{ user.email }}</span>
               </li>
+              <ng-container *ngIf="!editing; else editable">
+                <li class="user-profile-row">
+                  <span class="user-profile-field-name">Preferred Server: </span>
+                  <span class="user-profile-field-val"> {{ user.server }} </span>
+                </li>
+                <li class="user-profile-row">
+                  <span class="user-profile-field-name">Org: </span>
+                  <span class="user-profile-field-val"> {{ user.org }} </span>
+                </li>
+              </ng-container>
+              <ng-template #editable>
+                <div class="server-dd-container">
+                  <app-server-dropdown
+                    [serverControl]="userFormSrv.serverControl">
+                  </app-server-dropdown>
+                </div>
+                <div class="org-input">
+                  <mat-label id="org-label">Org Name:</mat-label>
+                  <mat-form-field>
+                    <mat-error *ngIf="userFormSrv.orgControl?.hasError &&
+                    (userFormSrv.orgControl?.dirty || !userFormSrv.orgControl?.untouched)">
+                    </mat-error>
+                    <input
+                      matInput
+                      [formControl]="userFormSrv.orgControl"
+                      (input)="userFormSrv.orgUpdateCharacterCount()"
+                      maxlength="32"
+                      placeholder="Enter org name..."
+                      [attr.aria-labelledby]="'listing-title'">
+                    <mat-hint align="start">{{ userFormSrv.orgCharacterCount }}/32</mat-hint>
+                  </mat-form-field>
+                </div>
+
+              </ng-template>
               <li class="user-profile-row">
-                <span class="user-profile-field-name">Preferred Server: </span>
-                <span class="user-profile-field-val"> {{ user.server }} </span>
-              </li>
-              <li class="user-profile-row">
-                <span class="user-profile-field-name">Org: </span>
-                <span class="user-profile-field-val"> {{ user.org }} </span>
-              </li>
-              <li class="user-profile-row">
-                <span class="user-profile-field-name">About: </span>
-                <span class="user-profile-field-val"> {{ user.about }} </span>
+                <span class="user-profile-field-name">Discord: </span>
+                <ng-container *ngIf="user.discordUsername; else discordNotLinked">
+                  <span class="user-profile-field-val"> {{ user.discordUsername }} </span>
+                  <a class="disc-account-link"
+                     (click)="userService.confirmRemoveDiscord()">
+                    <span class="bracky">[</span> Remove Discord <span class="bracky">]</span></a>
+                </ng-container>
+                <ng-template #discordNotLinked>
+                  <a class="disc-account-link"
+                     (click)="userService.userLinkDiscord()">
+                    <span class="bracky">[</span> Link Discord <span class="bracky">]</span>
+                  </a>
+                </ng-template>
               </li>
               <li class="user-profile-row">
                 <span class="user-profile-field-name">Account Created: </span>
                 <span class="user-profile-field-val"> {{ user.acctCreated | date: 'MMM d, yyyy h:mm a' }} </span>
               </li>
             </ul>
+
+            <div class="account-tabs-button-container">
+
+              <ng-container *ngIf="!editing; else openedEditor">
+                <button class="action-buttons"
+                  (click)="userProfileEdit()">
+                  Edit Profile
+                </button>
+              </ng-container>
+              <ng-template #openedEditor>
+                <button class="action-buttons"
+                        (click)="cancelEdit()">
+                  Cancel Edit
+                </button>
+                <button class="action-buttons"
+                        (click)="saveProfileEdit()">
+                  Save Profile
+                </button>
+              </ng-template>
+
+
+              <button class="action-buttons"
+                      (click)="openConfirmUserDelete()">Delete Account
+              </button>
+            </div>
+
           </ng-container>
 
           <!-- MODERATOR TAB -->

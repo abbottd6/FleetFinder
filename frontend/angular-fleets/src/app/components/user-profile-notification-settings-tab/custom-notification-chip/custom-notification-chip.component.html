@@ -1,0 +1,99 @@
+<div class="chip-self">
+
+  <div class="header-row">
+    <h5 id="header-left">{{ customNoteInput.tagLabel }}</h5>
+    <span id="header-right">
+      <span class="field-label">
+        Created: {{ customNoteInput.createdAt | date:'MM/dd/yyyy'}}
+      </span>
+    </span>
+  </div>
+
+  <div class="chip-body">
+    <div class="data-wrapper">
+      <div class="template-column">
+        <div class="label-val-pair">
+          <span class="field-label">Server:</span>
+          <span class="field-val" [class.has-val]="customNoteInput.server != null">
+          {{ customNoteInput.server ?? 'Any' }}
+        </span>
+        </div>
+        <div class="label-val-pair">
+          <span class="field-label">Environment:</span>
+          <span class="field-val" [class.has-val]="customNoteInput.environment != null">
+          {{ customNoteInput.environment ?? 'Any' }}
+        </span>
+        </div>
+        <div class="label-val-pair">
+          <span class="field-label">Experience: </span>
+          <span class="field-val" [class.has-val]="customNoteInput.experience != null">
+          {{ customNoteInput.experience ?? 'Any' }}
+        </span>
+        </div>
+        <div class="label-val-pair">
+          <span class="field-label">Language:</span>
+          <span class="field-val" [class.has-val]="customNoteInput.languageCode != null">
+          {{ customNoteInput.languageCode ?? 'Any' }}
+        </span>
+        </div>
+      </div>
+
+      <div class="template-column">
+        <div class="label-val-pair">
+          <span class="field-label">Category:</span>
+          <span class="field-val" [class.has-val]="customNoteInput.category != null">
+          {{ customNoteInput.category ?? 'Any' }}
+        </span>
+        </div>
+        <div class="label-val-pair">
+          <span class="field-label">Subcategory:</span>
+          <span class="field-val" [class.has-val]="customNoteInput.subcategory != null">
+          {{ customNoteInput.subcategory ?? 'Any' }}</span>
+        </div>
+        <div class="label-val-pair">
+          <span class="field-label">System:</span>
+          <span class="field-val" [class.has-val]="customNoteInput.system != null">
+          {{ customNoteInput.system ?? 'Any' }}
+        </span>
+        </div>
+      </div>
+
+      <div class="template-column">
+        <div class="label-val-pair">
+          <span class="field-label">Group Status:</span>
+          <span class="field-val" [class.has-val]="customNoteInput.groupStatus != null">
+          {{ customNoteInput.groupStatus ?? 'Any' }}
+        </span>
+        </div>
+        <div class="label-val-pair">
+          <span class="field-label">PvP Status:</span>
+          <span class="field-val" [class.has-val]="customNoteInput.pvpStatus != null">
+          {{ customNoteInput.pvpStatus ?? 'Any' }}
+        </span>
+        </div>
+        <div class="label-val-pair">
+          <span class="field-label">Legality:</span>
+          <span class="field-val" [class.has-val]="customNoteInput.legality != null">
+          {{ customNoteInput.legality ?? 'Any' }}
+        </span>
+        </div>
+      </div>
+    </div>
+    <div class="template-column" id="last-column">
+      <mat-slide-toggle
+        [formControl]="enabledCtrl"
+        (change)="emitEnabledState()">
+      </mat-slide-toggle>
+      <div class="button-row">
+        <a id="edit"
+            (click)="customNoteService.setNoteForEdit(customNoteInput)">Edit</a>
+        <span> | </span>
+        <a id="delete"
+           (click)="customNoteService.openConfirmDeleteCustomNote(
+                      customNoteInput.customNoteId, customNoteInput.tagLabel)">
+          Delete
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

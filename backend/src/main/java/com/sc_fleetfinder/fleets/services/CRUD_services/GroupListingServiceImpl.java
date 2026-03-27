@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingReportRepository;
+import com.sc_fleetfinder.fleets.DAO.NewListingNotifyQueueRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
@@ -10,6 +11,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.CommsOption;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.NewListingNotifyQueue;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -37,6 +39,8 @@ import org.springframework.validation.annotation.Validated;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +65,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final HiddenListingService hls;
     private final ListingReportRepository lrr;
     private final NotificationOutboxRepository outboxRepo;
+    private final NewListingNotifyQueueRepository listingNotifyQueueRepository;
 
     @PersistenceContext
     private EntityManager em;
@@ -71,7 +76,8 @@ public class GroupListingServiceImpl implements GroupListingService {
                                    ArchiveService archiveService,
                                    HiddenListingService hls,
                                    ListingReportRepository lrr,
-                                   NotificationOutboxRepository outboxRepo) {
+                                   NotificationOutboxRepository outboxRepo,
+                                   NewListingNotifyQueueRepository listingNotifyQueueRepository) {
 
         this.groupListingRepository = groupListingRepository;
         this.groupListingConversionService = groupListingConversionService;
@@ -80,6 +86,7 @@ public class GroupListingServiceImpl implements GroupListingService {
         this.hls = hls;
         this.lrr = lrr;
         this.outboxRepo = outboxRepo;
+        this.listingNotifyQueueRepository = listingNotifyQueueRepository;
     }
 
     @Override
@@ -128,7 +135,14 @@ public class GroupListingServiceImpl implements GroupListingService {
                 groupListing.setUsers(requestingUser);
                 groupListing.setLastUpdated(Instant.now());
 
-                groupListingRepository.save(groupListing);
+                GroupListing listingWithId = groupListingRepository.save(groupListing);
+                groupListingRepository.flush();
+
+                log.info("id: {}", listingWithId.getGroupId());
+
+                NewListingNotifyQueue queued = new NewListingNotifyQueue(listingWithId);
+
+                listingNotifyQueueRepository.save(queued);
 
                 Map<String, String> response = new HashMap<>();
                 response.put("listingTitle", groupListing.getListingTitle());
@@ -188,7 +202,7 @@ public class GroupListingServiceImpl implements GroupListingService {
                 GroupListing listing = groupListingRepository.findById(groupId)
                     .orElseThrow(() -> new ResourceNotFoundException("GroupListing", groupId));
 
-                if (Objects.equals(listing.getUsers(), user)) {
+                if (Objects.equals(listing.getUsers().getUserId(), user.getUserId())) {
 
                     archiveService.prepareUserDeleteRecords(listing, user);
 
@@ -345,6 +359,11 @@ public class GroupListingServiceImpl implements GroupListingService {
                         criteriaBuilder.equal(root.get(fieldName), tempOption));
             }
 
+            else if(fieldName.equals("languageCode")) {
+                spec = spec.and((root, query, criteriaBuilder) ->
+                        criteriaBuilder.equal(root.get(fieldName), value));
+            }
+
             else if(fieldName.equals("dateStart")) {
                 LocalDate date = (LocalDate) value;
                 spec = spec.and((root, query, criteriaBuilder) ->
@@ -353,8 +372,10 @@ public class GroupListingServiceImpl implements GroupListingService {
             }
             else if(fieldName.equals("dateEnd")) {
                 LocalDate date = (LocalDate) value;
+                //add one day to the filter date so that anything with a time on the last day of filter end is included
+                LocalDate datePlus = date.plusDays(1);
                 spec = spec.and((root, query, criteriaBuilder) ->
-                        criteriaBuilder.lessThanOrEqualTo(root.get("eventSchedule"), date)
+                        criteriaBuilder.lessThan(root.get("eventSchedule"), datePlus)
                 );
             }
 

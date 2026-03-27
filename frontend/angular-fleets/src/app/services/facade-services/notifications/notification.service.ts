@@ -15,6 +15,9 @@ export class NotificationService {
   private openStateSubject = new BehaviorSubject<boolean>(false);
   public openState$ = this.openStateSubject.asObservable();
 
+  private myNotificationsSubject = new BehaviorSubject<NotificationViewModel[]>([]);
+  public myNotifications$ = this.myNotificationsSubject.asObservable();
+
   private notePageIdx: number = 0;
   private notePageSize: number = 10;
   private noteTotalElements: number = 0;
@@ -27,12 +30,16 @@ export class NotificationService {
               private noteApi: NotificationApiService) {
   }
 
+  loadMyNotifications(page: NotificationViewModel[]) {
+    this.myNotificationsSubject.next(page);
+  }
+
   setOpenState(open: boolean): void {
     this.openStateSubject.next(open);
   }
 
-  loadNotifications() {
-    this.noteApi.getMyNotifications(this.notePageIdx, this.notePageSize)
+  loadDropdownNotifications() {
+    this.noteApi.getMyDropdownNotifications(this.notePageIdx, this.notePageSize)
       .pipe(takeUntilDestroyed(this.notesDestroyRef))
       .subscribe(page => {
         this.noteTotalElements = page.page.totalElements;
@@ -45,8 +52,8 @@ export class NotificationService {
       })
   }
 
-  removeNotification(noteId: number) {
-    this.noteApi.deleteNotification(noteId).pipe(takeUntilDestroyed(this.notesDestroyRef))
+  removeNotificationDropdownPriority(noteId: number) {
+    this.noteApi.removeNoteDropdownPriority(noteId).pipe(takeUntilDestroyed(this.notesDestroyRef))
       .subscribe( {
         next: () => {
             this.closingIds.add(noteId);

@@ -6,6 +6,9 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {InputFieldModule} from "../input-fields/input-field/input-field.module";
 import {MatError} from "@angular/material/form-field";
 import {RouterLink} from "@angular/router";
+import {
+    AbstractStringDropdownComponent
+} from "../dropdowns/abstract-string-string-map-dropdown/abstract-string-dropdown.component";
 
 @NgModule({
   declarations: [
@@ -19,6 +22,7 @@ import {RouterLink} from "@angular/router";
         ReactiveFormsModule,
         MatError,
         RouterLink,
+        AbstractStringDropdownComponent,
     ],
   exports:
    [CreateListingComponent]

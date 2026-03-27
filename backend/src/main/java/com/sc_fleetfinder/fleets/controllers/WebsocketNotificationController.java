@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationUnreadCountDto;
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.NotificationService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -53,15 +54,21 @@ public class WebsocketNotificationController {
     @MessageMapping("/system.notify/get_unread")
     public void getUnreadCount(Principal principal) {
         String userSub = principal.getName();
-        Users user = userService.verifyUser(userSub);
 
-        Integer count = notificationService.countUnread(user.getUserId());
-        NotificationUnreadCountDto dto = new NotificationUnreadCountDto(count);
+        try {
+            Users user = userService.verifyUser(userSub);
 
-        messagingTemplate.convertAndSendToUser(
-                userSub,
-                "queue/system.notify_count",
-                dto
-        );
+            Integer count = notificationService.countUnread(user.getUserId());
+            NotificationUnreadCountDto dto = new NotificationUnreadCountDto(count);
+
+            messagingTemplate.convertAndSendToUser(
+                    userSub,
+                    "/queue/system.notify_count",
+                    dto
+            );
+        }
+        catch (ResourceNotFoundException e) {
+            log.info(e.getMessage());
+        }
     }
 }

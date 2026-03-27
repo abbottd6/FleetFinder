@@ -13,10 +13,9 @@ public interface NotificationOutboxRepository extends JpaRepository<Notification
     @Query(value = """
             UPDATE notification_outbox
             SET status = 'PROCESSING',
-                locked_at = NOW(),
                 attempt_count = attempt_count + 1
             WHERE status = 'PENDING'
-                AND (locked_at IS NULL OR locked_at < (NOW() - INTERVAL 2 MINUTE))
+                AND (locked_at IS NULL OR locked_at < (NOW() - INTERVAL 4 MINUTE))
             ORDER BY created_at
             LIMIT :limit
             """, nativeQuery = true)
@@ -25,11 +24,31 @@ public interface NotificationOutboxRepository extends JpaRepository<Notification
     @Query(value = """
             SELECT * FROM notification_outbox
             WHERE status = 'PROCESSING'
-              AND locked_at < (NOW() - INTERVAL 2 MINUTE)
+              AND (locked_at IS NULL OR locked_at < (NOW() - INTERVAL 4 MINUTE))
             ORDER BY created_at
             LIMIT :limit
             """, nativeQuery = true)
     List<NotificationOutbox> findStatus_Claimed(@Param("limit") int limit);
+
+    @Modifying
+    @Query(value = """
+            UPDATE notification_outbox ob
+            SET status = 'PENDING',
+                last_error = 'User recently active',
+                locked_at = (NOW() - INTERVAL 190 SECOND)
+            WHERE ob.outbox_id = :outboxId
+            """, nativeQuery = true)
+    int markForUserActive_Delayed(@Param("outboxId") Long outboxId);
+
+    @Modifying
+    @Query(value = """
+            UPDATE notification_outbox ob
+            SET status = 'PENDING',
+                locked_at = NOW(),
+                last_error = :error
+            WHERE ob.outbox_id = :outboxId
+            """, nativeQuery = true)
+    int stageFailureForRetry(@Param("outboxId") Long outboxId, @Param("error") String newError);
 
     @Modifying
     @Query(value = """
@@ -47,7 +66,16 @@ public interface NotificationOutboxRepository extends JpaRepository<Notification
                 last_error = :error
             WHERE outbox_id = :outboxId
             """, nativeQuery = true)
-    int markFailed(@Param("outboxId") long outboxId, @Param("error") String error);
+    int markFailed(@Param("outboxId") long outboxId, @Param("error") String newError);
+
+    @Modifying
+    @Query(value = """
+            UPDATE notification_outbox
+            SET status = 'SKIPPED',
+                last_error = :error
+            WHERE outbox_id = :outboxId
+            """, nativeQuery = true)
+    int markSkipped(@Param("outboxId") long outboxId, @Param("error") String error);
 
     @Modifying
     @Query(value = """

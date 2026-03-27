@@ -8,6 +8,7 @@ import {ListingFormService, ListingFormShape} from "../../services/listing-form-
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {ListingTemplateViewModel} from "../../models/listing-templates/listing-template-view-model";
 import {BehaviorSubject, Subject} from "rxjs";
+import {LANGUAGE_OPTIONS} from "../../models/language-options";
 
 @Component({
   selector: 'app-create-listing',
@@ -87,4 +88,6 @@ export class CreateListingComponent  implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  protected readonly LANGUAGE_OPTIONS = LANGUAGE_OPTIONS;
 }

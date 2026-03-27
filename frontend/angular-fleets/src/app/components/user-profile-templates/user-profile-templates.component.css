@@ -2,6 +2,13 @@
   margin: 1rem 0 1rem 1rem;
 }
 
+.header-notice {
+  width: 95%;
+  margin-inline: 1rem;
+  font-family: "Exo 2", sans-serif;
+  font-size: 105%;
+}
+
 .button-row {
   display: flex;
   flex-direction: row;
@@ -17,9 +24,9 @@
 
 .user-table {
   display: block;
-  overflow-y: scroll;
   overflow-x: scroll;
-  max-height: 50vh;
+  margin-left: 2rem;
+  /*max-height: 50vh;*/
   scrollbar-color: #2c2c2c transparent;
 }
 
@@ -185,6 +192,10 @@
 
   .action-buttons {
     font-size: .7rem;
+  }
+
+  .user-table {
+    margin-inline: auto;
   }
 }
 

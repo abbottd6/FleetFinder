@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -92,4 +93,6 @@ public class UpdateGroupListingDto {
     @Nullable
     private String commsService;
 
+    @NotNull(message = "UpdateGroupListingDto field 'languageCode' cannot be null.")
+    private LanguageOptions languageCode;
 }

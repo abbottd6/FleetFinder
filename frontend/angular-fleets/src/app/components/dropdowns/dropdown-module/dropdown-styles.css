@@ -7,6 +7,10 @@
   font-size: clamp(0.7rem, 1vw, 1rem);
 }
 
+.hide-dropdown-internal-label {
+  display: none;
+}
+
 .dropdown-component .ng-select {
   scrollbar-width: thin;
   scrollbar-color: rgba(88, 92, 96, .9) transparent !important;

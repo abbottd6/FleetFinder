@@ -12,6 +12,7 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Planetary
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import com.sc_fleetfinder.fleets.utils.VisStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -71,12 +72,11 @@ public class GroupListing {
 
     @Column(name="listing_title")
     @NotBlank(message = "GroupListing entity field 'listingTitle' cannot be blank")
-    @Size(min = 3, max = 65, message = "GroupListing entity field 'listingTitle' must be between 2 and 65 characters")
+    @Size(min = 3, max = 128, message = "GroupListing entity field 'listingTitle' must be between 2 and 128 characters")
     private String listingTitle;
 
     @ManyToOne
-    @Nullable
-    @JoinColumn(name="style_id")
+    @JoinColumn(name="style_id", nullable = true)
     private PlayStyle playStyle;
 
     @ManyToOne
@@ -89,19 +89,23 @@ public class GroupListing {
     @NotNull(message = "GroupListing entity field 'groupStatus' cannot be null")
     private GroupStatus groupStatus;
 
-    @Column(name="event_schedule")
-    @Nullable
+    @Column(name="event_schedule", nullable = true)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant eventSchedule;
 
+    //TODO: MODIFY THIS SO USERS CAN SELECT MULTIPLE CATEGORIES PER LISTING
+    // CREATE A 'listing_category' TABLE THAT RELATES A LISTING TO A CATEGORY SPECIFICATION
+    // WHERE EACH listing_category ENTRY CONTAINS id_group AND A SINGLE id_category
+    // SO, MULTIPLE ENTRIES PER LISTING IF THERE ARE MULTIPLE CATEGORIES
     @ManyToOne
     @JoinColumn(name="category_id")
     @NotNull(message = "GroupListing category cannot be null")
     private GameplayCategory category;
 
+    //TODO: SAME AS CATEGORY
+    // NEED TO FIGURE OUT HOW THIS WILL WORK FOR ARCHIVING AND TEMPLATING
     @ManyToOne
     @JoinColumn(name="subcategory_id")
-    @Nullable
     private GameplaySubcategory subcategory;
 
     @ManyToOne
@@ -116,12 +120,11 @@ public class GroupListing {
 
     @ManyToOne
     @JoinColumn(name="planet_id")
-    @Nullable
     private PlanetMoonSystem planetMoonSystem;
 
-    @Column(name="listing_description")
-    @NotBlank(message = "GroupListing entity field 'listingDescription' cannot be blank")
-    @Size(max = 500, message = "Listing description cannot be longer than 500 characters")
+    @Column(name="listing_description", nullable = false)
+    @NotNull(message = "GroupListing field 'listingDescription' cannot be null.")
+    @Size(max = 2000, message = "Listing description cannot be longer than 2000 characters")
     private String listingDescription;
 
     @Column(name="desired_party_size")
@@ -143,6 +146,11 @@ public class GroupListing {
 
     @Column(name="comms_service")
     private String commsService;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="language_code")
+    @NotNull(message= "GroupListing entity field 'languageCode' cannot be null")
+    private LanguageOptions languageCode;
 
     @CreationTimestamp
     @Column(name="creation_timestamp")

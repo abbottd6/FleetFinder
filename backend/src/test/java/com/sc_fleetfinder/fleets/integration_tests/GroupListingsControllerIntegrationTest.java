@@ -1,11 +1,11 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
 import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
-import org.junit.jupiter.api.Disabled;
 import tools.jackson.databind.ObjectMapper;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
+import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import org.junit.jupiter.api.Disabled;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -54,16 +61,6 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
 
     @Autowired
     private MapperLookupService mapperLookupService;
-
-    @Test
-    @Disabled
-    void testGetAllGroupListings_Success() throws Exception {
-        mockMvc.perform(get("/api/group-listings")
-                .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId"))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("_embedded.groupListingResponseDtoes[0].groupId").value("1"));
-    }
 
     @Test
     void testGetGroupListingByIdSuccess() throws Exception {
@@ -119,6 +116,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                         "$.commsOption").value("Optional"))
                 .andExpect(jsonPath(
                         "$.commsService").value("Discord"))
+                .andExpect(jsonPath("$.languageCode").value("English"))
                 .andExpect(jsonPath("$.creationTimestamp").exists())
                 .andExpect(jsonPath("$.lastUpdated").exists());
     }
@@ -155,6 +153,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
             testDto.setAvailableRoles("Medic, Sniper"); // Optional
             testDto.setCommsOption("Optional");
             testDto.setCommsService("Discord");
+            testDto.setLanguageCode(LanguageOptions.English);
 
 //        Users mockUser = new Users();
 //        mockUser.setUsername("mock user");
@@ -198,7 +197,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                 .andExpect(jsonPath("$.currentPartySize").value(2))
                 .andExpect(jsonPath("$.availableRoles").value("Medic, Sniper"))
                 .andExpect(jsonPath("$.commsOption").value("Optional"))
-                .andExpect(jsonPath("$.commsService").value("Discord"));
+                .andExpect(jsonPath("$.commsService").value("Discord"))
+                .andExpect(jsonPath("$.languageCode").value("English"));
     }
 
     @Test
@@ -224,6 +224,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
         testDto.setDesiredPartySize(5);
         testDto.setCurrentPartySize(2);
         testDto.setCommsOption("Optional");
+        testDto.setLanguageCode(LanguageOptions.English);
 
         //posting the listing to call createGroupListing
         mockMvc.perform(post("/api/group-listings/create_listing")
@@ -260,7 +261,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                 .andExpect(jsonPath("$.currentPartySize").value(2))
                 .andExpect(jsonPath("$.availableRoles").value(""))
                 .andExpect(jsonPath("$.commsOption").value("Optional"))
-                .andExpect(jsonPath("$.commsService").value(""));
+                .andExpect(jsonPath("$.commsService").value(""))
+                .andExpect(jsonPath("$.languageCode").value("English"));
     }
 
     @Test
@@ -282,6 +284,7 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
         testDto.setDesiredPartySize(5);
         testDto.setCurrentPartySize(2);
         testDto.setCommsOption("Optional");
+        testDto.setLanguageCode(LanguageOptions.English);
 
 //        Users mockUser = new Users();
 //        mockUser.setUserId(12L);
@@ -307,5 +310,120 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
             .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(testDto)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void testDeleteGroupListing_Success() throws Exception {
+        // when: delete the seed listing owned by TestUser (keycloakId = "someKeycloakId")
+        mockMvc.perform(delete("/api/group-listings/delete_listing/1")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.listingId").value("1"));
+
+        // then: listing is no longer accessible (deleted within the current transaction)
+        mockMvc.perform(get("/api/group-listings/1")
+                        .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId"))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteGroupListing_NotFound() throws Exception {
+        mockMvc.perform(delete("/api/group-listings/delete_listing/9999")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "someKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDeleteGroupListing_Unauthorized_WrongUser() throws Exception {
+        jdbcTemplate.update(
+                "INSERT INTO users (keycloak_id, user_name, email) VALUES (?, ?, ?)",
+                "anotherKeycloakId", "AnotherTestUser", "another@test.com");
+
+        mockMvc.perform(delete("/api/group-listings/delete_listing/1")
+                        .with(jwt()
+                                .jwt(jwt -> jwt.claim("sub", "anotherKeycloakId"))
+                                .authorities(new SimpleGrantedAuthority("ROLE_user"))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    // --- searchGroupListings integration tests ---
+
+    @Test
+    void testSearchGroupListings_NoFilters_ReturnsSeedListing() throws Exception {
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].listingTitle").value("Integration testing title"));
+    }
+
+    @Test
+    void testSearchGroupListings_ServerFilter_Matching_ReturnsSeedListing() throws Exception {
+        // seed listing has server_id=1 (USA)
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"server\":1,\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
+    }
+
+    @Test
+    void testSearchGroupListings_ServerFilter_NonMatching_ReturnsEmpty() throws Exception {
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"server\":99,\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
+    }
+
+    @Test
+    void testSearchGroupListings_TextSearch_MatchesTitle() throws Exception {
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"search\":\"Integration\",\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1))
+                .andExpect(jsonPath("$.content[0].listingTitle").value("Integration testing title"));
+    }
+
+    @Test
+    void testSearchGroupListings_TextSearch_NoMatch_ReturnsEmpty() throws Exception {
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"search\":\"zzznomatch\",\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(0));
+    }
+
+    @Test
+    void testSearchGroupListings_LanguageCode_ReturnsFiltered() throws Exception {
+        // seed listing has language_code='English'
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"languageCode\":\"English\",\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
+    }
+
+    @Test
+    void testSearchGroupListings_CommsOptionFilter_BugExposed() throws Exception {
+        // seed listing has comms_options='Optional' — CommsOption.getById(2) = "Optional"
+        mockMvc.perform(post("/api/group-listings/search")
+                        .with(jwt().jwt(j -> j.claim("sub", "someKeycloakId")))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"commsOption\":2,\"page\":0,\"size\":10}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.page.totalElements").value(1));
     }
 }

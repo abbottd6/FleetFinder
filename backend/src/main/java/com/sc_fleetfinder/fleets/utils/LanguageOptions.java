@@ -1,0 +1,32 @@
+package com.sc_fleetfinder.fleets.utils;
+
+public enum LanguageOptions {
+    Arabic,
+    Chinese,
+    Czech,
+    Danish,
+    Dutch,
+    English,
+    Finnish,
+    French,
+    German,
+    Greek,
+    Hindi,
+    Hungarian,
+    Indonesian,
+    Italian,
+    Japanese,
+    Korean,
+    Malay,
+    Norwegian,
+    Polish,
+    Portuguese,
+    Romanian,
+    Russian,
+    Spanish,
+    Swedish,
+    Thai,
+    Turkish,
+    Ukrainian,
+    Vietnamese;
+}
