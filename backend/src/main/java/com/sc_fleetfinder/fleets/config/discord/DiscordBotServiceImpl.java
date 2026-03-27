@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.config.discord;
 
+import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
 import com.sc_fleetfinder.fleets.entities.Notification;
-import com.sc_fleetfinder.fleets.utils.ExternalNotifcationResult;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,12 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,19 +22,20 @@ import java.util.Map;
 public class DiscordBotServiceImpl implements DiscordBotService {
 
     private final RestClient discordRestClient;
+    private final NotificationRepository notificationRepository;
 
     @Override
     public void sendDiscordNotification(String discordUserId, Notification note) {
         String channelId = openDmChannel(discordUserId);
         ResponseEntity<?> response = sendDmNotification(channelId, note);
 
-        Map<ExternalNotifcationResult, HttpStatus> messageStatus = new HashMap<>();
-
         if(response.getStatusCode() == HttpStatus.OK) {
-            messageStatus.put(ExternalNotifcationResult.SUCCESS, HttpStatus.OK);
             note.setReadAt(Instant.now());
         } else {
-            throw new ResponseStatusException(response.getStatusCode());
+            String message = "Failed to send push notification for user with ID: [" + note.getUser().getUserId()
+                    + "]. " + response.getBody();
+            notificationRepository.delete(note);
+            throw new ResponseStatusException(response.getStatusCode(), message);
         }
     }
 
@@ -106,14 +105,11 @@ public class DiscordBotServiceImpl implements DiscordBotService {
                 "embeds", List.of(embed)
         );
 
-        ResponseEntity<?> response = discordRestClient.post()
+        return discordRestClient.post()
                 .uri("/channels/{channelId}/messages", channelId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(body)
                 .retrieve()
                 .toBodilessEntity();
-
-        log.info(response.toString());
-        return response;
     }
 }

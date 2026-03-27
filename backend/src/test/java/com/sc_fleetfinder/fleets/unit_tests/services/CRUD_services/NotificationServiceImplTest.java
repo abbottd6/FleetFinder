@@ -41,6 +41,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -51,6 +52,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -547,7 +549,7 @@ class NotificationServiceImplTest {
     }
 
     @Test
-    void prepareAndSendOutboxNotification_PushDelivery_Failure_LogsOutboxError() throws Exception {
+    void prepareAndSendOutboxNotification_PushDelivery_Failure_DeletesNotification_ThrowsException() throws Exception {
         NotificationOutbox outbox = buildMockOutbox(NotificationType.LISTING_VIS_STATUS_CHANGED, DeliveryChannel.PUSH);
         GroupListing mockListing = mock(GroupListing.class);
         when(mockListing.getListingTitle()).thenReturn("Test Listing");
@@ -569,10 +571,9 @@ class NotificationServiceImplTest {
         when(pushNotificationService.sendPushNotification(eq(mockPushSub), any(String.class)))
                 .thenReturn(Map.of(ExternalNotifcationResult.FAILURE, HttpStatus.INTERNAL_SERVER_ERROR));
 
-        assertThatNoException().isThrownBy(() -> notificationService.prepareAndSendOutboxNotification(outbox));
+        assertThrows(ResponseStatusException.class, () -> notificationService.prepareAndSendOutboxNotification(outbox));
 
-        verify(noteOutbox).setStatus("PARTIAL_FAILURE");
-        verify(outboxRepo).save(noteOutbox);
+        verify(notificationRepo).delete(savedNote);
     }
 
     // ─── generateOutboxNotificationForModAction ───────────────────────────────

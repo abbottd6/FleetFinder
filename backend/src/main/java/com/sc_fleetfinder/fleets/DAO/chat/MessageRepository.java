@@ -67,7 +67,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                 AND channels.delivery_channel = 'PUSH'
                 AND push.social_notes_enabled = 1
             WHERE msg.id_msg = :msgId
-                AND (noti.created_at IS NULL OR noti.created_at < (NOW() - INTERVAL 5 MINUTE))
+                AND (noti.created_at IS NULL OR noti.created_at < (NOW() - INTERVAL 20 SECOND))
                 AND (parti.last_read_message_id IS NULL OR parti.last_read_message_id < :msgId)
                 AND (
                     (channels.delivery_channel = 'DISCORD'

@@ -216,7 +216,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void sendPushNotification(Notification note, PushSubscription pushSub) {
-        String payload = note.getTitle() + "'" + note.getMessage() + "'";
+        String payload = note.getTitle() + " '" + note.getMessage() + "'";
 
         try {
             Map<ExternalNotifcationResult, HttpStatus> pushResult = pushNotificationService.sendPushNotification(pushSub, payload);
@@ -228,18 +228,17 @@ public class NotificationServiceImpl implements NotificationService {
                 throw new ResponseStatusException(pushResult.get(ExternalNotifcationResult.FAILURE));
             }
         } catch (Exception e) {
-            note.getOutbox().setLastError("Failed to send push notification for push subscription with ID: "
-                    + pushSub.getIdPushSub() + ", and notification outbox ID: " + note.getOutbox().getOutboxId()
-                    + ", and notification ID: " + note.getNotificationId() + " \n" + e.getMessage());
-            note.getOutbox().setStatus("PARTIAL_FAILURE");
-            outboxRepo.save(note.getOutbox());
+            String error = "Failed to send push notification for push subscription with ID: "
+                    + pushSub.getIdPushSub() + ". ERROR:" + e.getMessage();
+            notificationRepo.delete(note);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, error);
         }
     }
 
     // SEND DISCORD NOTIFICATION is in config/discord/DiscordBotService
 
     private Notification buildNewMessageNotification(NotificationOutbox obEntity) {
-        String title = "You have a new message from ";
+        String title = "New message from ";
         Message message = msgRepo.findMessageByConversationIdAndMessageId(
                 obEntity.getParentEntityId(), obEntity.getEntityId())
                 .orElse(null);
