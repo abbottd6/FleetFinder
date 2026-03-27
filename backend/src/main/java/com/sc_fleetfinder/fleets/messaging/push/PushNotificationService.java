@@ -48,6 +48,8 @@ public class PushNotificationService {
             HttpStatus status = HttpStatus.valueOf(response.getStatusLine().getStatusCode());
             result.put(ExternalNotifcationResult.FAILURE, status);
         }
+
+        log.warn("PUSH SUBSCRIPTION SEND RESULT: {} \n PUSH SUBSCRIPTION RESPONSE LINE: {}", result, response);
         return result;
     }
 }
