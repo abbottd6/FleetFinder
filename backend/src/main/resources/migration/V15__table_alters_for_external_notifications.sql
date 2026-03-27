@@ -42,9 +42,6 @@ ALTER TABLE mod_listing_action
     ADD CONSTRAINT fk_mod_action_to_report_basis
         FOREIGN KEY (action_basis) REFERENCES listing_report_basis (id_basis);
 
-ALTER TABLE listing_archive
-    MODIFY COLUMN action_type ENUM('None', 'AutoMod', 'Manual') NOT NULL DEFAULT 'None';
-
 UPDATE notification
 SET parent_entity_type = 'MOD_LISTING_ACTION',
     parent_entity_id = id_action
