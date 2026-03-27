@@ -4,6 +4,7 @@ export const environment = {
   production: true,
   apiBaseUrl: 'https://scfleetfinder.com/api',
   wsBaseUrl: "wss://scfleetfinder.com",
+  vapidPublicKey: "BDwOYrwYIWZzQpJY-QZ93bElLlD33ly4Kx-NKwu6RneHyZ0pb2xGJ8eogXQX2tMOsQjvKx8WkEaZAMJwSndeK8E",
   oidc: {
     authority: 'https://scfleetfinder.com/auth/realms/oauthrealm',
     redirectUrl: window.location.origin,
