@@ -51,16 +51,16 @@ CREATE TABLE IF NOT EXISTS user_custom_notification
 CREATE TABLE IF NOT EXISTS push_subscription
 (
     id_push_sub          BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id              BIGINT       NOT NULL,
-    user_label           VARCHAR(32)  NOT NULL,
-    device_url           TEXT         NOT NULL,
-    public_key           VARCHAR(255) NOT NULL,
-    browser_secret       VARCHAR(255) NOT NULL,
-    sys_notes_enabled    TINYINT(1)   NOT NULL DEFAULT 0,
-    group_notes_enabled  TINYINT(1)   NOT NULL DEFAULT 1,
-    social_notes_enabled TINYINT(1)   NOT NULL DEFAULT 1,
-    daily_failure_count  INT          NOT NULL DEFAULT 0,
-    created_at           TIMESTAMP             DEFAULT CURRENT_TIMESTAMP,
+    user_id              BIGINT        NOT NULL,
+    user_label           VARCHAR(32)   NOT NULL,
+    device_url           VARCHAR(2048) NOT NULL,
+    public_key           VARCHAR(255)  NOT NULL,
+    browser_secret       VARCHAR(255)  NOT NULL,
+    sys_notes_enabled    TINYINT(1)    NOT NULL DEFAULT 0,
+    group_notes_enabled  TINYINT(1)    NOT NULL DEFAULT 1,
+    social_notes_enabled TINYINT(1)    NOT NULL DEFAULT 1,
+    daily_failure_count  INT           NOT NULL DEFAULT 0,
+    created_at           TIMESTAMP              DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_push_sub_to_users
         FOREIGN KEY (user_id) REFERENCES users (id_user)
@@ -75,7 +75,33 @@ CREATE TABLE IF NOT EXISTS new_listing_notify_queue
     processed_at TIMESTAMP   NULL,
 
     CONSTRAINT fk_listing_notify_queue_to_group
-        FOREIGN KEY (id_group) REFERENCES group_listing (id_group),
+        FOREIGN KEY (id_group) REFERENCES group_listing (id_group) ON DELETE CASCADE,
 
     INDEX index_on_new_listing_queue_status_and_queued_at (status, queued_at)
+);
+
+CREATE TABLE IF NOT EXISTS notification_outbox_archive
+(
+    unsent_id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    archived_at        TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    outbox_id          BIGINT        NOT NULL,
+    event_type         VARCHAR(128)  NULL,
+    entity_type        VARCHAR(128)  NULL,
+    entity_id          BIGINT        NULL,
+    entity_owner_id    BIGINT        NULL,
+    entity_new_status  VARCHAR(32)   NULL,
+    payload_json       JSON          NULL,
+    status             VARCHAR(32)   NULL,
+    attempt_count      TINYINT       NULL,
+    last_error         VARCHAR(2048) NULL,
+    created_at         TIMESTAMP     NULL,
+    locked_at          TIMESTAMP     NULL,
+    sent_at            TIMESTAMP     NULL,
+    delivery_channel   VARCHAR(32)   NULL,
+    parent_entity_id   BIGINT        NULL,
+    parent_entity_type VARCHAR(64)   NULL,
+    sibling_key        CHAR(128)     NULL,
+    error_count        TINYINT       NULL,
+    push_sub_id        BIGINT        NULL,
+    UNIQUE KEY uq_outbox_archive_on_outbox_id (outbox_id)
 );

@@ -216,7 +216,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void sendPushNotification(Notification note, PushSubscription pushSub) {
-        String payload = note.getTitle() + ". " + note.getMessage();
+        String payload = note.getTitle() + "'" + note.getMessage() + "'";
 
         try {
             Map<ExternalNotifcationResult, HttpStatus> pushResult = pushNotificationService.sendPushNotification(pushSub, payload);
