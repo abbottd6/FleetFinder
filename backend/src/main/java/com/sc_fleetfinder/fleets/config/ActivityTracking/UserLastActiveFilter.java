@@ -22,7 +22,6 @@ import java.io.IOException;
 public class UserLastActiveFilter extends OncePerRequestFilter {
 
     private final UserActivityCache userActivityCache;
-    private final UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,

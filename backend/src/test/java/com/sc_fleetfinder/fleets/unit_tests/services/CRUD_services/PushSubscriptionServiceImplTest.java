@@ -233,7 +233,7 @@ class PushSubscriptionServiceImplTest {
     // ─── deletePushSub ────────────────────────────────────────────────────────
 
     @Test
-    void deletePushSub_Success_ReturnsOne() {
+    void deletePushSub_Success_ReturnsTrue() {
         when(pushSubRepository.deleteByUserAndIdPushSub(mockUser, 1L)).thenReturn(1);
 
         Integer result = pushSubscriptionService.deletePushSub(mockUser, 1L);

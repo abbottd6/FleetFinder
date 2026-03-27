@@ -27,18 +27,18 @@ public class ModListingAction {
     protected ModListingAction() {}
 
     // for auto mod deletions
-    public ModListingAction(ModerationIssue issue, String note, Integer actionBasis,
-                            ListingArchive archive) {
+    public ModListingAction(ModerationIssue issue, String note,
+                            ListingReportBasis basis, ListingArchive archive) {
         this.archive = archive;
         this.userId = issue.getUserRef().getUserId();
         this.username = issue.getUserRef().getUsername();
         this.actionType = "Auto";
-        this.actionBasis.setBasisId(actionBasis);
+        this.actionBasis = basis;
         this.actionNote = note;
     }
 
     // for manual mod deletions
-    public ModListingAction(ModerationIssue issue, String modNote, Integer actionBasis,
+    public ModListingAction(ModerationIssue issue, String modNote, ListingReportBasis basis,
                             ListingArchive archive, Users mod) {
         this.archive = archive;
         this.userId = issue.getUserRef().getUserId();
@@ -46,7 +46,7 @@ public class ModListingAction {
         this.modId = mod.getUserId();
         this.modName = mod.getUsername();
         this.actionType = "Manual";
-        this.actionBasis.setBasisId(actionBasis);
+        this.actionBasis = basis;
         this.actionNote = modNote;
     }
 

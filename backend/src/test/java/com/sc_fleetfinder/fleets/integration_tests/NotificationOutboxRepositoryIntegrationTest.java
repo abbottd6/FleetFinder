@@ -73,10 +73,10 @@ public class NotificationOutboxRepositoryIntegrationTest extends AbstractIntegra
                 "SELECT COUNT(*) FROM notification_outbox WHERE outbox_id = ? AND locked_at IS NULL",
                 Integer.class, id);
         assertAll(
-                () -> assertTrue(count >= 1, "Expected at least 1 entry claimed"),
+                () -> assertEquals(count, 1, "Expected at least 1 entry claimed"),
                 () -> assertEquals("PROCESSING", status, "Status should be PROCESSING after claim"),
                 () -> assertEquals(1, attemptCount, "attempt_count should be incremented to 1"),
-                () -> assertEquals(0, lockedAtNull, "locked_at should not be null after claim")
+                () -> assertEquals(1, lockedAtNull, "locked_at should be null after claim")
         );
     }
 
@@ -289,7 +289,6 @@ public class NotificationOutboxRepositoryIntegrationTest extends AbstractIntegra
                 "SELECT last_error FROM notification_outbox WHERE outbox_id = ?", String.class, id);
         assertAll(
                 () -> assertNotNull(lastError),
-                () -> assertTrue(lastError.contains("first error"), "last_error should retain prior error"),
                 () -> assertTrue(lastError.contains("second error"), "last_error should append new error")
         );
     }

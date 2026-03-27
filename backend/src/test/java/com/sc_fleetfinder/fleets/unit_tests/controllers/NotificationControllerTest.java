@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.NotificationController;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -60,6 +61,9 @@ class NotificationControllerTest {
 
     @MockitoBean
     private NotificationService notificationService;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private Users mockUser;
 

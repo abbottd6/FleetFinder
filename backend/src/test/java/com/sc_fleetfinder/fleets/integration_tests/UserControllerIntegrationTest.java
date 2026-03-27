@@ -6,7 +6,6 @@ import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,6 +37,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -191,6 +191,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .with(jwt().jwt(j -> j.subject("doesNotExist")))
                 .accept(MediaType.APPLICATION_JSON)
         )
+                .andDo(print())
                 .andExpect(status().isNotFound());
     }
 

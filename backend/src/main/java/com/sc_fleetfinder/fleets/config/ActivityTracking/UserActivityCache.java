@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.config.ActivityTracking;
 
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,9 +20,13 @@ public class UserActivityCache {
     private final UserService userService;
 
     public void recordAccess(String kcId) {
-        Instant ts = lastAccess.put(kcId, Instant.now());
+        try {
+            Users user = userService.verifyUser(kcId);
+        } catch (ResourceNotFoundException e) {
+            return;
+        }
 
-        Users user = userService.verifyUser(kcId);
+        Instant ts = lastAccess.put(kcId, Instant.now());
 
         log.debug("Updated: {}'s last access: {}.", kcId, ts );
     }

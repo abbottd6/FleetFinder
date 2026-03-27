@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.Cr
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdatePushSubRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPageOfCustomNotificationsAndEnabledCount;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPushSubDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.NotificationPrefsAndPushSubController;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -45,6 +46,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -73,6 +75,9 @@ class NotificationPrefsAndPushSubControllerTest {
 
     @MockitoBean
     private PushSubscriptionService pushSubscriptionService;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private Users mockUser;
 
@@ -269,7 +274,7 @@ class NotificationPrefsAndPushSubControllerTest {
                                 .jwt(j -> j.claim("sub", MOCK_KCID))
                                 .authorities(new SimpleGrantedAuthority("ROLE_user"))))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value(1));
+                .andExpect(content().string("1"));
     }
 
     @Test

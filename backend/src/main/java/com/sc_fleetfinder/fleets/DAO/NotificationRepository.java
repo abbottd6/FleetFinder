@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     @Query(value = """
             SELECT * FROM notification n
-            WHERE n.id_user =: userId
+            WHERE n.id_user = :userId
                 AND n.delivery_channel = 'IN_APP'
             ORDER BY n.created_at DESC
             """, nativeQuery = true)
@@ -111,5 +112,5 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
                 AND n.sibling_key = :siblingKey
                 AND n.delivery_channel = 'IN_APP'
             """, nativeQuery = true)
-    Optional<Instant> checkSiblingNotificationReadStatus(@Param("userId") Long userId, @Param("siblingKey") String siblingKey);
+    Optional<LocalDateTime> checkSiblingNotificationReadStatus(@Param("userId") Long userId, @Param("siblingKey") String siblingKey);
 }

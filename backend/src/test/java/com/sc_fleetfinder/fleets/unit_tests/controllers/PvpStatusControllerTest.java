@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PvpStatusDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.PvpStatusController;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.PvpStatusService;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class PvpStatusControllerTest {
 
     @MockitoBean
     private PvpStatusService pvpStatusService;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private List<PvpStatusDto> mockPvpStatuses;
 

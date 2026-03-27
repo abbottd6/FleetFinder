@@ -206,8 +206,11 @@ public class ModerationServiceImpl implements ModerationService {
                 condemned, issue, dto.getNote(), mod
         );
 
+        ListingReportBasis basis = lrbr.findById(dto.getReportBasis())
+                .orElseThrow(() -> new ResourceNotFoundException("ListingReportBasis", dto.getReportBasis()));
+
         // create a moderator action for deletion
-        recordModeratorAction(issue, dto.getNote(), dto.getReportBasis(), archive, mod);
+        recordModeratorAction(issue, dto.getNote(), basis, archive, mod);
 
         // recording the users content moderation history for possible bans
         updateOrCreateUserModerationRecord(condemned);
@@ -309,7 +312,10 @@ public class ModerationServiceImpl implements ModerationService {
     protected void recordModeratorAction(ModerationIssue issue, String note,
                                          ListingArchive archive) {
 
-        Integer actionBasis = mir.findAutoModActionBasis_MostCommonReportBasis(issue.getIssueId());
+        ListingReportBasis actionBasis = mir.findAutoModActionBasis_MostCommonReportBasis(issue.getIssueId());
+        if (actionBasis == null) {
+            throw new ResourceNotFoundException("ListingReportBasis for issueId", issue.getIssueId());
+        }
 
         ModListingAction modAction = new ModListingAction(issue, note, actionBasis, archive);
 
@@ -322,7 +328,7 @@ public class ModerationServiceImpl implements ModerationService {
 
     //for manual moderator actions
     @Transactional
-    protected void recordModeratorAction(ModerationIssue issue, String note, Integer actionBasis,
+    protected void recordModeratorAction(ModerationIssue issue, String note, ListingReportBasis actionBasis,
                                          ListingArchive archive, Users mod) {
 
         ModListingAction modAction = new ModListingAction(issue, note, actionBasis, archive, mod);

@@ -43,6 +43,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -327,7 +328,7 @@ class NotificationServiceImplTest {
         when(mockListing.getListingTitle()).thenReturn("Test Listing");
         when(groupListingRepository.findById(10L)).thenReturn(Optional.of(mockListing));
         when(notificationRepo.checkSiblingNotificationReadStatus(1L, "testSibKey"))
-                .thenReturn(Optional.of(Instant.now()));
+                .thenReturn(Optional.of(LocalDateTime.now()));
 
         assertThatThrownBy(() -> notificationService.prepareAndSendOutboxNotification(outbox))
                 .isInstanceOf(SkipExternalNotificationProcessingException.class);
@@ -353,7 +354,7 @@ class NotificationServiceImplTest {
         when(mockArchive.getListingTitle()).thenReturn("Archived Listing");
         when(archiveRepo.findByGroupId(10L)).thenReturn(Optional.of(mockArchive));
         when(notificationRepo.checkSiblingNotificationReadStatus(1L, "testSibKey"))
-                .thenReturn(Optional.of(Instant.now()));
+                .thenReturn(Optional.of(LocalDateTime.now()));
 
         assertThatThrownBy(() -> notificationService.prepareAndSendOutboxNotification(outbox))
                 .isInstanceOf(SkipExternalNotificationProcessingException.class);
@@ -376,7 +377,7 @@ class NotificationServiceImplTest {
     void prepareAndSendOutboxNotification_NewListingMatch_SiblingAlreadyRead_ThrowsSkip() {
         NotificationOutbox outbox = buildMockOutbox(NotificationType.NEW_LISTING_MATCH, DeliveryChannel.DISCORD);
         when(notificationRepo.checkSiblingNotificationReadStatus(1L, "testSibKey"))
-                .thenReturn(Optional.of(Instant.now()));
+                .thenReturn(Optional.of(LocalDateTime.now()));
 
         assertThatThrownBy(() -> notificationService.prepareAndSendOutboxNotification(outbox))
                 .isInstanceOf(SkipExternalNotificationProcessingException.class);
@@ -417,7 +418,7 @@ class NotificationServiceImplTest {
         when(basis.getBasisLabel()).thenReturn("Spam");
         when(modActionRepo.findById(5L)).thenReturn(Optional.of(mockAction));
         when(notificationRepo.checkSiblingNotificationReadStatus(1L, "testSibKey"))
-                .thenReturn(Optional.of(Instant.now()));
+                .thenReturn(Optional.of(LocalDateTime.now()));
 
         assertThatThrownBy(() -> notificationService.prepareAndSendOutboxNotification(outbox))
                 .isInstanceOf(SkipExternalNotificationProcessingException.class);

@@ -8,6 +8,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ModListingActionDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ModerationIssueResponseDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.ModerationController;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -62,6 +63,9 @@ class ModerationControllerTest {
 
     @MockitoBean
     private JwtDecoder jwtDecoder;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     @Autowired
     private ObjectMapper objectMapper;

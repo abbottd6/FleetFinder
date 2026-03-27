@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.GroupListingsController;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -71,6 +72,9 @@ class GroupListingsControllerTest {
 
     @MockitoBean
     private JwtDecoder jwtDecoder;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     @Autowired
     private ObjectMapper objectMapper;

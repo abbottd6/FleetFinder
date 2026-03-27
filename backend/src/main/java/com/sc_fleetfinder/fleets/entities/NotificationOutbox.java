@@ -94,7 +94,7 @@ public class NotificationOutbox {
     @Column(name="last_error", nullable = true, columnDefinition = "VARCHAR(2048)")
     private String lastError;
 
-    @Column(name="error_count", nullable = false)
+    @Column(name="error_count", nullable = false, columnDefinition = "TINYINT NOT NULL DEFAULT 0")
     @NotNull(message="NotificationOutbox entity field 'errorCount' should not be null.")
     private Integer errorCount = 0;
 

@@ -203,17 +203,17 @@ public class UserServiceImpl implements UserService {
         switch (dto.getLabel()) {
             case "sysNotes":
                 user.setExternalSysNotesEnabled(dto.getValue());
-                userRepository.save(user);
+                userRepository.saveAndFlush(user);
                 returnVal = user.getExternalSysNotesEnabled();
                 break;
             case "groupNotes":
                 user.setExternalGroupNotesEnabled(dto.getValue());
-                userRepository.save(user);
+                userRepository.saveAndFlush(user);
                 returnVal = user.getExternalGroupNotesEnabled();
                 break;
             case "socialNotes":
                 user.setExternalSocialNotesEnabled(dto.getValue());
-                userRepository.save(user);
+                userRepository.saveAndFlush(user);
                 returnVal = user.getExternalSocialNotesEnabled();
                 break;
             default:
@@ -225,6 +225,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String generateUserDiscordLink(String token) {
+
         return kcAdminService.generateDiscordKeycloakLink(token);
     }
 

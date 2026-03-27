@@ -17,6 +17,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -150,7 +152,7 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
                 () -> assertEquals("IN_APP", channel),
                 () -> assertEquals("MOD_DELETE", eventType),
                 () -> assertEquals("LISTING_ARCHIVE", entityType),
-                () -> assertEquals("ARCHIVED", entityNewStatus),
+                () -> assertEquals("Actioned", entityNewStatus),
                 () -> assertEquals("MOD_LISTING_ACTION", parentEntityType),
                 () -> assertEquals("PENDING", status)
         );
@@ -309,7 +311,9 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
         Long userId = insertUser(false, false);
         Long noteId = insertNotification(userId, TEST_SIBLING_KEY, "IN_APP", "NOW()");
 
-        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId, TEST_SIBLING_KEY);
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(
+                userId, TEST_SIBLING_KEY).map(ldt -> ldt.toInstant(ZoneOffset.UTC));
+
 
         Long expectedEpoch = jdbcTemplate.queryForObject(
                 "SELECT UNIX_TIMESTAMP(read_at) FROM notification WHERE id_notification = ?",
@@ -328,7 +332,8 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
         Long userId = insertUser(false, false);
         insertNotification(userId, TEST_SIBLING_KEY, "IN_APP", "NULL");
 
-        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId, TEST_SIBLING_KEY);
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(
+                userId, TEST_SIBLING_KEY).map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         assertTrue(result.isEmpty(),
                 "Unread IN_APP sibling (read_at IS NULL) should return Optional.empty()");
@@ -340,7 +345,8 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
         Long userId = insertUser(false, false);
         insertNotification(userId, "b".repeat(64), "IN_APP", "NOW()");
 
-        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId, TEST_SIBLING_KEY);
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(
+                userId, TEST_SIBLING_KEY).map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         assertTrue(result.isEmpty(),
                 "No notification with TEST_SIBLING_KEY should return Optional.empty()");
@@ -353,7 +359,8 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
         Long userId2 = insertUser(false, false);
         insertNotification(userId1, TEST_SIBLING_KEY, "IN_APP", "NOW()");
 
-        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId2, TEST_SIBLING_KEY);
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(
+                userId2, TEST_SIBLING_KEY).map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         assertTrue(result.isEmpty(),
                 "Notification belonging to a different user should return Optional.empty()");
@@ -365,7 +372,8 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
         Long userId = insertUser(false, false);
         insertNotification(userId, TEST_SIBLING_KEY, "DISCORD", "NOW()");
 
-        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(userId, TEST_SIBLING_KEY);
+        Optional<Instant> result = notificationRepository.checkSiblingNotificationReadStatus(
+                userId, TEST_SIBLING_KEY).map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         assertTrue(result.isEmpty(),
                 "Non-IN_APP delivery channel should be excluded — query filters to delivery_channel = 'IN_APP'");

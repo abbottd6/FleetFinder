@@ -41,6 +41,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -278,7 +279,8 @@ public class NotificationServiceImpl implements NotificationService {
         Notification newNote = new Notification(outboxEntity, title, message);
 
         Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
-                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey());
+                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
+                .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         if (readAt.isPresent()) {
             throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
@@ -299,7 +301,8 @@ public class NotificationServiceImpl implements NotificationService {
         Notification newNote = new Notification(outboxEntity, title, msg);
 
         Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
-                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey());
+                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
+                .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         if (readAt.isPresent()) {
             throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
@@ -319,7 +322,8 @@ public class NotificationServiceImpl implements NotificationService {
         Notification newNote = new Notification(outboxEntity, title, msg);
 
         Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
-                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey());
+                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
+                .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         if (readAt.isPresent()) {
             throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
@@ -341,7 +345,8 @@ public class NotificationServiceImpl implements NotificationService {
         Notification newNote = new Notification(outboxEntity, title, msg);
 
         Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
-                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey());
+                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
+                .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         if (readAt.isPresent()) {
             throw new SkipExternalNotificationProcessingException("Sibling notification already read.");

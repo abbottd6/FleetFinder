@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.PlayStyleDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.PlayStyleController;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.PlayStyleService;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ class PlayStyleControllerTest {
 
     @MockitoBean
     private PlayStyleService playStyleService;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private List<PlayStyleDto> mockPlayStyles;
 

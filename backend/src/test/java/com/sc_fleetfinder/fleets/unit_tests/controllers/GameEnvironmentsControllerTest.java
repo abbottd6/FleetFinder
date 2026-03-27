@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.unit_tests.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameEnvironmentDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.controllers.ListingReferenceDataControllers.GameEnvironmentsController;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.GameEnvironmentService;
@@ -29,6 +30,9 @@ class GameEnvironmentsControllerTest {
 
     @MockitoBean
     private GameEnvironmentService gameEnvironmentService;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private List<GameEnvironmentDto> mockEnvironments;
 

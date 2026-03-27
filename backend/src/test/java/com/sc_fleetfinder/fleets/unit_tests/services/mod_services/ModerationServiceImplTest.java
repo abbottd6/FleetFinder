@@ -408,6 +408,8 @@ class ModerationServiceImplTest {
         when(lrr.saveAll(any())).thenReturn(List.of(report));
         when(archiveService.archiveListing(any(GroupListing.class), any(ModerationIssue.class),
                 any(String.class),any(String.class))).thenReturn(archive);
+        when(mir.findAutoModActionBasis_MostCommonReportBasis(anyLong()))
+                .thenReturn(mock(ListingReportBasis.class));
         when(mlar.save(any(ModListingAction.class))).thenReturn(mock(ModListingAction.class));
         when(umrr.findByUser(any(Users.class))).thenReturn(Optional.of(record));
 

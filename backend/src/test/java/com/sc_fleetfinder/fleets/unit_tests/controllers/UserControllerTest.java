@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrEditListingTemplateDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
+import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
 import com.sc_fleetfinder.fleets.config.SecurityConfig;
 import com.sc_fleetfinder.fleets.controllers.UserController;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -75,6 +76,9 @@ public class UserControllerTest {
 
     @MockitoBean
     private ListingReportingService lrs;
+
+    @MockitoBean
+    private UserActivityCache userActivityCache;
 
     private Users mockUser;
 
