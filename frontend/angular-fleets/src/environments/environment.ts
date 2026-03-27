@@ -1,7 +1,5 @@
 import {LogLevel} from "angular-auth-oidc-client";
 
-//TODO GENERATE PROD VAPID KEY PAIR
-
 export const environment = {
   production: false,
   apiBaseUrl: '/api',
