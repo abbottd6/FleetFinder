@@ -271,7 +271,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     private Notification buildNewListingMatchNotification(NotificationOutbox outboxEntity) {
         String title = "Your custom notification '" + outboxEntity.getPayloadJson().getNoteTopic() + "' " +
-                "matched a new listing:";
+                "matched a new listing";
 
         String message = outboxEntity.getPayloadJson().getTargetLabel();
 
@@ -289,7 +289,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private Notification buildListingStatusChangeNotification(NotificationOutbox outboxEntity) {
-        String title = "The status of one of your listings has changed to: " +
+        String title = "The status of one of your listings has changed to " +
                 outboxEntity.getEntityNewStatus();
 
         String msg = groupListingRepository.findById(outboxEntity.getEntityId())
@@ -332,7 +332,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private Notification buildModDeleteNotification(NotificationOutbox outboxEntity) {
-        String title = "One of your listings was removed by a moderator.";
+        String title = "One of your listings was removed by a moderator";
         String msg = modActionRepo.findById(outboxEntity.getParentEntityId())
                 .map(ModListingAction::getActionBasis)
                 .map(ListingReportBasis::getBasisLabel)

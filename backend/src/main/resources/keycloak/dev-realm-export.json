@@ -755,7 +755,7 @@
       "attributes": {
         "realm_client": "false",
         "oidc.ciba.grant.enabled": "false",
-        "client.secret.creation.time": "1773455124",
+        "client.secret.creation.time": "1774721943",
         "backchannel.logout.session.required": "true",
         "standard.token.exchange.enabled": "false",
         "post.logout.redirect.uris": "+",
@@ -1781,7 +1781,7 @@
     {
       "alias": "discord",
       "displayName": "",
-      "internalId": "96709ff1-f23d-46b9-b5ce-477352765873",
+      "internalId": "21d12fb5-da59-4403-b5e2-db9ffd00dce6",
       "providerId": "oidc",
       "enabled": true,
       "updateProfileFirstLoginMode": "on",
@@ -1806,7 +1806,6 @@
         "syncMode": "FORCE",
         "clientSecret": "**********",
         "allowedClockSkew": "0",
-        "defaultScope": "identify email",
         "userInfoUrl": "https://discord.com/api/oauth2/userinfo",
         "validateSignature": "true",
         "clientId": "1481092992864485528",
@@ -1826,8 +1825,8 @@
   ],
   "identityProviderMappers": [
     {
-      "id": "a05a7b3d-4842-4822-89a0-d9391e906062",
-      "name": "discord-user-id-to-email",
+      "id": "113e9803-43f5-45cb-b44c-9968aa48d1c1",
+      "name": "discord-user-id-to-fleetfinder-discord-user-id",
       "identityProviderAlias": "discord",
       "identityProviderMapper": "oidc-user-attribute-idp-mapper",
       "config": {
@@ -1837,7 +1836,7 @@
       }
     },
     {
-      "id": "a7823de8-b1a7-4449-b86d-a690730b1bef",
+      "id": "50675b9d-e671-4b62-b909-0b557d8cbf54",
       "name": "discord-username-to-fleetfinder-username",
       "identityProviderAlias": "discord",
       "identityProviderMapper": "oidc-user-attribute-idp-mapper",
