@@ -83,17 +83,6 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
         );
     }
 
-    // Inserts an in-app notification linking the recipient to the conversation.
-    // createdAtExpr is a SQL expression: "DATE_SUB(NOW(), INTERVAL 10 MINUTE)" for old,
-    // "NOW()" for fresh (< 5 min — will not satisfy the query's age check).
-    private void insertNewMessageNotification(Long recipientId, Long convId, String createdAtExpr) {
-        jdbcTemplate.update(
-                "INSERT INTO notification (id_user, type, message, parent_entity_id, parent_entity_type, created_at) " +
-                "VALUES (?, 'NEW_MESSAGE', 'You have a new message', ?, 'CONVERSATION', " + createdAtExpr + ")",
-                recipientId, convId
-        );
-    }
-
     private void insertPushSubscription(Long userId, boolean socialNotesEnabled) {
         jdbcTemplate.update(
                 "INSERT INTO push_subscription (user_id, user_label, device_url, public_key, browser_secret, social_notes_enabled) " +
@@ -118,18 +107,17 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
         Integer count = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'NEW_CHAT_MESSAGE'",
                 Integer.class, msgId);
-        assertEquals(0, count, "No in-app notification for conversation should produce no outbox entries");
+        assertEquals(0, count, "No external channels enabled should produce no outbox entries");
     }
 
     @Test
-    void generateExternal_OldNotification_Discord_CreatesDiscordEntry() {
-        // given: discord-enabled recipient, in-app notification older than 5 minutes
+    void generateExternal_DiscordEnabled_CreatesDiscordEntry() {
+        // given: discord-enabled recipient with no prior outbox entries for this message
         Long senderId = insertUser(false, false);
         Long recipientId = insertUser(true, true);  // discord + social_notes_enabled
         Long convId = insertConversation(senderId);
         Long msgId = insertMessage(convId, senderId);
         insertParticipant(convId, recipientId);
-        insertNewMessageNotification(recipientId, convId, "DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 
         int inserted = messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
 
@@ -147,14 +135,13 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
     }
 
     @Test
-    void generateExternal_OldNotification_Discord_Idempotent_SecondCallIsNoop() {
+    void generateExternal_Discord_Idempotent_SecondCallIsNoOp() {
         // given: same setup as above — second call should not create duplicates
         Long senderId = insertUser(false, false);
         Long recipientId = insertUser(true, true);
         Long convId = insertConversation(senderId);
         Long msgId = insertMessage(convId, senderId);
         insertParticipant(convId, recipientId);
-        insertNewMessageNotification(recipientId, convId, "DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 
         messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
         messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
@@ -162,19 +149,18 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
         Integer discordCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'NEW_CHAT_MESSAGE' AND delivery_channel = 'DISCORD'",
                 Integer.class, msgId);
-        assertEquals(1, discordCount, "Second call must not create a duplicate entry (ON DUPLICATE KEY)");
+        assertEquals(1, discordCount, "Second call must not create a duplicate entry (INSERT IGNORE)");
     }
 
     @Test
-    void generateExternal_OldNotification_Push_CreatesPushEntry() {
-        // given: push-enabled recipient, in-app notification older than 5 minutes
+    void generateExternal_PushEnabled_CreatesPushEntry() {
+        // given: push-enabled recipient
         Long senderId = insertUser(false, false);
         Long recipientId = insertUser(false, false);
         Long convId = insertConversation(senderId);
         Long msgId = insertMessage(convId, senderId);
         insertParticipant(convId, recipientId);
         insertPushSubscription(recipientId, true);  // social_notes_enabled = 1
-        insertNewMessageNotification(recipientId, convId, "DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 
         messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
 
@@ -199,7 +185,6 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
         Long msgId = insertMessage(convId, senderId);
         insertParticipant(convId, recipientId);
         insertPushSubscription(recipientId, true);
-        insertNewMessageNotification(recipientId, convId, "DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 
         messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
 
@@ -220,24 +205,6 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
     }
 
     @Test
-    void generateExternal_RecentNotification_NoEntry() {
-        // given: in-app notification created just now (< 5 minutes) — query excludes it
-        Long senderId = insertUser(false, false);
-        Long recipientId = insertUser(true, true);
-        Long convId = insertConversation(senderId);
-        Long msgId = insertMessage(convId, senderId);
-        insertParticipant(convId, recipientId);
-        insertNewMessageNotification(recipientId, convId, "NOW()");  // too recent
-
-        messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
-
-        Integer count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'NEW_CHAT_MESSAGE'",
-                Integer.class, msgId);
-        assertEquals(0, count, "Notification created less than 5 minutes ago should not trigger external delivery");
-    }
-
-    @Test
     void generateExternal_RecipientAlreadyRead_NoEntry() {
         // given: recipient's last_read_message_id points to a newer message than :msgId
         // meaning they have already implicitly read the target message
@@ -248,7 +215,6 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
         Long newerMsgId = insertMessage(convId, senderId);  // a newer message the recipient has read
         // recipient has read up to newerMsgId, which is > olderMsgId
         insertParticipantWithReadPointer(convId, recipientId, newerMsgId);
-        insertNewMessageNotification(recipientId, convId, "DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 
         messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, olderMsgId);
 
@@ -266,7 +232,6 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
         Long convId = insertConversation(senderId);
         Long msgId = insertMessage(convId, senderId);
         insertParticipant(convId, recipientId);
-        insertNewMessageNotification(recipientId, convId, "DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 
         messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
 
@@ -285,7 +250,6 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
         Long msgId = insertMessage(convId, senderId);
         insertParticipant(convId, recipientId);
         insertPushSubscription(recipientId, false);  // social_notes_enabled = 0
-        insertNewMessageNotification(recipientId, convId, "DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 
         messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
 
@@ -296,9 +260,9 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
     }
 
     @Test
-    void generateExternal_MultiplePushSubs_OnlyOnePushEntry() {
+    void generateExternal_MultiplePushSubs_ProducesMultipleEntries() {
         // given: 2 push subscriptions both with social_notes_enabled = 1
-        // ON DUPLICATE KEY UPDATE should deduplicate to exactly 1 PUSH outbox entry
+        // each produces its own PUSH outbox entry (different push_sub_id)
         Long senderId = insertUser(false, false);
         Long recipientId = insertUser(false, false);
         Long convId = insertConversation(senderId);
@@ -306,13 +270,31 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
         insertParticipant(convId, recipientId);
         insertPushSubscription(recipientId, true);
         insertPushSubscription(recipientId, true);
-        insertNewMessageNotification(recipientId, convId, "DATE_SUB(NOW(), INTERVAL 10 MINUTE)");
 
         messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
 
         Integer pushCount = jdbcTemplate.queryForObject(
                 "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'NEW_CHAT_MESSAGE' AND delivery_channel = 'PUSH'",
                 Integer.class, msgId);
-        assertEquals(1, pushCount, "2 push subscriptions should still produce exactly 1 PUSH entry (ON DUPLICATE KEY dedup)");
+        assertEquals(2, pushCount, "2 push subscriptions should produce exactly 2 PUSH entries");
+    }
+
+    @Test
+    void generateExternal_MultiplePushSubs_OneWithSocialNotesDisabled_ProducesSingleEntry() {
+        // given: 2 push subscriptions, one with social_notes_enabled = 0
+        Long senderId = insertUser(false, false);
+        Long recipientId = insertUser(false, false);
+        Long convId = insertConversation(senderId);
+        Long msgId = insertMessage(convId, senderId);
+        insertParticipant(convId, recipientId);
+        insertPushSubscription(recipientId, false);
+        insertPushSubscription(recipientId, true);
+
+        messageRepository.generateExternalDeliveryOutboxNotifications(recipientId, msgId);
+
+        Integer pushCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'NEW_CHAT_MESSAGE' AND delivery_channel = 'PUSH'",
+                Integer.class, msgId);
+        assertEquals(1, pushCount, "Only the enabled push subscription should produce a PUSH entry");
     }
 }

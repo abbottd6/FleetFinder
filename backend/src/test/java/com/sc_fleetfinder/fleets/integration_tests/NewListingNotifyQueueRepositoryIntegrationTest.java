@@ -379,8 +379,9 @@ public class NewListingNotifyQueueRepositoryIntegrationTest extends AbstractInte
     }
 
     @Test
-    void generateOutbox_UserWithMultiplePushSubs_OnlyOnePushEntry() {
-        // Two push subscriptions both with group_notes_enabled=1; ON DUPLICATE KEY deduplicates to 1
+    void generateOutbox_UserWithMultiplePushSubs_ProducesMultipleEntries() {
+        // Two push subscriptions both with group_notes_enabled=1; on duplicate key should allow multiple push sub notes
+        // for a single event
         Long ownerId = insertUser(false, false);
         Long receiverId = insertUser(false, false);
         Long listingId = insertListing(ownerId);
@@ -398,8 +399,8 @@ public class NewListingNotifyQueueRepositoryIntegrationTest extends AbstractInte
                 "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'NEW_LISTING_MATCH' AND delivery_channel = 'PUSH'",
                 Integer.class, listingId);
         assertAll(
-                () -> assertEquals(2, totalCount, "2 push subs → 1 IN_APP + 1 PUSH (deduped via ON DUPLICATE KEY)"),
-                () -> assertEquals(1, pushCount, "Exactly 1 PUSH entry despite 2 subscriptions")
+                () -> assertEquals(3, totalCount, "2 push subs → 1 IN_APP + 2 PUSH"),
+                () -> assertEquals(2, pushCount, "Exactly 2 PUSH entries when 2 subscriptions are active")
         );
     }
 
