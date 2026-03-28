@@ -16,7 +16,8 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 @Profile("!test")
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    @Value("${app.ws.allowed-origins}")
+    //WebSockets allowed origins is base url
+    @Value("${app.frontend-base-url}")
     private String wsAppUrl;
 
     private final StompJwtChannelInterceptor stompJwtChannelInterceptor;

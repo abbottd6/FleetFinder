@@ -138,8 +138,6 @@ public class GroupListingServiceImpl implements GroupListingService {
                 GroupListing listingWithId = groupListingRepository.save(groupListing);
                 groupListingRepository.flush();
 
-                log.info("id: {}", listingWithId.getGroupId());
-
                 NewListingNotifyQueue queued = new NewListingNotifyQueue(listingWithId);
 
                 listingNotifyQueueRepository.save(queued);
