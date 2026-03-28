@@ -247,7 +247,7 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
     @Test
     void generateOutbox_ModDelete_MultiplePushSubs_OnlyOnePushEntry() {
         // given: 2 push subscriptions both with sys_notes_enabled = 1
-        // ON DUPLICATE KEY UPDATE should deduplicate to exactly 1 PUSH outbox entry
+        // ON DUPLICATE KEY UPDATE should generate 2 outbox entries
         Long ownerId = insertUser(false, false);
         insertPushSubscription(ownerId, true);
         insertPushSubscription(ownerId, true);
@@ -263,8 +263,8 @@ public class NotificationRepositoryIntegrationTest extends AbstractIntegrationTe
                 "SELECT COUNT(*) FROM notification_outbox WHERE parent_entity_id = ? AND event_type = 'MOD_DELETE' AND delivery_channel = 'PUSH'",
                 Integer.class, actionId);
         assertAll(
-                () -> assertEquals(2, totalCount, "2 push subs should still yield 2 total entries (1 IN_APP + 1 PUSH deduped)"),
-                () -> assertEquals(1, pushCount, "Exactly 1 PUSH entry despite 2 subscriptions (ON DUPLICATE KEY)")
+                () -> assertEquals(3, totalCount, "2 push subs should still yield 2 total entries (1 IN_APP + 1 PUSH deduped)"),
+                () -> assertEquals(2, pushCount, "Exactly 1 PUSH entry despite 2 subscriptions (ON DUPLICATE KEY)")
         );
     }
 

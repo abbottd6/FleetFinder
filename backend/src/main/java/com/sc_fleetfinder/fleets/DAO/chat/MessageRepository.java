@@ -28,7 +28,7 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
             INSERT IGNORE INTO notification_outbox (
             event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
             parent_entity_id, parent_entity_type, payload_json, status, push_sub_id,
-            delivery_channel, sibling_key, created_at
+            delivery_channel, do_not_duplicate, sibling_key, created_at
             )
             SELECT
                 'NEW_CHAT_MESSAGE'          AS event_type,
@@ -44,30 +44,27 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
                     'targetLabel',      SUBSTRING(msg.msg_body, 1, 100),
                     'targetCreatedAt',  msg.created_at,
                     'addContext',       SUBSTRING(conv.title, 1, 64)
-                )                           AS payload_json,
-                'PENDING'                   AS status,
-                push.id_push_sub            AS push_sub_id,
-                channels.delivery_channel   AS delivery_channel,
+                )                               AS payload_json,
+                'PENDING'                       AS status,
+                push.id_push_sub                AS push_sub_id,
+                channels.delivery_channel       AS delivery_channel,
+                channels.do_not_duplicate       AS do_not_duplicate,
                 SHA2(CONCAT('NEW_CHAT_MESSAGE', '|', 'MESSAGE', '|', msg.id_msg, '|', :recipientId, '|', 'NEW MESSAGE'), 256) AS sibling_key,
-                NOW()                       AS created_at
+                NOW()                           AS created_at
             FROM message msg
             JOIN conversation conv ON msg.id_conversation = conv.id_conversation
-            LEFT JOIN notification noti ON conv.id_conversation = noti.parent_entity_id
-                AND noti.id_user = :recipientId
-                AND noti.parent_entity_type = 'CONVERSATION'
             JOIN conversation_participant parti ON conv.id_conversation = parti.id_conversation
                 AND parti.id_user = :recipientId
             JOIN users u ON :recipientId = u.id_user
             CROSS JOIN (
-                SELECT 'DISCORD' AS delivery_channel UNION ALL
-                SELECT 'PUSH'
+                SELECT 'DISCORD' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'PUSH', NULL AS do_not_duplicate
             ) AS channels
             LEFT JOIN push_subscription push
                 ON push.user_id = :recipientId
                 AND channels.delivery_channel = 'PUSH'
                 AND push.social_notes_enabled = 1
             WHERE msg.id_msg = :msgId
-                AND (noti.created_at IS NULL OR noti.created_at < (NOW() - INTERVAL 20 SECOND))
                 AND (parti.last_read_message_id IS NULL OR parti.last_read_message_id < :msgId)
                 AND (
                     (channels.delivery_channel = 'DISCORD'
