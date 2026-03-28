@@ -47,6 +47,9 @@ public class NotificationOutbox {
     @NotNull(message="NotificationOutbox entity field 'delivery_channel' cannot be null.")
     private DeliveryChannel deliveryChannel;
 
+    @Column(name="do_not_duplicate", nullable = true)
+    private Integer doNotDuplicate;
+
     //name of entity type
     @Column(name="entity_type")
     @NotNull(message="NotificationOutbox field 'entityType' cannot be null.")

@@ -21,7 +21,7 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
             INSERT IGNORE INTO notification_outbox (
                 event_type, entity_type, entity_id, entity_owner_id,
                 entity_new_status, payload_json, status, push_sub_id,
-                delivery_channel, sibling_key, created_at
+                delivery_channel, do_not_duplicate, sibling_key, created_at
                 )
             SELECT
                 'LISTING_ARCHIVED'                      AS event_type,
@@ -39,14 +39,15 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 'PENDING'                               AS status,
                 push.id_push_sub                        AS push_sub_id,
                 channels.delivery_channel               AS delivery_channel,
+                channels.do_not_duplicate               AS do_not_duplicate,
                 SHA2(CONCAT('LISTING_ARCHIVED', '|', 'GROUP_LISTING', '|', gl.id_group, '|', gl.id_user, '|', 'ARCHIVED'), 256) AS sibling_key,
                 NOW()                                   AS created_at
             FROM group_listing gl
             JOIN users u ON gl.id_user = u.id_user
             CROSS JOIN (
-                SELECT 'IN_APP' AS delivery_channel UNION ALL
-                SELECT 'DISCORD' UNION ALL
-                SELECT 'PUSH'
+                SELECT 'IN_APP' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'DISCORD' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'PUSH' AS delivery_channel, NULL AS do_not_duplicate
             ) AS channels
             LEFT JOIN push_subscription push
                 ON push.user_id = gl.id_user
@@ -90,7 +91,7 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
             INSERT IGNORE INTO notification_outbox (
                 event_type, entity_type, entity_id, entity_owner_id,
                 entity_new_status, payload_json, status, push_sub_id,
-                delivery_channel, sibling_key, created_at
+                delivery_channel, do_not_duplicate, sibling_key, created_at
                 )
             SELECT
                 'LISTING_VIS_STATUS_CHANGED'                AS event_type,
@@ -108,6 +109,7 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 'PENDING'                                   AS status,
                 push.id_push_sub                            AS push_sub_id,
                 channels.delivery_channel                   AS delivery_channel,
+                channels.do_not_duplicate                   AS do_not_duplicate,
                 SHA2(CONCAT('LISTING_VIS_STATUS_CHANGED', '|', 'GROUP_LISTING', '|', gl.id_group, '|', gl.id_user, '|', COALESCE(computed.entity_new_status, '')), 256) AS sibling_key,
                 NOW()                                       AS created_at
             FROM group_listing gl
@@ -129,9 +131,9 @@ public interface GroupListingRepository extends JpaRepository<GroupListing, Long
                 FROM group_listing
             ) computed ON computed.id_group = gl.id_group
             CROSS JOIN (
-                SELECT 'IN_APP' AS delivery_channel UNION ALL
-                SELECT 'DISCORD' UNION ALL
-                SELECT 'PUSH'
+                SELECT 'IN_APP' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'DISCORD' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'PUSH' AS delivery_channel, NULL AS do_not_duplicate
             ) AS channels
             LEFT JOIN push_subscription push
                 ON push.user_id = gl.id_user

@@ -516,9 +516,9 @@ public class GroupListingRepositoryScheduledQueriesIntegrationTest extends Abstr
     }
 
     @Test
-    void createOutboxEntries_Archive_UserWithMultiplePushSubs_DeduplicatedToOnePushEntry() {
+    void createOutboxEntries_Archive_UserWithMultiplePushSubs_ShouldGenerateMultipleEntries() {
         // given: user has 2 push subscriptions both with sys_notes_enabled = 1
-        // ON DUPLICATE KEY UPDATE should deduplicate to a single PUSH outbox entry
+        // should generate an entry for each push sub in notification_outbox
         Long userId = insertUserWithSysNotesConfig(false, false);
         insertPushSubscription(userId, true);
         insertPushSubscription(userId, true);
@@ -533,8 +533,33 @@ public class GroupListingRepositoryScheduledQueriesIntegrationTest extends Abstr
                 "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED' AND delivery_channel = 'PUSH'",
                 Integer.class, id);
         assertAll(
-                () -> assertEquals(2, totalCount, "2 push subs should still yield only 2 total entries (1 IN_APP + 1 PUSH deduped)"),
-                () -> assertEquals(1, pushCount, "Exactly 1 PUSH entry despite 2 subscriptions (ON DUPLICATE KEY)")
+                () -> assertEquals(3, totalCount, "2 push subs should still yield 3 total entries (1 IN_APP + 2 PUSH)"),
+                () -> assertEquals(2, pushCount, "Should generate entries for both PUSH subscriptions")
+        );
+    }
+
+    @Test
+    void createOutboxEntries_Archive_UserWithMultiplePushSubs_OneEnabled_OneDisabled() {
+        // given: Single user has 2 push subscriptions, one has sysNotesEnabled, the other has them disabled
+        // should only generate an entry for the push sub with sysNotesEnabled
+        Long userId = insertUserWithSysNotesConfig(false, false);
+        insertPushSubscription(userId, true);
+        insertPushSubscription(userId, false);
+        Long id = insertListingForUser(userId, "ARCHIVED", "DATE_SUB(NOW(), INTERVAL 30 DAY)");
+
+        listingRepo.createOutboxEntriesForArchiveNotifications();
+
+        Integer totalCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED'",
+                Integer.class, id);
+        Integer pushCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_ARCHIVED' AND delivery_channel = 'PUSH'",
+                Integer.class, id);
+        assertAll(
+                () -> assertEquals(2, totalCount, "2 push subs (one disabled) should still yield " +
+                        "2 total entries (1 IN_APP + 1 PUSH)"),
+                () -> assertEquals(1, pushCount, "Should generate entries for only the push sub with" +
+                        " sysNotesEnabled")
         );
     }
 
@@ -634,7 +659,7 @@ public class GroupListingRepositoryScheduledQueriesIntegrationTest extends Abstr
     }
 
     @Test
-    void createOutboxEntriesForStatusUpdates_UserWithMultiplePushSubs_OnlyOnePushEntry() {
+    void createOutboxEntriesForStatusUpdates_UserWithMultiplePushSubs_ProducesMultiplePushEntries() {
         Long userId = insertUserWithSysNotesConfig(false, false);
         insertPushSubscription(userId, true);
         insertPushSubscription(userId, true);
@@ -649,8 +674,8 @@ public class GroupListingRepositoryScheduledQueriesIntegrationTest extends Abstr
                 "SELECT COUNT(*) FROM notification_outbox WHERE entity_id = ? AND event_type = 'LISTING_VIS_STATUS_CHANGED' AND delivery_channel = 'PUSH'",
                 Integer.class, id);
         assertAll(
-                () -> assertEquals(2, totalCount, "2 push subs → 1 IN_APP + 1 PUSH (deduped)"),
-                () -> assertEquals(1, pushCount, "ON DUPLICATE KEY dedup → exactly 1 PUSH entry")
+                () -> assertEquals(3, totalCount, "2 push subs → 1 IN_APP + 2 PUSH"),
+                () -> assertEquals(2, pushCount, "Should generate both PUSH entries")
         );
     }
 }

@@ -59,7 +59,7 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             INSERT IGNORE INTO notification_outbox (
             event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
             parent_entity_id, parent_entity_type, payload_json, status, push_sub_id,
-            delivery_channel, sibling_key, created_at
+            delivery_channel, do_not_duplicate, sibling_key, created_at
             )
             SELECT
                 'MOD_DELETE'                AS event_type,
@@ -75,19 +75,20 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
                     'targetLabel',      action.action_type,
                     'targetCreatedAt',  action.action_ts,
                     'addContext',       action.action_note
-                )                           AS payload_json,
-                'PENDING'                   AS status,
-                push.id_push_sub            AS push_sub_id,
-                channels.delivery_channel   AS delivery_channel,
+                )                               AS payload_json,
+                'PENDING'                       AS status,
+                push.id_push_sub                AS push_sub_id,
+                channels.delivery_channel       AS delivery_channel,
+                channels.do_not_duplicate       AS do_not_duplicate,
                 SHA2(CONCAT('MOD_DELETE', '|', 'LISTING_ARCHIVE', '|', action.id_archive, '|', action.id_user, '|', 'ARCHIVED'), 256) AS sibling_key,
-                NOW()                       as created_at
+                NOW()                           AS created_at
                 FROM mod_listing_action action
                 JOIN listing_archive archive ON action.id_archive = archive.id_archive
                 JOIN users u ON action.id_user = u.id_user
                 CROSS JOIN (
-                    SELECT 'IN_APP' AS delivery_channel UNION ALL
-                    SELECT 'DISCORD' UNION ALL
-                    SELECT 'PUSH'
+                    SELECT 'IN_APP' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                    SELECT 'DISCORD' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                    SELECT 'PUSH' AS delivery_channel, NULL AS do_not_duplicate
                 ) AS channels
                 LEFT JOIN push_subscription push
                     ON push.user_id = action.id_user

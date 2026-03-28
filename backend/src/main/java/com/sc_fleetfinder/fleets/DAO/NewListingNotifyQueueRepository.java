@@ -15,7 +15,7 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
             INSERT IGNORE INTO notification_outbox (
                         event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
                         parent_entity_id, parent_entity_type, payload_json, status, push_sub_id,
-                        delivery_channel, sibling_key, created_at
+                        delivery_channel, do_not_duplicate, sibling_key, created_at
                     )
             SELECT
                 'NEW_LISTING_MATCH'             AS event_type,
@@ -35,6 +35,7 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
                 'PENDING'                       AS status,
                 push.id_push_sub                AS push_sub_id,
                 channels.delivery_channel       AS delivery_channel,
+                channels.do_not_duplicate       AS do_not_duplicate,
                 SHA2(CONCAT('NEW_LISTING_MATCH', '|', 'GROUP_LISTING', '|', gl.id_group, '|', customNote.user_id, '|', 'MATCHED'), 256) AS sibling_key,
                 NOW()                           AS created_at
             FROM new_listing_notify_queue queue
@@ -55,9 +56,9 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
                 AND (customNote.group_status_id IS NULL OR customNote.group_status_id = gl.group_status_id)
             JOIN users u ON customNote.user_id = u.id_user
             CROSS JOIN (
-                SELECT 'IN_APP'  AS delivery_channel UNION ALL
-                SELECT 'DISCORD' UNION ALL
-                SELECT 'PUSH'
+                SELECT 'IN_APP' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'DISCORD' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'PUSH' AS delivery_channel, NULL AS do_not_duplicate
             ) AS channels
             LEFT JOIN push_subscription push
                 ON push.user_id = u.id_user
@@ -91,8 +92,7 @@ public interface NewListingNotifyQueueRepository extends JpaRepository<NewListin
             // The push_subscription LEFT JOIN is conditioned on channels.delivery_channel = 'PUSH',
             // so it only fires for PUSH rows. IN_APP and DISCORD rows produce exactly 1 row per match
             // regardless of how many push subscriptions a user has (avoiding row multiplication).
-            // Users with multiple push subscriptions produce multiple PUSH rows; INSERT IGNORE
-            // deduplicates them — the single PUSH outbox entry is then sent to all their subscriptions.
+            // Users with multiple push subscriptions produce multiple PUSH entries.
 
     @Modifying
     @Query(value = """
