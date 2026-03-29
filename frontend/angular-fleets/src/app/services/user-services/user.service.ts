@@ -55,6 +55,9 @@ export class UserService {
   private readonly userSubject = new BehaviorSubject<SessionUser | null>(null);
   readonly sessionUser$ = this.userSubject.asObservable();
 
+  private readonly userLoggedInSubject = new BehaviorSubject<boolean>(false);
+  readonly userLoggedIn$ = this.userLoggedInSubject.asObservable();
+
   get debugUserSubj() {
     return this.userSubject.value;
   }
@@ -84,7 +87,10 @@ export class UserService {
       takeUntilDestroyed(this.destroyRef),
 
       switchMap(loggedIn => {
-        if (!loggedIn) { return of<SessionUser | null>(null);}
+        if (!loggedIn) {
+          this.userLoggedInSubject.next(false);
+          return of<SessionUser | null>(null);
+        }
 
         return combineLatest([this.kcProfile$, this.ffPrivateUser$]).pipe(
           filter(([, ffPrivate]) => !!ffPrivate),
@@ -108,6 +114,7 @@ export class UserService {
     ).subscribe(user => {
       if(user === null || user === undefined) return;
       else {
+        this.userLoggedInSubject.next(true);
         this.userSubject.next(user);
       }
     });

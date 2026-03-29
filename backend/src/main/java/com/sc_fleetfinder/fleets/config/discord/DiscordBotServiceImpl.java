@@ -65,7 +65,7 @@ public class DiscordBotServiceImpl implements DiscordBotService {
 
                 //TODO add this page and routing
                 field2 = "Check it out: ";
-                value2 = "https://scfleetfinder.com/listing_details/" + note.getTargetMetadata().getTargetId();
+                value2 = "https://scfleetfinder.com/listing-details/" + note.getTargetMetadata().getTargetId();
 
                 break;
             case NotificationType.NEW_CHAT_MESSAGE:

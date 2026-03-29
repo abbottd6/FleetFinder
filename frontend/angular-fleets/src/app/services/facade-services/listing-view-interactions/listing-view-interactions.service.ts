@@ -45,6 +45,8 @@ export class ListingViewInteractionsService {
   isModalVisible: boolean = false;
   private modalCloseFromPop = false;
 
+  public linkCopied: boolean = false;
+
   refreshSubject = new Subject<'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | 'created' | null>();
   readonly refresh$ = this.refreshSubject.asObservable();
 
@@ -308,6 +310,13 @@ export class ListingViewInteractionsService {
       console.log("reason: ", reason);
     }
     this.refreshSubject.next(reason);
+  }
+
+  copyListingLink(groupId: number) {
+    const link = environment.webAppBaseUrl + `/listing-details/${groupId}`;
+    navigator.clipboard.writeText(link);
+    this.linkCopied = true;
+    setTimeout(() => this.linkCopied = false, 20000);
   }
 
   //on close instructions for groupListing modal popup
