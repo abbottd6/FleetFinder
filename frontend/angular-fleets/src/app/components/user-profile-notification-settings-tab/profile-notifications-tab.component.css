@@ -241,6 +241,17 @@ mat-panel-description.mat-expansion-panel-header-description {
     max-width: 300px;
   }
 
+  app-custom-notification-form {
+    min-width: 85%;
+    max-width: 92vw !important;
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+
+  .custom-notes-create-container {
+    max-width: 85vw;
+  }
+
   mat-panel-description.mat-expansion-panel-header-description {
     display: none;
   }
@@ -249,7 +260,7 @@ mat-panel-description.mat-expansion-panel-header-description {
     width: 100%;
   }
   :host ::ng-deep .mat-expansion-panel-body {
-    padding-inline: 0;
+    padding-inline: 8px;
     margin-inline: auto;
   }
 
@@ -332,6 +343,13 @@ app-push-notification-form {
   transition: transform 0.5s ease, max-height 0.5s ease;
 }
 
+@media(max-width: 1200px) {
+  app-custom-notification-form.show-form {
+    min-width: 100%;
+    flex: 1 1 auto;
+  }
+}
+
 .do-not-show-form {
   transform: scaleY(0) scaleX(0);
   max-height: 0;
@@ -344,7 +362,7 @@ app-push-notification-form {
 
 .show-form {
   transform: scaleY(1) scaleX(1);
-  max-height: 1000px;
+  max-height: 2000px;
   max-width: 90%;
   overflow-y: visible;
   overflow-x: hidden;

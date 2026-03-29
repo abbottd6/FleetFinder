@@ -21,7 +21,6 @@
   }
   :host ::ng-deep .form-wrapper {
     margin-inline: auto;
-
   }
 
   :host ::ng-deep .form-wrapper .form-row .generic-input {

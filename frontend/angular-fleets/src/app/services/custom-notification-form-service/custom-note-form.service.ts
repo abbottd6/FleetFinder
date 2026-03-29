@@ -45,7 +45,7 @@ export class CustomNoteFormService {
       environmentCtrl: new FormControl(null),
       experienceCtrl: new FormControl(null),
       categoryCtrl: new FormControl(null),
-      subcategoryCtrl: new FormControl(null),
+      subcategoryCtrl: new FormControl({value: null, disabled: true}),
       systemCtrl: new FormControl(null),
       languageCtrl: new FormControl(null),
       pvpStatusCtrl: new FormControl(null),
