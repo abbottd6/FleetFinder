@@ -1,4 +1,4 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {filter, map, shareReplay, Subject, takeUntil} from "rxjs";
 import {ActivatedRoute, Router, RouterLink} from "@angular/router";
 import {
@@ -36,13 +36,13 @@ import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.s
   ],
   styleUrl: './listing-details.component.css'
 })
-export class ListingDetailsComponent implements OnDestroy {
+export class ListingDetailsComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
   private breakpoint = new BreakpointObserver();
 
   protected isLoading: boolean = true;
 
-  private readonly groupId!: number | null;
+  private groupId!: number | null;
 
   protected listing!: GroupListingViewModel;
 
@@ -52,8 +52,9 @@ export class ListingDetailsComponent implements OnDestroy {
               private listingsApi: GroupListingFetchService,
               protected userService: UserService,
               protected listingInteract: ListingViewInteractionsService,
-              protected chatHostSrv: ChatHostService) {
+              protected chatHostSrv: ChatHostService) {}
 
+  ngOnInit() {
     const stringId = this.route.snapshot.paramMap.get('groupId');
 
     this.groupId = Number(stringId) ? Number(stringId) : null;
@@ -69,7 +70,7 @@ export class ListingDetailsComponent implements OnDestroy {
       .subscribe({
           next: (profile => {
             this.listing = profile;
-            // this.checkAuth();
+            this.checkAuth();
             this.isLoading = false;
           }),
           error: error => {
@@ -81,7 +82,7 @@ export class ListingDetailsComponent implements OnDestroy {
   }
 
   rerouteGroupNotFound() {
-    this.router.navigateByUrl('/nothing-here-page');
+    this.router.navigateByUrl('nothing-here-page');
   }
 
   checkAuth() {
