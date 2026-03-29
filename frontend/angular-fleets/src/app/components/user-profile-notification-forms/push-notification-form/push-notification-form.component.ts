@@ -1,4 +1,4 @@
-import {Component, EventEmitter, OnDestroy, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnDestroy, Output, SimpleChanges} from '@angular/core';
 import {BehaviorSubject, Subject, takeUntil} from "rxjs";
 import {FormControl, Validators} from "@angular/forms";
 import {
@@ -22,13 +22,17 @@ import {HttpErrorResponse} from "@angular/common/http";
   ],
   styleUrl: './push-notification-form.component.css'
 })
-export class PushNotificationFormComponent implements OnDestroy {
+export class PushNotificationFormComponent implements OnDestroy, OnChanges {
   private destroy$ = new Subject<void>();
+
   @Output() cancelForm= new EventEmitter<boolean>();
   @Output() formSuccess = new EventEmitter<boolean>();
   @Output() formError = new EventEmitter<HttpErrorResponse>();
 
+  @Input() triggerBrowserCheck: boolean = false;
+
   protected showFormErrorMessage: string | null = null;
+  protected browserIncompatibilityMessage: string | null = null;
 
   private pushSubFormSubmitSubject = new BehaviorSubject<boolean>(false);
   public pushSubFormSubmit$ = this.pushSubFormSubmitSubject.asObservable();
@@ -40,7 +44,13 @@ export class PushNotificationFormComponent implements OnDestroy {
                  nonNullable: true
   });
 
-  constructor(private noteSettingsApiService: NotificationSettingsApiService){}
+  constructor(private noteSettingsApiService: NotificationSettingsApiService) {}
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes['triggerBrowserCheck']?.currentValue === true) {
+      this.browserIncompatibilityMessage = this.determineBrowserCompatibility();
+    }
+  }
 
   async enablePushNotifications() {
     if(this.pushSubInputCtrl.invalid){
@@ -51,7 +61,7 @@ export class PushNotificationFormComponent implements OnDestroy {
     const permission = await Notification.requestPermission();
 
     if(permission !== 'granted') {
-      this.showFormErrorMessage = permission;
+      this.showFormErrorMessage = 'Your browser is blocking the request: ' + permission;
       return;
     }
 
@@ -70,6 +80,12 @@ export class PushNotificationFormComponent implements OnDestroy {
       deviceUrl: sub.endpoint,
       publicKey: sub.keys['p256dh'],
       browserSecret: sub.keys['auth']
+    }
+
+    if(newPushSubRequest.deviceUrl.toString().includes('permanently-removed.invalid')) {
+      this.showFormErrorMessage = "Push subscription key is invalid. Please try a different browser or device.";
+      return;
+
     }
 
     this.noteSettingsApiService.savePushSubscription(newPushSubRequest).pipe(takeUntil(this.destroy$))
@@ -103,6 +119,20 @@ export class PushNotificationFormComponent implements OnDestroy {
     const rawData = atob(base64);
 
     return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+  }
+
+  determineBrowserCompatibility() {
+      const ua = navigator.userAgent;
+
+      const deviceMsg = " devices do not support push notifications."
+      const browserMsg = " do[es] not support push notifications."
+
+      if (/iPhone|iPad|iPod/i.test(ua)) return 'iOS' + deviceMsg;
+      if (/FBAN|FBAV/i.test(ua)) return 'In-app browsers' + browserMsg;
+      if (/Instagram/i.test(ua)) return 'In-app browsers' + browserMsg;
+      if (/wv/.test(ua) && /Android/i.test(ua)) return 'Android WebView' + browserMsg;
+      if (/Edg\//.test(ua) && /Mobile/i.test(ua)) return 'Edge Mobile' + browserMsg;
+      return null;
   }
 
   ngOnDestroy() {

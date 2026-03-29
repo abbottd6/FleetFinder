@@ -2,15 +2,23 @@
   <h5>Notifications:</h5>
 
   <div class="header-notice">
+    <ul>
+      <li>Enable Discord and/or push notifications to get notifications when you are not active on the app.</li>
+      <li>Create custom notification profiles to get notified when other users create listings that
+        match your criteria.</li>
+      <li>Notification channels are customizable so that you receive only the notifications you
+      are interested in.</li>
+      <li>You can disable notifications or remove linked accounts and push notification
+      configurations at any time.</li>
+    </ul>
     <p>
-      SCFleetFinder uses account links and emails for user verification and notification purposes only. This
+      Privacy Policy: SCFleetFinder uses account links and emails for user verification and notification purposes
+      only. This
       <span class="fancy-text">
         user information is secure, private, and will never be shared with third parties or other users without
         your explicit consent.
       </span>
-      Notifications are customizable so that you can receive only the notifications you
-      are interested in. You can disable notifications or remove linked accounts and push notification
-      configurations at any time.
+
     </p>
   </div>
 </div>
@@ -35,7 +43,8 @@
         <li>You can also sign up for <span class="fancy-text">notifications through Discord</span>
           — which are sent as direct messages from the FleetFinder Discord bot, FleetyBot.</li>
         <li>Discord requires FleetyBot to share a server with you in order for you to receive messages from it,
-            so be sure to join the <a href="https://discord.gg/X2QskC5DG9">SCFleetFinder Discord</a></li>
+            so be sure to join the
+          <a class="fancy-text" href="https://discord.gg/X2QskC5DG9">SCFleetFinder Discord</a></li>
         <li>Notifications are divided into three categories, which you can enable/disable individually.</li>
       </ul>
     </div>
@@ -150,6 +159,7 @@
       <app-push-notification-form
         [class.do-not-show-form]="doNotShowPushNotesForm"
         [class.show-form]="!doNotShowPushNotesForm"
+        [triggerBrowserCheck]="checkBrowser"
         (cancelForm)="showSubscribeOnThisDevice()"
         (formSuccess)="createPushSubSuccessTrigger($event)"
         (formError)="showPushSubFormError($event)">

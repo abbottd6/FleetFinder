@@ -365,10 +365,18 @@ app-push-notification-form {
 
 .push-sub-proliferation-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(425px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
   width: 95%;
+  max-width: 95vw;
   margin-inline: auto;
   min-height: 100px;
   margin-top: 20px;
   gap: 10px;
+}
+
+@media(max-width: 500px) {
+  .push-sub-proliferation-container {
+    grid-template-columns: 1fr;
+    max-width: 95%;
+  }
 }
