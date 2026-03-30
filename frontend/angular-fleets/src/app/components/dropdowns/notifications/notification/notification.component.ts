@@ -53,7 +53,7 @@ export class NotificationComponent implements OnInit {
         this.header = this.note.title;
         this.contextLabel = "Group Status: ";
         this.context = this.note.targetMetadata?.addContext;
-        this.hasLink = "listing-details/" + this.note.parentEntity.parentEntityId;
+        this.hasLink = "listing-details/" + this.note.targetMetadata?.targetId;
     }
 
     if (this.note.message.includes("EXPIRED")) {
