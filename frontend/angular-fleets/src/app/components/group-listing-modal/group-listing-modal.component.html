@@ -1,44 +1,47 @@
 <!-- TABLE ITEM MODAL -->
 <div *ngIf="isVisible"
-  class="modal fade"
-  tabindex="-1"
-  [ngClass]="{'show': isVisible}"
-  [style.display]="isVisible ? 'block' : 'none'"
-  role="dialog"
-  aria-modal="true"
-  >
-<!--  (click)="closeOnBackdropClick($event)"-->
+     class="modal fade"
+     tabindex="-1"
+     [ngClass]="{'show': isVisible}"
+     [style.display]="isVisible ? 'block' : 'none'"
+     role="dialog"
+     aria-modal="true"
+>
+  <!--  (click)="closeOnBackdropClick($event)"-->
 
   <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-dash">//</h1><h4 class="modal-title">{{ selectedListing?.listingTitle}}</h4>
+        <h1 class="modal-dash">//</h1><h4 class="modal-title">{{ selectedListing?.listingTitle }}</h4>
         <button type="button" class="close" (click)="closeModal(null, null)" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
 
       <div class="modal-body">
-        <div class="container-fluid">
+        <div class="listing-details-scoped-block">
+          <div class="label-wrapper">
+            <span class="scope-label">Logistics & Coordination</span>
+          </div>
 
           <!-- FIRST GRID BLOCK COLUMN LEFT -->
           <div class="modal-listing-container-grid">
             <div class="modal-listing-block column-left">
               <div class="modal-listing-row">
                 <span class="modal-listing-field">Listed By:</span>
-                <span class="modal-listing-val">{{selectedListing?.userName}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.userName }}</span>
               </div>
               <div class="modal-listing-row">
                 <span class="modal-listing-field">Server Region:</span>
-                <span class="modal-listing-val">{{selectedListing?.server}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.server }}</span>
               </div>
               <div class="modal-listing-row">
                 <span class="modal-listing-field">Play Style:</span>
-                <span class="modal-listing-val">{{selectedListing?.playStyle}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.playStyle }}</span>
               </div>
               <div class="modal-listing-row">
                 <span class="modal-listing-field">Language:</span>
-                <span class="modal-listing-val">{{selectedListing?.languageCode}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.languageCode }}</span>
               </div>
             </div>
 
@@ -46,17 +49,22 @@
             <div class="modal-listing-block column-right">
               <div class="modal-listing-row column-right">
                 <span class="modal-listing-field">Last Updated: </span>
-                <span class="modal-listing-val">{{selectedListing?.lastUpdated | date:'MMM d, h:mm a'}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.lastUpdated | date:'MMM d, h:mm a' }}</span>
               </div>
               <div class="modal-listing-row column-right">
                 <span class="modal-listing-field">Group Status:</span>
-                <span class="modal-listing-val">{{selectedListing?.groupStatus}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.groupStatus }}</span>
               </div>
-              <div *ngIf="selectedListing?.groupStatus === 'Future/Scheduled' && selectedListing?.eventSchedule as
-                    eventSchedule" class="modal-listing-row column-right">
-                      <span class="modal-listing-field">Event Scheduled: </span>
-                      <span class="modal-listing-val">{{ eventSchedule | date: 'MMM d, h:mm a' }}</span>
-              </div>
+              <ng-container
+                *ngIf="selectedListing?.groupStatus === 'Future/Scheduled' && selectedListing?.eventSchedule as eventSchedule">
+                <div class="modal-listing-row column-right">
+                  <span class="modal-listing-field">Event Scheduled: </span>
+                  <span class="modal-listing-val">(Your time) {{ eventSchedule | date: 'MMM d, h:mm a' }}</span>
+                </div>
+                <div class="modal-listing-row column-right">
+                  <span class="modal-listing-val">(UTC) {{ eventSchedule | date: 'MMM d, h:mm a' : 'UTC' }}</span>
+                </div>
+              </ng-container>
             </div>
           </div>
           <!-- END OF FIRST GRID BLOCK -->
@@ -67,24 +75,24 @@
             <div class="modal-listing-block column-left">
               <div class="modal-listing-row">
                 <span class="modal-listing-field">Environment:</span>
-                <span class="modal-listing-val">{{selectedListing?.environment}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.environment }}</span>
               </div>
               <div class="modal-listing-row">
                 <span class="modal-listing-field">Experience:</span>
-                <span class="modal-listing-val">{{selectedListing?.experience}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.experience }}</span>
               </div>
 
-          <!-- SECOND GRID BLOCK COLUMN RIGHT -->
+              <!-- SECOND GRID BLOCK COLUMN RIGHT -->
             </div>
             <div class="modal-listing-block column-right">
               <div class="modal-listing-row column-right">
                 <span class="modal-listing-field">Comms:</span>
-                <span class="modal-listing-val">{{selectedListing?.commsOption}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.commsOption }}</span>
               </div>
               <div class="modal-listing-row column-right">
                 <span class="modal-listing-field">Comms Service:</span>
                 <ng-container *ngIf="selectedListing?.commsService; else emptyCommsService">
-                  <span class="modal-listing-val">{{selectedListing?.commsService}}</span>
+                  <span class="modal-listing-val">{{ selectedListing?.commsService }}</span>
                 </ng-container>
               </div>
               <div>
@@ -95,31 +103,35 @@
             </div>
           </div>
           <!-- END OF SECOND GRID BLOCK -->
+        </div>
 
-
+        <div class="listing-details-scoped-block">
+          <div class="label-wrapper">
+            <span class="scope-label">Gameplay Details</span>
+          </div>
           <!-- THIRD GRID BLOCK COLUMN LEFT -->
           <div class="modal-listing-container-grid">
             <div class="modal-listing-block column-left">
               <div class="modal-listing-row">
                 <span class="modal-listing-field">System:</span>
-                <span class="modal-listing-val">{{selectedListing?.system}}</span>
+                <span class="modal-listing-val">{{ selectedListing?.system }}</span>
               </div>
               <div class="modal-listing-row column-left-indent">
                 <span class="modal-listing-field">Planet/Moon:</span>
-                <span class="modal-listing-val"> {{selectedListing?.planetMoonSystem}} </span>
+                <span class="modal-listing-val"> {{ selectedListing?.planetMoonSystem }} </span>
               </div>
               <div class="modal-listing-row column-left">
-                  <span class="modal-listing-field">Gameplay Category:</span>
-                  <span class="modal-listing-val">{{selectedListing?.category}}</span>
+                <span class="modal-listing-field">Gameplay Category:</span>
+                <span class="modal-listing-val">{{ selectedListing?.category }}</span>
               </div>
               <div class="modal-listing-row column-left-indent">
-                  <span class="modal-listing-field">Subcategory:</span>
-                  <span class="modal-listing-val"> {{ selectedListing?.subcategory}} </span>
+                <span class="modal-listing-field">Subcategory:</span>
+                <span class="modal-listing-val"> {{ selectedListing?.subcategory }} </span>
               </div>
             </div>
 
 
-          <!-- THIRD LISTING BLOCK COLUMN RIGHT -->
+            <!-- THIRD LISTING BLOCK COLUMN RIGHT -->
             <div class="modal-listing-block column-right">
               <div class="modal-listing-row column-right">
                 <span class="modal-listing-field">PvP Status:</span>
@@ -148,7 +160,7 @@
               <span class="modal-listing-field">Description:</span>
             </div>
             <div class="modal-listing-block column-left-indent">
-              <span class="modal-listing-val">{{selectedListing?.listingDescription}}</span>
+              <span class="modal-listing-val">{{ selectedListing?.listingDescription }}</span>
             </div>
           </div>
 
@@ -158,67 +170,74 @@
               <span class="modal-listing-field">Available Roles:</span>
             </div>
             <div class="modal-listing-row column-left-indent">
-              <span class="modal-listing-val">{{selectedListing?.availableRoles}}</span>
+              <span class="modal-listing-val">{{ selectedListing?.availableRoles }}</span>
             </div>
           </div>
+        </div>
 
-          <div class="modal-footer">
-            <div class="footer-buttons-left">
+        <div class="modal-footer">
+          <div class="footer-buttons-left">
+            <button
+              *ngIf="!userIsListingOwner()"
+              type="button"
+              class="modal-button-with-icon"
+              [matMenuTriggerFor]="listingOptionsMenu">
+              Options
+              <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+            <mat-hint *ngIf="linkCopied" id="copied-hint">Copied</mat-hint>
+            <mat-menu #listingOptionsMenu="matMenu">
               <button
-                *ngIf="!userIsListingOwner()"
-                type="button"
-                class="modal-button-with-icon"
-                [matMenuTriggerFor]="listingOptionsMenu">
-                Options
-                <mat-icon>arrow_drop_down</mat-icon>
+                mat-menu-item
+                class="options-item"
+                (click)="closeModal('hide', selectedListing)">
+                Hide
               </button>
-              <mat-menu #listingOptionsMenu="matMenu">
+              <ng-container *ngIf="(isBookmarked$ | async) === false; else notBookmarked">
                 <button
                   mat-menu-item
                   class="options-item"
-                  (click)="closeModal('hide', selectedListing)">
-                  Hide
+                  (click)="closeModal('bookmark', selectedListing)">
+                  Bookmark
                 </button>
-                <ng-container *ngIf="(isBookmarked$ | async) === false; else notBookmarked">
-                  <button
-                    mat-menu-item
-                    class="options-item"
-                    (click)="closeModal('bookmark', selectedListing)">
-                    Bookmark
-                  </button>
-                </ng-container>
-                <ng-template #notBookmarked>
-                  <button
-                    mat-menu-item
-                    class="options-item"
-                    (click)="closeModal('unbookmark', selectedListing)">
-                    Unmark
-                  </button>
-                </ng-template>
-                <button
-                  mat-menu-item
-                  class="options-item"
-                  (click)="closeModal('report', selectedListing)">
-                  Report
-                </button>
-              </mat-menu>
-            </div>
-            <div class="footer-buttons-right">
-              <button type="button" class="modal-buttons" (click)="closeModal(null, null)">Close</button>
-              <ng-container *ngIf="userIsListingOwner(); else notOwner">
-                <a [routerLink]="['/user-account']" (click)="closeModal(null, null)">
-                  <button type="button" class="modal-buttons">Manage</button>
-                </a>
               </ng-container>
-              <ng-template #notOwner>
-                <button type="button"
-                        class="modal-button-with-icon"
-                        (click)="chatHostSrv.provisionConversation(selectedListing!)">
-                  <mat-icon class="msg-icon">rss_feed</mat-icon>
-                  Message
+              <ng-template #notBookmarked>
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="closeModal('unbookmark', selectedListing)">
+                  Unmark
                 </button>
               </ng-template>
-            </div>
+              <button
+                mat-menu-item
+                class="options-item"
+                (click)="copyListingLink()">
+                Share Link
+              </button>
+              <button
+                mat-menu-item
+                class="options-item"
+                (click)="closeModal('report', selectedListing)">
+                Report
+              </button>
+            </mat-menu>
+          </div>
+          <div class="footer-buttons-right">
+            <button type="button" class="modal-buttons" (click)="closeModal(null, null)">Close</button>
+            <ng-container *ngIf="userIsListingOwner(); else notOwner">
+              <a [routerLink]="['/user-account']" (click)="closeModal(null, null)">
+                <button type="button" class="modal-buttons">Manage</button>
+              </a>
+            </ng-container>
+            <ng-template #notOwner>
+              <button type="button"
+                      class="modal-button-with-icon"
+                      (click)="chatHostSrv.provisionConversation(selectedListing!)">
+                <mat-icon class="msg-icon">rss_feed</mat-icon>
+                Message
+              </button>
+            </ng-template>
           </div>
         </div>
       </div>

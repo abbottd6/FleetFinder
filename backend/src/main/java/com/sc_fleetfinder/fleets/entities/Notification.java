@@ -5,6 +5,8 @@ import com.sc_fleetfinder.fleets.utils.ParentEntityReference;
 import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import com.sc_fleetfinder.fleets.utils.NotificationTargetMetadataConverter;
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
@@ -97,6 +99,10 @@ public class Notification {
     private DeliveryChannel deliveryChannel = DeliveryChannel.IN_APP;
 
     @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "parentEntityId", column = @Column(name = "parent_entity_id")),
+            @AttributeOverride(name = "parentEntityType", column = @Column(name = "parent_entity_type")),
+    })
     private ParentEntityReference parentEntity;
 
     @Column(name = "sibling_key", nullable = true)

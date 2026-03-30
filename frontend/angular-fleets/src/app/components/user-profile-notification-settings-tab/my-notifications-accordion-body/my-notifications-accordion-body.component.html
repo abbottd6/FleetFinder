@@ -13,18 +13,10 @@
       <ng-container *ngIf="!noNotifications; else noNotes">
         <ng-container *ngIf="notesService.myNotifications$ | async as myNotifications">
           @for(note of myNotifications; track note.notificationId) {
-            <ng-container *ngIf="NOTE_TYPES_WITH_METADATA.includes(note.type); else noMetaData">
-              <app-notification-chip-with-metadata
-                [inputNote]="note">
-              <!-- TODO DEFINE THE LAYOUT AND PRINT STUFF FOR THESE -->
-              </app-notification-chip-with-metadata>
-            </ng-container>
-            <ng-template #noMetaData>
-              <app-notification-chip-generic
-                [inputNote]="note"
-                (deleteNoteEvent)="deleteSingleNoteEvent($event)">
-              </app-notification-chip-generic>
-            </ng-template>
+            <app-notification-chip-generic
+              [inputNote]="note"
+              (deleteNoteEvent)="deleteSingleNoteEvent($event)">
+            </app-notification-chip-generic>
           }
         </ng-container>
       </ng-container>

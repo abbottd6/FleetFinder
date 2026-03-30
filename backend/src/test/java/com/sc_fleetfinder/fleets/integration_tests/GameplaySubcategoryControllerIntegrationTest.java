@@ -30,7 +30,7 @@ public class GameplaySubcategoryControllerIntegrationTest extends AbstractIntegr
     void testGetAllSubcategories_Success_200() throws Exception {
         mockMvc.perform(get("/api/lookup/gameplay-subcategories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(48))
+                .andExpect(jsonPath("$.length()").value(62))
                 .andExpect(jsonPath("$[0].subcategoryId").exists())
                 .andExpect(jsonPath("$[0].subcategoryName").exists())
                 .andExpect(jsonPath("$[0].gameplayCategoryName").exists());
@@ -39,11 +39,11 @@ public class GameplaySubcategoryControllerIntegrationTest extends AbstractIntegr
     //testing responseDto values
     @Test
     void testGetSubcategoryById_Success_200() throws Exception {
-        mockMvc.perform(get("/api/lookup/gameplay-subcategories/1"))
+        mockMvc.perform(get("/api/lookup/gameplay-subcategories/50"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.subcategoryId").value(1))
-                .andExpect(jsonPath("$.subcategoryName").value("Bounty Hunting PVP"))
-                .andExpect(jsonPath("$.gameplayCategoryName").value("Ship Combat"));
+                .andExpect(jsonPath("$.subcategoryId").value(50))
+                .andExpect(jsonPath("$.subcategoryName").value("Investigation Contract"))
+                .andExpect(jsonPath("$.gameplayCategoryName").value("Exploration"));
     }
 
     @Test

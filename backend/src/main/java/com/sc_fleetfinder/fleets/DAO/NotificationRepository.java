@@ -16,12 +16,12 @@ import java.util.Optional;
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
     @Query(value = """
-            SELECT * FROM notification n
-            WHERE n.id_user = :userId
-                AND n.dropdown_priority = true
-                AND n.delivery_channel = 'IN_APP'
-            ORDER BY n.created_at DESC
-            """, nativeQuery = true)
+            SELECT n FROM Notification n
+            WHERE n.user.userId = :userId
+                AND n.dropdownPriority = true
+                AND n.deliveryChannel = 'IN_APP'
+            ORDER BY n.createdAt DESC
+            """)
     Page<Notification> findAllDropdownNotificationsByUserId(@Param("userId") Long userId, Pageable pageable);
 
     @Query(value = """

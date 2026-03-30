@@ -2,6 +2,7 @@ import {LogLevel} from "angular-auth-oidc-client";
 
 export const environment = {
   production: false,
+  webAppBaseUrl: 'http://localhost:4200',
   apiBaseUrl: '/api',
   wsBaseUrl: "ws://localhost:8080",
   vapidPublicKey: 'BJ6GO7eYzYx0FhmPPyw0D0aU-E1KC6tEt8_XZvD0zZDlgshBEGBBPnhb2hTRRjK9B2segWYfsjLufSLte_0INUU',

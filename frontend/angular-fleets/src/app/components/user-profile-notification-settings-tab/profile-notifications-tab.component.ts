@@ -35,7 +35,6 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {PushSubscriptionChipComponent} from "./push-subscription-chip/push-subscription-chip.component";
 import {HttpErrorResponse} from "@angular/common/http";
 import {MatDialog} from "@angular/material/dialog";
-import {ConfirmDeleteComponent} from "../pop-ups/confirm-delete/confirm-delete.component";
 import {ConfirmGenericComponent} from "../pop-ups/confirm-generic/confirm-generic.component";
 import {NotificationService} from "../../services/facade-services/notifications/notification.service";
 
@@ -63,6 +62,7 @@ import {NotificationService} from "../../services/facade-services/notifications/
 })
 export class ProfileNotificationsTabComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
+  protected checkBrowser: boolean = false;
 
   public hasDiscordAcct!: boolean;
   public doNotShowCustomNotesForm: boolean = true;
@@ -123,29 +123,15 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
   }
 
   showSubscribeOnThisDevice() {
+    this.checkBrowser = true;
+
     this.doNotShowPushNotesForm = !this.doNotShowPushNotesForm;
   }
 
   createPushSubSuccessTrigger(val: boolean) {
     if(val) {
       this.showSubscribeOnThisDevice();
-
-      this.snackBar.open('Push subscription created successfully', 'OK', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']
-      })
-
       this.getMyPushSubs();
-    }
-    else {
-      this.snackBar.open('There was an error creating your push subscription.', 'OK', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']
-      })
     }
   }
 

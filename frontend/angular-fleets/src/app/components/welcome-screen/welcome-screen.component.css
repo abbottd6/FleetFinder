@@ -80,7 +80,7 @@
 }
 
 @media(min-width: 500px) {
-  #body-title h2 {
+  .body-title h2 {
     margin: 2rem auto 2rem auto;
     text-align: center;
     font-size: 1.8rem;
@@ -88,7 +88,7 @@
 }
 
 @media(max-width: 499px) {
-  #body-title h2 {
+  .body-title h2 {
     margin: 1rem auto 1rem auto;
     text-align: center;
     font-size: clamp(1.2rem, 20%, 1.6rem);
@@ -175,7 +175,7 @@
   }
 }
 
-.dev-text {
+.bottom-page-text {
   margin-bottom: 20vh;
 }
 

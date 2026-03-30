@@ -30,8 +30,8 @@ public class UpdateGroupListingDto {
     private Integer experienceId;
 
     @NotBlank(message = "Update group listing request DTO field 'listingTitle' cannot be null")
-    @Size(min = 2, max = 65, message = "Update group listing request DTO field 'listingTitle' must be " +
-            "between 2 and 65 characters.")
+    @Size(min = 2, max = 128, message = "Update group listing request DTO field 'listingTitle' must be " +
+            "between 2 and 128 characters.")
     private String listingTitle;
 
     @Nullable

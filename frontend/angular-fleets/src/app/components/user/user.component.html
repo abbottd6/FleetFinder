@@ -137,24 +137,49 @@
                 </div>
 
               </ng-template>
-              <li class="user-profile-row">
-                <span class="user-profile-field-name">Discord: </span>
-                <ng-container *ngIf="user.discordUsername; else discordNotLinked">
-                  <span class="user-profile-field-val"> {{ user.discordUsername }} </span>
-                  <a class="disc-account-link"
-                     (click)="userService.confirmRemoveDiscord()">
-                    <span class="bracky">[</span> Remove Discord <span class="bracky">]</span></a>
-                </ng-container>
-                <ng-template #discordNotLinked>
-                  <a class="disc-account-link"
-                     (click)="userService.userLinkDiscord()">
-                    <span class="bracky">[</span> Link Discord <span class="bracky">]</span>
-                  </a>
-                </ng-template>
-              </li>
+              <ng-container *ngIf="!(isMobile$ | async); else moreRows">
+                <li class="user-profile-row">
+                    <span class="user-profile-field-name">Discord: </span>
+                    <ng-container *ngIf="user.discordUsername; else discordNotLinked">
+                      <span class="user-profile-field-val"> {{ user.discordUsername }} </span>
+                      <a class="disc-account-link"
+                         (click)="userService.confirmRemoveDiscord()">
+                        <span class="bracky">[</span> Remove Discord <span class="bracky">]</span></a>
+                    </ng-container>
+                    <ng-template #discordNotLinked>
+                      <a class="disc-account-link"
+                         (click)="userService.userLinkDiscord()">
+                        <span class="bracky">[</span> Link Discord <span class="bracky">]</span>
+                      </a>
+                    </ng-template>
+                </li>
+              </ng-container>
+              <ng-template #moreRows>
+                  <ng-container *ngIf="user.discordUsername; else mobileDiscordNotLinked">
+                    <li class="user-profile-row">
+                      <span class="user-profile-field-name">Discord: </span>
+                      <span class="user-profile-field-val"> {{ user.discordUsername }} </span>
+                    </li>
+                    <li class="user-profile-row">
+                      <a class="disc-account-link"
+                         (click)="userService.confirmRemoveDiscord()">
+                        <span class="bracky">[</span> Remove Discord <span class="bracky">]</span></a>
+                    </li>
+                  </ng-container>
+                  <ng-template #mobileDiscordNotLinked>
+                    <li class="user-profile-row">
+                      <span class="user-profile-field-name">Discord: </span>
+                      <a class="disc-account-link"
+                         (click)="userService.userLinkDiscord()">
+                        <span class="bracky">[</span> Link Discord <span class="bracky">]</span>
+                      </a>
+                    </li>
+                  </ng-template>
+              </ng-template>
+
               <li class="user-profile-row">
                 <span class="user-profile-field-name">Account Created: </span>
-                <span class="user-profile-field-val"> {{ user.acctCreated | date: 'MMM d, yyyy h:mm a' }} </span>
+                <span class="user-profile-field-val"> {{ user.acctCreated | date: 'MMM d, yyyy' }} </span>
               </li>
             </ul>
 

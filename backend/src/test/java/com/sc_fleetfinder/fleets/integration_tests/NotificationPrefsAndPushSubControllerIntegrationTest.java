@@ -5,13 +5,17 @@ import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdatePushSubRequestDto;
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.messaging.push.PushNotificationService;
 import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
+import com.sc_fleetfinder.fleets.utils.ExternalNotifcationResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -55,6 +59,9 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
 
     @MockitoBean
     private JwtDecoder jwtDecoder;
+
+    @MockitoBean
+    private PushNotificationService pushNotificationService;
 
     private static final String MOCK_KCID = "pushSubCtrlTestKcId";
     private static final String MOCK_USERNAME = "PushSubCtrlTestUser";
@@ -136,6 +143,8 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
     @Test
     void testCreatePushSub_Success_PersistsToDb() throws Exception {
         Long userId = getTestUserId();
+        Mockito.when(pushNotificationService.sendPushNotification(Mockito.any(), Mockito.any()))
+                .thenReturn(java.util.Map.of(ExternalNotifcationResult.SUCCESS, HttpStatus.CREATED));
 
         mockMvc.perform(post("/api/user_notification_preferences/create_push_sub")
                         .with(jwt()

@@ -11,7 +11,7 @@ import {
   take,
   timer
 } from "rxjs";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -49,12 +49,14 @@ export class AuthService {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private route: ActivatedRoute) {
     this.oidc.checkAuth().pipe().subscribe(({ isAuthenticated }) => {
       if (isAuthenticated) {
-        const url = sessionStorage.getItem('post_login_url') ?? '/';
-        sessionStorage.removeItem('post_login_url');
-        this.router.navigateByUrl(url);
+        const url = sessionStorage.getItem('post_login_url');
+        if(url) {
+          sessionStorage.removeItem('post_login_url');
+          this.router.navigateByUrl(url);
+        }
       }
     });
   }

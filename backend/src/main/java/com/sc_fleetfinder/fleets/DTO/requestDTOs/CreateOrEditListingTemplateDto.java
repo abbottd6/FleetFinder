@@ -20,7 +20,7 @@ public class CreateOrEditListingTemplateDto {
 
     private Integer experienceId;
 
-    @Size(min = 2, max = 65, message = "Create group listing DTO field 'listing title' must be" +
+    @Size(min = 2, max = 128, message = "Create group listing DTO field 'listing title' must be" +
             "between 2 and 65 characters.")
     private String listingTitle;
 

@@ -1,0 +1,39 @@
+<div class="container-clip-path-wrapper">
+  <div class="body-container">
+    <h3>Forget to refuel before heading out to Pyro?</h3>
+    <div class="success-body">
+      <ng-container *ngIf="nothingHereLayoutMode$ | async as mode">
+        <div class="text-body-container">
+          <span id="body-title"><h4> There's nothing here.</h4></span>
+          <div class="text-body">
+            <p>If you came here looking for a listing, it was probably deleted.</p>
+          </div>
+          <div id="button-container">
+            <a [routerLink]="['/user-account']">
+              <button class="action-buttons"><span>Profile</span></button>
+            </a>
+            <a [routerLink]="['/group-listings']">
+              <button class="action-buttons"><span>Browse Listings</span></button>
+            </a>
+          </div>
+        </div>
+          <ng-container *ngIf="mode !== 'full'">
+            <div class="image-container">
+              <div class="image-border">
+                <img src="/images/DoctorTalos_in_MSR.jpg" class="nothing-here-image" alt="Pico is the best">
+              </div>
+            </div>
+          </ng-container>
+
+        <ng-container *ngIf="mode === 'full'">
+          <div class="image-container">
+            <div class="image-border">
+              <img src="/images/DoctorTalos_in_MSR.jpg" class="nothing-here-image" alt="Pico is the best">
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div>
+

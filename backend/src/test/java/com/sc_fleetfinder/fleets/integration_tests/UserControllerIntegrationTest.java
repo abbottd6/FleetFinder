@@ -322,8 +322,8 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
         dto.setEventDate("2025-06-15");
         dto.setEventTime("18:30:00");
         dto.setEventTimeZone("UTC");
-        dto.setCategoryId(1);
-        dto.setSubcategoryId(1);
+        dto.setCategoryId(17);
+        dto.setSubcategoryId(65);
         dto.setPvpStatusId(1);
         dto.setSystemId(1);
         dto.setPlanetId(1);

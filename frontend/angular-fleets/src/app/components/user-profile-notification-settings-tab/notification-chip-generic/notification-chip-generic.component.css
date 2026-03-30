@@ -1,5 +1,9 @@
 @import "../custom-notification-chip/custom-notification-chip.component.css";
 
+:host {
+  width: 100%;
+}
+
 :host .chip-self {
   min-height: 50px;
 }
@@ -19,19 +23,117 @@
   text-align: center;
 }
 
+.field-label {
+  margin-left: 10px;
+  margin-right: 4px;
+}
+
+.field-val {
+  margin-right: 10px;
+}
+
+.has-val {
+  color: rgb(53, 114, 163);
+}
+
 .action-column {
   flex: 0 0 auto;
 }
 
-#delete-note {
+.delete-note {
   scale: 1.25;
   transition: 0.25s ease;
 }
 
-#delete-note:hover {
+.delete-note:hover {
   cursor: pointer;
   color: rgba(255, 131, 7, .5);
 }
+
+.chip-self {
+  min-height: 100px;
+  width: 100%;
+  max-width: 80vw;
+  margin-inline: auto;
+  border: 1px solid rgba(28, 24, 24, 0.1);
+  border-radius: 10px;
+  padding: 8px;
+  background-color: rgba(37, 37, 37, 0.25);
+  box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
+  overflow: hidden;
+  font-family: "Exo 2", sans-serif;
+}
+
+.clickable {
+  transition: 0.25s ease;
+}
+
+.clickable:hover {
+  background-color: rgba(150, 168, 183, 0.05);
+  cursor: pointer;
+}
+
+.header-row {
+  display: flex;
+  flex-direction: row;
+  max-width: 98%;
+  border-bottom: 1px solid rgba(150, 168, 183, .3);
+  margin-bottom: 8px;
+  margin-inline: auto;
+}
+
+.header-left {
+  margin-left: 0;
+  margin-right: auto;
+  color: rgba(150, 168, 183, .5);
+  font-size: 110%;
+}
+
+.header-right {
+  margin-left: auto;
+  margin-right: 0;
+  font-size: 0.9rem;
+}
+
+@media(max-width: 1050px) {
+  .chip-self {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .header-row {
+    flex-direction: column;
+    justify-content: flex-start;
+    max-width: 98%;
+    border-bottom: 1px solid rgba(150, 168, 183, .3);
+    margin-bottom: 8px;
+    margin-inline: auto;
+  }
+
+  .header-row .header-right {
+    margin-left: 0;
+  }
+
+  .content-body {
+    display: flex;
+    flex-direction: column !important;
+  }
+
+  .message-column {
+    text-align: start;
+  }
+
+  .message-column .field-label {
+    margin-left: 0;
+  }
+
+  .action-column {
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+
+
 
 TEMP {
   background-color: rgba(53, 114, 163, 0.5);

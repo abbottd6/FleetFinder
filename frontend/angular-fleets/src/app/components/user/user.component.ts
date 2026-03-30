@@ -4,10 +4,10 @@ import {
   OnInit, ViewChild,
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
-import {map, shareReplay, Subject, takeUntil} from "rxjs";
+import {map, shareReplay, Subject, take, takeUntil} from "rxjs";
 import {Router, RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
-import {MatSidenavModule} from "@angular/material/sidenav";
+import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
 import {MatListItem, MatNavList} from "@angular/material/list";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import { BreakpointObserver } from "@angular/cdk/layout";
@@ -64,6 +64,7 @@ export class UserComponent implements OnInit, OnDestroy {
   private breakpointObserver = inject(BreakpointObserver);
 
   @ViewChild('bookmarks') bookmarks!: UserProfileBookmarksComponent;
+  @ViewChild('drawer') sidenavDrawer!: MatSidenav;
 
   //modal popup vars
   selectedListing: GroupListingViewModel | null = null;
@@ -113,6 +114,11 @@ export class UserComponent implements OnInit, OnDestroy {
 
   selectTab(tab: typeof this.selectedTab){
     this.selectedTab = tab;
+    this.isMobile$.pipe(take(1)).subscribe(isMobile => {
+      if(isMobile) {
+        setTimeout(() => this.sidenavDrawer.toggle(), 300);
+      }
+    })
   }
 
   onListingSelected(listing: GroupListingViewModel) {

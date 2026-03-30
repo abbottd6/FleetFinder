@@ -10,10 +10,12 @@ import {UpdateListingComponent} from "./components/update-listing/update-listing
 import {LoginModalComponent} from "./components/login-modal/login-modal.component";
 import {ListingSuccessComponent} from "./components/listing-success/listing-success.component";
 import {HowToComponent} from "./components/how-to/how-to.component";
+import {ListingDetailsComponent} from "./components/listing-details/listing-details.component";
+import {NothingHerePageComponent} from "./components/nothing-here-page/nothing-here-page.component";
 
 
 const routes: Routes = [
-  { path: '', component: WelcomeScreenComponent },
+  { path: '', component: WelcomeScreenComponent, pathMatch: 'full' },
   { path: 'login', component: LoginModalComponent },
   { path: 'group-listings', component: GroupListingsComponent },
   { path: 'create-listing', component: CreateListingComponent, canActivate: [ AuthGuard ] },
@@ -22,6 +24,8 @@ const routes: Routes = [
   { path: 'about', component: AboutComponent },
   { path: 'listing-success', component: ListingSuccessComponent, canActivate: [ AuthGuard ] },
   { path: 'how-to', component: HowToComponent },
+  { path: 'listing-details/:groupId', component: ListingDetailsComponent },
+  { path: 'nothing-here-page', component: NothingHerePageComponent}
 ];
 
 @NgModule({

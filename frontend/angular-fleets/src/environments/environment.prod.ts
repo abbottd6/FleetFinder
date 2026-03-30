@@ -2,6 +2,7 @@ import {LogLevel} from "angular-auth-oidc-client";
 
 export const environment = {
   production: true,
+  webAppBaseUrl: 'https://scfleetfinder.com',
   apiBaseUrl: 'https://scfleetfinder.com/api',
   wsBaseUrl: "wss://scfleetfinder.com",
   vapidPublicKey: "BDwOYrwYIWZzQpJY-QZ93bElLlD33ly4Kx-NKwu6RneHyZ0pb2xGJ8eogXQX2tMOsQjvKx8WkEaZAMJwSndeK8E",

@@ -10,6 +10,10 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.exceptions.UnsuccessfulPushSubscriptionException;
+import com.sc_fleetfinder.fleets.utils.ExternalNotifcationResult;
+import jakarta.ws.rs.InternalServerErrorException;
+import com.sc_fleetfinder.fleets.messaging.push.PushNotificationService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.PushSubscriptionServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +44,9 @@ class PushSubscriptionServiceImplTest {
 
     @Mock
     private ModelMapper modelMapper;
+
+    @Mock
+    private PushNotificationService pushNotificationService;
 
     @InjectMocks
     private PushSubscriptionServiceImpl pushSubscriptionService;
@@ -91,7 +99,7 @@ class PushSubscriptionServiceImplTest {
     // ─── createNewPushSub ─────────────────────────────────────────────────────
 
     @Test
-    void createNewPushSub_Success() {
+    void createNewPushSub_Success() throws Exception {
         CreatePushSubRequestDto dto = new CreatePushSubRequestDto();
         dto.setUserLabel("My Device");
         dto.setDeviceUrl("https://push.example.com/sub/123");
@@ -99,18 +107,56 @@ class PushSubscriptionServiceImplTest {
         dto.setBrowserSecret("secret");
 
         PushSubscription saved = new PushSubscription();
+        saved.setUserLabel("My Device");
         GetPushSubDto responseDto = new GetPushSubDto();
         responseDto.setIdPushSub(1L);
 
         when(pushSubRepository.findByUserAndDeviceUrl(mockUser, dto.getDeviceUrl()))
                 .thenReturn(Optional.empty());
         when(pushSubRepository.save(any(PushSubscription.class))).thenReturn(saved);
+        when(pushNotificationService.sendPushNotification(eq(saved), any(String.class)))
+                .thenReturn(Map.of(ExternalNotifcationResult.SUCCESS, org.springframework.http.HttpStatus.CREATED));
         when(modelMapper.map(saved, GetPushSubDto.class)).thenReturn(responseDto);
 
         GetPushSubDto result = pushSubscriptionService.createNewPushSub(mockUser, dto);
 
         assertThat(result.getIdPushSub()).isEqualTo(1L);
         verify(pushSubRepository).save(any(PushSubscription.class));
+        verify(pushNotificationService).sendPushNotification(eq(saved), any(String.class));
+    }
+
+    @Test
+    void createNewPushSub_PushServiceThrowsException_ThrowsInternalServerError() throws Exception {
+        CreatePushSubRequestDto dto = new CreatePushSubRequestDto();
+        dto.setDeviceUrl("https://push.example.com/sub/123");
+
+        PushSubscription saved = new PushSubscription();
+
+        when(pushSubRepository.findByUserAndDeviceUrl(mockUser, dto.getDeviceUrl()))
+                .thenReturn(Optional.empty());
+        when(pushSubRepository.save(any(PushSubscription.class))).thenReturn(saved);
+        when(pushNotificationService.sendPushNotification(any(), any()))
+                .thenThrow(new Exception("push service error"));
+
+        assertThatThrownBy(() -> pushSubscriptionService.createNewPushSub(mockUser, dto))
+                .isInstanceOf(InternalServerErrorException.class);
+    }
+
+    @Test
+    void createNewPushSub_PushServiceReturnsFailure_ThrowsUnsuccessfulPushSubscriptionException() throws Exception {
+        CreatePushSubRequestDto dto = new CreatePushSubRequestDto();
+        dto.setDeviceUrl("https://push.example.com/sub/123");
+
+        PushSubscription saved = new PushSubscription();
+
+        when(pushSubRepository.findByUserAndDeviceUrl(mockUser, dto.getDeviceUrl()))
+                .thenReturn(Optional.empty());
+        when(pushSubRepository.save(any(PushSubscription.class))).thenReturn(saved);
+        when(pushNotificationService.sendPushNotification(any(), any()))
+                .thenReturn(Map.of(ExternalNotifcationResult.FAILURE, org.springframework.http.HttpStatus.GONE));
+
+        assertThatThrownBy(() -> pushSubscriptionService.createNewPushSub(mockUser, dto))
+                .isInstanceOf(UnsuccessfulPushSubscriptionException.class);
     }
 
     @Test

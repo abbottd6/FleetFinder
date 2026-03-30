@@ -1,15 +1,10 @@
 import {Component, OnDestroy} from '@angular/core';
-import {BehaviorSubject, Subject, takeUntil} from "rxjs";
+import {Subject, takeUntil} from "rxjs";
 import {NotificationApiService} from "../../../services/api-services/notification-api/notification-api.service";
 import {NotificationService} from "../../../services/facade-services/notifications/notification.service";
 import {MatDialog} from "@angular/material/dialog";
 import {MatSnackBar} from "@angular/material/snack-bar";
-import {NotificationViewModel} from "../../../models/NotificationViewModel";
-import {Page} from "../../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {AsyncPipe, NgIf} from "@angular/common";
-import {
-  NotificationChipWithMetadataComponent
-} from "../notification-chip-with-metadata/notification-chip-with-metadata.component";
 import {NotificationChipGenericComponent} from "../notification-chip-generic/notification-chip-generic.component";
 import {ConfirmGenericComponent} from "../../pop-ups/confirm-generic/confirm-generic.component";
 
@@ -20,16 +15,12 @@ import {ConfirmGenericComponent} from "../../pop-ups/confirm-generic/confirm-gen
   imports: [
     NgIf,
     AsyncPipe,
-    NotificationChipWithMetadataComponent,
     NotificationChipGenericComponent
   ],
   styleUrl: './my-notifications-accordion-body.component.css'
 })
 export class MyNotificationsAccordionBodyComponent implements OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
-
-  protected NOTE_TYPES_WITH_METADATA: string[] = ['CUSTOM_NOTIFICATION'];
-  protected GENERIC_NOTE_TYPES: string[] = ['LISTING_VIS_STATUS_CHANGED', 'LISTING_ARCHIVED', 'MOD_DELETE']
 
   public noNotifications: boolean = false;
 
