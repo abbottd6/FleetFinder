@@ -86,7 +86,7 @@ export class NotificationChipGenericComponent implements OnInit {
 
         this.contextLabel = "Group Status: ";
         this.context = this.inputNote.targetMetadata?.addContext;
-        this.hasLink = "listing-details/" + this.inputNote.parentEntity.parentEntityId;
+        this.hasLink = "listing-details/" + this.inputNote.targetMetadata?.targetId
     }
 
     if (this.inputNote.message.includes("EXPIRED")) {
@@ -100,7 +100,6 @@ export class NotificationChipGenericComponent implements OnInit {
   }
 
   routeLink(url: string) {
-    console.warn("THIS IS THE URL: ", url);
     this.router.navigateByUrl(url);
   }
 
