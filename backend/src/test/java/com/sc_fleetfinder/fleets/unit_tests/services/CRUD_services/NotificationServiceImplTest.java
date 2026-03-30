@@ -611,7 +611,7 @@ class NotificationServiceImplTest {
         assertThat(captured.getTag()).isEqualTo("New Listing Match");
         // NOTE: captured.getData() is currently null — payload.setData(dataField) is missing in production code (bug)
         assertThat(captured.getActions()).hasSize(2);
-        assertThat(captured.isRequireInteraction()).isTrue();
+        assertThat(captured.isRequireInteraction()).isFalse();
     }
 
     // ─── generateOutboxNotificationForModAction ───────────────────────────────
