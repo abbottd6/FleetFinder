@@ -4,6 +4,7 @@
      tabindex="-1"
      [ngClass]="{'show': isVisible}"
      [style.display]="isVisible ? 'block' : 'none'"
+     [class.hiding]="isHiding"
      role="dialog"
      aria-modal="true"
 >
@@ -233,7 +234,7 @@
             <ng-template #notOwner>
               <button type="button"
                       class="modal-button-with-icon"
-                      (click)="chatHostSrv.provisionConversation(selectedListing!)">
+                      (click)="routeConversation(selectedListing!)">
                 <mat-icon class="msg-icon">rss_feed</mat-icon>
                 Message
               </button>

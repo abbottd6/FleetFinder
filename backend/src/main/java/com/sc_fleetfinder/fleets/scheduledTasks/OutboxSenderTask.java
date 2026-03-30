@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.scheduledTasks;
 
 import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
+import com.sc_fleetfinder.fleets.config.WebSocketSessionTracker;
 import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.SkipExternalNotificationProcessingException;
@@ -21,6 +22,7 @@ public class OutboxSenderTask {
     private final NotificationService notificationService;
     private final OutboxTaskService outboxService;
     private final UserActivityCache activityCache;
+    private final WebSocketSessionTracker wsSessionTracker;
 
     private final int RECENT_THRESHOLD = 300;
 
@@ -44,10 +46,12 @@ public class OutboxSenderTask {
             try {
                 if(!outbox.getDeliveryChannel().equals(DeliveryChannel.IN_APP)) {
                     String kcId = outbox.getEntityOwner().getKeycloakId();
-                    if (activityCache.hasRecentAccess(kcId, RECENT_THRESHOLD) && (outbox.getAttemptCount() < 10)) {
-                        outboxService.markForUserActive_Delayed(outbox.getOutboxId());
-                        log.debug("Delay counter incremented");
-                        continue;
+                    if(wsSessionTracker.isUserConnected(kcId)) {
+                        if (activityCache.hasRecentAccess(kcId, RECENT_THRESHOLD) && (outbox.getAttemptCount() < 10)) {
+                            outboxService.markForUserActive_Delayed(outbox.getOutboxId());
+                            log.debug("Delay counter incremented");
+                            continue;
+                        }
                     }
                 }
 

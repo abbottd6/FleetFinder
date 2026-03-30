@@ -149,8 +149,8 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
       distinctUntilChanged(),
       takeUntil(this.chatPanelDestroy$))
       .subscribe(mode => {
-        if(mode === 'handheld') this.drawer.close();
-        else this.drawer.open();
+        if(mode === 'handheld') this.drawer?.close();
+        else this.drawer?.open();
       })
 
     this.chatStoreSrv.messages$.pipe(takeUntil(this.chatPanelDestroy$))
@@ -411,6 +411,11 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
     this.resetMsgPage();
     this.selectedConv.select(conv);
     this.chatStoreSrv.selectConversation(conv.conversationId);
+    this.chatLayoutMode$.pipe(take(1)).subscribe(mode => {
+      if(mode === 'handheld' && this.drawer?.opened) {
+        setTimeout(() => this.drawer.close(), 300);
+      }
+    })
 
     this.loadSelectedConversationMessages();
   }

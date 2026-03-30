@@ -34,17 +34,9 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close();
-  if (event.action === 'view' || event.action === '') {
+  if (event.action === 'view' || !event.action || event.action === '') {
     const url = event.notification.data?.url || self.location.origin
-    event.waitUntil(
-      clients.matchAll({type: 'window', includeUncontrolled: true}).then(clientList => {
-        for (const client of clientList) {
-          if (client.url === url && 'focus' in client) {
-            return client.focus();
-          }
-        }
-        return clients.openWindow(url);
-      })
-    );
+    event.waitUntil(clients.openWindow(url));
   }
 });
+
