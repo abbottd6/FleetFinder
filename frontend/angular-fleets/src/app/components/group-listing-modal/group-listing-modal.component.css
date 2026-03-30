@@ -5,6 +5,14 @@
   margin-inline: auto;
   overflow-y: auto;
   scrollbar-width: none;
+  transform-origin: left top;
+  transform: scale(1, 1);
+  transition: transform 0.2s ease;
+}
+
+.modal.fade.hiding .modal-content {
+  /*max-width: 0;*/
+  transform: scale(0, 0) !important;
 }
 
 .modal-header {
@@ -34,7 +42,11 @@
   line-height: 1;
   color: rgba(255, 131, 7, .65);
   opacity: .75;
-  transition: background-color 0.15s ease;
+  transition: background-color 0.25s ease;
+}
+
+.modal.fade {
+  transition: opacity 0.25s ease;
 }
 
 .close:hover,

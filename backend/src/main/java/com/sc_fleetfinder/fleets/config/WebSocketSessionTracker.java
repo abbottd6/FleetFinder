@@ -15,39 +15,41 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
-//@Component
+@Component
 @RequiredArgsConstructor
-// Not in use. Retained for potential future use on connectivity tracking, but the use case
-// I added this for now uses UserActivityCache and last_active users field instead
 public class WebSocketSessionTracker implements ApplicationListener<AbstractSubProtocolEvent> {
 
-    private final UserService userService;
-    private final Set<Long> connectedUsers = ConcurrentHashMap.newKeySet();
+    private final Set<String> connectedUsers = ConcurrentHashMap.newKeySet();
 
     @Override
     public void onApplicationEvent(AbstractSubProtocolEvent event) {
+        if(!(event instanceof SessionConnectedEvent || event instanceof SessionDisconnectEvent)) {
+            return;
+        }
+
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(event.getMessage());
 
         Principal principal = accessor.getUser();
 
         assert principal != null;
-        Long userId = userService.verifyUser(principal.getName()).getUserId();
 
-        if(userId == null) {
-            log.warn("user null");
+        String kcId = principal.getName();
+
+        if(kcId.isBlank()) {
+            log.debug("WS tracker had a blank userId");
             return;
         }
 
         if (event instanceof SessionConnectedEvent) {
-            log.warn("connected: {}", userId);
-            connectedUsers.add(userId);
-        } else if (event instanceof SessionDisconnectEvent) {
-            log.warn("disconnected: {}", userId);
-            connectedUsers.remove(userId);
+            log.debug("connected: {}", kcId);
+            connectedUsers.add(principal.getName());
+        } else {
+            log.debug("disconnected: {}", kcId);
+            connectedUsers.remove(principal.getName());
         }
     }
 
-    public boolean isUserConnected(Long userId) {
-        return connectedUsers.contains(userId);
+    public boolean isUserConnected(String kcId) {
+        return connectedUsers.contains(kcId);
     }
 }
