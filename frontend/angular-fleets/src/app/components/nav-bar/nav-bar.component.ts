@@ -55,8 +55,6 @@ export class NavBarComponent implements OnInit, OnDestroy {
   pingForNotificationCount() {
     this.ws.publish('/app/system.notify/get_unread',
       null)
-
-    console.warn("note unread:", this.ws.notificationUnread$.pipe(take(1)))
   }
 
   subscribeToNoteChanges() {
