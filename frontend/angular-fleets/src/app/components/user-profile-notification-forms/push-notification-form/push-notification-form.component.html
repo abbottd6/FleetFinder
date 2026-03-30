@@ -27,7 +27,8 @@
       Cancel
     </button>
     <button class="action-buttons"
-      (click)="enablePushNotifications()">
+      (click)="enablePushNotifications()"
+      [disabled]="pushSubFormSubmit$ | async">
       Subscribe
     </button>
   </div>

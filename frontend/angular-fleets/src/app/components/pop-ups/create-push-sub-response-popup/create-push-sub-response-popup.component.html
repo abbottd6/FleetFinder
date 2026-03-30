@@ -1,0 +1,36 @@
+<ng-container *ngIf="success; else wasFailure">
+  <h2 mat-dialog-title>Subscription success</h2>
+  <mat-dialog-content>
+    <ul>
+      <li>We sent a test notification using this subscription —
+        you should receive it within a couple of minutes</li>
+      <li>If you do not receive the notification you may need
+        to check your browser and system notification permissions</li>
+    </ul>
+  </mat-dialog-content>
+</ng-container>
+
+<ng-template #wasFailure>
+  <ng-container *ngIf="failure?.status === 409; else other">
+    <h2 mat-dialog-title>You already subscribed on this device</h2>
+    <mat-dialog-content>
+      <p>If you need to create a new subscription on this device, delete the existing one first.</p>
+    </mat-dialog-content>
+  </ng-container>
+  <ng-template #other>
+    <h2 mat-dialog-title>Subscription Unsuccessful</h2>
+    <mat-dialog-content>
+      <p>
+        There was an error creating your subscription. Please check your browser and
+        system notification permissions and try again.
+      </p>
+      <p>
+        If the problem persists, try a different browser — Chrome and Firefox support
+        push notifications on mobile and desktop.
+      </p>
+    </mat-dialog-content>
+  </ng-template>
+</ng-template>
+<mat-dialog-actions align="end">
+  <button class="action-buttons" (click)="onConfirm()">Ok</button>
+</mat-dialog-actions>

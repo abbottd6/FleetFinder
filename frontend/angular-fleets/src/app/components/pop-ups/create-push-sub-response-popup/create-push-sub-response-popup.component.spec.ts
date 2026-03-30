@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CreatePushSubSuccessPopupComponent } from './create-push-sub-success-popup.component';
+import { CreatePushSubResponsePopupComponent } from './create-push-sub-response-popup.component';
 
 describe('CreatePushSubSuccessPopupComponent', () => {
-  let component: CreatePushSubSuccessPopupComponent;
-  let fixture: ComponentFixture<CreatePushSubSuccessPopupComponent>;
+  let component: CreatePushSubResponsePopupComponent;
+  let fixture: ComponentFixture<CreatePushSubResponsePopupComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [CreatePushSubSuccessPopupComponent]
+      declarations: [CreatePushSubResponsePopupComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(CreatePushSubSuccessPopupComponent);
+    fixture = TestBed.createComponent(CreatePushSubResponsePopupComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

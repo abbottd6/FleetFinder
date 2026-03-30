@@ -131,23 +131,7 @@ export class ProfileNotificationsTabComponent implements OnDestroy {
   createPushSubSuccessTrigger(val: boolean) {
     if(val) {
       this.showSubscribeOnThisDevice();
-
-      this.snackBar.open('Push subscription created successfully', 'OK', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']
-      })
-
       this.getMyPushSubs();
-    }
-    else {
-      this.snackBar.open('There was an error creating your push subscription.', 'OK', {
-        duration: 3000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']
-      })
     }
   }
 

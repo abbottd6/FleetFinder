@@ -9,8 +9,12 @@ import {
   NewPushSubscription,
   NotificationSettingsApiService
 } from "../../../services/api-services/notification-api/notification-settings-api.service";
-import {NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {HttpErrorResponse} from "@angular/common/http";
+import {MatDialog} from "@angular/material/dialog";
+import {
+  CreatePushSubResponsePopupComponent
+} from "../../pop-ups/create-push-sub-response-popup/create-push-sub-response-popup.component";
 
 @Component({
   selector: 'app-push-notification-form',
@@ -18,7 +22,8 @@ import {HttpErrorResponse} from "@angular/common/http";
   templateUrl: './push-notification-form.component.html',
   imports: [
     GenericSmallInputFieldComponent,
-    NgIf
+    NgIf,
+    AsyncPipe
   ],
   styleUrl: './push-notification-form.component.css'
 })
@@ -44,7 +49,7 @@ export class PushNotificationFormComponent implements OnDestroy, OnChanges {
                  nonNullable: true
   });
 
-  constructor(private noteSettingsApiService: NotificationSettingsApiService) {}
+  constructor(private noteSettingsApiService: NotificationSettingsApiService, private dialog: MatDialog) {}
 
   ngOnChanges(changes: SimpleChanges) {
     if(changes['triggerBrowserCheck']?.currentValue === true) {
@@ -53,11 +58,14 @@ export class PushNotificationFormComponent implements OnDestroy, OnChanges {
   }
 
   async enablePushNotifications() {
+    this.pushSubFormSubmitSubject.next(true);
+
     if(this.pushSubInputCtrl.invalid){
       this.pushSubInputCtrl.markAsDirty()
       this.pushSubInputCtrl.markAsTouched();
       return;
     }
+
     const permission = await Notification.requestPermission();
 
     if(permission !== 'granted') {
@@ -94,12 +102,33 @@ export class PushNotificationFormComponent implements OnDestroy, OnChanges {
           if (!environment.production) {
             console.log("New Push Subscription: ", JSON.stringify(response))
           }
-          this.pushSubInputCtrl.reset();
           this.showFormErrorMessage = null;
-          this.formSuccess.emit(true);
+
+          const dialogRef = this.dialog.open(CreatePushSubResponsePopupComponent, {
+            data: {
+              response: response,
+              error: null
+            }
+          });
+
+          dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(() => {
+            this.pushSubInputCtrl.reset();
+            this.formSuccess.emit(true);
+            this.pushSubFormSubmitSubject.next(false);
+          })
+
         },
         error: (err) => {
-          this.formError.emit(err);
+          const dialogRef = this.dialog.open(CreatePushSubResponsePopupComponent, {
+            data: {
+              response: null,
+              error: err
+            }
+          });
+
+          dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(() => {
+            this.pushSubFormSubmitSubject.next(false);
+          })
         }
       });
   }

@@ -1,0 +1,41 @@
+.mat-mdc-dialog-content {
+  font-family: "Exo 2", sans-serif;
+  white-space: pre-line;
+}
+
+.action-buttons {
+  border: 1px solid rgba(255, 131, 7, .75);
+  padding: .42rem 1.12rem .42rem 1.12rem !important;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .75);
+  font-size: 1rem;
+  border-radius: .2rem;
+  transition: 0.2s ease;
+}
+
+.action-buttons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+  cursor: pointer;
+}
+
+@media(min-width: 725px) and (max-width: 2000px) {
+
+  .action-buttons {
+    font-size: 0.9rem;
+  }
+}
+
+@media(max-width: 1350px)  and (min-width: 725px) {
+  .action-buttons {
+    font-size: clamp(0.6rem, 0.8rem, 1.2rem);
+  }
+}
+
+@media(max-width: 724px) {
+  .action-buttons {
+    font-size: .9rem;
+  }
+}
