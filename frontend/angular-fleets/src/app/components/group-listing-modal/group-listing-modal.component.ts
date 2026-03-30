@@ -78,6 +78,8 @@ export class GroupListingModalComponent implements OnInit {
 
   closeModal(action: CloseValue['value'], group: GroupListingViewModel | null) {
     this.isVisible = false;
+    history.pushState({ listingModal: false }, '');
+
     const emitVal: CloseValue = {
       value: action,
       group: group

@@ -15,11 +15,18 @@
 }
 
 @media(max-width: 600px) {
-  .form-wrapper {
-    flex: 0 0 auto;
-    max-width: 95%;
+  :host {
+    min-width: 100%;
   }
+
   :host ::ng-deep .form-wrapper {
+    margin-inline: auto;
+    max-width: 98%;
+  }
+
+  .text-body {
+    font-size: 1rem !important;
+    max-width: 95%;
     margin-inline: auto;
   }
 
@@ -29,9 +36,15 @@
   }
 
   :host ::ng-deep .form-wrapper .form-row .generic-input .mat-mdc-text-field-wrapper {
-    max-width: 95%;
+    max-width: 99%;
   }
 
+}
+
+:host .form-wrapper .text-body {
+  font-family: "Exo 2", sans-serif;
+  font-size: 1.1rem;
+  color: rgba(150, 168, 183, 0.8) !important;
 }
 
 :host.do-not-show-form .form-wrapper {

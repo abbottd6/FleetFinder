@@ -2,6 +2,11 @@
   <div *ngIf="browserIncompatibilityMessage" class="error-message">
     <span>{{ browserIncompatibilityMessage }}</span>
   </div>
+  <div class="text-body">
+    <span>Enter a label for your browser/device and click subscribe. FleetFinder will check that
+      the values provided by your browser are valid and then attempt to<span class="fancy-text"> send you a
+        test notification.</span></span>
+  </div>
   <app-generic-small-input-field
     class="form-row"
     [label]="'Device Name:'"

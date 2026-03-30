@@ -290,6 +290,10 @@ mat-panel-description.mat-expansion-panel-header-description {
   mat-slide-toggle {
     margin-left: 0;
   }
+
+  :host ul {
+    padding-left: 10px;
+  }
 }
 
 .toggle-label {
@@ -397,4 +401,11 @@ app-push-notification-form {
     grid-template-columns: 1fr;
     max-width: 95%;
   }
+}
+
+:host ::ng-deep .notifications-list-container .mat-expansion-panel-body  {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }

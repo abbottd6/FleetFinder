@@ -44,9 +44,16 @@
   grid-template-columns: 85% 15%;
 }
 
+@media(max-width: 1050px) {
+  .chip-body {
+    grid-template-columns: 65% 35%;
+  }
+}
+
+
 @media(max-width: 725px) {
   .chip-self {
-    max-width: 70vw;
+    max-width: 80vw;
   }
   .chip-body {
     grid-template-columns: 1fr;
@@ -80,6 +87,8 @@ mat-slide-toggle {
   margin-right: 10px;
   text-decoration: underline;
   color: rgba(255, 131, 7, .5);
+  font-size: 1.1rem;
+  padding: 8px;
   transition: color 0.25s ease;
 }
 
@@ -92,6 +101,8 @@ mat-slide-toggle {
   margin-left: 10px;
   text-decoration: underline;
   color: rgba(255, 131, 7, .5);
+  font-size: 1.1rem;
+  padding: 8px;
   transition: color 0.25s ease;
 }
 

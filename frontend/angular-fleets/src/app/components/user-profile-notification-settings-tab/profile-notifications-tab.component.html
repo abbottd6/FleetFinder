@@ -1,16 +1,21 @@
 <div class="title-container">
-  <h5>Notifications:</h5>
+  <h5>Notifications</h5>
 
   <div class="header-notice">
+    <span class="fancy-text">Getting Started:</span>
     <ul>
-      <li>Enable Discord and/or push notifications to get notifications when you are not active on the app.</li>
-      <li>Create custom notification profiles to get notified when other users create listings that
-        match your criteria.</li>
-      <li>Notification channels are customizable so that you receive only the notifications you
-      are interested in.</li>
-      <li>You can disable notifications or remove linked accounts and push notification
-      configurations at any time.</li>
+      <li>Pick a channel to receive external notifications through, either Discord or browser push notifications.</li>
+      <li>Enable 'Group' and 'Social' notifications for your chosen channel using the toggles.</li>
+      <li>Create custom notifications to have FleetFinder notify you when a new listing matches your criteria.</li>
+
     </ul>
+    <p>
+      <span class="fancy-text">Recommendation:</span> Discord is the easier option if you already use it,
+      some browsers (iOS, some mobile, others) do not support push notifications, and push permission conflicts
+      between browser/OS can be annoying. They do work well on Chrome and Firefox, as well as some other browsers.
+      FleetFinder will send you a test push notification when you create a subscription so you can verify that
+      it is working.
+    </p>
     <p>
       Privacy Policy: SCFleetFinder uses account links and emails for user verification and notification purposes
       only. This
@@ -45,7 +50,8 @@
         <li>Discord requires FleetyBot to share a server with you in order for you to receive messages from it,
             so be sure to join the
           <a class="fancy-text" href="https://discord.gg/X2QskC5DG9">SCFleetFinder Discord</a></li>
-        <li>Notifications are divided into three categories, which you can enable/disable individually.</li>
+        <li><span class="fancy-text">Recommendation:</span> Enable 'Group' (custom notifications) and 'Social' (chat)
+        notifications and leave 'System' (periodic status changes for your listings) disabled.</li>
       </ul>
     </div>
     <div class="toggles-container">
@@ -142,7 +148,8 @@
         <li>FleetFinder stores a unique token for each browser or device you enable. This token
             identifies where to deliver your notifications but <span class="fancy-text">contains no personal
             or account information</span> — it cannot be used to identify you.</li>
-        <li>You can manage or remove any device's notification settings at any time.</li>
+        <li><span class="fancy-text">Recommendation:</span> Enable 'Group' (custom notifications) and 'Social' (chat)
+          notifications and leave 'System' disabled (periodic status changes for your listings).</li>
       </ul>
     </div>
     <div class="custom-notes-create-container">
@@ -195,11 +202,13 @@
     </mat-expansion-panel-header>
     <div class="bullet-container">
       <ul>
-        <li>You can create a <span class="fancy-text">total of 10</span> custom notifications.</li>
-        <li>You may have <span class="fancy-text">up to 5 enabled</span>.</li>
+        <li>You can create a <span class="fancy-text">total of 10</span> custom notifications, and have
+          <span class="fancy-text">up to 5 enabled</span>.</li>
         <li>Manage how you receive these notifications through the
           <span class="fancy-text">Discord and/or Push Notification Settings</span>
           panels above.</li>
+        <li><span class="fancy-text">Not sure where to start?</span> Create one with just your preferred server,
+          game environment, experience (PU vs. AC), and language — you can refine it later if that is too broad.</li>
       </ul>
     </div>
     <div class="custom-notes-create-container">
@@ -238,19 +247,20 @@
     </div>
   </mat-expansion-panel>
 
-  <mat-expansion-panel
-    class="notifications-container"
-    [expanded]="true">
-    <mat-expansion-panel-header>
-      <mat-panel-title class="child-container-header">
-        My Notifications
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <div class="my-notifications-container">
-      <app-my-notifications-accordion-body>
+  <div class="notifications-list-container">
+    <mat-expansion-panel
 
-      </app-my-notifications-accordion-body>
-    </div>
-  </mat-expansion-panel>
+      [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title class="child-container-header">
+          My Notifications
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <div class="my-notifications-container">
+        <app-my-notifications-accordion-body>
+        </app-my-notifications-accordion-body>
+      </div>
+    </mat-expansion-panel>
+  </div>
 </mat-accordion>
 

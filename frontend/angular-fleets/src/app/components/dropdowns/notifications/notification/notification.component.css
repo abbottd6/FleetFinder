@@ -12,6 +12,16 @@
   overflow-x: hidden;
 }
 
+.clickable {
+  transition: 0.25s ease;
+}
+
+.clickable:hover {
+  background-color: rgba(33, 37, 41, 0.3);
+  box-shadow: 0 0 0 10px rgba(33, 37, 41, 0.3);
+  cursor: pointer;
+}
+
 .note-container {
   display: grid;
   grid-template-columns: minmax(250px, max-content) auto;
@@ -22,8 +32,8 @@
   transition: opacity 200ms ease, transform 200ms ease, max-height 200ms ease, min-height 200ms ease, padding-left 200ms ease;
   opacity: 1;
   transform: translateY(0);
-  max-height: 60px;
-  min-height: 50px;
+  max-height: 70px;
+  min-height: 60px;
   padding-left: 4px;
   margin: 0;
   overflow: hidden;
@@ -37,7 +47,7 @@
   padding-left: 0;
 }
 
-#remove-button {
+.remove-button {
   background-color: transparent;
   border: none;
   color: rgba(150, 168, 183, 0.8);
@@ -46,7 +56,7 @@
   min-height: 20px !important;
 }
 
-#remove-button:hover {
+.remove-button:hover {
   color:  rgba(255, 131, 7, .5);
   background-color: rgba(44, 30, 18, 0.3);
   align-items: center;
@@ -58,7 +68,7 @@
 }
 
 h1 {
-  font-size: 15px;
+  font-size: 13px;
   margin-bottom: 2px;
 }
 

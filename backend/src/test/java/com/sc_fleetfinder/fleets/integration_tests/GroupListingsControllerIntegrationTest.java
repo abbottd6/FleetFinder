@@ -142,8 +142,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
             testDto.setEventDate("2025-03-15"); // Optional
             testDto.setEventTime("18:30:00");
             testDto.setEventTimeZone("America/Los_Angeles");
-            testDto.setCategoryId(1);
-            testDto.setSubcategoryId(1); // Optional
+            testDto.setCategoryId(17);
+            testDto.setSubcategoryId(65); // Optional
             testDto.setPvpStatusId(1);
             testDto.setSystemId(1);
             testDto.setPlanetId(1); // Optional
@@ -154,13 +154,6 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
             testDto.setCommsOption("Optional");
             testDto.setCommsService("Discord");
             testDto.setLanguageCode(LanguageOptions.English);
-
-//        Users mockUser = new Users();
-//        mockUser.setUsername("mock user");
-//        mockUser.setKeycloakId("someKeycloakId");
-//        mockUser.setEmail("mockuser@gmail.com");
-//        userRepository.save(mockUser);
-//        userRepository.flush();
 
         //posting the listing to call createGroupListing
         mockMvc.perform(post("/api/group-listings/create_listing")
@@ -188,8 +181,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
                 .andExpect(jsonPath("$.legality").value("Lawful"))
                 .andExpect(jsonPath("$.groupStatus").value("Future/Scheduled"))
                 .andExpect(jsonPath("$.eventSchedule").value("2025-03-16T01:30:00Z"))
-                .andExpect(jsonPath("$.category").value("Commerce/Trade"))
-                .andExpect(jsonPath("$.subcategory").value("Bounty Hunting PVP"))
+                .andExpect(jsonPath("$.category").value("Looking for Service"))
+                .andExpect(jsonPath("$.subcategory").value("PvP Bounty Hunter"))
                 .andExpect(jsonPath("$.pvpStatus").value("PvP"))
                 .andExpect(jsonPath("$.system").value("Stanton"))
                 .andExpect(jsonPath("$.planetMoonSystem").value("Hurston: Stanton I"))

@@ -5,6 +5,16 @@
   padding-top: 0.25rem;
 }
 
+@media(min-width: 1950px) {
+  ::ng-deep .dropdown-component .ng-select-container {
+    width: 285px;
+  }
+
+  ::ng-deep .dropdown-component .ng-dropdown-panel {
+    width: 275px;
+  }
+}
+
 @media(max-width: 1050px) and (min-width: 750px) {
   .dropdown-row {
     grid-template-columns: 1.25fr 1.25fr 1.25fr;
@@ -14,6 +24,8 @@
   .dropdown-component .ng-select {
     min-width: 10.5rem;
   }
+
+
 
   /* Dropdown selected val */
   :host ::ng-deep .ng-select .ng-value-container {
@@ -127,8 +139,9 @@
   scrollbar-color: rgba(88, 92, 96, .9) transparent !important;
 }
 
-:host ::ng-deep .ng-dropdown-panel {
+::ng-deep .dropdown-component .ng-dropdown-panel {
   background-color: rgba(33, 37, 41, 1) !important;
+  width: 275px;
 }
 
 :host ::ng-deep .ng-dropdown-panel .ng-option-label {
@@ -220,6 +233,11 @@
 
   :host ::ng-deep .ng-dropdown-panel {
     font-size: clamp(0.3rem, 0.8rem, 1rem);
+  }
+
+  ::ng-deep .dropdown-component .ng-dropdown-panel {
+    width: 200px;
+    font-size: clamp(0.6rem, 0.9rem, 1.1rem);
   }
 
   :host ::ng-deep .ng-dropdown-panel .ng-option-label {
