@@ -14,7 +14,7 @@ public class PushNotificationPayload {
 
     private String title;
     private String body;
-    private String icon = "https://scfleetfinder.com/assets/icon.png";
+    private String icon;
     private String tag;
     private List<PushNotificationAction> actions = new ArrayList<>();
     private boolean requireInteraction;

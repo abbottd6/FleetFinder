@@ -235,7 +235,7 @@ public class NotificationServiceImpl implements NotificationService {
         List<PushNotificationAction> actions = List.of(action1, action2);
 
         payload.setActions(actions);
-        payload.setRequireInteraction(true);
+        payload.setRequireInteraction(false);
 
         PushNotificationDataField dataField = new PushNotificationDataField();
 
@@ -259,6 +259,8 @@ public class NotificationServiceImpl implements NotificationService {
                 dataField.setUrl("https://scfleetfinder.com/user-account");
                 break;
         }
+
+        payload.setData(dataField);
 
         try {
             Map<ExternalNotifcationResult, HttpStatus> pushResult = pushNotificationService.sendPushNotificationObject(pushSub, payload);
