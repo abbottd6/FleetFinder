@@ -24,8 +24,8 @@ public class CreateGroupListingDto {
     private Integer experienceId;
 
     @NotBlank(message = "Create group listing DTO field 'listingTitle' cannot be blank")
-    @Size(min = 2, max = 65, message = "Create group listing DTO field 'listing title' must be" +
-            "between 2 and 65 characters.")
+    @Size(min = 2, max = 128, message = "Create group listing DTO field 'listing title' must be" +
+            "between 2 and 128 characters.")
     private String listingTitle;
 
     private Integer playStyleId;

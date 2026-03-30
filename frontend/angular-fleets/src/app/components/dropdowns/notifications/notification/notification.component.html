@@ -1,28 +1,70 @@
-<div class="note-container">
-  <div class="note-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
-    <h1>{{ header }}</h1>
-    <p>{{ note.title.length >= 30 ? (note.title|slice: 0: 30) + '...' : note.title }}
-    @if(isExpired) {
-      <span class="note-msg">{{ note.message }}</span>
-    }
-    </p>
-    <div class="data-row">
-      <div>
-        <span [class.archive-date]="isExpired">{{ message }} {{ archiveDate ? ( archiveDate | date: 'MMM d') : ''}}</span>
-        @if(!isExpired) {
-          <span class="note-msg">{{ note.message }}</span>
+<ng-container *ngIf="(hasLink && hasLink.length > 0); else noLink">
+  <div class="clickable note-container"
+      (click)="routeLink(hasLink)">
+    <div class="note-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
+      <h1>{{ header }}</h1>
+      <p>"{{ note.message.length >= 30 ? (note.message|slice: 0: 30) + '...' : note.message }}"
+        @if (isExpired) {
+          <span class="note-msg">{{ note.entityNewStatus }}</span>
         }
-      </div>
-      <div class="ts-container">
-        <span class="ts">{{ note.createdAt | date: 'MMM d, h:mm a' }}</span>
+      </p>
+      <div class="data-row">
+        <div>
+          <ng-container *ngIf="isExpired; else notExpired">
+            <span
+              [class.archive-date]="isExpired">{{ contextLabel }} {{ archiveDate ? (archiveDate | date: 'MMM d') : '' }}</span>
+          </ng-container>
+          <ng-template #notExpired>
+            <span>{{ contextLabel }}</span>
+            <span class="note-msg">{{ context }}</span>
+          </ng-template>
+        </div>
+        <div class="ts-container">
+          <span class="ts">{{ note.createdAt | date: 'MMM d, h:mm a' }}</span>
+        </div>
       </div>
     </div>
+    <div class="remove-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
+      <button
+        class="remove-button"
+        (click)="noteService.removeNotificationDropdownPriority(note.notificationId)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
-  <div class="remove-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
-    <button
-      id="remove-button"
-      (click)="noteService.removeNotificationDropdownPriority(note.notificationId)">
-      <mat-icon>close</mat-icon>
-    </button>
+</ng-container>
+
+<ng-template #noLink>
+  <div class="note-container">
+    <div class="note-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
+      <h1>{{ header }}</h1>
+      <p>"{{ note.message.length >= 30 ? (note.message|slice: 0: 30) + '...' : note.message }}"
+        @if (isExpired) {
+          <span class="note-msg">{{ note.entityNewStatus }}</span>
+        }
+      </p>
+      <div class="data-row">
+        <div>
+          <ng-container *ngIf="isExpired; else notExpired">
+            <span
+              [class.archive-date]="isExpired">{{ contextLabel }} {{ archiveDate ? (archiveDate | date: 'MMM d') : '' }}</span>
+          </ng-container>
+          <ng-template #notExpired>
+            <span>{{ contextLabel }}</span>
+            <span class="note-msg">{{ context }}</span>
+          </ng-template>
+        </div>
+        <div class="ts-container">
+          <span class="ts">{{ note.createdAt | date: 'MMM d, h:mm a' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="remove-element" [class.closing]="noteService.closingIds.has(note.notificationId)">
+      <button
+        class="remove-button"
+        (click)="noteService.removeNotificationDropdownPriority(note.notificationId)">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
   </div>
-</div>
+</ng-template>

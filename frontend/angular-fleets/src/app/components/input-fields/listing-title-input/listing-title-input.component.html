@@ -13,9 +13,9 @@
         matInput
         [formControl]="titleControl"
         (input)="updateCharacterCount()"
-        maxlength="65"
+        maxlength="128"
         placeholder="Enter listing title..."
         [attr.aria-labelledby]="'listing-title'">
-      <mat-hint align="start">{{ characterCount }}/65</mat-hint>
+      <mat-hint align="start">{{ characterCount }}/128</mat-hint>
     </mat-form-field>
 </div>

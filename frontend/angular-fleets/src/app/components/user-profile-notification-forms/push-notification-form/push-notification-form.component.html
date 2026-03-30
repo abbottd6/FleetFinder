@@ -1,4 +1,12 @@
 <div class="form-wrapper">
+  <div *ngIf="browserIncompatibilityMessage" class="error-message">
+    <span>{{ browserIncompatibilityMessage }}</span>
+  </div>
+  <div class="text-body">
+    <span>Enter a label for your browser/device and click subscribe. FleetFinder will check that
+      the values provided by your browser are valid and then attempt to<span class="fancy-text"> send you a
+        test notification.</span></span>
+  </div>
   <app-generic-small-input-field
     class="form-row"
     [label]="'Device Name:'"
@@ -6,11 +14,12 @@
     [min]="3"
     [max]="32"
     [inputCtrl]="pushSubInputCtrl"
-    [placeholder]="'Name your device...'">
+    [placeholder]="'Chrome on my PC...'">
   </app-generic-small-input-field>
   <ng-container *ngIf="showFormErrorMessage as message">
-    <span>Error: your browser is blocking the request.</span>
-    <span>{{ message }}</span>
+    <div class="error-message">
+      <span>{{ showFormErrorMessage }}</span>
+    </div>
   </ng-container>
   <div class="button-row">
     <button class="action-buttons"
@@ -18,7 +27,8 @@
       Cancel
     </button>
     <button class="action-buttons"
-      (click)="enablePushNotifications()">
+      (click)="enablePushNotifications()"
+      [disabled]="pushSubFormSubmit$ | async">
       Subscribe
     </button>
   </div>

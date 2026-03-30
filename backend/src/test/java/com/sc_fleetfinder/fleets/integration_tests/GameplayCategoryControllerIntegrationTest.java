@@ -40,7 +40,7 @@ public class GameplayCategoryControllerIntegrationTest extends AbstractIntegrati
     void testGetAllGameplayCategories_Success_200() throws Exception {
         mockMvc.perform(get("/api/lookup/gameplay-categories"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.length()").value(12))
+                .andExpect(jsonPath("$.length()").value(15))
                 .andExpect(jsonPath("$[0].gameplayCategoryId").exists())
                 .andExpect(jsonPath("$[0].gameplayCategoryName").exists());
     }

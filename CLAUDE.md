@@ -51,6 +51,8 @@ src/test/java/com/sc_fleetfinder/fleets/
 - Spring Boot 4 `Page<>` JSON: `totalElements` is at `$.page.totalElements`, not `$.totalElements`.
 - `jdbcTemplate.queryForObject(..., Timestamp.class).toInstant()` applies the JVM timezone and gives wrong UTC values. For timestamp comparisons use `UNIX_TIMESTAMP(col)` in SQL and compare to `instant.getEpochSecond()`.
 - `ZoneId.of()` requires IANA names (`"America/Los_Angeles"`, `"UTC"`). Windows-style names (`"Pacific Standard Time"`) throw at runtime.
+- `listing_report.id_reporter` has a FK to `users.id_user` (added by Hibernate DDL auto-update, not in the V5 migration SQL). Insert real users via JDBC before inserting `listing_report` rows — reporter IDs 101/102/etc. will fail with a FK constraint violation.
+- `@SpringBootTest` context requires `discord.bot.token`, `vapid.public.key`, `vapid.private.key` in `application-test.properties` (placeholder values are fine). Missing any of these causes `PlaceholderResolutionException` at context startup.
 
 ### Frontend (npm — run from `frontend/angular-fleets/`)
 

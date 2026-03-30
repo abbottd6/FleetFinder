@@ -8,7 +8,7 @@
         </div>
       </div>
       <div class="text-body-container">
-        <span id="body-title"><h2>Welcome to FleetFinder</h2></span>
+        <span class="body-title"><h2>Welcome to FleetFinder</h2></span>
         <div id="entry-buttons-container">
             <a [routerLink]="['/create-listing']">
               <button class="action-buttons">Create a Listing</button>
@@ -23,18 +23,26 @@
               <button [routerLink]="['/how-to']" class="action-buttons">How To</button>
             </a>
         </div>
-        <div class="text-body dev-text">
+        <span class="secondary-text"><h4>Whats New?</h4></span>
+        <div class="text-body">
+          <ul>
+            <li>You can now subscribe to <span class="highlight-text">notifications through Discord and/or push
+              notifications</span>
+            </li>
+            <li>Create <span class="highlight-text">custom notification profiles</span> to have alerts sent when
+              new listings match your criteria</li>
+            <li>Link your discord account for login</li>
+            <li>External notifications for chat messages, listing status changes, and other events</li>
+            <li>Language criteria on listings for filtering</li>
+          </ul>
+        </div>
+        <div class="text-body bottom-page-text">
           <p>If you've ever thought, <span class="highlight-text">"I want to do more in
             <span style="font-style: italic">Star Citizen</span>, but I can't find people to do it with,"</span> that's exactly what
-            FleetFinder is for. Solo player who wants to try Bock Breaker but need a group? Need a hand on your mining
-            operation? Org looking for another org to have a fleet battle with? This is what FleetFinder is for.
+            FleetFinder is for. Solo player who wants to try Rock Breaker but need a group? Need a hand on your mining
+            operation? Org looking for another org to have a fleet battle with? This is what FleetFinder is for. Jump
+            in and search for a group, sign up to get notifications through Discord or push, or create a group listing.
           </p>
-          <h2>What's New?</h2>
-          <ul>
-            <li>Discord account linking for login and notifications</li>
-            <li>External notifications through Discord and/or push notifications</li>
-            <li>Custom notifications to send you alerts when a new listing matches your criteria</li>
-          </ul>
         </div>
       </div>
     </div>

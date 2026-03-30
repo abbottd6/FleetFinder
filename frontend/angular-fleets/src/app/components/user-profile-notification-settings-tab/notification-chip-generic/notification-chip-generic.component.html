@@ -1,34 +1,70 @@
-<div class="chip-self">
-
-  <div class="header-row">
-    <h5 id="header-left">{{ header }}</h5>
-    <span id="header-right">
-      <span class="field-label">
-        Created: {{ inputNote.createdAt | date:'MMM d, h:mm a'}}</span>
-    </span>
-  </div>
-
-  <div class="content-body">
-    <div class="title-column">
-      <p>{{ inputNote.title }}
-        @if (isExpired) {
-          <span class="note-msg">{{ inputNote.message }}</span>
-        }
-      </p>
+<ng-container *ngIf="(hasLink && hasLink.length > 0); else noLink">
+  <div class="clickable chip-self"
+       (click)="routeLink(hasLink)">
+    <div class="header-row">
+      <h5 class="header-left">{{ header }}</h5>
+      <span class="header-right">
+        <span class="field-label">
+          Created: {{ inputNote.createdAt | date:'MMM d, h:mm a'}}</span>
+      </span>
     </div>
-    <div class="message-column">
-      <div>
-        <span
-          [class.archive-date]="isExpired">{{ message }} {{ archiveDate ? (archiveDate | date: 'MMM d') : '' }}</span>
-        @if (!isExpired) {
-          <span class="note-msg">{{ inputNote.message }}</span>
-        }
+
+    <div class="content-body">
+      <div class="title-column">
+        <p>{{ targetTitle }}</p>
+      </div>
+      <div class="message-column">
+        <div>
+          <ng-container *ngIf="isExpired; else notExpired">
+              <span
+                [class.archive-date]="isExpired">{{ contextLabel }} {{ archiveDate ? (archiveDate | date: 'MMM d') : '' }}</span>
+          </ng-container>
+          <ng-template #notExpired>
+            <span class="field-label">{{ contextLabel }}</span>
+            <span class="field-val has-val">{{ context }}</span>
+          </ng-template>
+        </div>
+      </div>
+      <div class="action-column">
+        <a (click)="deleteThisNotification()">
+          <mat-icon class="delete-note">delete</mat-icon>
+        </a>
       </div>
     </div>
-    <div class="action-column">
-      <a (click)="deleteThisNotification()">
-        <mat-icon id="delete-note">delete</mat-icon>
-      </a>
+  </div>
+</ng-container>
+
+<ng-template #noLink>
+  <div class="chip-self">
+    <div class="header-row">
+      <h5 class="header-left">{{ header }}</h5>
+      <span class="header-right">
+        <span class="field-label">
+          Created: {{ inputNote.createdAt | date:'MMM d, h:mm a'}}</span>
+      </span>
+    </div>
+
+    <div class="content-body">
+      <div class="title-column">
+        <p>{{ targetTitle }}</p>
+      </div>
+      <div class="message-column">
+        <div>
+          <ng-container *ngIf="isExpired; else notExpired">
+              <span
+                [class.archive-date]="isExpired">{{ contextLabel }} {{ archiveDate ? (archiveDate | date: 'MMM d') : '' }}</span>
+          </ng-container>
+          <ng-template #notExpired>
+            <span class="field-label">{{ contextLabel }}</span>
+            <span class="field-val has-val">{{ context }}</span>
+          </ng-template>
+        </div>
+      </div>
+      <div class="action-column">
+        <a (click)="deleteThisNotification()">
+          <mat-icon class="delete-note">delete</mat-icon>
+        </a>
+      </div>
     </div>
   </div>
-</div>
+</ng-template>

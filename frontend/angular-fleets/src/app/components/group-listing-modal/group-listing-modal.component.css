@@ -13,7 +13,7 @@
 }
 
 .modal-dash {
-  color: rgba(255, 131, 7, .75);
+  color: rgba(255, 131, 7, .65);
   margin-left: .25rem;
   margin-right: .25rem;
   padding-left: .25rem;
@@ -32,7 +32,7 @@
   font-size: 1.5rem;
   font-weight: 500;
   line-height: 1;
-  color: rgba(255, 131, 7, .75);
+  color: rgba(255, 131, 7, .65);
   opacity: .75;
   transition: background-color 0.15s ease;
 }
@@ -43,6 +43,38 @@
   color: var(--bs-gray-900);
   border-color: rgba(255, 131, 7, .75);
   background-color: rgba(255, 131, 7, .25);
+}
+
+.modal-body {
+  padding-top: 0;
+}
+
+.listing-details-scoped-block {
+  min-height: 100px;
+  width: 100%;
+  max-width: 80vw;
+  margin-inline: auto;
+  border: rgba(188, 191, 200, .3);
+  border-radius: 8px;
+  margin-top: 20px;
+  padding: 0 8px 8px 8px;
+  background-color: rgba(108, 108, 108, 0.03);
+  box-shadow: 0 0 5px rgba(188, 191, 200, .1);
+  overflow: hidden;
+  font-family: "Exo 2", sans-serif;
+}
+
+.label-wrapper {
+  display: flex;
+  margin: 0.5rem;
+  width: fit-content;
+  padding-right: 5rem;
+  /*border-bottom: 1px solid;*/
+}
+
+.scope-label {
+  font-size: 1.2rem;
+
 }
 
 /*The actual main container for the modal: LARGE VW*/
@@ -61,8 +93,7 @@
   .modal-listing-container-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin: 1.25rem 0 1.25rem 0;
+    margin: .25rem 0 .25rem 0;
   }
 }
 
@@ -125,7 +156,6 @@
     display: flex;
     flex-direction: column;
     max-width: 90vw;
-    padding: 0.5rem 0 0.5rem 0;
   }
 
   .column-right {
@@ -146,7 +176,7 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
-    margin: 1.25rem 0 1.25rem 0;
+    margin: .25rem 0 .25rem 0;
   }
 
   /* reversed to push everything to the left side at this viewport size */
@@ -163,7 +193,6 @@
     display: flex;
     flex-direction: column;
     max-width: 98vw;
-    padding: 0.5rem 0 0.5rem 0;
   }
 
   .modal-button-with-icon {
@@ -183,6 +212,7 @@
     grid-template-columns: 1fr 1.5fr;
     padding-right: 0;
     margin-right: 0;
+    border-top: transparent;
   }
 
   .footer-buttons-right {
@@ -193,7 +223,7 @@
 /* Field labels */
 .modal-listing-field {
   padding: 0 0.25rem 0 0.25rem;
-  color: rgba(255, 131, 7, .75);
+  color: rgba(255, 131, 7, .6);
   font-family: 'Exo 2', sans-serif;
   font-weight: 500;
 }
@@ -258,6 +288,13 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: center;
+  border-top: transparent;
+}
+
+#copied-hint {
+  align-self: center;
+  margin-left: 10px;
+  color:  rgba(188, 191, 200, .5);
 }
 
 .options-button {

@@ -20,7 +20,6 @@ import {
 import {
   CreateOrUpdateCustomNoteRequest
 } from "../../../models/NotificationPrefAndCustomNotesModels/CreateOrUpdateCustomNoteRequest";
-import {NotificationApiService} from "../../../services/api-services/notification-api/notification-api.service";
 import {AsyncPipe} from "@angular/common";
 import {
   NotificationSettingsApiService

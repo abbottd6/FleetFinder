@@ -23,6 +23,9 @@ import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.SkipExternalNotificationProcessingException;
+import com.sc_fleetfinder.fleets.messaging.push.PushNotificationAction;
+import com.sc_fleetfinder.fleets.messaging.push.PushNotificationDataField;
+import com.sc_fleetfinder.fleets.messaging.push.PushNotificationPayload;
 import com.sc_fleetfinder.fleets.messaging.push.PushNotificationService;
 import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
 import com.sc_fleetfinder.fleets.utils.ExternalNotifcationResult;
@@ -42,6 +45,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -216,10 +221,49 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void sendPushNotification(Notification note, PushSubscription pushSub) {
-        String payload = note.getTitle() + " '" + note.getMessage() + "'";
+        PushNotificationPayload payload = new PushNotificationPayload();
+
+        payload.setTitle(note.getTitle());
+        payload.setBody(note.getMessage());
+
+        PushNotificationAction action1 = new PushNotificationAction();
+        PushNotificationAction action2 = new PushNotificationAction();
+        action1.setAction("view");
+        action1.setTitle("View");
+        action2.setAction("dismiss");
+        action2.setTitle("Dismiss");
+        List<PushNotificationAction> actions = List.of(action1, action2);
+
+        payload.setActions(actions);
+        payload.setRequireInteraction(false);
+
+        PushNotificationDataField dataField = new PushNotificationDataField();
+
+        switch (note.getType()) {
+            case NotificationType.NEW_LISTING_MATCH:
+                Long id = note.getTargetMetadata().getTargetId();
+
+                payload.setTag("New Listing Match");
+                dataField.setUrl("https://scfleetfinder.com/listing-details/" + id);
+                break;
+            case NotificationType.NEW_CHAT_MESSAGE:
+                payload.setTag("New Chat Message");
+                dataField.setUrl("https://scfleetfinder.com/user-account");
+                break;
+            case NotificationType.MOD_DELETE:
+                payload.setTag("Mod Action");
+                dataField.setUrl("https://scfleetfinder.com/user-account");
+                break;
+            default:
+                payload.setTag("Listing Status Change");
+                dataField.setUrl("https://scfleetfinder.com/user-account");
+                break;
+        }
+
+        payload.setData(dataField);
 
         try {
-            Map<ExternalNotifcationResult, HttpStatus> pushResult = pushNotificationService.sendPushNotification(pushSub, payload);
+            Map<ExternalNotifcationResult, HttpStatus> pushResult = pushNotificationService.sendPushNotificationObject(pushSub, payload);
 
             if (pushResult.containsKey(ExternalNotifcationResult.SUCCESS)) {
                 note.setReadAt(Instant.now());

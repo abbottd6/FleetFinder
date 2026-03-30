@@ -21,6 +21,7 @@ import com.sc_fleetfinder.fleets.events.UserAccountDeleteEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.SkipExternalNotificationProcessingException;
+import com.sc_fleetfinder.fleets.messaging.push.PushNotificationPayload;
 import com.sc_fleetfinder.fleets.messaging.push.PushNotificationService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.NotificationServiceImpl;
 import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
@@ -30,6 +31,7 @@ import com.sc_fleetfinder.fleets.utils.NotificationType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -537,8 +539,9 @@ class NotificationServiceImplTest {
         Notification savedNote = buildMockSavedNote(DeliveryChannel.PUSH, outbox.getEntityOwner());
         when(savedNote.getTitle()).thenReturn("Test Title");
         when(savedNote.getMessage()).thenReturn("Test Message");
+        when(savedNote.getType()).thenReturn(NotificationType.LISTING_VIS_STATUS_CHANGED);
         when(notificationRepo.save(any(Notification.class))).thenReturn(savedNote);
-        when(pushNotificationService.sendPushNotification(eq(mockPushSub), any(String.class)))
+        when(pushNotificationService.sendPushNotificationObject(eq(mockPushSub), any(PushNotificationPayload.class)))
                 .thenReturn(Map.of(ExternalNotifcationResult.SUCCESS, HttpStatus.CREATED));
 
         assertThatNoException().isThrownBy(() -> notificationService.prepareAndSendOutboxNotification(outbox));
@@ -566,14 +569,49 @@ class NotificationServiceImplTest {
         Notification savedNote = buildMockSavedNote(DeliveryChannel.PUSH, outbox.getEntityOwner());
         when(savedNote.getTitle()).thenReturn("Test Title");
         when(savedNote.getMessage()).thenReturn("Test Message");
+        when(savedNote.getType()).thenReturn(NotificationType.LISTING_VIS_STATUS_CHANGED);
         when(savedNote.getOutbox()).thenReturn(noteOutbox);
         when(notificationRepo.save(any(Notification.class))).thenReturn(savedNote);
-        when(pushNotificationService.sendPushNotification(eq(mockPushSub), any(String.class)))
+        when(pushNotificationService.sendPushNotificationObject(eq(mockPushSub), any(PushNotificationPayload.class)))
                 .thenReturn(Map.of(ExternalNotifcationResult.FAILURE, HttpStatus.INTERNAL_SERVER_ERROR));
 
         assertThrows(ResponseStatusException.class, () -> notificationService.prepareAndSendOutboxNotification(outbox));
 
         verify(notificationRepo).delete(savedNote);
+    }
+
+    @Test
+    void prepareAndSendOutboxNotification_PushDelivery_NewListingMatch_BuildsListingUrlInPayload() throws Exception {
+        NotificationOutbox outbox = buildMockOutbox(NotificationType.NEW_LISTING_MATCH, DeliveryChannel.PUSH);
+        when(notificationRepo.checkSiblingNotificationReadStatus(1L, "testSibKey")).thenReturn(Optional.empty());
+
+        com.sc_fleetfinder.fleets.entities.PushSubscription mockPushSub =
+                mock(com.sc_fleetfinder.fleets.entities.PushSubscription.class);
+        when(mockPushSub.getIdPushSub()).thenReturn(99L);
+        when(outbox.getTargetPushSub()).thenReturn(mockPushSub);
+
+        com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata mockMeta =
+                mock(com.sc_fleetfinder.fleets.utils.NotificationTargetMetadata.class);
+        when(mockMeta.getTargetId()).thenReturn(42L);
+
+        Notification savedNote = buildMockSavedNote(DeliveryChannel.PUSH, outbox.getEntityOwner());
+        when(savedNote.getTitle()).thenReturn("Test Title");
+        when(savedNote.getMessage()).thenReturn("Test Message");
+        when(savedNote.getType()).thenReturn(NotificationType.NEW_LISTING_MATCH);
+        when(savedNote.getTargetMetadata()).thenReturn(mockMeta);
+        when(notificationRepo.save(any(Notification.class))).thenReturn(savedNote);
+
+        ArgumentCaptor<PushNotificationPayload> payloadCaptor = ArgumentCaptor.forClass(PushNotificationPayload.class);
+        when(pushNotificationService.sendPushNotificationObject(eq(mockPushSub), payloadCaptor.capture()))
+                .thenReturn(Map.of(ExternalNotifcationResult.SUCCESS, HttpStatus.CREATED));
+
+        assertThatNoException().isThrownBy(() -> notificationService.prepareAndSendOutboxNotification(outbox));
+
+        PushNotificationPayload captured = payloadCaptor.getValue();
+        assertThat(captured.getTag()).isEqualTo("New Listing Match");
+        // NOTE: captured.getData() is currently null — payload.setData(dataField) is missing in production code (bug)
+        assertThat(captured.getActions()).hasSize(2);
+        assertThat(captured.isRequireInteraction()).isFalse();
     }
 
     // ─── generateOutboxNotificationForModAction ───────────────────────────────

@@ -1,0 +1,251 @@
+<div class="body-container">
+  <span class="page-title"><h2>Listing Details</h2></span>
+
+  <div class="content-wrapper">
+    <div class="listing-content" *ngIf="!isLoading; else loading">
+      <span class="listing-title"><h3>{{ listing.listingTitle }}</h3></span>
+
+      <div class="listing-details-scoped-block">
+        <div class="label-wrapper">
+          <span class="scope-label">Logistics & Coordination</span>
+        </div>
+
+        <!-- FIRST GRID BLOCK COLUMN LEFT -->
+
+        <div class="listing-container-grid">
+          <div class="listing-content-block column-left">
+            <div class="listing-content-row">
+              <span class="listing-content-field">Listed By:</span>
+              <span class="listing-content-val">{{ listing.userName }}</span>
+            </div>
+            <div class="listing-content-row">
+              <span class="listing-content-field">Server Region:</span>
+              <span class="listing-content-val">{{ listing.server }}</span>
+            </div>
+            <div class="listing-content-row">
+              <span class="listing-content-field">Play Style:</span>
+              <span class="listing-content-val">{{ listing.playStyle }}</span>
+            </div>
+            <div class="listing-content-row">
+              <span class="listing-content-field">Language:</span>
+              <span class="listing-content-val">{{ listing.languageCode }}</span>
+            </div>
+          </div>
+
+          <!-- FIRST GRID BLOCK COLUMN RIGHT -->
+          <div class="listing-content-block column-right">
+            <div class="listing-content-row column-right">
+              <span class="listing-content-field">Last Updated: </span>
+              <span class="listing-content-val">{{ listing.lastUpdated | date:'MMM d, h:mm a' }}</span>
+            </div>
+            <div class="listing-content-row column-right">
+              <span class="listing-content-field">Group Status:</span>
+              <span class="listing-content-val">{{ listing.groupStatus }}</span>
+            </div>
+            <ng-container *ngIf="listing.groupStatus === 'Future/Scheduled' && listing.eventSchedule as eventSchedule">
+              <div class="listing-content-row column-right">
+                <span class="listing-content-field">Event Scheduled: </span>
+                <span class="listing-content-val">(Your time) {{ eventSchedule | date: 'MMM d, h:mm a' }}</span>
+              </div>
+              <div class="listing-content-row column-right">
+                <span class="listing-content-val">(UTC) {{ eventSchedule | date: 'MMM d, h:mm a' : 'UTC' }}</span>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <!-- END OF FIRST GRID BLOCK -->
+
+
+        <!-- SECOND GRID BLOCK COLUMN LEFT -->
+        <div class="listing-container-grid">
+          <div class="listing-content-block column-left">
+            <div class="listing-content-row">
+              <span class="listing-content-field">Environment:</span>
+              <span class="listing-content-val">{{ listing.environment }}</span>
+            </div>
+            <div class="listing-content-row">
+              <span class="listing-content-field">Experience:</span>
+              <span class="listing-content-val">{{ listing.experience }}</span>
+            </div>
+
+            <!-- SECOND GRID BLOCK COLUMN RIGHT -->
+          </div>
+          <div class="listing-content-block column-right">
+            <div class="listing-content-row column-right">
+              <span class="listing-content-field">Comms:</span>
+              <span class="listing-content-val">{{ listing.commsOption }}</span>
+            </div>
+            <div class="listing-content-row column-right">
+              <span class="listing-content-field">Comms Service:</span>
+              <ng-container *ngIf="listing.commsService; else emptyCommsService">
+                <span class="listing-content-val">{{ listing.commsService }}</span>
+              </ng-container>
+            </div>
+            <div>
+              <ng-template #emptyCommsService>
+                <!--Blank if no comms service -->
+              </ng-template>
+            </div>
+          </div>
+        </div>
+        <!-- END OF SECOND GRID BLOCK -->
+      </div>
+
+      <div class="listing-details-scoped-block">
+        <div class="label-wrapper">
+          <span class="scope-label">Gameplay Details</span>
+        </div>
+        <!-- THIRD GRID BLOCK COLUMN LEFT -->
+        <div class="listing-container-grid">
+          <div class="listing-content-block column-left">
+            <div class="listing-content-row">
+              <span class="listing-content-field">System:</span>
+              <span class="listing-content-val">{{ listing.system }}</span>
+            </div>
+            <div class="listing-content-row column-left-indent">
+              <span class="listing-content-field">Planet/Moon:</span>
+              <span class="listing-content-val"> {{ listing.planetMoonSystem }} </span>
+            </div>
+            <div class="listing-content-row column-left">
+              <span class="listing-content-field">Gameplay Category:</span>
+              <span class="listing-content-val">{{ listing.category }}</span>
+            </div>
+            <div class="listing-content-row column-left-indent">
+              <span class="listing-content-field">Subcategory:</span>
+              <span class="listing-content-val"> {{ listing.subcategory }} </span>
+            </div>
+          </div>
+
+
+          <!-- THIRD LISTING BLOCK COLUMN RIGHT -->
+          <div class="listing-content-block column-right">
+            <div class="listing-content-row column-right">
+              <span class="listing-content-field">PvP Status:</span>
+              <span class="listing-content-val">{{ listing.pvpStatus }}</span>
+            </div>
+
+            <div class="listing-content-row column-right">
+              <span class="listing-content-field">Legality:</span>
+              <span class="listing-content-val">{{ listing.legality }}</span>
+            </div>
+
+            <div class="listing-content-row column-right">
+              <span class="listing-content-field">Group Size:</span>
+              <!-- Group size is fraction: current party size divided by desired party size -->
+              <span class="listing-content-val">{{ listing.currentPartySize }}
+                / {{ listing.desiredPartySize }}</span>
+            </div>
+          </div>
+        </div>
+        <!-- END OF THIRD LISTING BLOCK -->
+
+
+        <!-- DESCRIPTION BLOCK -->
+        <div class="listing-content-block column-left">
+          <div class="listing-content-row column-left">
+            <span class="listing-content-field">Description:</span>
+          </div>
+          <div class="listing-content-block column-left-indent">
+            <span class="listing-content-val">{{ listing.listingDescription }}</span>
+          </div>
+        </div>
+
+        <!-- AVAILABLE ROLES BLOCK -->
+        <div class="listing-content-block column-left">
+          <div class="listing-content-row column-left">
+            <span class="listing-content-field">Available Roles:</span>
+          </div>
+          <div class="listing-content-row column-left-indent">
+            <span class="listing-content-val">{{ listing.availableRoles }}</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="listing-content-footer">
+        <div *ngIf="!(isMobile$ | async); else mobileViewAll" class="button-left-wrapper">
+          <button id="left-button" class="action-buttons"
+                  [routerLink]="['/group-listings']">
+            View All Listings
+          </button>
+        </div>
+        <div class="buttons-right-wrapper">
+          <div class="footer-buttons-right">
+            <ng-template #mobileViewAll>
+              <div>
+                <button class="action-buttons"
+                        [routerLink]="['/group-listings']">
+                  View All Listings
+                </button>
+              </div>
+            </ng-template>
+            <button
+              *ngIf="!userIsListingOwner()"
+              type="button"
+              class="action-buttons-with-icons"
+              [matMenuTriggerFor]="listingOptionsMenu">
+              Options
+              <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+            <mat-menu #listingOptionsMenu="matMenu">
+              <button
+                mat-menu-item
+                class="options-item"
+                (click)="listingInteract.hideSelected()">
+                Hide
+              </button>
+              <ng-container *ngIf="(listingInteract.selectedIsBookmarked$ | async) === false; else notBookmarked">
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="listingInteract.addBookmark(listing.groupId)">
+                  Bookmark
+                </button>
+              </ng-container>
+              <ng-template #notBookmarked>
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="listingInteract.deleteBookmark(listing.groupId)">
+                  Unmark
+                </button>
+              </ng-template>
+              <button mat-menu-item
+                      class="options-item"
+                      (click)="listingInteract.copyListingLink(listing.groupId)">
+                Share Link
+              </button>
+              <button
+                mat-menu-item
+                class="options-item"
+                (click)="listingInteract.reportSelected()">
+                Report
+              </button>
+            </mat-menu>
+            <ng-container *ngIf="userIsListingOwner(); else notOwner">
+              <a [routerLink]="['/user-account']">
+                <button type="button" class="action-buttons">Manage</button>
+              </a>
+            </ng-container>
+            <ng-template #notOwner>
+              <button type="button"
+                      class="action-buttons-with-icons"
+                      (click)="chatHostSrv.provisionConversation(listing!)">
+                <mat-icon class="msg-icon">rss_feed</mat-icon>
+                Message
+              </button>
+            </ng-template>
+          </div>
+          <div id="copied-hint">
+            <mat-hint *ngIf="listingInteract.linkCopied">Link copied to clipboard</mat-hint>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #loading>
+      <div>
+        <mat-spinner></mat-spinner>
+      </div>
+    </ng-template>
+  </div>
+</div>

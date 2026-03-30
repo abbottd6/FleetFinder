@@ -17,7 +17,7 @@ import {
   MatRow,
   MatRowDef, MatTable, MatTableDataSource
 } from "@angular/material/table";
-import {AsyncPipe, DatePipe, NgIf} from "@angular/common";
+import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {Subject, takeUntil} from "rxjs";
 import {GroupListingViewModel} from "../../../../models/group-listing/group-listing-view-model";
@@ -59,7 +59,8 @@ import {ChatHostService} from "../../../../services/facade-services/chat/chat-ho
     MatMenu,
     MatMenuItem,
     NgIf,
-    MatMenuTrigger
+    MatMenuTrigger,
+    SlicePipe
   ],
   styleUrl: './desktop-table-view.component.css'
 })

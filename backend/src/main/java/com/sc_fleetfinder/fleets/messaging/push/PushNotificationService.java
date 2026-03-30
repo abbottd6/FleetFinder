@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.messaging.push;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sc_fleetfinder.fleets.entities.PushSubscription;
 import com.sc_fleetfinder.fleets.utils.ExternalNotifcationResult;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,17 @@ public class PushNotificationService {
     @Value("${vapid.private.key}")
     private String privateKey;
 
-    public Map<ExternalNotifcationResult, HttpStatus> sendPushNotification(PushSubscription pushSub, String payload) throws Exception{
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public Map<ExternalNotifcationResult, HttpStatus> sendPushNotificationObject(PushSubscription pushSub,
+                                                                           PushNotificationPayload payload) throws Exception{
+
+        String payloadJson = objectMapper.writeValueAsString(payload);
+        return sendPushNotification(pushSub, payloadJson);
+    }
+
+    public Map<ExternalNotifcationResult, HttpStatus> sendPushNotification(PushSubscription pushSub,
+                                                                           String payload) throws Exception{
 
         String endpoint = pushSub.getDeviceUrl();
         String p256dh = pushSub.getPublicKey();

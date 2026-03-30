@@ -1,7 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {DatePipe} from "@angular/common";
+import {DatePipe, NgIf} from "@angular/common";
 import {NotificationViewModel} from "../../../models/NotificationViewModel";
 import {MatIcon} from "@angular/material/icon";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-notification-chip-generic',
@@ -9,7 +10,8 @@ import {MatIcon} from "@angular/material/icon";
   templateUrl: './notification-chip-generic.component.html',
   imports: [
     DatePipe,
-    MatIcon
+    MatIcon,
+    NgIf,
   ],
   styleUrl: './notification-chip-generic.component.css'
 })
@@ -18,10 +20,14 @@ export class NotificationChipGenericComponent implements OnInit {
   @Output() deleteNoteEvent = new EventEmitter<number>();
 
   protected header!: String | undefined;
-  protected contentTitle!: String | undefined;
-  protected message!: String | undefined;
+  protected contextLabel!: String | undefined;
+  protected context!: String | undefined;
+  protected targetTitle!: String | undefined;
   protected archiveDate!: Date | undefined;
   protected isExpired: boolean = false;
+  protected hasLink: string | null = null;
+
+  constructor(private router: Router){};
 
   ngOnInit() {
     this.buildNoteDisplay();
@@ -31,16 +37,56 @@ export class NotificationChipGenericComponent implements OnInit {
     switch (this.inputNote.type) {
       case ('LISTING_VIS_STATUS_CHANGED'):
         this.header = "Listing visibility status changed";
-        this.contentTitle ='Your Listing: ' + this.inputNote.title ;
-        this.message = "New status: ";
+
+        if(this.inputNote.message.length > 42) {
+          this.targetTitle = "Your listing: " + "\"" + this.inputNote.message.substring(0, 42) + "\"";
+        } else {
+          this.targetTitle = "Your listing: " + "\"" + this.inputNote.message + "\""
+        }
+
+        this.contextLabel = "New status: ";
+        this.context = this.inputNote.targetMetadata?.addContext;
         break;
+
+
       case ('LISTING_ARCHIVED'):
-        this.header = "Listing Archived";
+        this.header = this.inputNote.title;
+
+        if(this.inputNote.message.length > 42) {
+          this.targetTitle = "Your listing: " + "\"" + this.inputNote.message.substring(0, 42) + "\"";
+        } else {
+          this.targetTitle = "Your listing: " + "\"" + this.inputNote.message + "\""
+        }
+
         break;
+
+
       case ('MOD_DELETE'):
         this.header = "Listing removed by a moderator";
-        this.message = "Basis for removal: ";
+
+        if(this.inputNote.message.length > 42) {
+          this.targetTitle = "Your listing: " + "\"" + this.inputNote.message.substring(0, 42) + "\"";
+        } else {
+          this.targetTitle = "Your listing: " + "\"" + this.inputNote.message + "\""
+        }
+
+        this.contextLabel = "Performed by: ";
+        this.context = this.inputNote.targetMetadata?.targetLabel;
         break;
+
+
+      case ('NEW_LISTING_MATCH'):
+        this.header = this.inputNote.title;
+
+        if(this.inputNote.message.length > 42) {
+          this.targetTitle = "Your listing: " + "\"" + this.inputNote.message.substring(0, 42) + "\"";
+        } else {
+          this.targetTitle = "Listing title: " + "\"" + this.inputNote.message + "\""
+        }
+
+        this.contextLabel = "Group Status: ";
+        this.context = this.inputNote.targetMetadata?.addContext;
+        this.hasLink = "listing-details/" + this.inputNote.parentEntity.parentEntityId;
     }
 
     if (this.inputNote.message.includes("EXPIRED")) {
@@ -48,9 +94,14 @@ export class NotificationChipGenericComponent implements OnInit {
       this.archiveDate = new Date(this.inputNote.createdAt);
       this.archiveDate.setDate(this.archiveDate.getDate() + 11);
 
-      this.header = "Listing visibility expired"
-      this.message = "Archival on: "
+      this.header = "Listing visibility expired."
+      this.contextLabel = "Archival on: "
     }
+  }
+
+  routeLink(url: string) {
+    console.warn("THIS IS THE URL: ", url);
+    this.router.navigateByUrl(url);
   }
 
   deleteThisNotification() {
