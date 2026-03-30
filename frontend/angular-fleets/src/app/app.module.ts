@@ -29,7 +29,6 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {AuthInterceptor} from "./services/auth/interceptors/auth.interceptor";
 import {MatSidenav, MatSidenavContainer} from "@angular/material/sidenav";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import { LoginModalComponent } from './components/login-modal/login-modal.component';
 import {MatSnackBarModule} from "@angular/material/snack-bar";
 import {DropdownModule} from "./components/dropdowns/dropdown-module/dropdown.module";
 import {InputFieldModule} from "./components/input-fields/input-field/input-field.module";
@@ -91,7 +90,6 @@ import { ConfirmDelinkDiscordPopupComponent } from './components/pop-ups/confirm
     FooterComponent,
     WelcomeScreenComponent,
     AboutComponent,
-    LoginModalComponent,
     SearchBarComponent,
     ConfirmDeleteComponent,
     ConfirmReportComponent,

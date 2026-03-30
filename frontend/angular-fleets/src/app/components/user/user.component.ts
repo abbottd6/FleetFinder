@@ -82,7 +82,6 @@ export class UserComponent implements OnInit, OnDestroy {
               protected templatesModal: TemplatesModalService,
               private chatHostSrv: ChatHostService,
               private userApiSrv: UserApiService,
-              private router: Router,
               private dialog: MatDialog,
               protected userFormSrv: UpdateUserFormService) {
 
@@ -94,6 +93,11 @@ export class UserComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    if(sessionStorage.getItem('pendingDiscordLink')) {
+      sessionStorage.removeItem('pendingDiscordLink');
+      this.userService.kcProfileRefresh();
+    }
+
     this.userService.refreshUser();
     this.shouldDisplayMod$ = this.askShouldDisplayMod();
 

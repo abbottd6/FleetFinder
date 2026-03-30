@@ -144,7 +144,10 @@ body#keycloak-bg::after {
 .pf-v5-c-form-control > input:focus {
     color: transparent !important;
     outline: 1px solid rgba(188, 191, 200, 0.5);
+}
 
+.pf-v5-c-form-control > input#password-new:focus {
+    color: rgba(188, 191, 200, 0.85) !important;
 }
 
 .pf-v5-c-button.pf-m-control {

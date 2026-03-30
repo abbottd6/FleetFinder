@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.scheduledTasks;
 
 import com.sc_fleetfinder.fleets.config.ActivityTracking.UserActivityCache;
+import com.sc_fleetfinder.fleets.config.WebSocketSessionTracker;
 import com.sc_fleetfinder.fleets.entities.NotificationOutbox;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -36,6 +37,9 @@ class OutboxSenderTaskTest {
 
     @Mock
     private UserActivityCache activityCache;
+
+    @Mock
+    private WebSocketSessionTracker wsSessionTracker;
 
     @InjectMocks
     private OutboxSenderTask outboxSenderTask;
@@ -204,18 +208,20 @@ class OutboxSenderTaskTest {
 
     @Test
     void sendOutboxNotifications_ExternalChannel_UserRecentlyActive_AttemptCountLow_DelaysNotification() {
-        // given — external channel, user recently active, attemptCount < 10 → delay
+        // given — external channel, user WS-connected and recently active, attemptCount < 10 → delay
         NotificationOutbox outbox = buildMockExternalOutbox(5L, "kc-1", 2);
 
         when(outboxService.claimPendingBatch(200)).thenReturn(1);
         when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(wsSessionTracker.isUserConnected("kc-1")).thenReturn(true);
         when(activityCache.hasRecentAccess("kc-1", 300)).thenReturn(true);
 
         // when
         outboxSenderTask.sendOutboxNotifications();
 
         // then
-        assertAll("delay when user is recently active and attemptCount < 10:",
+        assertAll("delay when user is WS-connected, recently active, and attemptCount < 10:",
+                () -> verify(wsSessionTracker, times(1)).isUserConnected("kc-1"),
                 () -> verify(outboxService, times(1)).markForUserActive_Delayed(5L),
                 () -> verify(notificationService, never()).prepareAndSendOutboxNotification(any()),
                 () -> verify(outboxService, never()).markSent(anyLong()),
@@ -225,11 +231,12 @@ class OutboxSenderTaskTest {
 
     @Test
     void sendOutboxNotifications_ExternalChannel_UserRecentlyActive_AttemptCountMaxedOut_ProceedsToSend() {
-        // given — attemptCount >= 10 bypasses the activity delay even when user is active
+        // given — user WS-connected and recently active, but attemptCount >= 10 bypasses the delay
         NotificationOutbox outbox = buildMockExternalOutbox(5L, "kc-1", 10);
 
         when(outboxService.claimPendingBatch(200)).thenReturn(1);
         when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(wsSessionTracker.isUserConnected("kc-1")).thenReturn(true);
         when(activityCache.hasRecentAccess("kc-1", 300)).thenReturn(true);
         doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox);
 
@@ -245,12 +252,13 @@ class OutboxSenderTaskTest {
     }
 
     @Test
-    void sendOutboxNotifications_ExternalChannel_UserNotRecentlyActive_ProceedsToSend() {
-        // given — user is not recently active, so no delay
+    void sendOutboxNotifications_ExternalChannel_UserConnected_NotRecentlyActive_ProceedsToSend() {
+        // given — user is WS-connected but not recently active; activity check passes → no delay
         NotificationOutbox outbox = buildMockExternalOutbox(6L, "kc-2", 1);
 
         when(outboxService.claimPendingBatch(200)).thenReturn(1);
         when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(wsSessionTracker.isUserConnected("kc-2")).thenReturn(true);
         when(activityCache.hasRecentAccess("kc-2", 300)).thenReturn(false);
         doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox);
 
@@ -258,7 +266,7 @@ class OutboxSenderTaskTest {
         outboxSenderTask.sendOutboxNotifications();
 
         // then
-        assertAll("no activity delay when user is not recently active:",
+        assertAll("no activity delay when user is WS-connected but not recently active:",
                 () -> verify(outboxService, never()).markForUserActive_Delayed(anyLong()),
                 () -> verify(notificationService, times(1)).prepareAndSendOutboxNotification(outbox),
                 () -> verify(outboxService, times(1)).markSent(6L)
@@ -278,7 +286,8 @@ class OutboxSenderTaskTest {
         outboxSenderTask.sendOutboxNotifications();
 
         // then
-        assertAll("IN_APP channel: activity cache never consulted:",
+        assertAll("IN_APP channel: WS tracker and activity cache never consulted:",
+                () -> verify(wsSessionTracker, never()).isUserConnected(any()),
                 () -> verify(activityCache, never()).hasRecentAccess(any(), anyInt()),
                 () -> verify(outboxService, never()).markForUserActive_Delayed(anyLong()),
                 () -> verify(notificationService, times(1)).prepareAndSendOutboxNotification(outbox),
@@ -381,11 +390,12 @@ class OutboxSenderTaskTest {
 
     @Test
     void sendOutboxNotifications_PushChannel_UserRecentlyActive_AttemptCountLow_Delays() {
-        // given — PUSH channel (not just DISCORD) also triggers the activity-delay check
+        // given — PUSH channel (not just DISCORD) also triggers the WS + activity-delay check
         NotificationOutbox outbox = buildMockPushOutbox(15L, "kc-push", 1);
 
         when(outboxService.claimPendingBatch(200)).thenReturn(1);
         when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(wsSessionTracker.isUserConnected("kc-push")).thenReturn(true);
         when(activityCache.hasRecentAccess("kc-push", 300)).thenReturn(true);
 
         // when
@@ -393,6 +403,7 @@ class OutboxSenderTaskTest {
 
         // then
         assertAll("PUSH channel: activity delay applies just like DISCORD:",
+                () -> verify(wsSessionTracker, times(1)).isUserConnected("kc-push"),
                 () -> verify(outboxService, times(1)).markForUserActive_Delayed(15L),
                 () -> verify(notificationService, never()).prepareAndSendOutboxNotification(any()),
                 () -> verify(outboxService, never()).markSent(anyLong())
@@ -401,11 +412,12 @@ class OutboxSenderTaskTest {
 
     @Test
     void sendOutboxNotifications_ExternalChannel_AttemptCount9_UserActive_Delays() {
-        // given — attemptCount=9 is still < 10, so delay still applies (boundary check)
+        // given — user WS-connected and active; attemptCount=9 is still < 10 (boundary: delay still applies)
         NotificationOutbox outbox = buildMockExternalOutbox(16L, "kc-3", 9);
 
         when(outboxService.claimPendingBatch(200)).thenReturn(1);
         when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(wsSessionTracker.isUserConnected("kc-3")).thenReturn(true);
         when(activityCache.hasRecentAccess("kc-3", 300)).thenReturn(true);
 
         // when
@@ -413,6 +425,7 @@ class OutboxSenderTaskTest {
 
         // then
         assertAll("attemptCount=9 (boundary: still < 10) → delay still applied:",
+                () -> verify(wsSessionTracker, times(1)).isUserConnected("kc-3"),
                 () -> verify(outboxService, times(1)).markForUserActive_Delayed(16L),
                 () -> verify(notificationService, never()).prepareAndSendOutboxNotification(any()),
                 () -> verify(outboxService, never()).markSent(anyLong())
@@ -422,11 +435,12 @@ class OutboxSenderTaskTest {
     @Test
     void sendOutboxNotifications_ExternalChannel_PreviouslyDeferred_UserNowInactive_Sends() {
         // given — outbox was deferred several times (attemptCount=6) while user was active;
-        //         user is now inactive (hasRecentAccess=false) → notification should proceed
+        //         user is still WS-connected but no longer recently active → notification proceeds
         NotificationOutbox outbox = buildMockExternalOutbox(17L, "kc-4", 6);
 
         when(outboxService.claimPendingBatch(200)).thenReturn(1);
         when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(wsSessionTracker.isUserConnected("kc-4")).thenReturn(true);
         when(activityCache.hasRecentAccess("kc-4", 300)).thenReturn(false);
         doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox);
 
@@ -438,6 +452,29 @@ class OutboxSenderTaskTest {
                 () -> verify(outboxService, never()).markForUserActive_Delayed(anyLong()),
                 () -> verify(notificationService, times(1)).prepareAndSendOutboxNotification(outbox),
                 () -> verify(outboxService, times(1)).markSent(17L)
+        );
+    }
+
+    @Test
+    void sendOutboxNotifications_ExternalChannel_UserNotConnectedToWs_SkipsActivityCheckAndSendsImmediately() {
+        // given — user has no active WS session; the inner activity check is never reached → sends immediately
+        NotificationOutbox outbox = buildMockExternalOutbox(20L, "kc-offline", 1);
+
+        when(outboxService.claimPendingBatch(200)).thenReturn(1);
+        when(outboxService.findStatus_Claimed(200)).thenReturn(List.of(outbox));
+        when(wsSessionTracker.isUserConnected("kc-offline")).thenReturn(false);
+        doNothing().when(notificationService).prepareAndSendOutboxNotification(outbox);
+
+        // when
+        outboxSenderTask.sendOutboxNotifications();
+
+        // then
+        assertAll("user not WS-connected: activity cache skipped, sends immediately:",
+                () -> verify(wsSessionTracker, times(1)).isUserConnected("kc-offline"),
+                () -> verify(activityCache, never()).hasRecentAccess(any(), anyInt()),
+                () -> verify(outboxService, never()).markForUserActive_Delayed(anyLong()),
+                () -> verify(notificationService, times(1)).prepareAndSendOutboxNotification(outbox),
+                () -> verify(outboxService, times(1)).markSent(20L)
         );
     }
 
