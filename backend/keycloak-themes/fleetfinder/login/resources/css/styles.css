@@ -142,7 +142,6 @@ body#keycloak-bg::after {
 }
 
 .pf-v5-c-form-control > input:focus {
-    color: transparent !important;
     outline: 1px solid rgba(188, 191, 200, 0.5);
 }
 
