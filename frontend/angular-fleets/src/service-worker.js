@@ -33,10 +33,10 @@ self.addEventListener('push', event => {
 });
 
 self.addEventListener('notificationclick', event => {
-  event.notification.close();
   if (event.action === 'view' || !event.action || event.action === '') {
     const url = event.notification.data?.url || self.location.origin
     event.waitUntil(clients.openWindow(url));
+    event.notification.close();
   }
 });
 
