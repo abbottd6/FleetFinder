@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.web.client.RestTemplate;
 
 import java.security.Security;
@@ -53,6 +54,10 @@ public class SecurityConfig {
                         .requestMatchers("/api/group-listings/create_listing").authenticated()
                         .requestMatchers("/api/group-listings").permitAll()
                         .requestMatchers("/api/modctrl/**").hasRole("mod")
+                        .requestMatchers("/actuator/prometheus").access(
+                                new WebExpressionAuthorizationManager("hasIpAddress('172.16.0.0/12')"))
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers("/actuator/**").denyAll()
                         .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
