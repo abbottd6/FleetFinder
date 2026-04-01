@@ -60,7 +60,6 @@ public class ChatServiceImpl implements ChatService {
     private final MessageRepository msgRepo;
     private final MessageConversionService msgConvSrv;
     private final ConversationRepository convRepo;
-    private final MessageRepository messageRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final ApplicationEventPublisher eventPublisher;
@@ -101,7 +100,7 @@ public class ChatServiceImpl implements ChatService {
                 })
                 .orElseGet(() -> generateNewConversation(user, dto, dmKey));
 
-        if(!(conv.getTitle().equals(dto.getTitle()))) {
+        if(!(Objects.equals(conv.getTitle(), dto.getTitle()))) {
             conv.setTitle(dto.getTitle());
         }
 
@@ -116,7 +115,7 @@ public class ChatServiceImpl implements ChatService {
         Conversation currentConv = convRepo.findById(dto.getConversationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Conversation not found"));
 
-        boolean isFirstMsg = (messageRepository.countMessagesByConversation_ConversationId(
+        boolean isFirstMsg = (msgRepo.countMessagesByConversation_ConversationId(
                 currentConv.getConversationId()) == 0);
 
         Map<MessageUserRoles, Participant> inferredParts = this.defineSenderAndRecipient(currentConv, user.getUserId());
@@ -142,14 +141,14 @@ public class ChatServiceImpl implements ChatService {
         Long repliedToId = dto.getRepliedToMsgId();
 
         if(repliedToId != null) {
-            repliedToMessage = messageRepository.findMessageByConversationIdAndMessageId(
+            repliedToMessage = msgRepo.findMessageByConversationIdAndMessageId(
                     currentConv.getConversationId(), repliedToId).orElseThrow(() -> new ResourceNotFoundException(
                             "repliedToMessage not found in this conversation."));
         }
 
         Message newMsg = new Message(currentConv, senderPart.getUser(), repliedToMessage, dto);
 
-        Message saved = messageRepository.save(newMsg);
+        Message saved = msgRepo.save(newMsg);
 
         currentConv.setLastMsg(newMsg);
         convRepo.save(currentConv);
