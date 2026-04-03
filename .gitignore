@@ -81,3 +81,4 @@ frontend/angular-fleets/.typings/
 # System files
 frontend/angular-fleets/.DS_Store
 frontend/angular-fleets.Thumbs.db
+.idea/db-forest-config.xml
