@@ -96,11 +96,12 @@ CREATE TABLE IF NOT EXISTS group_member
 );
 
 # labels for crew roles, can be associated with a user or NULL and accessible to all
-CREATE TABLE IF NOT EXISTS crew_role_type
+CREATE TABLE IF NOT EXISTS crew_role_classification
 (
-    id_role    BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    role_title VARCHAR(32) NOT NULL, #uq1
-    user_id    BIGINT      NULL, #uq1
+    id_role       BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    role_category VARCHAR(32) NOT NULL,
+    role_title    VARCHAR(32) NOT NULL, #uq1
+    user_id       BIGINT      NULL,     #uq1
 
     CONSTRAINT fk_role_type_references_user
         FOREIGN KEY (user_id) REFERENCES users (id_user)
@@ -132,7 +133,7 @@ CREATE TABLE IF NOT EXISTS mgmt_crew_position
             ON DELETE CASCADE,
 
     CONSTRAINT fk_crew_position_references_crew_role
-        FOREIGN KEY (position_role_id) REFERENCES crew_role_type (id_role)
+        FOREIGN KEY (position_role_id) REFERENCES crew_role_classification (id_role)
             ON DELETE SET NULL,
 
     # this must be handled in app so that whenever a member entity is deleted, it removes their position first
@@ -150,9 +151,11 @@ CREATE TABLE IF NOT EXISTS group_invite
     listing_id     BIGINT                                   NOT NULL, #ref
     sender_id      BIGINT                                   NOT NULL, #ref
     recipient_id   BIGINT                                   NOT NULL, #ref
-    invite_type    ENUM ('OFFER', 'REQUEST')                NOT NULL,
+    direction      ENUM ('OFFER', 'REQUEST')                NOT NULL,
+    roster_class   ENUM ('ACTIVE', 'WAITLIST')              NOT NULL,
     invite_status  ENUM ('PENDING', 'ACCEPTED', 'DECLINED') NOT NULL DEFAULT 'PENDING',
     invite_message VARCHAR(255)                             NULL,
+    expires_at     TIMESTAMP                                NULL,
     created_at     TIMESTAMP                                NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_group_invite_references_group_listing
@@ -168,5 +171,5 @@ CREATE TABLE IF NOT EXISTS group_invite
             ON DELETE CASCADE,
 
     CONSTRAINT uq_group_invite_type_sender_recipient_group
-        UNIQUE KEY (invite_type, sender_id, recipient_id, listing_id)
+        UNIQUE KEY (direction, sender_id, recipient_id, listing_id)
 );

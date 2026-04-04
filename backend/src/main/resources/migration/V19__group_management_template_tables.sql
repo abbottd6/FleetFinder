@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS crew_template
 (
     id_template       BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT,
     template_label    VARCHAR(64) NOT NULL,
-    template_category ENUM ('CAPITAL', 'LARGE', 'MEDIUM', 'SMALL', 'USER'),
+    template_category ENUM ('Capital', 'Large', 'Medium', 'Small', 'User'),
     owner_id          BIGINT      NULL,
     last_used_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
