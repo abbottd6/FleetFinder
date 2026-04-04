@@ -1,0 +1,43 @@
+CREATE TABLE IF NOT EXISTS crew_template
+(
+    id_template       BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    template_label    VARCHAR(64) NOT NULL,
+    template_category ENUM ('CAPITAL', 'LARGE', 'MEDIUM', 'SMALL', 'USER'),
+    owner_id          BIGINT      NULL,
+    last_used_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_crew_template_references_user
+        FOREIGN KEY (owner_id) REFERENCES users (id_user),
+
+    CONSTRAINT uq_user_template_label
+        UNIQUE KEY (owner_id, template_label)
+);
+
+CREATE TABLE IF NOT EXISTS crew_subgroup_template
+(
+    id_template_subgroup   BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    template_id            BIGINT       NOT NULL, #ref
+    parent_subgroup_id     BIGINT       NULL,     #ref
+    subgroup_label         VARCHAR(64)  NOT NULL,
+    subgroup_notes         VARCHAR(255) NULL,
+    intended_subgroup_size TINYINT      NULL,
+
+    CONSTRAINT fk_template_subgroup_references_template
+        FOREIGN KEY (template_id) REFERENCES crew_template (id_template)
+            ON DELETE CASCADE,
+    CONSTRAINT fk_template_subgroup_references_parent_subgroup
+        FOREIGN KEY (parent_subgroup_id) REFERENCES crew_subgroup_template (id_template_subgroup)
+            ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS crew_position_template
+(
+    id_template_position BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    subgroup_template_id BIGINT       NOT NULL, #ref
+    position_role_id     BIGINT       NULL,
+    position_notes       VARCHAR(255) NULL,
+
+    CONSTRAINT fk_position_template_references_subgroup_template
+        FOREIGN KEY (subgroup_template_id) REFERENCES crew_subgroup_template (id_template_subgroup)
+            ON DELETE CASCADE
+)

@@ -1,41 +1,48 @@
 ALTER TABLE group_listing
-    ADD COLUMN rsvp_required TINYINT NOT NULL DEFAULT 0,
+    ADD COLUMN rsvp_required  TINYINT   NOT NULL DEFAULT 0,
     ADD COLUMN rsvp_scheduled TIMESTAMP NULL;
 
 ALTER TABLE conversation
     ADD COLUMN listing_id BIGINT NULL;
 
 # listing_id here refers to group_listing -> id_group to reduce confusion about 'group' labels
-CREATE TABLE IF NOT EXISTS group_management_subgroup (
-    id_subgroup BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    listing_id BIGINT NOT NULL,
-    parent_subgroup_id BIGINT NULL,
-    subgroup_label VARCHAR(64) NULL,
-    subgroup_notes VARCHAR(255) NULL,
-    intended_subgroup_size TINYINT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS group_management_subgroup
+(
+    id_subgroup            BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    listing_id             BIGINT       NOT NULL,
+    parent_subgroup_id     BIGINT       NULL,
+    subgroup_label         VARCHAR(64)  NULL,
+    subgroup_notes         VARCHAR(255) NULL,
+    intended_subgroup_size TINYINT      NULL,
+    created_at             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_subgroup_references_group_listing
         FOREIGN KEY (listing_id) REFERENCES group_listing (id_group)
             ON DELETE CASCADE,
     CONSTRAINT fk_subgroup_references_parent_subgroup
         FOREIGN KEY (parent_subgroup_id) REFERENCES group_management_subgroup (id_subgroup)
+            ON DELETE SET NULL
 );
 
 # this is the actual class for the rank, it references assigned privilege to
 # define what privileges the rank has
-CREATE TABLE IF NOT EXISTS in_group_rank (
-    id_rank BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    listing_id BIGINT NULL,
-    rank_scope_id BIGINT NULL,
-    rank_title VARCHAR(32) NULL,
-    rank_notes VARCHAR(64) NULL,
-    created_by BIGINT NOT NULL,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CREATE TABLE IF NOT EXISTS in_group_rank
+(
+    id_rank       BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    listing_id    BIGINT      NULL,
+    rank_scope_id BIGINT      NULL,
+    rank_title    VARCHAR(32) NULL,
+    rank_notes    VARCHAR(64) NULL,
+    created_by_id BIGINT      NULL,
+    created_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_in_grp_rank_references_listing_id
         FOREIGN KEY (listing_id) REFERENCES group_listing (id_group)
             ON DELETE CASCADE,
+
+    CONSTRAINT fk_in_grp_rank_references_creator
+        FOREIGN KEY (created_by_id) REFERENCES users (id_user)
+            ON DELETE SET NULL,
 
     CONSTRAINT fk_in_group_rank_scope_references_grp_mgmt_subgrp
         FOREIGN KEY (rank_scope_id) REFERENCES group_management_subgroup (id_subgroup)
@@ -44,47 +51,122 @@ CREATE TABLE IF NOT EXISTS in_group_rank (
 
 
 # reference table for privilege actions/types
-CREATE TABLE IF NOT EXISTS rank_privilege_type (
+CREATE TABLE IF NOT EXISTS rank_privilege_type
+(
     id_privilege VARCHAR(32) NOT NULL PRIMARY KEY
 );
 
 # privilege actions/types assigned to a rank
-CREATE TABLE IF NOT EXISTS group_rank_assigned_privilege (
-    id_rank BIGINT NOT NULL,
-    id_privilege VARCHAR(32) NOT NULL,
+CREATE TABLE IF NOT EXISTS group_rank_assigned_privilege
+(
+    rank_id      BIGINT      NOT NULL,
+    privilege_id VARCHAR(32) NOT NULL,
 
     CONSTRAINT assigned_priv_primary_key
-        PRIMARY KEY (id_rank, id_privilege),
+        PRIMARY KEY (rank_id, privilege_id),
 
     CONSTRAINT fk_assigned_priv_references_rank_id
-        FOREIGN KEY (id_rank) REFERENCES in_group_rank (id_rank),
+        FOREIGN KEY (rank_id) REFERENCES in_group_rank (id_rank)
+            ON DELETE CASCADE,
 
-    CONSTRAINT fk_assinged_privilege_references_rank_priv_type
-        FOREIGN KEY (id_privilege) REFERENCES rank_privilege_type (id_privilege)
+    CONSTRAINT fk_assigned_privilege_references_rank_priv_type
+        FOREIGN KEY (privilege_id) REFERENCES rank_privilege_type (id_privilege)
+            ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS group_member (
-    listing_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
-    member_status ENUM('ACTIVE', 'WAITLIST'),
-    subgroup_id BIGINT NULL,
-    in_group_rank_id BIGINT NULL,
-    has_comms TINYINT NOT NULL DEFAULT 0,
-    member_note VARCHAR(255) NULL,
-    has_ext_notes TINYINT NOT NULL DEFAULT 0,
-    rsvp_status ENUM('PENDING', 'CONFIRMED', 'DECLINED'),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+# members who have accepted an invite to the group
+CREATE TABLE IF NOT EXISTS group_member
+(
+    listing_id       BIGINT       NOT NULL,
+    user_id          BIGINT       NOT NULL,
+    member_status    ENUM ('ACTIVE', 'WAITLIST'),
+    in_group_rank_id BIGINT       NULL,
+    has_comms        TINYINT      NOT NULL DEFAULT 0,
+    member_note      VARCHAR(255) NULL,
+    has_ext_notes    TINYINT      NOT NULL DEFAULT 0,
+    rsvp_status      ENUM ('PENDING', 'CONFIRMED', 'DECLINED'),
+    created_at       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT pk_group_member
         PRIMARY KEY (listing_id, user_id),
 
-    CONSTRAINT fk_grp_member_references_subgroup
-        FOREIGN KEY (subgroup_id) REFERENCES group_management_subgroup (id_subgroup),
-
     CONSTRAINT fk_grp_member_references_in_group_rank
         FOREIGN KEY (in_group_rank_id) REFERENCES in_group_rank (id_rank)
+            ON DELETE SET NULL
 );
 
-CREATE TABLE IF NOT EXISTS subgroup_role (
-    id_role
-)
+# labels for crew roles, can be associated with a user or NULL and accessible to all
+CREATE TABLE IF NOT EXISTS crew_role_type
+(
+    id_role    BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    role_title VARCHAR(32) NOT NULL, #uq1
+    user_id    BIGINT      NULL, #uq1
+
+    CONSTRAINT fk_role_type_references_user
+        FOREIGN KEY (user_id) REFERENCES users (id_user)
+            ON DELETE CASCADE,
+
+    CONSTRAINT uq_role_type_for_role_title_and_user
+        UNIQUE KEY (role_title, user_id)
+);
+
+# crew slot within a subgroup
+CREATE TABLE IF NOT EXISTS mgmt_crew_position
+(
+    id_position        BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    listing_id         BIGINT       NOT NULL, #ref #uq1
+    subgroup_id        BIGINT       NOT NULL, #ref
+    position_role_id   BIGINT       NULL, #ref
+    position_note      VARCHAR(128) NULL,
+    assigned_member_id BIGINT       NULL,     #ref #uq1
+    filled_at          TIMESTAMP    NULL,
+    vacated_at         TIMESTAMP    NULL,
+    created_at         TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_crew_position_references_listing
+        FOREIGN KEY (listing_id) REFERENCES group_listing (id_group)
+            ON DELETE CASCADE,
+
+    CONSTRAINT fk_crew_position_references_mgmt_subgroup
+        FOREIGN KEY (subgroup_id) REFERENCES group_management_subgroup (id_subgroup)
+            ON DELETE CASCADE,
+
+    CONSTRAINT fk_crew_position_references_crew_role
+        FOREIGN KEY (position_role_id) REFERENCES crew_role_type (id_role)
+            ON DELETE SET NULL,
+
+    # this must be handled in app so that whenever a member entity is deleted, it removes their position first
+    CONSTRAINT fk_crew_position_may_reference_group_member
+        FOREIGN KEY (listing_id, assigned_member_id) REFERENCES group_member (listing_id, user_id)
+            ON DELETE CASCADE,
+
+    CONSTRAINT uq_group_member_to_crew_position
+        UNIQUE KEY (listing_id, assigned_member_id)
+);
+
+CREATE TABLE IF NOT EXISTS group_invite
+(
+    id_invite      BIGINT                                   NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    listing_id     BIGINT                                   NOT NULL, #ref
+    sender_id      BIGINT                                   NOT NULL, #ref
+    recipient_id   BIGINT                                   NOT NULL, #ref
+    invite_type    ENUM ('OFFER', 'REQUEST')                NOT NULL,
+    invite_status  ENUM ('PENDING', 'ACCEPTED', 'DECLINED') NOT NULL DEFAULT 'PENDING',
+    invite_message VARCHAR(255)                             NULL,
+    created_at     TIMESTAMP                                NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_group_invite_references_group_listing
+        FOREIGN KEY (listing_id) REFERENCES group_listing (id_group)
+            ON DELETE CASCADE,
+
+    CONSTRAINT fk_group_invite_references_sender
+        FOREIGN KEY (sender_id) REFERENCES users (id_user)
+            ON DELETE CASCADE,
+
+    CONSTRAINT fk_group_invite_references_recipient
+        FOREIGN KEY (recipient_id) REFERENCES users (id_user)
+            ON DELETE CASCADE,
+
+    CONSTRAINT uq_group_invite_type_sender_recipient_group
+        UNIQUE KEY (invite_type, sender_id, recipient_id, listing_id)
+);
