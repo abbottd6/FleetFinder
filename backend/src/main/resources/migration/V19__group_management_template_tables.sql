@@ -34,10 +34,14 @@ CREATE TABLE IF NOT EXISTS crew_position_template
 (
     id_template_position BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
     subgroup_template_id BIGINT       NOT NULL, #ref
-    position_role_id     BIGINT       NULL,
+    position_role_id     BIGINT       NULL, #ref
     position_notes       VARCHAR(255) NULL,
 
     CONSTRAINT fk_position_template_references_subgroup_template
         FOREIGN KEY (subgroup_template_id) REFERENCES crew_subgroup_template (id_template_subgroup)
-            ON DELETE CASCADE
+            ON DELETE CASCADE,
+
+    CONSTRAINT fk_position_template_references_crew_role_classification
+        FOREIGN KEY (position_role_id) REFERENCES crew_role_classification (id_role)
+            ON DELETE SET NULL
 )
