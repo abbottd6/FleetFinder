@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.entities.chat;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.chat.FindOrStartNewConversationDto;
+import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.ConversationType;
 import jakarta.persistence.CascadeType;
@@ -81,6 +82,10 @@ public class Conversation {
     // hash of minUserId:maxUserId. null for group chats.
     @Column(name="dm_key", length = 64, unique = true, nullable = true)
     private String dmKey;
+
+    @OneToOne
+    @JoinColumn(name="listing_id", nullable = true)
+    private GroupListing groupListing;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy="conversation", fetch = FetchType.LAZY)
     @JsonManagedReference

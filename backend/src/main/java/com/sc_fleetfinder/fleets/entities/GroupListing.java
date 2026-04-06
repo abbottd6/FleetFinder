@@ -164,4 +164,11 @@ public class GroupListing {
     @Enumerated(EnumType.STRING)
     @Column(name="vis_status", nullable = false)
     private VisStatus visStatus = VisStatus.FRESH;
+
+    @Column(name="rsvp_required", nullable = false)
+    private Boolean rsvpRequired = false;
+
+    @Column(name="rsvp_scheduled", nullable = true)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant rsvpScheduled;
 }

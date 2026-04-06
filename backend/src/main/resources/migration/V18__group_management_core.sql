@@ -3,7 +3,10 @@ ALTER TABLE group_listing
     ADD COLUMN rsvp_scheduled TIMESTAMP NULL;
 
 ALTER TABLE conversation
-    ADD COLUMN listing_id BIGINT NULL;
+    ADD COLUMN listing_id BIGINT NULL,
+    ADD CONSTRAINT fk_conv_references_group_listing
+        FOREIGN KEY (listing_id) REFERENCES group_listing (id_group)
+            ON DELETE SET NULL;
 
 # listing_id here refers to group_listing -> id_group to reduce confusion about 'group' labels
 CREATE TABLE IF NOT EXISTS group_management_subgroup

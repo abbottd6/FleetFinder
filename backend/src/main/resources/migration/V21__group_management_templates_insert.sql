@@ -199,84 +199,84 @@ SET @sParent = (SELECT id_template_subgroup FROM crew_subgroup_template WHERE su
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @idrisParent
-WHERE template_id = @idris && subgroup_label <> 'Idris';
+WHERE template_id = @idris AND subgroup_label <> 'Idris';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @polarisParent
-WHERE template_id = @polaris && subgroup_label <> 'Polaris';
+WHERE template_id = @polaris AND subgroup_label <> 'Polaris';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @gencapParent
-WHERE template_id = @gencap && subgroup_label <> 'Generic Capital';
+WHERE template_id = @gencap AND subgroup_label <> 'Generic Capital';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @hhParent
-WHERE template_id = @hh && subgroup_label <> 'Hammerhead';
+WHERE template_id = @hh AND subgroup_label <> 'Hammerhead';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @a2Parent
-WHERE template_id = @a2 && subgroup_label <> 'A2 Hercules';
+WHERE template_id = @a2 AND subgroup_label <> 'A2 Hercules';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @geminiParent
-WHERE template_id = @gemini && subgroup_label <> 'Starfarer/Gemini';
+WHERE template_id = @gemini AND subgroup_label <> 'Starfarer/Gemini';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @tacParent
-WHERE template_id = @tac && subgroup_label <> 'Starlancer TAC';
+WHERE template_id = @tac AND subgroup_label <> 'Starlancer TAC';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @890Parent
-WHERE template_id = @890 && subgroup_label <> '890 Jump';
+WHERE template_id = @890 AND subgroup_label <> '890 Jump';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @retParent
-WHERE template_id = @ret && subgroup_label <> 'Retaliator';
+WHERE template_id = @ret AND subgroup_label <> 'Retaliator';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @persParent
-WHERE template_id = @seus && subgroup_label <> 'Perseus';
+WHERE template_id = @seus AND subgroup_label <> 'Perseus';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @carrParent
-WHERE template_id = @carr && subgroup_label <> 'Carrack';
+WHERE template_id = @carr AND subgroup_label <> 'Carrack';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @recParent
-WHERE template_id = @claimer && subgroup_label <> 'Reclaimer';
+WHERE template_id = @claimer AND subgroup_label <> 'Reclaimer';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @lParent
-WHERE template_id = @genl && subgroup_label <> 'Generic Large';
+WHERE template_id = @genl AND subgroup_label <> 'Generic Large';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @valkParent
-WHERE template_id = @valk && subgroup_label <> 'Valkyrie';
+WHERE template_id = @valk AND subgroup_label <> 'Valkyrie';
 
-SET @ga = (SELECT id_template_subgroup FROM crew_subgroup_template WHERE subgroup_label = 'Ground Assault' && template_id = @valk);
+SET @ga = (SELECT id_template_subgroup FROM crew_subgroup_template WHERE subgroup_label = 'Ground Assault' AND template_id = @valk);
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @ga
-WHERE template_id = @valk && subgroup_label = 'Medical';
+WHERE template_id = @valk AND subgroup_label = 'Medical';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @600Parent
-WHERE template_id = @600 && subgroup_label <> '600i';
+WHERE template_id = @600 AND subgroup_label <> '600i';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @mParent
-WHERE template_id = @genm && subgroup_label <> 'Generic Medium';
+WHERE template_id = @genm AND subgroup_label <> 'Generic Medium';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @msrParent
-WHERE template_id = @msr && subgroup_label <> 'Mercury Star Runner';
+WHERE template_id = @msr AND subgroup_label <> 'Mercury Star Runner';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @redeemerParent
-WHERE template_id = @redeemer && subgroup_label <> 'Redeemer';
+WHERE template_id = @redeemer AND subgroup_label <> 'Redeemer';
 
 UPDATE crew_subgroup_template
 SET parent_subgroup_id = @moleParent
-WHERE template_id = @mole && subgroup_label <> 'MOLE';
+WHERE template_id = @mole AND subgroup_label <> 'MOLE';
 
 # Role id mappings ----------------------------------------------------------------------------------------
 
@@ -312,22 +312,22 @@ SET @logisticsM = (SELECT id_role FROM crew_role_classification WHERE role_title
 # @idris is id_template from crew template OR template_id from crew_subgroup_template
 SET @idrisBridge = (SELECT id_template_subgroup
                     FROM crew_subgroup_template
-                    WHERE template_id = @idris && subgroup_label = 'Bridge');
+                    WHERE template_id = @idris AND subgroup_label = 'Bridge');
 SET @idrisGun = (SELECT id_template_subgroup
                  FROM crew_subgroup_template
-                 WHERE template_id = @idris && subgroup_label = 'Gunnery');
+                 WHERE template_id = @idris AND subgroup_label = 'Gunnery');
 SET @idrisEng = (SELECT id_template_subgroup
                  FROM crew_subgroup_template
-                 WHERE template_id = @idris && subgroup_label = 'Engineering');
+                 WHERE template_id = @idris AND subgroup_label = 'Engineering');
 SET @idrisMed = (SELECT id_template_subgroup
                  FROM crew_subgroup_template
-                 WHERE template_id = @idris && subgroup_label = 'Medical');
+                 WHERE template_id = @idris AND subgroup_label = 'Medical');
 SET @idrisFighterBay = (SELECT id_template_subgroup
                       FROM crew_subgroup_template
-                      WHERE template_id = @idris && subgroup_label = 'Fighter Bay');
+                      WHERE template_id = @idris AND subgroup_label = 'Fighter Bay');
 SET @idrisMarine = (SELECT id_template_subgroup
                     FROM crew_subgroup_template
-                    WHERE template_id = @idris && subgroup_label = 'Marine Detachment');
+                    WHERE template_id = @idris AND subgroup_label = 'Marine Detachment');
 
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
@@ -373,22 +373,22 @@ VALUES (@idrisBridge, @shipCpt),
 
 SET @polarisBridge = (SELECT id_template_subgroup
                       FROM crew_subgroup_template
-                      WHERE template_id = @polaris && subgroup_label = 'Bridge');
+                      WHERE template_id = @polaris AND subgroup_label = 'Bridge');
 SET @polarisGun = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @polaris && subgroup_label = 'Gunnery');
+                   WHERE template_id = @polaris AND subgroup_label = 'Gunnery');
 SET @polarisEng = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @polaris && subgroup_label = 'Engineering');
+                   WHERE template_id = @polaris AND subgroup_label = 'Engineering');
 SET @polarisWeapSt = (SELECT id_template_subgroup
                       FROM crew_subgroup_template
-                      WHERE template_id = @polaris && subgroup_label = 'Weapons Station');
+                      WHERE template_id = @polaris AND subgroup_label = 'Weapons Station');
 SET @polarisMedical = (SELECT id_template_subgroup
                        FROM crew_subgroup_template
-                       WHERE template_id = @polaris && subgroup_label = 'Medical');
+                       WHERE template_id = @polaris AND subgroup_label = 'Medical');
 SET @polarisFighterBay = (SELECT id_template_subgroup
                           FROM crew_subgroup_template
-                          WHERE template_id = @polaris && subgroup_label = 'Fighter Bay');
+                          WHERE template_id = @polaris AND subgroup_label = 'Fighter Bay');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES (@polarisBridge, @shipCpt),
@@ -420,25 +420,25 @@ VALUES (@polarisBridge, @shipCpt),
 
 SET @gencapBridge = (SELECT id_template_subgroup
                      FROM crew_subgroup_template
-                     WHERE template_id = @gencap && subgroup_label = 'Bridge');
+                     WHERE template_id = @gencap AND subgroup_label = 'Bridge');
 SET @gencapGun = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @gencap && subgroup_label = 'Gunnery');
+                  WHERE template_id = @gencap AND subgroup_label = 'Gunnery');
 SET @gencapEng = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @gencap && subgroup_label = 'Engineering');
+                  WHERE template_id = @gencap AND subgroup_label = 'Engineering');
 SET @gencapMed = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @gencap && subgroup_label = 'Medical');
+                  WHERE template_id = @gencap AND subgroup_label = 'Medical');
 SET @gencapUtil = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @gencap && subgroup_label = 'Utility');
+                   WHERE template_id = @gencap AND subgroup_label = 'Utility');
 SET @gencapFighterBay = (SELECT id_template_subgroup
                          FROM crew_subgroup_template
-                         WHERE template_id = @gencap && subgroup_label = 'Fighter Bay');
+                         WHERE template_id = @gencap AND subgroup_label = 'Fighter Bay');
 SET @gencapMarine = (SELECT id_template_subgroup
                      FROM crew_subgroup_template
-                     WHERE template_id = @gencap && subgroup_label = 'Marine Detachment');
+                     WHERE template_id = @gencap AND subgroup_label = 'Marine Detachment');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@gencapBridge, @pilot),
@@ -470,13 +470,13 @@ VALUES  (@gencapBridge, @pilot),
 
 SET @hhBridge = (SELECT id_template_subgroup
                  FROM crew_subgroup_template
-                 WHERE template_id = @hh && subgroup_label = 'Bridge');
+                 WHERE template_id = @hh AND subgroup_label = 'Bridge');
 SET @hhGun = (SELECT id_template_subgroup
               FROM crew_subgroup_template
-              WHERE template_id = @hh && subgroup_label = 'Gunnery');
+              WHERE template_id = @hh AND subgroup_label = 'Gunnery');
 SET @hhEng = (SELECT id_template_subgroup
               FROM crew_subgroup_template
-              WHERE template_id = @hh && subgroup_label = 'Engineering');
+              WHERE template_id = @hh AND subgroup_label = 'Engineering');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@hhBridge, @shipCpt),
@@ -501,14 +501,14 @@ VALUES  (@hhBridge, @shipCpt),
 
 SET @a2Bridge = (SELECT id_template_subgroup
                  FROM crew_subgroup_template
-                 WHERE template_id = @a2 && subgroup_label = 'Bridge');
+                 WHERE template_id = @a2 AND subgroup_label = 'Bridge');
 
 SET @a2Eng = (SELECT id_template_subgroup
               FROM crew_subgroup_template
-              WHERE template_id = @a2 && subgroup_label = 'Engineering');
+              WHERE template_id = @a2 AND subgroup_label = 'Engineering');
 SET @a2Grnd = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @a2 && subgroup_label = 'Ground Assault');
+               WHERE template_id = @a2 AND subgroup_label = 'Ground Assault');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@a2Bridge, @pilot),
@@ -531,16 +531,16 @@ VALUES  (@a2Bridge, @pilot),
 
 SET @geminiBridge = (SELECT id_template_subgroup
                      FROM crew_subgroup_template
-                     WHERE template_id = @gemini && subgroup_label = 'Bridge');
+                     WHERE template_id = @gemini AND subgroup_label = 'Bridge');
 SET @geminiGun = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @gemini && subgroup_label = 'Gunnery');
+                  WHERE template_id = @gemini AND subgroup_label = 'Gunnery');
 SET @geminiFuel = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @gemini && subgroup_label = 'Fuel Operations');
+                   WHERE template_id = @gemini AND subgroup_label = 'Fuel Operations');
 SET @geminiEng = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @gemini && subgroup_label = 'Engineering');
+                  WHERE template_id = @gemini AND subgroup_label = 'Engineering');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@geminiBridge, @pilot),
@@ -563,16 +563,16 @@ VALUES  (@geminiBridge, @pilot),
 
 SET @tacBridge = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @tac && subgroup_label = 'Bridge');
+                  WHERE template_id = @tac AND subgroup_label = 'Bridge');
 SET @tacGun = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @tac && subgroup_label = 'Gunnery');
+               WHERE template_id = @tac AND subgroup_label = 'Gunnery');
 SET @tacMed = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @tac && subgroup_label = 'Medical');
+               WHERE template_id = @tac AND subgroup_label = 'Medical');
 SET @tacEng = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @tac && subgroup_label = 'Engineering');
+               WHERE template_id = @tac AND subgroup_label = 'Engineering');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@tacBridge, @pilot),
@@ -596,19 +596,19 @@ VALUES  (@tacBridge, @pilot),
 
 SET @890Bridge = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @890 && subgroup_label = 'Bridge');
+                  WHERE template_id = @890 AND subgroup_label = 'Bridge');
 SET @890Gun = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @890 && subgroup_label = 'Gunnery');
+               WHERE template_id = @890 AND subgroup_label = 'Gunnery');
 SET @890Med = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @890 && subgroup_label = 'Medical');
+               WHERE template_id = @890 AND subgroup_label = 'Medical');
 SET @890Eng = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @890 && subgroup_label = 'Engineering');
+               WHERE template_id = @890 AND subgroup_label = 'Engineering');
 SET @890Sec = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @890 && subgroup_label = 'Security');
+               WHERE template_id = @890 AND subgroup_label = 'Security');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@890Bridge, @pilot),
@@ -631,16 +631,16 @@ VALUES  (@890Bridge, @pilot),
 
 SET @retBridge = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @ret && subgroup_label = 'Bridge');
+                  WHERE template_id = @ret AND subgroup_label = 'Bridge');
 SET @retGun = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @ret && subgroup_label = 'Gunnery');
+                  WHERE template_id = @ret AND subgroup_label = 'Gunnery');
 SET @retEng = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @ret && subgroup_label = 'Engineering');
+                  WHERE template_id = @ret AND subgroup_label = 'Engineering');
 SET @retWeapSt = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @ret && subgroup_label = 'Weapons Station');
+                  WHERE template_id = @ret AND subgroup_label = 'Weapons Station');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@retBridge, @pilot),
@@ -664,16 +664,16 @@ VALUES  (@retBridge, @pilot),
 
 SET @perseusBridge = (SELECT id_template_subgroup
                       FROM crew_subgroup_template
-                      WHERE template_id = @seus && subgroup_label = 'Bridge');
+                      WHERE template_id = @seus AND subgroup_label = 'Bridge');
 SET @perseusGun = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @seus && subgroup_label = 'Gunnery');
+                   WHERE template_id = @seus AND subgroup_label = 'Gunnery');
 SET @perseusEng = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @seus && subgroup_label = 'Engineering');
+                   WHERE template_id = @seus AND subgroup_label = 'Engineering');
 SET @perseusWeapSt = (SELECT id_template_subgroup
                       FROM crew_subgroup_template
-                      WHERE template_id = @seus && subgroup_label = 'Weapons Station');
+                      WHERE template_id = @seus AND subgroup_label = 'Weapons Station');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@perseusBridge, @pilot),
@@ -695,16 +695,16 @@ VALUES  (@perseusBridge, @pilot),
 
 SET @carrBridge = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @carr && subgroup_label = 'Bridge');
+                   WHERE template_id = @carr AND subgroup_label = 'Bridge');
 SET @carrGun = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @carr && subgroup_label = 'Gunnery');
+                WHERE template_id = @carr AND subgroup_label = 'Gunnery');
 SET @carrSci = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @carr && subgroup_label = 'Science & Exploration');
+                WHERE template_id = @carr AND subgroup_label = 'Science & Exploration');
 SET @carrEng = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @carr && subgroup_label = 'Engineering');
+                WHERE template_id = @carr AND subgroup_label = 'Engineering');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@carrBridge, @pilot),
@@ -727,16 +727,16 @@ VALUES  (@carrBridge, @pilot),
 
 SET @claimerBridge = (SELECT id_template_subgroup
                       FROM crew_subgroup_template
-                      WHERE template_id = @claimer && subgroup_label = 'Bridge');
+                      WHERE template_id = @claimer AND subgroup_label = 'Bridge');
 SET @claimerClaw = (SELECT id_template_subgroup
                     FROM crew_subgroup_template
-                    WHERE template_id = @claimer && subgroup_label = 'Claw Operator');
+                    WHERE template_id = @claimer AND subgroup_label = 'Claw Operator');
 SET @claimerSalv = (SELECT id_template_subgroup
                     FROM crew_subgroup_template
-                    WHERE template_id = @claimer && subgroup_label = 'Salvage Operator');
+                    WHERE template_id = @claimer AND subgroup_label = 'Salvage Operator');
 SET @claimerCargo = (SELECT id_template_subgroup
                      FROM crew_subgroup_template
-                     WHERE template_id = @claimer && subgroup_label = 'Cargo');
+                     WHERE template_id = @claimer AND subgroup_label = 'Cargo');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@claimerBridge, @pilot),
@@ -756,16 +756,16 @@ VALUES  (@claimerBridge, @pilot),
 
 SET @genlBridge = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @genl && subgroup_label = 'Bridge');
+                   WHERE template_id = @genl AND subgroup_label = 'Bridge');
 SET @genlGun = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @genl && subgroup_label = 'Gunnery');
+                WHERE template_id = @genl AND subgroup_label = 'Gunnery');
 SET @genlEng = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @genl && subgroup_label = 'Engineering');
+                WHERE template_id = @genl AND subgroup_label = 'Engineering');
 SET @genlUtil = (SELECT id_template_subgroup
                  FROM crew_subgroup_template
-                 WHERE template_id = @genl && subgroup_label = 'Utility');
+                 WHERE template_id = @genl AND subgroup_label = 'Utility');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@genlBridge, @pilot),
@@ -789,19 +789,19 @@ VALUES  (@genlBridge, @pilot),
 
 SET @valkBridge = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @valk && subgroup_label = 'Bridge');
+                   WHERE template_id = @valk AND subgroup_label = 'Bridge');
 SET @valkGun = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @valk && subgroup_label = 'Gunnery');
+                WHERE template_id = @valk AND subgroup_label = 'Gunnery');
 SET @valkEng = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @valk && subgroup_label = 'Engineering');
+                WHERE template_id = @valk AND subgroup_label = 'Engineering');
 SET @valkGrnd = (SELECT id_template_subgroup
                  FROM crew_subgroup_template
-                 WHERE template_id = @valk && subgroup_label = 'Ground Assault');
+                 WHERE template_id = @valk AND subgroup_label = 'Ground Assault');
 SET @valkMed = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @valk && subgroup_label = 'Medical');
+                WHERE template_id = @valk AND subgroup_label = 'Medical');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@valkBridge, @pilot),
@@ -831,13 +831,13 @@ VALUES  (@valkBridge, @pilot),
 
 SET @600Bridge = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @600 && subgroup_label = 'Bridge');
+                  WHERE template_id = @600 AND subgroup_label = 'Bridge');
 SET @600Nav = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @600 && subgroup_label = 'Scanning/Navigation');
+               WHERE template_id = @600 AND subgroup_label = 'Scanning/Navigation');
 SET @600Sec = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @600 && subgroup_label = 'Security');
+               WHERE template_id = @600 AND subgroup_label = 'Security');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@600Bridge, @pilot),
@@ -856,13 +856,13 @@ VALUES  (@600Bridge, @pilot),
 
 SET @genmBridge = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @genm && subgroup_label = 'Bridge');
+                   WHERE template_id = @genm AND subgroup_label = 'Bridge');
 SET @genmGun = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @genm && subgroup_label = 'Gunnery');
+                WHERE template_id = @genm AND subgroup_label = 'Gunnery');
 SET @genmUtil = (SELECT id_template_subgroup
                  FROM crew_subgroup_template
-                 WHERE template_id = @genm && subgroup_label = 'Utility');
+                 WHERE template_id = @genm AND subgroup_label = 'Utility');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@genmBridge, @pilot),
@@ -881,13 +881,13 @@ VALUES  (@genmBridge, @pilot),
 
 SET @msrBridge = (SELECT id_template_subgroup
                   FROM crew_subgroup_template
-                  WHERE template_id = @msr && subgroup_label = 'Bridge');
+                  WHERE template_id = @msr AND subgroup_label = 'Bridge');
 SET @msrScan = (SELECT id_template_subgroup
                 FROM crew_subgroup_template
-                WHERE template_id = @msr && subgroup_label = 'Scanning/Data');
+                WHERE template_id = @msr AND subgroup_label = 'Scanning/Data');
 SET @msrGun = (SELECT id_template_subgroup
                FROM crew_subgroup_template
-               WHERE template_id = @msr && subgroup_label = 'Gunnery');
+               WHERE template_id = @msr AND subgroup_label = 'Gunnery');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@msrBridge, @pilot),
@@ -905,10 +905,10 @@ VALUES  (@msrBridge, @pilot),
 
 SET @redeemBridge = (SELECT id_template_subgroup
                      FROM crew_subgroup_template
-                     WHERE template_id = @redeemer && subgroup_label = 'Bridge');
+                     WHERE template_id = @redeemer AND subgroup_label = 'Bridge');
 SET @redeemGun = (SELECT id_template_subgroup
                      FROM crew_subgroup_template
-                     WHERE template_id = @redeemer && subgroup_label = 'Gunnery');
+                     WHERE template_id = @redeemer AND subgroup_label = 'Gunnery');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@redeemBridge, @pilot),
@@ -926,13 +926,13 @@ VALUES  (@redeemBridge, @pilot),
 
 SET @moleBridge = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @mole && subgroup_label = 'Bridge');
+                   WHERE template_id = @mole AND subgroup_label = 'Bridge');
 SET @moleMine = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @mole && subgroup_label = 'Mining Operators');
+                   WHERE template_id = @mole AND subgroup_label = 'Mining Operators');
 SET @moleUtil = (SELECT id_template_subgroup
                    FROM crew_subgroup_template
-                   WHERE template_id = @mole && subgroup_label = 'Utility');
+                   WHERE template_id = @mole AND subgroup_label = 'Utility');
 
 INSERT INTO crew_position_template (subgroup_template_id, position_role_id)
 VALUES  (@moleBridge, @pilot),
