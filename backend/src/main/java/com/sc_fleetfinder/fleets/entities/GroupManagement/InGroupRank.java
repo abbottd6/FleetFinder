@@ -34,11 +34,10 @@ public class InGroupRank {
     @JoinColumn(name="rank_scope_id", referencedColumnName="id_subgroup")
     private GroupManagementSubgroup rankSubgroupScope;
 
-    @Column(name="rank_title", nullable = false)
-    @NotNull(message="InGroupRank entity field 'rankTitle' cannot be null.")
+    @Column(name="rank_title", nullable = false, columnDefinition = "VARCHAR(32) NOT NULL")
     private String rankTitle;
 
-    @Column(name="rank_notes", nullable = true)
+    @Column(name="rank_notes", nullable = true, columnDefinition = "VARCHAR(64) NULL")
     private String rankNotes;
 
     @ManyToOne

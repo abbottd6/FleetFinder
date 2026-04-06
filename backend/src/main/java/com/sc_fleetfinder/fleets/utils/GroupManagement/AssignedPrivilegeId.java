@@ -1,6 +1,8 @@
 package com.sc_fleetfinder.fleets.utils.GroupManagement;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +19,8 @@ import java.util.Objects;
 public class AssignedPrivilegeId implements Serializable {
 
     private Long rankId;
+
+    @Enumerated(EnumType.STRING)
     private RankPrivilegeOptions privilegeType;
 
     @Override

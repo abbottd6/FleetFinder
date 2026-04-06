@@ -18,12 +18,12 @@ public class GroupRankAssignedPrivilege {
     @EmbeddedId
     private AssignedPrivilegeId rankAssignedPrivilegeId;
 
-    @MapsId
+    @MapsId("rankId")
     @ManyToOne
     @JoinColumn(name="rank_id", referencedColumnName="id_rank")
     private InGroupRank assignedToRank;
 
-    @MapsId
+    @MapsId("privilegeType")
     @ManyToOne
     @JoinColumn(name="privilege_id", referencedColumnName="id_privilege")
     private RankPrivilegeType privilegeType;

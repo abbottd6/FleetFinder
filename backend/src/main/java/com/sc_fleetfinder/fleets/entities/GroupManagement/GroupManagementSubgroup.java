@@ -34,7 +34,7 @@ public class GroupManagementSubgroup {
     @JoinColumn(name="parent_subgroup_id", referencedColumnName="id_subgroup", nullable = true)
     private GroupManagementSubgroup parentSubgroup;
 
-    @Column(name="subgroup_label", nullable = false)
+    @Column(name="subgroup_label", nullable = false, columnDefinition="VARCHAR(64) NULL")
     @NotNull(message="GroupManagementSubgroup entity field subgroupLabel cannot be null.")
     private String subgroupLabel;
 

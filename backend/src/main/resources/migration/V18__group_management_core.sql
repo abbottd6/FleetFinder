@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS in_group_rank
     id_rank       BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT,
     listing_id    BIGINT      NULL,
     rank_scope_id BIGINT      NULL,
-    rank_title    VARCHAR(32) NULL,
+    rank_title    VARCHAR(32) NOT NULL,
     rank_notes    VARCHAR(64) NULL,
     created_by_id BIGINT      NULL,
     created_at    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -150,16 +150,16 @@ CREATE TABLE IF NOT EXISTS mgmt_crew_position
 
 CREATE TABLE IF NOT EXISTS group_invite
 (
-    id_invite      BIGINT                                   NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    listing_id     BIGINT                                   NOT NULL, #ref
-    sender_id      BIGINT                                   NOT NULL, #ref
-    recipient_id   BIGINT                                   NOT NULL, #ref
-    direction      ENUM ('OFFER', 'REQUEST')                NOT NULL,
-    roster_class   ENUM ('ACTIVE', 'WAITLIST')              NOT NULL,
-    invite_status  ENUM ('PENDING', 'ACCEPTED', 'DECLINED') NOT NULL DEFAULT 'PENDING',
-    invite_message VARCHAR(255)                             NULL,
-    expires_at     TIMESTAMP                                NULL,
-    created_at     TIMESTAMP                                NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_invite      BIGINT                                                NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    listing_id     BIGINT                                                NOT NULL, #ref
+    sender_id      BIGINT                                                NOT NULL, #ref
+    recipient_id   BIGINT                                                NOT NULL, #ref
+    direction      ENUM ('OFFER', 'REQUEST')                             NOT NULL,
+    roster_class   ENUM ('ACTIVE', 'WAITLIST')                           NOT NULL,
+    invite_status  ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'RESCINDED') NOT NULL DEFAULT 'PENDING',
+    invite_message VARCHAR(255)                                          NULL,
+    expires_at     TIMESTAMP                                             NULL,
+    created_at     TIMESTAMP                                             NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_group_invite_references_group_listing
         FOREIGN KEY (listing_id) REFERENCES group_listing (id_group)

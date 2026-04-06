@@ -27,12 +27,12 @@ public class GroupMember {
     @EmbeddedId
     private GroupMemberId groupMemberId;
 
-    @MapsId
+    @MapsId("listingId")
     @ManyToOne
     @JoinColumn(name="listing_id", referencedColumnName="id_group")
     private GroupListing groupListing;
 
-    @MapsId
+    @MapsId("userId")
     @ManyToOne
     @JoinColumn(name="user_id", referencedColumnName="id_user")
     private Users user;
