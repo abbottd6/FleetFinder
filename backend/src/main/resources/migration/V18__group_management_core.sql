@@ -8,6 +8,16 @@ ALTER TABLE conversation
         FOREIGN KEY (listing_id) REFERENCES group_listing (id_group)
             ON DELETE SET NULL;
 
+ALTER TABLE users
+    ADD COLUMN in_game_username VARCHAR(32);
+
+UPDATE users
+SET in_game_username = user_name
+WHERE in_game_username IS NULL;
+
+ALTER TABLE USERS
+    MODIFY COLUMN in_game_username VARCHAR(32) NOT NULL;
+
 # listing_id here refers to group_listing -> id_group to reduce confusion about 'group' labels
 CREATE TABLE IF NOT EXISTS group_management_subgroup
 (
@@ -104,14 +114,14 @@ CREATE TABLE IF NOT EXISTS crew_role_classification
     id_role       BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT,
     role_category VARCHAR(32) NOT NULL,
     role_title    VARCHAR(32) NOT NULL, #uq1
-    user_id       BIGINT      NULL,     #uq1
+    creator_id    BIGINT      NULL,     #uq1
 
     CONSTRAINT fk_role_type_references_user
-        FOREIGN KEY (user_id) REFERENCES users (id_user)
+        FOREIGN KEY (creator_id) REFERENCES users (id_user)
             ON DELETE CASCADE,
 
     CONSTRAINT uq_role_type_for_role_title_and_user
-        UNIQUE KEY (role_title, user_id)
+        UNIQUE KEY (role_title, creator_id)
 );
 
 # crew slot within a subgroup
@@ -156,6 +166,7 @@ CREATE TABLE IF NOT EXISTS group_invite
     recipient_id   BIGINT                                                NOT NULL, #ref
     direction      ENUM ('OFFER', 'REQUEST')                             NOT NULL,
     roster_class   ENUM ('ACTIVE', 'WAITLIST')                           NOT NULL,
+    role_id        BIGINT                                                NULL,
     invite_status  ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'RESCINDED') NOT NULL DEFAULT 'PENDING',
     invite_message VARCHAR(255)                                          NULL,
     expires_at     TIMESTAMP                                             NULL,
@@ -172,6 +183,10 @@ CREATE TABLE IF NOT EXISTS group_invite
     CONSTRAINT fk_group_invite_references_recipient
         FOREIGN KEY (recipient_id) REFERENCES users (id_user)
             ON DELETE CASCADE,
+
+    CONSTRAINT fk_group_invite_references_role_classification
+        FOREIGN KEY (role_id) REFERENCES crew_role_classification (id_role)
+            ON DELETE SET NULL,
 
     CONSTRAINT uq_group_invite_type_sender_recipient_group
         UNIQUE KEY (direction, sender_id, recipient_id, listing_id)

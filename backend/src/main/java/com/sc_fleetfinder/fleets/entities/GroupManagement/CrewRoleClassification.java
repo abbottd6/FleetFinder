@@ -35,5 +35,5 @@ public class CrewRoleClassification {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users user;
+    private Users roleCreator;
 }

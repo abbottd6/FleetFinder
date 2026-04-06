@@ -7,10 +7,7 @@ import com.sc_fleetfinder.fleets.utils.GroupManagement.MemberStatusOptions;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RsvpStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -21,8 +18,19 @@ import java.time.Instant;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 public class GroupMember {
+
+    //OWNER CONSTRUCTOR
+    public GroupMember(GroupListing listing, Users user, MemberStatusOptions status,
+                       InGroupRank rank, Boolean extNotes) {
+        this.groupListing = listing;
+        this.user = user;
+        this.memberStatus = status;
+        this.memberRank = rank;
+        this.hasExtNotes = extNotes;
+    }
 
     @EmbeddedId
     private GroupMemberId groupMemberId;

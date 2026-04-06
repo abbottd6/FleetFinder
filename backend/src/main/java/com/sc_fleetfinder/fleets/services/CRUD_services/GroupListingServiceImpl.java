@@ -9,12 +9,14 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
+import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.CommsOption;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.NewListingNotifyQueue;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberService;
 import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import com.sc_fleetfinder.fleets.utils.SearchStopWords;
@@ -23,6 +25,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -55,6 +58,7 @@ import static com.sc_fleetfinder.fleets.entities.ModerationAndReporting.Moderati
 
 @Service
 @Validated
+@RequiredArgsConstructor
 public class GroupListingServiceImpl implements GroupListingService {
 
     private static final Logger log = LoggerFactory.getLogger(GroupListingServiceImpl.class);
@@ -66,28 +70,10 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final ListingReportRepository lrr;
     private final NotificationOutboxRepository outboxRepo;
     private final NewListingNotifyQueueRepository listingNotifyQueueRepository;
+    private final GroupMemberService groupMemberService;
 
     @PersistenceContext
     private EntityManager em;
-
-    public GroupListingServiceImpl(GroupListingRepository groupListingRepository,
-                                   GroupListingConversionService groupListingConversionService,
-                                   UserRepository userRepository,
-                                   ArchiveService archiveService,
-                                   HiddenListingService hls,
-                                   ListingReportRepository lrr,
-                                   NotificationOutboxRepository outboxRepo,
-                                   NewListingNotifyQueueRepository listingNotifyQueueRepository) {
-
-        this.groupListingRepository = groupListingRepository;
-        this.groupListingConversionService = groupListingConversionService;
-        this.userRepository = userRepository;
-        this.archiveService = archiveService;
-        this.hls = hls;
-        this.lrr = lrr;
-        this.outboxRepo = outboxRepo;
-        this.listingNotifyQueueRepository = listingNotifyQueueRepository;
-    }
 
     @Override
     public List<GroupListingResponseDto> getAllGroupListings() {
@@ -137,6 +123,8 @@ public class GroupListingServiceImpl implements GroupListingService {
 
                 GroupListing listingWithId = groupListingRepository.save(groupListing);
                 groupListingRepository.flush();
+
+                groupMemberService.createOwnerMember(requestingUser, listingWithId);
 
                 NewListingNotifyQueue queued = new NewListingNotifyQueue(listingWithId);
 

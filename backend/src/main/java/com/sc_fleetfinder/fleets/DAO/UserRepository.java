@@ -15,7 +15,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByUsernameIgnoreCase(String username);
     Optional<Users> findByDiscordId(String discordId);
 
-
     @Modifying
     @Query("UPDATE Users u SET u.lastAccess = :ts WHERE u.keycloakId = :kcId")
     void updateUserLastAccess(@Param("kcId") String kcId, @Param("ts") Instant ts);

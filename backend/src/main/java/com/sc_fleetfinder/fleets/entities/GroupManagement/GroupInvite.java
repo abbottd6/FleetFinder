@@ -23,6 +23,23 @@ import java.time.Instant;
 @NoArgsConstructor
 public class GroupInvite {
 
+    //Invite Offer
+
+    //Invite request
+    public GroupInvite(Users sender, Users recipient, GroupListing listing, InviteDirection dir,
+                       GroupRosterClass rosterClass, CrewRoleClassification role,
+                       GroupInvitationStatus status, String message, Instant expiresAt) {
+        this.groupListing = listing;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.inviteDirection = dir;
+        this.rosterClass = rosterClass;
+        this.inviteRole = role;
+        this.inviteStatus = status;
+        this.inviteMessage = message;
+        this.expiresAt = expiresAt;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_invite")
@@ -47,6 +64,10 @@ public class GroupInvite {
     @Enumerated(EnumType.STRING)
     @Column(name="roster_class", nullable = false)
     private GroupRosterClass rosterClass;
+
+    @ManyToOne
+    @JoinColumn(name="role_id", referencedColumnName="id_role", nullable = true)
+    private CrewRoleClassification inviteRole;
 
     @Enumerated(EnumType.STRING)
     @Column(name="invite_status", nullable = false)

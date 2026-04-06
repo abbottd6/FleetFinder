@@ -165,6 +165,7 @@ public class UserServiceImpl implements UserService {
         newUser.setEmail(newUserDto.getEmail());
         newUser.setDiscordId(newUserDto.getDiscordId());
         newUser.setDiscordUsername(newUserDto.getDiscordUsername());
+        newUser.setInGameUsername(newUserDto.getUsername());
 
         newUser.setIsDeleted(false);
 

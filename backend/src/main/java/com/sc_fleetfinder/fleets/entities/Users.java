@@ -87,6 +87,9 @@ public class Users {
     @Size(min=2, max=32)
     private String discordUsername;
 
+    @Column(name="in_game_username", nullable = false, columnDefinition = "VARCHAR(32) NOT NULL")
+    private String inGameUsername;
+
     @Column(name="external_sys_notes_enabled")
     @NotNull(message = "Users entity field 'externalSysNotesEnabled' cannot be null.")
     private Boolean externalSysNotesEnabled = Boolean.FALSE;
