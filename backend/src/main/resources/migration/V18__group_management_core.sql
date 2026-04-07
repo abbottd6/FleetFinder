@@ -15,7 +15,7 @@ UPDATE users
 SET in_game_username = user_name
 WHERE in_game_username IS NULL;
 
-ALTER TABLE USERS
+ALTER TABLE users
     MODIFY COLUMN in_game_username VARCHAR(32) NOT NULL;
 
 # listing_id here refers to group_listing -> id_group to reduce confusion about 'group' labels

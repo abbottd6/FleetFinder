@@ -3,7 +3,7 @@ package com.sc_fleetfinder.fleets.entities.GroupManagement;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberId;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.MemberStatusOptions;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRosterClass;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RsvpStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -18,18 +18,28 @@ import java.time.Instant;
 @Getter
 @Setter
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor
 public class GroupMember {
 
     //OWNER CONSTRUCTOR
-    public GroupMember(GroupListing listing, Users user, MemberStatusOptions status,
+    public GroupMember(GroupListing listing, Users user, GroupRosterClass rosterClass,
                        InGroupRank rank, Boolean extNotes) {
         this.groupListing = listing;
         this.user = user;
-        this.memberStatus = status;
+        this.rosterClass = rosterClass;
         this.memberRank = rank;
         this.hasExtNotes = extNotes;
+    }
+
+    //JOINING MEMBER CONSTRUCTOR
+    public GroupMember(GroupListing listing, Users newMember, GroupRosterClass rosterClass,
+                       InGroupRank rank, Boolean hasComms, Boolean hasExtNotes) {
+        this.groupListing = listing;
+        this.user = newMember;
+        this.rosterClass = rosterClass;
+        this.memberRank = rank;
+        this.hasComms = hasComms;
+        this.hasExtNotes = hasExtNotes;
     }
 
     @EmbeddedId
@@ -48,7 +58,7 @@ public class GroupMember {
     @Enumerated(EnumType.STRING)
     @Column(name="member_status")
     @NotNull(message="GroupMember entity field 'memberStatus' cannot be null.")
-    private MemberStatusOptions memberStatus;
+    private GroupRosterClass rosterClass;
 
     @ManyToOne
     @JoinColumn(name="in_group_rank_id", referencedColumnName="id_rank")

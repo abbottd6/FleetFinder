@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement;
 
+import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInvitationStatus;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRosterClass;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
@@ -8,10 +9,12 @@ import lombok.Data;
 import java.time.Instant;
 
 @Data
-public class GroupInviteResponseDto {
+public class GroupInviteRequestOrResponseDto {
 
+    private Long inviteId;
     private InviteUsersSummary senderSummary;
     private InviteUsersSummary recipientSummary;
+    private GroupListing listingDetails;
     private GroupRosterClass rosterClass;
     private GroupRoleSummaryDto roleSummary;
     private InviteDirection inviteDirection;
