@@ -44,6 +44,9 @@ public class GroupManagementSubgroup {
     @Column(name="intended_subgroup_size", nullable = true)
     private Integer intendedSubgroupSize;
 
+    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 1")
+    private Integer sortOrder = 1;
+
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name="created_at")

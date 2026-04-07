@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS crew_subgroup_template
     parent_subgroup_id     BIGINT       NULL,     #ref
     subgroup_label         VARCHAR(64)  NOT NULL,
     subgroup_notes         VARCHAR(255) NULL,
+    sort_order             TINYINT NOT NULL DEFAULT 1,
     intended_subgroup_size TINYINT      NULL,
 
     CONSTRAINT fk_template_subgroup_references_template
@@ -36,6 +37,7 @@ CREATE TABLE IF NOT EXISTS crew_position_template
     subgroup_template_id BIGINT       NOT NULL, #ref
     position_role_id     BIGINT       NULL, #ref
     position_notes       VARCHAR(255) NULL,
+    sort_order           TINYINT NOT NULL DEFAULT 1,
 
     CONSTRAINT fk_position_template_references_subgroup_template
         FOREIGN KEY (subgroup_template_id) REFERENCES crew_subgroup_template (id_template_subgroup)

@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS group_management_subgroup
     subgroup_label         VARCHAR(64)  NULL,
     subgroup_notes         VARCHAR(255) NULL,
     intended_subgroup_size TINYINT      NULL,
+    sort_order             TINYINT      NOT NULL DEFAULT 1,
     created_at             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_subgroup_references_group_listing
@@ -130,6 +131,7 @@ CREATE TABLE IF NOT EXISTS mgmt_crew_position
     id_position        BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
     listing_id         BIGINT       NOT NULL, #ref #uq1
     subgroup_id        BIGINT       NOT NULL, #ref
+    sort_order         TINYINT      NOT NULL DEFAULT 1,
     position_role_id   BIGINT       NULL, #ref
     position_note      VARCHAR(128) NULL,
     assigned_member_id BIGINT       NULL,     #ref #uq1

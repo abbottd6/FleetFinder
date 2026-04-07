@@ -36,4 +36,7 @@ public class CrewPositionTemplate {
 
     @Column(name = "position_notes")
     private String positionNotes;
+
+    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 1")
+    private Integer sortOrder = 1;
 }

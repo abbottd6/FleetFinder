@@ -34,6 +34,9 @@ public class CrewPosition {
     @JoinColumn(name="subgroup_id", referencedColumnName="id_subgroup", nullable = false)
     private GroupManagementSubgroup subgroup;
 
+    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 1")
+    private Integer sortOrder = 1;
+
     @ManyToOne
     @JoinColumn(name="position_role_id", referencedColumnName="id_role", nullable = true)
     private CrewRoleClassification positionRole;
