@@ -14,7 +14,7 @@ import java.util.List;
 public interface GroupRankAssignedPrivilegeRepository extends JpaRepository<GroupRankAssignedPrivilege, AssignedPrivilegeId> {
 
     @Query("""
-            SELECT p FROM GroupRankAssignedPrivilege p
+            SELECT p.privilegeType.privilegeType FROM GroupRankAssignedPrivilege p
             WHERE p.assignedToRank = :rank
             """)
     List<RankPrivilegeOptions> getAssignedPrivilegesByRank(@Param("rank") InGroupRank rank);

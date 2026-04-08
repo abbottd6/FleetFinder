@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class InviteUsersSummary {
+public class UserMonikerSummary {
 
     @NotNull(message="InviteUsersSummary dto field 'userId' cannot be null")
     private Long userId;

@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.services;
 
+import com.sc_fleetfinder.fleets.DAO.GroupManagement.CrewPositionRepository;
 import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.EnvironmentRepository;
 import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.ExperienceRepository;
 import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.GameplayCategoryRepository;
@@ -12,6 +13,8 @@ import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.PlayStyleRepository;
 import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.PvpStatusRepository;
 import com.sc_fleetfinder.fleets.DAO.ListingReferenceData.ServerRegionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewPosition;
+import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameEnvironment;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameExperience;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
@@ -26,6 +29,8 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerReg
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class MapperLookupService {
@@ -65,8 +70,6 @@ public class MapperLookupService {
         this.serverRegionRepository = serverRegionRepository;
         this.userRepository = userRepository;
     }
-
-    //Make these cacheable??
 
     public Users findUserById(Long id) {
         return userRepository.findById(id)

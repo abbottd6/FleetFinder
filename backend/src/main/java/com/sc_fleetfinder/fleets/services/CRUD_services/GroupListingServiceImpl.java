@@ -124,6 +124,8 @@ public class GroupListingServiceImpl implements GroupListingService {
                 GroupListing listingWithId = groupListingRepository.save(groupListing);
                 groupListingRepository.flush();
 
+                log.info("Listing ID: {}", listingWithId.getGroupId());
+
                 groupMemberService.createOwnerMember(requestingUser, listingWithId);
 
                 NewListingNotifyQueue queued = new NewListingNotifyQueue(listingWithId);

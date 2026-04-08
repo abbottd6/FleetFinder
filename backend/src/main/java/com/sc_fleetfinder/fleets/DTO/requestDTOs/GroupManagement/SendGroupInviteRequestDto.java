@@ -1,8 +1,7 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement;
 
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRosterClass;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberStatus;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -13,6 +12,6 @@ public class SendGroupInviteRequestDto {
     private Long listingId;
     @NotBlank(message="SendGroupInviteRequestDto field 'inGameUsername' cannot be null.")
     private String inGameUsername;
-    private GroupRosterClass rosterClass;
+    private GroupMemberStatus memberStatus;
     private String requestMessage;
 }

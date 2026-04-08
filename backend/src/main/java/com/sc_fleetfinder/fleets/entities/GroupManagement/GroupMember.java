@@ -3,7 +3,7 @@ package com.sc_fleetfinder.fleets.entities.GroupManagement;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberId;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRosterClass;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberStatus;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RsvpStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -22,21 +22,23 @@ import java.time.Instant;
 public class GroupMember {
 
     //OWNER CONSTRUCTOR
-    public GroupMember(GroupListing listing, Users user, GroupRosterClass rosterClass,
+    public GroupMember(GroupListing listing, Users user, GroupMemberStatus memberStatus,
                        InGroupRank rank, Boolean extNotes) {
+        this.groupMemberId = new GroupMemberId(listing.getGroupId(), user.getUserId());
         this.groupListing = listing;
         this.user = user;
-        this.rosterClass = rosterClass;
+        this.memberStatus = memberStatus;
         this.memberRank = rank;
         this.hasExtNotes = extNotes;
     }
 
     //JOINING MEMBER CONSTRUCTOR
-    public GroupMember(GroupListing listing, Users newMember, GroupRosterClass rosterClass,
+    public GroupMember(GroupListing listing, Users newMember, GroupMemberStatus memberStatus,
                        InGroupRank rank, Boolean hasComms, Boolean hasExtNotes) {
+        this.groupMemberId = new GroupMemberId(listing.getGroupId(), user.getUserId());
         this.groupListing = listing;
         this.user = newMember;
-        this.rosterClass = rosterClass;
+        this.memberStatus = memberStatus;
         this.memberRank = rank;
         this.hasComms = hasComms;
         this.hasExtNotes = hasExtNotes;
@@ -58,7 +60,7 @@ public class GroupMember {
     @Enumerated(EnumType.STRING)
     @Column(name="member_status")
     @NotNull(message="GroupMember entity field 'memberStatus' cannot be null.")
-    private GroupRosterClass rosterClass;
+    private GroupMemberStatus memberStatus;
 
     @ManyToOne
     @JoinColumn(name="in_group_rank_id", referencedColumnName="id_rank")

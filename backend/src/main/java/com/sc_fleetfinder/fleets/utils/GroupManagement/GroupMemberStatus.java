@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.utils.GroupManagement;
 
-public enum GroupRosterClass {
+public enum GroupMemberStatus {
     ACTIVE,
     WAITLIST
 }

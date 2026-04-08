@@ -35,6 +35,9 @@ import {
 } from "../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
 import {ListingTemplatesApiService} from "../../services/api-services/listing-templates-api/listing-templates-api.service";
 import {environment} from "../../../environments/environment";
+import {
+  GroupMembershipApiService
+} from "../../services/api-services/group-membership-api/group-membership-api.service";
 
 @Component({
   selector: 'app-user-acct-listings-table',
@@ -60,10 +63,15 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
   constructor(private listingOwnerSrv: ListingOwnerActionsService,
               private userService: UserService,
               protected listingInteract: ListingViewInteractionsService,
-              private snackBar: MatSnackBar) {}
+              private snackBar: MatSnackBar,
+              private groupMembershipsApi: GroupMembershipApiService) {}
 
   ngOnInit() {
     this.dataSource.data = this.userListings;
+    this.groupMembershipsApi.getMyGroupMemberships().pipe(takeUntil(this.destroy$))
+      .subscribe(response => {
+        console.log("THE DTO: " + response);
+      });
   }
 
   ngOnChanges(changes: SimpleChanges) {

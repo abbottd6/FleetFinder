@@ -1,12 +1,17 @@
-import {InviteUserSummaryViewModel} from "../../nested-models/invite-user-summary-view-model";
+import {UserMonikerSummaryViewModel} from "../../nested-models/user-moniker-summary-view-model";
 import {GroupListingViewModel} from "../../../group-listing/group-listing-view-model";
 
 export class GroupInviteViewModel {
   constructor(
     public inviteId: number,
-    public senderSummary: InviteUserSummaryViewModel,
-    public recipientSummary: InviteUserSummaryViewModel,
+    public senderSummary: UserMonikerSummaryViewModel,
+    public recipientSummary: UserMonikerSummaryViewModel,
     public listingDetails: GroupListingViewModel,
-
+    public rosterClass: string,
+    public inviteDirection: string,
+    public inviteStatus: string,
+    public inviteMessage: string,
+    public expiresAt: Date,
+    public sentAt: Date
   ){}
 }

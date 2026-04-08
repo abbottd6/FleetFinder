@@ -18,7 +18,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/group-membership")
+@RequestMapping("api/group-membership")
 @PreAuthorize("isAuthenticated() and hasRole('user')")
 @RequiredArgsConstructor
 public class GroupMembershipController {

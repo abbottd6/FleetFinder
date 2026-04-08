@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.InGroupRank;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRosterClass;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberStatus;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RsvpStatus;
 import lombok.Data;
 
@@ -12,13 +12,14 @@ import java.time.Instant;
 public class GroupMembershipResponseDto {
 
     private UserSummaryResponseDto userSummary;
-    private GroupRosterClass memberStatus;
+    private GroupMemberStatus memberStatus;
+    private MemberPositionSummaryDto memberRole;
+    private GroupRankDto memberRank;
     private String memberNote;
     private Boolean hasComms;
     private Boolean hasExtNotes;
     private RsvpStatus rsvpStatus;
     private Instant joinedAt;
-    private InGroupRank memberRank;
     private Boolean isAuthorizedManager;
-    private GroupListing listing;
+    private GroupListingResponseDto listing;
 }

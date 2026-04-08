@@ -54,6 +54,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/group-listings/create_listing").authenticated()
                         .requestMatchers("/api/group-listings").permitAll()
                         .requestMatchers("/api/modctrl/**").hasRole("mod")
+                        .requestMatchers("/api/group-membership/**").hasRole("user")
                         .requestMatchers("/actuator/prometheus").access(
                                 new WebExpressionAuthorizationManager("hasIpAddress('172.16.0.0/12')"))
                         .requestMatchers("/actuator/health").permitAll()

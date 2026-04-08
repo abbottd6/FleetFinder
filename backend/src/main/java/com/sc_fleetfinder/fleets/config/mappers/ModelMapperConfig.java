@@ -7,23 +7,20 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.Cr
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.*;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetMessageDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupMembershipResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplaySubcategoryDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetCustomNotificationResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPushSubDto;
 import com.sc_fleetfinder.fleets.entities.*;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.InGroupRank;
+import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.*;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
 import com.sc_fleetfinder.fleets.entities.chat.Message;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RankPrivilegeOptions;
 import com.sc_fleetfinder.fleets.utils.MessageType;
@@ -31,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
@@ -40,6 +38,7 @@ import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 @Configuration
@@ -49,7 +48,6 @@ public class ModelMapperConfig {
     private static final DateTimeFormatter UTC_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yy HH:mm")
             .withZone(ZoneOffset.UTC);
 
-    private GroupRankAssignedPrivilegeRepository assignedPrivilegeRepository;
     private final MapperLookupService mls;
 
     Converter<CreateGroupListingDto, Instant> dateTimeAndZoneToInstantConverter = ctx -> {
@@ -1032,6 +1030,30 @@ public class ModelMapperConfig {
                     }).map(PushSubscription::getUser, GetPushSubDto::setUserId);
                 });
 
+//GROUP MANAGEMENT SUBGROUPS
+        modelMapper.createTypeMap(GroupManagementSubgroup.class, SubgroupSummaryDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(GroupManagementSubgroup::getSubgroupId, SubgroupSummaryDto::setSubgroupId);
+
+                    mapper.map(GroupManagementSubgroup::getSubgroupLabel, SubgroupSummaryDto::setSubgroupLabel);
+
+                    mapper.map(GroupManagementSubgroup::getSubgroupNotes, SubgroupSummaryDto::setSubgroupNotes);
+
+                    mapper.using(ctx -> {
+                        GroupManagementSubgroup parent = (GroupManagementSubgroup) ctx.getSource();
+                        return parent != null ? parent.getSubgroupId() : null;
+                    }).map(GroupManagementSubgroup::getParentSubgroup, SubgroupSummaryDto::setParentSubgroupId);
+
+                    mapper.using(ctx -> {
+                        GroupManagementSubgroup parent = (GroupManagementSubgroup) ctx.getSource();
+                        return parent != null ? parent.getSubgroupLabel() : null;
+                    }).map(GroupManagementSubgroup::getParentSubgroup, SubgroupSummaryDto::setParentSubgroupLabel);
+
+                    mapper.map(GroupManagementSubgroup::getIntendedSubgroupSize, SubgroupSummaryDto::setIntendedSubgroupSize);
+
+                    mapper.map(GroupManagementSubgroup::getCreatedAt, SubgroupSummaryDto::setCreatedAt);
+                });
+
 //GROUP INVITES
         // Group Invite ---->>>> Response Dto
         modelMapper.createTypeMap(GroupInvite.class, GroupInviteRequestOrResponseDto.class)
@@ -1044,7 +1066,7 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupInvite::getGroupListing, GroupInviteRequestOrResponseDto::setListingDetails);
 
-                    mapper.map(GroupInvite::getRosterClass, GroupInviteRequestOrResponseDto::setRosterClass);
+                    mapper.map(GroupInvite::getMemberStatus, GroupInviteRequestOrResponseDto::setMemberStatus);
 
                     mapper.map(GroupInvite::getInviteRole, GroupInviteRequestOrResponseDto::setRoleSummary);
 
@@ -1061,11 +1083,19 @@ public class ModelMapperConfig {
 
 //GROUP MEMBERS
         // Group Member ---->>> Group MemberSHIP Response Dto
-        modelMapper.createTypeMap(GroupMember.class, GroupMembershipResponseDto.class)
-                .addMappings(mapper -> {
+        //have to declare an empty type map because it is auto-mapping fields i dont want
+        TypeMap<GroupMember, GroupMembershipResponseDto> memberToResponseDtoTypeMap =
+                modelMapper.emptyTypeMap(GroupMember.class, GroupMembershipResponseDto.class);
+
+        memberToResponseDtoTypeMap.addMappings(mapper -> {
                     mapper.map(GroupMember::getUser, GroupMembershipResponseDto::setUserSummary);
 
-                    mapper.map(GroupMember::getRosterClass, GroupMembershipResponseDto::setMemberStatus);
+                    mapper.map(GroupMember::getMemberStatus, GroupMembershipResponseDto::setMemberStatus);
+
+                    //this needs to be handled in the method that calls the transformation
+                    mapper.skip(GroupMembershipResponseDto::setMemberRole);
+
+                    mapper.map(GroupMember::getMemberRank, GroupMembershipResponseDto::setMemberRank);
 
                     mapper.map(GroupMember::getMemberNote, GroupMembershipResponseDto::setMemberNote);
 
@@ -1077,12 +1107,11 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupMember::getCreatedAt, GroupMembershipResponseDto::setJoinedAt);
 
-                    mapper.map(GroupMember::getMemberRank, GroupMembershipResponseDto::setMemberRank);
-
-                    mapper.using(ctx -> {
-                        InGroupRank rank = (InGroupRank) ctx.getSource();
-                        return hasGroupManagementPrivileges(rank);
-                    }).map(GroupMember::getMemberRank, GroupMembershipResponseDto::setIsAuthorizedManager);
+                    mapper.skip(GroupMembershipResponseDto::setIsAuthorizedManager);
+//                    mapper.using(ctx -> {
+//                        InGroupRank rank = (InGroupRank) ctx.getSource();
+//                        return rank != null ? hasGroupManagementPrivileges(rank) : null;
+//                    }).map(GroupMember::getMemberRank, GroupMembershipResponseDto::setIsAuthorizedManager);
 
                     mapper.map(GroupMember::getGroupListing, GroupMembershipResponseDto::setListing);
                 });
@@ -1097,7 +1126,7 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupMember::getUser, GroupManagerMemberResponseDto::setUserSummary);
 
-                    mapper.map(GroupMember::getRosterClass, GroupManagerMemberResponseDto::setMemberStatus);
+                    mapper.map(GroupMember::getMemberStatus, GroupManagerMemberResponseDto::setMemberStatus);
 
                     mapper.map(GroupMember::getMemberNote, GroupManagerMemberResponseDto::setMemberNote);
 
@@ -1110,6 +1139,53 @@ public class ModelMapperConfig {
                     mapper.map(GroupMember::getCreatedAt, GroupManagerMemberResponseDto::setJoinedAt);
 
                     mapper.map(GroupMember::getMemberRank, GroupManagerMemberResponseDto::setMemberRank);
+                });
+
+//GROUP RANKS
+        TypeMap<InGroupRank, GroupRankDto> inGroupRankToDtoTypeMap =
+                modelMapper.emptyTypeMap(InGroupRank.class, GroupRankDto.class);
+
+        inGroupRankToDtoTypeMap.addMappings(mapper -> {
+                    mapper.map(InGroupRank::getRankId, GroupRankDto::setRankId);
+
+                    mapper.using(ctx -> {
+                        GroupListing listing = (GroupListing) ctx.getSource();
+                        return listing != null ? listing.getGroupId() : null;
+                    }).map(InGroupRank::getGroupListing, GroupRankDto::setListingId);
+
+                    mapper.using(ctx -> {
+                        GroupManagementSubgroup scope = (GroupManagementSubgroup) ctx.getSource();
+                        return scope != null ? scope.getSubgroupId() : null;
+                    }).map(InGroupRank::getRankSubgroupScope, GroupRankDto::setRankSubgroupScope);
+
+                    mapper.map(InGroupRank::getRankTitle, GroupRankDto::setRankTitle);
+
+                    mapper.map(InGroupRank::getRankNotes, GroupRankDto::setRankNotes);
+
+                    mapper.map(InGroupRank::getCreatedByUser, GroupRankDto::setCreatedByUser);
+
+                    mapper.map(InGroupRank::getCreatedAt, GroupRankDto::setCreatedAt);
+                });
+
+//CREW POSITIONS
+        modelMapper.createTypeMap(CrewPosition.class, MemberPositionSummaryDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(CrewPosition::getPositionId, MemberPositionSummaryDto::setPositionId);
+
+                    mapper.using(ctx -> {
+                        GroupListing listing = (GroupListing) ctx.getSource();
+                        return listing != null ? listing.getGroupId() : null;
+                    }).map(CrewPosition::getGroupListing, MemberPositionSummaryDto::setListingId);
+
+                    mapper.map(CrewPosition::getSubgroup, MemberPositionSummaryDto::setSubgroupSummary);
+
+                    mapper.map(CrewPosition::getPositionRole, MemberPositionSummaryDto::setRoleSummary);
+
+                    mapper.map(CrewPosition::getPositionNote, MemberPositionSummaryDto::setPositionNote);
+
+                    mapper.map(CrewPosition::getFilledAt, MemberPositionSummaryDto::setFilledAt);
+
+                    mapper.map(CrewPosition::getCreatedAt, MemberPositionSummaryDto::setCreatedAt);
                 });
 
 //REFERENCE DATA
@@ -1142,20 +1218,5 @@ public class ModelMapperConfig {
         return modelMapper;
     }
 
-    private boolean hasGroupManagementPrivileges(InGroupRank rank) {
-        if(rank == null) return false;
-        List<RankPrivilegeOptions> privileges = assignedPrivilegeRepository.getAssignedPrivilegesByRank(rank);
 
-        if(privileges.isEmpty()) return false;
-
-        Set<RankPrivilegeOptions> managementPrivileges = Set.of(
-                RankPrivilegeOptions.MANAGE_RANKS,
-                RankPrivilegeOptions.MANAGE_POSITIONS,
-                RankPrivilegeOptions.MANAGE_ROLES,
-                RankPrivilegeOptions.MANAGE_ROSTERS,
-                RankPrivilegeOptions.MANAGE_SUBGROUPS
-        );
-
-        return privileges.stream().anyMatch(managementPrivileges::contains);
-    }
 }

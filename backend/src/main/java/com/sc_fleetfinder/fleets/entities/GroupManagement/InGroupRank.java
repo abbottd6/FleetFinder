@@ -23,11 +23,11 @@ public class InGroupRank {
     private Long rankId;
 
     @ManyToOne
-    @JoinColumn(name="listing_id", referencedColumnName="id_group")
+    @JoinColumn(name="listing_id", referencedColumnName="id_group", nullable=true)
     private GroupListing groupListing;
 
     @ManyToOne
-    @JoinColumn(name="rank_scope_id", referencedColumnName="id_subgroup")
+    @JoinColumn(name="rank_scope_id", referencedColumnName="id_subgroup", nullable = true)
     private GroupManagementSubgroup rankSubgroupScope;
 
     @Column(name="rank_title", nullable = false, columnDefinition = "VARCHAR(32) NOT NULL")

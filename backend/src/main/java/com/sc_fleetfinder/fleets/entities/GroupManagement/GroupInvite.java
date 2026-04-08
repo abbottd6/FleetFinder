@@ -3,7 +3,7 @@ package com.sc_fleetfinder.fleets.entities.GroupManagement;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInvitationStatus;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRosterClass;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberStatus;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -27,13 +27,13 @@ public class GroupInvite {
 
     //Invite request
     public GroupInvite(Users sender, Users recipient, GroupListing listing, InviteDirection dir,
-                       GroupRosterClass rosterClass, CrewRoleClassification role,
+                       GroupMemberStatus memberStatus, CrewRoleClassification role,
                        GroupInvitationStatus status, String message, Instant expiresAt) {
         this.groupListing = listing;
         this.sender = sender;
         this.recipient = recipient;
         this.inviteDirection = dir;
-        this.rosterClass = rosterClass;
+        this.memberStatus = memberStatus;
         this.inviteRole = role;
         this.inviteStatus = status;
         this.inviteMessage = message;
@@ -63,7 +63,7 @@ public class GroupInvite {
 
     @Enumerated(EnumType.STRING)
     @Column(name="roster_class", nullable = false)
-    private GroupRosterClass rosterClass;
+    private GroupMemberStatus memberStatus;
 
     @ManyToOne
     @JoinColumn(name="role_id", referencedColumnName="id_role", nullable = true)

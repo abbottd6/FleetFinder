@@ -1,4 +1,4 @@
-export class InviteUserSummaryViewModel {
+export class UserMonikerSummaryViewModel {
   constructor(
     public userId: number,
     public username: string,
