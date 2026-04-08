@@ -37,6 +37,7 @@ export class UserApiService {
           raw.acctCreated!,
           raw.lastAccess!,
           raw.discordUsername!,
+          raw.inGameUsername!,
           raw.externalSysNotesEnabled!,
           raw.externalGroupNotesEnabled!,
           raw.externalSocialNotesEnabled!,

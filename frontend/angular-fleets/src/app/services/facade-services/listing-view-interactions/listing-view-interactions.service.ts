@@ -3,7 +3,7 @@ import {GroupListingViewModel} from "../../../models/group-listing/group-listing
 import {
   BehaviorSubject,
   combineLatest,
-  distinctUntilChanged, fromEvent,
+  distinctUntilChanged, filter, fromEvent,
   map,
   Observable,
   of,
@@ -26,6 +26,14 @@ import {UiPrefsService} from "../ui-prefs/ui-prefs.service";
 import {CloseValue} from "../../../components/group-listing-modal/group-listing-modal.component";
 import {UserService} from "../../user-services/user.service";
 import {TemplatesModalService} from "../../component-services/templates-modal-service/templates-modal.service";
+import {GroupMembershipApiService} from "../../api-services/group-membership-api/group-membership-api.service";
+import {SendGroupInviteRequest} from "../../../models/group-management-models/request-models/send-group-invite-request";
+import {
+  GroupInviteViewModel
+} from "../../../models/group-management-models/view-models/group-membership/group-invite-view-model";
+import {
+  UserMonikerSummaryViewModel
+} from "../../../models/group-management-models/nested-models/user-moniker-summary-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -57,7 +65,8 @@ export class ListingViewInteractionsService {
               private userSrv: UserService,
               private templatesModal: TemplatesModalService,
               private snackBar: MatSnackBar,
-              private dialog: MatDialog) {
+              private dialog: MatDialog,
+              private groupMembershipsApi: GroupMembershipApiService) {
 
     this.bmService.getBookmarksBrief();
 
@@ -113,6 +122,45 @@ export class ListingViewInteractionsService {
     }
 
     this.isModalVisible = true;
+  }
+
+  openRequestInvitePopup(tempListing: GroupListingViewModel) {
+    this.setSelectedListing(tempListing);
+  }
+
+  requestGroupInvite(tempListing: GroupListingViewModel, requestedStatus: string, message: string) {
+    if(!this.userSrv.userLoggedIn) {
+      this.snackBar.open("You must log in to send invite requests.", 'OK', {
+        duration: 5000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']
+      })
+      return;
+    }
+
+    const invRequest = new SendGroupInviteRequest(tempListing.groupId, requestedStatus, message);
+
+    this.groupMembershipsApi.sendGroupInviteRequest(invRequest).pipe(take(1))
+      .subscribe( {
+        next: (inv) => {
+          this.snackBar.open(`Invite request sent to "${inv.recipientSummary.username}"`, 'OK', {
+            duration: 5000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+            panelClass: ['mobile-snackbar']
+          });
+        },
+        error: (err) => {
+          const msg = err.splice(0, 100);
+          this.snackBar.open(msg, 'OK', {
+            duration: 5000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+            panelClass: ['mobile-snackbar']
+          });
+        }
+        });
   }
 
   //modal popup cancel click for interactable cell

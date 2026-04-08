@@ -81,6 +81,8 @@ import { ListingSuccessComponent } from './components/listing-success/listing-su
 import { HowToComponent } from './components/how-to/how-to.component';
 import { UserDeleteAccountPopupComponent } from './components/pop-ups/user-delete-account-popup/user-delete-account-popup.component';
 import { ConfirmDelinkDiscordPopupComponent } from './components/pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component';
+import { InviteFormPopupComponent } from './components/pop-ups/invite-form-popup/invite-form-popup.component';
+import { GenericMediumInputFieldComponent } from './components/input-fields/generic-medium-input-field/generic-medium-input-field.component';
 
 @NgModule({
   declarations: [
@@ -103,6 +105,8 @@ import { ConfirmDelinkDiscordPopupComponent } from './components/pop-ups/confirm
     HowToComponent,
     UserDeleteAccountPopupComponent,
     ConfirmDelinkDiscordPopupComponent,
+    InviteFormPopupComponent,
+    GenericMediumInputFieldComponent,
   ],
   imports: [
     BrowserModule,

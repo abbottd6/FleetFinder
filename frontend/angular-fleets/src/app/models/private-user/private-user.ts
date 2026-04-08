@@ -11,6 +11,7 @@ export class PrivateUser {
               public acctCreated: Date,
               public lastAccess: Date,
               public discordUsername: string,
+              public inGameUsername: string,
               public externalSysNotesEnabled: boolean,
               public externalGroupNotesEnabled: boolean,
               public externalSocialNotesEnabled: boolean,

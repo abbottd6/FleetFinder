@@ -8,6 +8,17 @@ import {
 } from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   import {tap} from "rxjs/operators";
+  import {
+    SendGroupInviteRequest
+  } from "../../../models/group-management-models/request-models/send-group-invite-request";
+  import {
+    GroupInviteViewModel
+  } from "../../../models/group-management-models/view-models/group-membership/group-invite-view-model";
+
+export const rosterClasses = new Map<string, string>([
+  ['ACTIVE', 'Active'],
+  ['WAITLIST', 'Waitlist']
+]);
 
 @Injectable({
   providedIn: 'root'
@@ -21,10 +32,12 @@ export class GroupMembershipApiService {
 
   getMyGroupMemberships(): Observable<Page<GroupMembershipViewModel>> {
     return this.httpClient.get<Page<GroupMembershipViewModel>>(`${this.baseUrl}/my_groups`).pipe(
-      tap(response => {
-        console.log('DTO: ' + response);
-      })
-  )
+      takeUntilDestroyed(this.destroyRef),
+      tap(page => page)
+      );
+  }
 
+  sendGroupInviteRequest(invRequest: SendGroupInviteRequest): Observable<GroupInviteViewModel> {
+    return this.httpClient.post<GroupInviteViewModel>(`${this.baseUrl}/request_invite`, invRequest);
   }
 }

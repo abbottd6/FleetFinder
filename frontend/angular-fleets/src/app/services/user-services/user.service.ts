@@ -32,6 +32,7 @@ export interface SessionUser {
   server: string,
   org: string,
   about: string,
+  inGameUsername: string,
   discordUsername: string,
   externalSysNotesEnabled: boolean,
   externalGroupNotesEnabled: boolean,
@@ -179,11 +180,13 @@ export class UserService {
   }
 
   get sessionUser(): SessionUser | null { return this.userSubject.value ?? null; }
+  get userLoggedIn(): boolean { return this.userLoggedInSubject.value ?? false; }
   get userId(): number | null { return this.userSubject.value?.userId ?? null; }
   get username(): string | null { return this.userSubject.value?.username ?? null; }
   get server(): string | null { return this.userSubject.value?.server ?? null; }
   get org(): string | null { return this.userSubject.value?.org ?? null; }
   get about(): string | null { return this.userSubject.value?.about ?? null; }
+  get inGameUsername(): string | null { return this.userSubject.value?.inGameUsername ?? null; }
   get discordUsername(): string | null { return this.userSubject.value?.discordUsername ?? null; }
   get sysNotesEnabled(): boolean | null { return this.userSubject.value?.externalSysNotesEnabled ?? null; }
   get groupNotesEnabled(): boolean | null { return this.userSubject.value?.externalGroupNotesEnabled ?? null; }

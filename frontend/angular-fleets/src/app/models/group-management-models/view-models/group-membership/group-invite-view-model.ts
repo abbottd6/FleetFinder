@@ -7,7 +7,7 @@ export class GroupInviteViewModel {
     public senderSummary: UserMonikerSummaryViewModel,
     public recipientSummary: UserMonikerSummaryViewModel,
     public listingDetails: GroupListingViewModel,
-    public rosterClass: string,
+    public memberStatus: string,
     public inviteDirection: string,
     public inviteStatus: string,
     public inviteMessage: string,

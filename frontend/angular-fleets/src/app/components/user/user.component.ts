@@ -5,7 +5,7 @@ import {
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {map, shareReplay, Subject, take, takeUntil} from "rxjs";
-import {Router, RouterModule} from "@angular/router";
+import {RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
 import {MatListItem, MatNavList} from "@angular/material/list";
@@ -13,7 +13,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import { BreakpointObserver } from "@angular/cdk/layout";
 import {UserAcctListingsTableComponent} from "../user-acct-listings-table/user-acct-listings-table.component";
 import {MatButtonModule} from "@angular/material/button";
-import {SessionUser, UserRole, UserService} from "../../services/user-services/user.service";
+import {UserRole, UserService} from "../../services/user-services/user.service";
 import {CloseValue, GroupListingModalComponent} from "../group-listing-modal/group-listing-modal.component";
 import {environment} from "../../../environments/environment";
 import {UserProfileBookmarksComponent} from "../user-profile-bookmarks/user-profile-bookmarks.component";
