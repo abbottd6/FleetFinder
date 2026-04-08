@@ -29,6 +29,7 @@ import com.sc_fleetfinder.fleets.messaging.push.PushNotificationPayload;
 import com.sc_fleetfinder.fleets.messaging.push.PushNotificationService;
 import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
 import com.sc_fleetfinder.fleets.utils.ExternalNotifcationResult;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -152,6 +153,11 @@ public class NotificationServiceImpl implements NotificationService {
                 identifyDeliveryChannel_andSend(savedMatchNote, outboxEntity);
                 break;
 
+            case NotificationType.NEW_GROUP_INVITE:
+                Notification savedInviteNote = buildNewGroupInviteNotification(outboxEntity);
+                identifyDeliveryChannel_andSend(savedInviteNote, outboxEntity);
+                break;
+
             case NotificationType.LISTING_VIS_STATUS_CHANGED:
                 Notification savedVisNote = buildListingStatusChangeNotification(outboxEntity);
                 identifyDeliveryChannel_andSend(savedVisNote, outboxEntity);
@@ -250,6 +256,9 @@ public class NotificationServiceImpl implements NotificationService {
                 payload.setTag("New Chat Message");
                 dataField.setUrl("https://scfleetfinder.com/user-account");
                 break;
+            case NotificationType.NEW_GROUP_INVITE:
+                payload.setTag("New Group Request");
+                dataField.setUrl("https://scfleetfinder.com/user-account");
             case NotificationType.MOD_DELETE:
                 payload.setTag("Mod Action");
                 dataField.setUrl("https://scfleetfinder.com/user-account");
@@ -323,6 +332,29 @@ public class NotificationServiceImpl implements NotificationService {
 
         Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
                 outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
+                .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
+
+        if (readAt.isPresent()) {
+            throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
+        }
+
+        return notificationRepo.save(newNote);
+    }
+
+    private Notification buildNewGroupInviteNotification(NotificationOutbox outboxEntity) {
+        String title = "Someone as sent you a group request.";
+
+        if(Objects.equals(outboxEntity.getEntityNewStatus(), InviteDirection.REQUEST.toString())) {
+            title = "'" + outboxEntity.getPayloadJson().getNoteTopic() + "'" + " would like to join your group.";
+        } else if(Objects.equals(outboxEntity.getEntityNewStatus(), InviteDirection.OFFER.toString())) {
+            title = "'" + outboxEntity.getPayloadJson().getNoteTopic() + "'" + " would like you to join their group.";
+        }
+        String message = outboxEntity.getPayloadJson().getAddContext();
+
+        Notification newNote = new Notification(outboxEntity, title, message);
+
+        Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
+                        outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
                 .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         if (readAt.isPresent()) {

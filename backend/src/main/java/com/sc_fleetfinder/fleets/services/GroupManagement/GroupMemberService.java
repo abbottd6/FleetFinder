@@ -12,7 +12,7 @@ import org.springframework.data.domain.Page;
 
 public interface GroupMemberService {
 
-    GroupMember createOwnerMember(Users user, GroupListing listing);
+    void createOwnerMember(Users user, GroupListing listing);
 
     Page<GroupMembershipResponseDto> getMyGroupMemberships(Users user);
 

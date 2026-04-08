@@ -18,6 +18,7 @@ import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.InGroupRank;
 import com.sc_fleetfinder.fleets.entities.PushSubscription;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.GroupManagement.NewInviteRequestEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -25,6 +26,7 @@ import com.sc_fleetfinder.fleets.utils.GroupManagement.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -48,6 +50,7 @@ public class GroupMemberServiceImpl implements GroupMemberService{
     private final CrewRoleClassificationRepository roleRepo;
     private final UserRepository userRepo;
     private final ModelMapper modelMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public Page<GroupMembershipResponseDto> getMyGroupMemberships(Users user) {
@@ -76,7 +79,7 @@ public class GroupMemberServiceImpl implements GroupMemberService{
             GroupInvite savedInv = inviteRepo.save(new GroupInvite(sender, recipient, listing, direction,
                     dto.getRosterClass(), role, pending, dto.getRequestMessage(), expiresAt));
 
-            //TODO save outbox notification for recipient
+            eventPublisher.publishEvent(new NewInviteRequestEvent(savedInv));
 
             return modelMapper.map(savedInv, GroupInviteRequestOrResponseDto.class);
         } catch (DataIntegrityViolationException e) {
@@ -126,7 +129,7 @@ public class GroupMemberServiceImpl implements GroupMemberService{
                 GroupInvite savedInvite = inviteRepo.save(new GroupInvite(sender, recipient, listing, direction,
                         dto.getRosterClass(), role, pending, dto.getInviteMessage(), expiresAt));
 
-                //TODO save outbox notification for recipient
+                eventPublisher.publishEvent(new NewInviteRequestEvent(savedInvite));
 
                 return modelMapper.map(savedInvite, GroupInviteRequestOrResponseDto.class);
 
@@ -144,11 +147,11 @@ public class GroupMemberServiceImpl implements GroupMemberService{
 
     @Override
     @Transactional
-    public GroupMember createOwnerMember(Users user, GroupListing listing) {
+    public void createOwnerMember(Users user, GroupListing listing) {
         InGroupRank ownerRank = rankService.getGenericRankByTitle(GroupRankGenericTypes.Owner);
         Boolean hasExtNotes = getNewMemberHasExternalNotes(user);
 
-        return memberRepo.save(new GroupMember(listing, user, GroupRosterClass.ACTIVE,
+        memberRepo.save(new GroupMember(listing, user, GroupRosterClass.ACTIVE,
                 ownerRank, hasExtNotes));
     }
 

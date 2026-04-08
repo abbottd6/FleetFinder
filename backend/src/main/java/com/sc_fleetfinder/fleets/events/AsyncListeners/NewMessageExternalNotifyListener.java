@@ -41,7 +41,7 @@ public class NewMessageExternalNotifyListener {
         int outboxNotesGenerated = messageRepo.generateExternalDeliveryOutboxNotifications(
                 recipient.getUserId(), event.message().getMsgId());
 
-        log.warn("Generated {} notification outbox entries for user, '{}' for message ID: {}",
+        log.debug("Generated {} notification outbox entries for user, '{}' for message ID: {}",
                 outboxNotesGenerated, recipient.getUsername(), event.message().getMsgId());
     }
 }

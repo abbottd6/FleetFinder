@@ -5,5 +5,6 @@ public enum NotificationType {
     LISTING_VIS_STATUS_CHANGED,
     MOD_DELETE,
     NEW_LISTING_MATCH,
-    NEW_CHAT_MESSAGE
+    NEW_CHAT_MESSAGE,
+    NEW_GROUP_INVITE
 }
