@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class ModerationIssueConversionServiceImpl implements ModerationIssueConversionService {
 
-    private final ModelMapper modIssueEntityToDtoMapper;
+    private final ModelMapper modelMapper;
 
-    ModerationIssueConversionServiceImpl(ModelMapper modIssueEntityToDtoMapper) {
-        this.modIssueEntityToDtoMapper = modIssueEntityToDtoMapper;
+    ModerationIssueConversionServiceImpl(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public ModerationIssueResponseDto convertToResponseDto(ModerationIssue entity) {
-        return modIssueEntityToDtoMapper.map(entity, ModerationIssueResponseDto.class);
+        return modelMapper.map(entity, ModerationIssueResponseDto.class);
     }
 }

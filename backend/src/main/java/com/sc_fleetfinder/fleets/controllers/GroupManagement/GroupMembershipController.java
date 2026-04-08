@@ -27,7 +27,7 @@ public class GroupMembershipController {
     private final GroupMemberService memberService;
 
     @GetMapping("/my_groups")
-    public Page<GroupMembershipResponseDto> getMyMemberGroups(@AuthenticationPrincipal Jwt jwt) {
+    public Page<GroupMembershipResponseDto> getMyGroupMemberships(@AuthenticationPrincipal Jwt jwt) {
         String kcId = jwt.getSubject();
 
         Users user = userService.verifyUser(kcId);

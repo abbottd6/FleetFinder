@@ -38,13 +38,14 @@ public class MessageRepositoryIntegrationTest extends AbstractIntegrationTestDB 
         String uuid = UUID.randomUUID().toString();
         jdbcTemplate.update(
                 "INSERT INTO users (keycloak_id, user_name, email, external_sys_notes_enabled, " +
-                "external_group_notes_enabled, external_social_notes_enabled, discord_user_id) " +
-                "VALUES (?, ?, ?, 0, 0, ?, ?)",
+                "external_group_notes_enabled, external_social_notes_enabled, discord_user_id, in_game_username) " +
+                "VALUES (?, ?, ?, 0, 0, ?, ?, ?)",
                 uuid,
                 "user_" + uuid.substring(0, 8),
                 uuid.substring(0, 8) + "@test.com",
                 socialNotesEnabled ? 1 : 0,
-                withDiscord ? "123456789012345678" : null
+                withDiscord ? "123456789012345678" : null,
+                "user_" + uuid.substring(0, 8)
         );
         return jdbcTemplate.queryForObject("SELECT MAX(id_user) FROM users", Long.class);
     }

@@ -165,7 +165,7 @@ public class GroupListing {
     @Column(name="vis_status", nullable = false)
     private VisStatus visStatus = VisStatus.FRESH;
 
-    @Column(name="rsvp_required", nullable = false)
+    @Column(name="rsvp_required", nullable = false, columnDefinition = "TINYINT NOT NULL DEFAULT 0")
     private Boolean rsvpRequired = false;
 
     @Column(name="rsvp_scheduled", nullable = true)

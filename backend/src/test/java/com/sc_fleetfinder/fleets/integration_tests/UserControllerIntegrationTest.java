@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.integration_tests;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.config.TestEnvironmentLoader;
+import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
@@ -65,16 +66,23 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
     private static final String MOCK_KCID = "someKeycloakId";
     private static final String MOCK_USERNAME = "TestUser";
     private static final String MOCK_EMAIL = "test@gmail.com";
+    private static final String MOCK_IN_GAME_USERNAME = "InGameUser";
 
     @BeforeEach
     void verifyTestUser() {
+        ServerRegion mockServer = new ServerRegion();
+        mockServer.setServerId(1);
+        mockServer.setServerName("USA");
+
         userRepository.findByKeycloakId(MOCK_KCID)
                 .orElseGet(() -> {
                     Users mockUser = new Users();
                     mockUser.setKeycloakId(MOCK_KCID);
                     mockUser.setEmail(MOCK_EMAIL);
                     mockUser.setUsername(MOCK_USERNAME);
+                    mockUser.setServer(mockServer);
                     mockUser.setIsDeleted(false);
+                    mockUser.setInGameUsername(MOCK_IN_GAME_USERNAME);
 
                     return userRepository.save(mockUser);
                 });
@@ -102,12 +110,13 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
 
     // ─── user endpoint tests (existing) ───────────────────────────────────────
 
+    // this is not really testing anything because security is not enabled
     @Test
     void testGetUsers_Success() throws Exception {
         mockMvc.perform(get("/api/users")
                         .with(jwt()
                                 .jwt(j -> j.subject(MOCK_KCID))
-                                .authorities(new SimpleGrantedAuthority("ROLE_user")))
+                                .authorities(new SimpleGrantedAuthority("ROLE_mod")))
                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -119,6 +128,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .andExpect(jsonPath("$[0].org").exists())
                 .andExpect(jsonPath("$[0].about").exists())
                 .andExpect(jsonPath("$[0].email").doesNotExist())
+                .andExpect(jsonPath("$[0].inGameUsername").value(MOCK_IN_GAME_USERNAME))
                 .andExpect(jsonPath("$[0].groupListingsDto").doesNotExist())
                 .andExpect(jsonPath("$[0].acctCreated").doesNotExist());
     }
@@ -145,6 +155,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
                 .andExpect(jsonPath("$.org").exists())
                 .andExpect(jsonPath("$.about").exists())
                 .andExpect(jsonPath("$.email").doesNotExist())
+                .andExpect(jsonPath("$.inGameUsername").value(MOCK_IN_GAME_USERNAME))
                 .andExpect(jsonPath("$.groupListingsDto").doesNotExist())
                 .andExpect(jsonPath("$.acctCreated").doesNotExist());
     }
@@ -463,6 +474,7 @@ public class UserControllerIntegrationTest extends AbstractIntegrationTestDB {
         user2.setUsername("DifferentOwner");
         user2.setEmail("differentowner@test.com");
         user2.setIsDeleted(false);
+        user2.setInGameUsername("DifferentInGameName");
         user2 = userRepository.save(user2);
         Long templateId = insertTemplate(user2.getUserId());
 

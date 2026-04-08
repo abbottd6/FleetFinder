@@ -85,6 +85,7 @@ public class ListingTemplateRepositoryIntegrationTest extends AbstractIntegratio
         otherUser.setUsername("OtherUser");
         otherUser.setEmail("other@test.com");
         otherUser.setIsDeleted(false);
+        otherUser.setInGameUsername("OtherUser");
         otherUser = userRepository.save(otherUser);
         insertTemplate(otherUser.getUserId());
 
@@ -165,6 +166,7 @@ public class ListingTemplateRepositoryIntegrationTest extends AbstractIntegratio
         otherUser.setUsername("MismatchUser");
         otherUser.setEmail("mismatch@test.com");
         otherUser.setIsDeleted(false);
+        otherUser.setInGameUsername("MismatchUser");
         otherUser = userRepository.save(otherUser);
         Long templateId = insertTemplate(otherUser.getUserId());
 

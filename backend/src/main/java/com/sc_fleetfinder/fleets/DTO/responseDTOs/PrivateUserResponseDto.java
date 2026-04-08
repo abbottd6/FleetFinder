@@ -36,6 +36,8 @@ public class PrivateUserResponseDto {
 
     private String discordUsername;
 
+    private String inGameUsername;
+
     private Boolean externalSysNotesEnabled;
 
     private Boolean externalGroupNotesEnabled;

@@ -237,7 +237,7 @@ public class UserServiceImplTest {
         mockUser.setKeycloakId("mock-kc-id");
         mockUser.setUsername("someUsername");
         mockUser.setEmail("some@email.com");
-        mockUser.setServerId(testServer);
+        mockUser.setServer(testServer);
         mockUser.setOrg("SomeOrg");
         mockUser.setAbout("Some about text");
         mockUser.setDiscordId("12345678901234567890");
@@ -257,7 +257,7 @@ public class UserServiceImplTest {
                 () -> assertEquals("deleted_123@deleted.com", mockUser.getEmail()),
                 () -> assertEquals("deleted_123", mockUser.getUsername()),
                 () -> assertEquals("deleted_123", mockUser.getKeycloakId()),
-                () -> assertNull(mockUser.getServerId()),
+                () -> assertNull(mockUser.getServer()),
                 () -> assertNull(mockUser.getOrg()),
                 () -> assertNull(mockUser.getAbout()),
                 () -> assertNull(mockUser.getDiscordId()),

@@ -10,13 +10,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class BookmarkConversionServiceImpl implements BookmarkConversionService {
 
-    private final ListingBookmarkRepository bmr;
     private final ModelMapper modelMapper;
 
 
-    public BookmarkConversionServiceImpl(ListingBookmarkRepository bookmarkRepository,
-                                         ModelMapper modelMapper) {
-        this.bmr = bookmarkRepository;
+    public BookmarkConversionServiceImpl(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 

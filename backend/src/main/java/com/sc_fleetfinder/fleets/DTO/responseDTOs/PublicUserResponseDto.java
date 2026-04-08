@@ -24,5 +24,5 @@ public class PublicUserResponseDto {
     @Size(max = 255, message = "PublicUserResponseDto 'about' cannot exceed 255 characters")
     private String about;
 
-    public PublicUserResponseDto() {}
+    private String inGameUsername;
 }

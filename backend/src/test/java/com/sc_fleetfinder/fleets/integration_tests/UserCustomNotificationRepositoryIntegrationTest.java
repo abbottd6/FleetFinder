@@ -53,6 +53,7 @@ public class UserCustomNotificationRepositoryIntegrationTest extends AbstractInt
                     u.setUsername("CustomNoteTestUser");
                     u.setEmail("customnotetest@test.com");
                     u.setIsDeleted(false);
+                    u.setInGameUsername("InGameUsername");
                     return userRepository.save(u);
                 });
 
@@ -63,6 +64,7 @@ public class UserCustomNotificationRepositoryIntegrationTest extends AbstractInt
                     u.setUsername("CustomNoteOtherUser");
                     u.setEmail("customnoteother@test.com");
                     u.setIsDeleted(false);
+                    u.setInGameUsername("BetterInGameUsername");
                     return userRepository.save(u);
                 });
     }

@@ -1,8 +1,9 @@
 package com.sc_fleetfinder.fleets.unit_tests.config.mappers;
 
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplayCategoryDto;
-import com.sc_fleetfinder.fleets.config.mappers.CategoryConvertToDtoMapperConfig;
+import com.sc_fleetfinder.fleets.config.mappers.ModelMapperConfig;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.GameplayCategory;
+import com.sc_fleetfinder.fleets.services.MapperLookupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
@@ -14,11 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class CategoryConvertToDtoMapperConfigTest {
 
     private ModelMapper modelMapper = new ModelMapper();
+    private MapperLookupService mls;
 
     @BeforeEach
     void setUp() {
-        CategoryConvertToDtoMapperConfig config = new CategoryConvertToDtoMapperConfig();
-        modelMapper = config.CategoryConvertToDtoMapper();
+        ModelMapperConfig config = new ModelMapperConfig(mls);
+        modelMapper = config.fleetFinderModelMapper();
     }
 
     @Test

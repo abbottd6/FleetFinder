@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class ModListingActionConversionServiceImpl implements ModListingActionConversionService {
 
-    private final ModelMapper modListingActionToDtoMapper;
+    private final ModelMapper modelMapper;
 
-    ModListingActionConversionServiceImpl(ModelMapper modListingActionToDtoMapper) {
-        this.modListingActionToDtoMapper = modListingActionToDtoMapper;
+    ModListingActionConversionServiceImpl(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public ModListingActionDto convertToDto(ModListingAction entity) {
-        return modListingActionToDtoMapper.map(entity, ModListingActionDto.class);
+        return modelMapper.map(entity, ModListingActionDto.class);
     }
 }

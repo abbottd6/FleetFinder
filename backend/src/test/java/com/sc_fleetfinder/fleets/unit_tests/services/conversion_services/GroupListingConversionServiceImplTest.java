@@ -19,58 +19,50 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class GroupListingConversionServiceImplTest {
 
-    // Three separate mocks are required because all three are the same type (ModelMapper)
-    // and Mockito cannot distinguish them by type alone for @InjectMocks.
     @Mock
-    private ModelMapper createMapper;
-
-    @Mock
-    private ModelMapper updateMapper;
-
-    @Mock
-    private ModelMapper responseMapper;
+    private ModelMapper modelMapper;
 
     private GroupListingConversionServiceImpl service;
 
     @BeforeEach
     void setUp() {
         // Constructor order: createGroupListingModelMapper, updateGroupListingModelMapper, groupListingResponseDtoMapper
-        service = new GroupListingConversionServiceImpl(createMapper, updateMapper, responseMapper);
+        service = new GroupListingConversionServiceImpl(modelMapper);
     }
 
     @Test
     void convertListingToResponseDto_MapsEntityToResponseDto() {
         GroupListing listing = new GroupListing();
         GroupListingResponseDto expectedDto = new GroupListingResponseDto();
-        when(responseMapper.map(listing, GroupListingResponseDto.class)).thenReturn(expectedDto);
+        when(modelMapper.map(listing, GroupListingResponseDto.class)).thenReturn(expectedDto);
 
         GroupListingResponseDto result = service.convertListingToResponseDto(listing);
 
         assertThat(result).isEqualTo(expectedDto);
-        verify(responseMapper).map(listing, GroupListingResponseDto.class);
+        verify(modelMapper).map(listing, GroupListingResponseDto.class);
     }
 
     @Test
     void convertToEntity_FromCreateDto_MapsToGroupListing() {
         CreateGroupListingDto dto = new CreateGroupListingDto();
         GroupListing expectedEntity = new GroupListing();
-        when(createMapper.map(dto, GroupListing.class)).thenReturn(expectedEntity);
+        when(modelMapper.map(dto, GroupListing.class)).thenReturn(expectedEntity);
 
         GroupListing result = service.convertToEntity(dto);
 
         assertThat(result).isEqualTo(expectedEntity);
-        verify(createMapper).map(dto, GroupListing.class);
+        verify(modelMapper).map(dto, GroupListing.class);
     }
 
     @Test
     void convertToEntity_FromUpdateDto_MapsToGroupListing() {
         UpdateGroupListingDto dto = new UpdateGroupListingDto();
         GroupListing expectedEntity = new GroupListing();
-        when(updateMapper.map(dto, GroupListing.class)).thenReturn(expectedEntity);
+        when(modelMapper.map(dto, GroupListing.class)).thenReturn(expectedEntity);
 
         GroupListing result = service.convertToEntity(dto);
 
         assertThat(result).isEqualTo(expectedEntity);
-        verify(updateMapper).map(dto, GroupListing.class);
+        verify(modelMapper).map(dto, GroupListing.class);
     }
 }

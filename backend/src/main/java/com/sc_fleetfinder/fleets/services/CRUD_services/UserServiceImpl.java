@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
 
         try {
             if(updateUserDto.getServerId() != null) {
-                user.setServerId(serverService.getServerEntityById(updateUserDto.getServerId()));
+                user.setServer(serverService.getServerEntityById(updateUserDto.getServerId()));
             }
             user.setOrg(updateUserDto.getOrg());
 
@@ -260,7 +260,7 @@ public class UserServiceImpl implements UserService {
 
         toDelete.setEmail("deleted_" + toDelete.getUserId() + "@deleted.com");
         toDelete.setUsername("deleted_" + toDelete.getUserId());
-        toDelete.setServerId(null);
+        toDelete.setServer(null);
         toDelete.setOrg(null);
         toDelete.setAbout(null);
         toDelete.setDiscordId(null);

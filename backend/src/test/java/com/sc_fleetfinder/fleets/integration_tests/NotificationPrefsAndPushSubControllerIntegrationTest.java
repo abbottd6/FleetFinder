@@ -76,6 +76,7 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
                     user.setUsername(MOCK_USERNAME);
                     user.setEmail(MOCK_EMAIL);
                     user.setIsDeleted(false);
+                    user.setInGameUsername("theBestInGameName");
                     return userRepository.save(user);
                 });
     }
@@ -123,6 +124,7 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
         otherUser.setUsername("OtherPushSubUser");
         otherUser.setEmail("otherpushsub@test.com");
         otherUser.setIsDeleted(false);
+        otherUser.setInGameUsername("WowAnInGameUsername");
         otherUser = userRepository.save(otherUser);
 
         insertPushSub(userId, "My Device", "https://push.example.com/sub/mine");
@@ -228,6 +230,7 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
         otherUser.setUsername("OtherUpdateUser");
         otherUser.setEmail("otherupdate@test.com");
         otherUser.setIsDeleted(false);
+        otherUser.setInGameUsername("inGameUsername");
         otherUser = userRepository.save(otherUser);
         Long otherSubId = insertPushSub(otherUser.getUserId(), "Other Device", "https://push.example.com/sub/other2");
 
@@ -275,6 +278,7 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
         otherUser.setUsername("OtherDeleteUser");
         otherUser.setEmail("otherdelete@test.com");
         otherUser.setIsDeleted(false);
+        otherUser.setInGameUsername("inGameUsername");
         otherUser = userRepository.save(otherUser);
         Long otherSubId = insertPushSub(otherUser.getUserId(), "Other Device", "https://push.example.com/sub/other3");
 
@@ -320,6 +324,7 @@ public class NotificationPrefsAndPushSubControllerIntegrationTest extends Abstra
                     u.setUsername("CustomNoteOtherIntUser");
                     u.setEmail("customnoteother_int@test.com");
                     u.setIsDeleted(false);
+                    u.setInGameUsername("wowAnInGameUsername");
                     return userRepository.save(u);
                 });
         return other.getUserId();

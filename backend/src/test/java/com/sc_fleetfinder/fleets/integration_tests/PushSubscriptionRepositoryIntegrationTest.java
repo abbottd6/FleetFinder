@@ -53,6 +53,7 @@ public class PushSubscriptionRepositoryIntegrationTest extends AbstractIntegrati
                     u.setUsername("PushSubTestUser");
                     u.setEmail("pushsubtest@test.com");
                     u.setIsDeleted(false);
+                    u.setInGameUsername("inGameUsername");
                     return userRepository.save(u);
                 });
 
@@ -63,6 +64,7 @@ public class PushSubscriptionRepositoryIntegrationTest extends AbstractIntegrati
                     u.setUsername("PushSubOtherUser");
                     u.setEmail("pushsubother@test.com");
                     u.setIsDeleted(false);
+                    u.setInGameUsername("betterUsername");
                     return userRepository.save(u);
                 });
     }

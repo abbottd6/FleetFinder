@@ -39,7 +39,7 @@ public class PushSubscriptionServiceImpl implements PushSubscriptionService {
     private final PushNotificationService pushNotificationService;
 
     public PushSubscriptionServiceImpl(PushSubscriptionRepository pushSubRepo,
-                                       @Qualifier("pushSubscriptionMapper")ModelMapper modelMapper,
+                                       ModelMapper modelMapper,
                                        PushNotificationService pushNotificationService) {
         this.pushSubRepo = pushSubRepo;
         this.modelMapper = modelMapper;

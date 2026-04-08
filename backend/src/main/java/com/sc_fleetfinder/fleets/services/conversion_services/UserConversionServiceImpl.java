@@ -17,13 +17,10 @@ import java.util.stream.Collectors;
 public class UserConversionServiceImpl implements UserConversionService{
 
     private static final Logger log = LoggerFactory.getLogger(UserConversionServiceImpl.class);
-    private final ModelMapper groupListingResposneDtoMapper;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserConversionServiceImpl(ModelMapper groupListingResponseDtoMapper,
-                                     ModelMapper modelMapper) {
-        this.groupListingResposneDtoMapper = groupListingResponseDtoMapper;
+    public UserConversionServiceImpl(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
@@ -32,7 +29,7 @@ public class UserConversionServiceImpl implements UserConversionService{
 
         //Entity 'Users' contains a set of groupListing entities that also need to be converted to the response dto
         Set<GroupListingResponseDto> groupListingResponseDtos = users.getGroupListings().stream()
-                .map(groupListing -> groupListingResposneDtoMapper.map(groupListing, GroupListingResponseDto.class))
+                .map(groupListing -> modelMapper.map(groupListing, GroupListingResponseDto.class))
                 .collect(Collectors.toSet());
 
         PrivateUserResponseDto privateUserResponseDto = modelMapper.map(users, PrivateUserResponseDto.class);

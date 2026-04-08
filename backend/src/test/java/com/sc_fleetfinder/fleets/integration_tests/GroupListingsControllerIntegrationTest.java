@@ -1,6 +1,10 @@
 package com.sc_fleetfinder.fleets.integration_tests;
 
+import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberService;
 import com.sc_fleetfinder.fleets.testConfig.SimpMessageTestConfig;
+import org.mockito.Mock;
 import tools.jackson.databind.ObjectMapper;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
@@ -25,6 +29,9 @@ import java.time.Instant;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import org.junit.jupiter.api.Disabled;
@@ -61,6 +68,9 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
 
     @Autowired
     private MapperLookupService mapperLookupService;
+
+    @MockitoBean
+    private GroupMemberService memberService;
 
     @Test
     void testGetGroupListingByIdSuccess() throws Exception {
@@ -155,6 +165,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
             testDto.setCommsService("Discord");
             testDto.setLanguageCode(LanguageOptions.English);
 
+        doNothing().when(memberService).createOwnerMember(any(Users.class), any(GroupListing.class));
+
         //posting the listing to call createGroupListing
         mockMvc.perform(post("/api/group-listings/create_listing")
                         .with(jwt().jwt(jwt -> jwt.claim("sub", "someKeycloakId")))
@@ -218,6 +230,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
         testDto.setCurrentPartySize(2);
         testDto.setCommsOption("Optional");
         testDto.setLanguageCode(LanguageOptions.English);
+
+        doNothing().when(memberService).createOwnerMember(any(Users.class), any(GroupListing.class));
 
         //posting the listing to call createGroupListing
         mockMvc.perform(post("/api/group-listings/create_listing")
@@ -333,8 +347,8 @@ public class GroupListingsControllerIntegrationTest extends AbstractIntegrationT
     @Test
     void testDeleteGroupListing_Unauthorized_WrongUser() throws Exception {
         jdbcTemplate.update(
-                "INSERT INTO users (keycloak_id, user_name, email) VALUES (?, ?, ?)",
-                "anotherKeycloakId", "AnotherTestUser", "another@test.com");
+                "INSERT INTO users (keycloak_id, user_name, email, in_game_username) VALUES (?, ?, ?, ?)",
+                "anotherKeycloakId", "AnotherTestUser", "another@test.com", "inGameUsername");
 
         mockMvc.perform(delete("/api/group-listings/delete_listing/1")
                         .with(jwt()

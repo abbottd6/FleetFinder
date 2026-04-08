@@ -256,7 +256,10 @@ public class GroupMemberServiceImpl implements GroupMemberService{
                 inviteRepo.save(invite);
             }
         } else if(Objects.equals(invite.getInviteDirection(), InviteDirection.REQUEST)) {
-            rankService.verifyUserRankPermissions(actingUser, dto.getListingDetails(),
+            GroupListing listing = glr.findById(dto.getListingDetails().getGroupId())
+                            .orElseThrow(() -> new ResourceNotFoundException("Group Listing", dto.getListingDetails().getGroupId()));
+
+            rankService.verifyUserRankPermissions(actingUser, listing,
                     RankPrivilegeOptions.MANAGE_ROSTERS);
 
             invite.setInviteStatus(GroupInvitationStatus.DECLINED);
@@ -284,7 +287,10 @@ public class GroupMemberServiceImpl implements GroupMemberService{
                 //TODO save outbox notification for recipient
             }
         } else if(Objects.equals(invite.getInviteDirection(), InviteDirection.REQUEST)) {
-            rankService.verifyUserRankPermissions(actingUser, dto.getListingDetails(),
+            GroupListing listing = glr.findById(dto.getListingDetails().getGroupId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Group Listing", dto.getListingDetails().getGroupId()));
+
+            rankService.verifyUserRankPermissions(actingUser, listing,
                     RankPrivilegeOptions.MANAGE_ROSTERS);
 
             invite.setInviteStatus(GroupInvitationStatus.RESCINDED);

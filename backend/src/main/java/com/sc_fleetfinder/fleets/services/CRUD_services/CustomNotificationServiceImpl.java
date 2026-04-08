@@ -26,7 +26,7 @@ public class CustomNotificationServiceImpl implements CustomNotificationService 
     private final ModelMapper modelMapper;
 
     public CustomNotificationServiceImpl(UserCustomNotificationRepository cnr,
-                                         @Qualifier("customNotificationMapper") ModelMapper modelMapper) {
+                                         ModelMapper modelMapper) {
         this.cnr = cnr;
         this.modelMapper = modelMapper;
     }

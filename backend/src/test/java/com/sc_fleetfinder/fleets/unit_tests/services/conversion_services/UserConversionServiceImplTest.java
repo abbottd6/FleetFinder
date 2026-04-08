@@ -87,6 +87,7 @@ public class UserConversionServiceImplTest {
         mockUser.setUsername("mockUsername");
         mockUser.setEmail("thisrawemail@gmail.com");
         mockUser.setIsDeleted(false);
+        mockUser.setInGameUsername("anInGameUsername");
 
         PublicUserResponseDto mockDto = new PublicUserResponseDto();
         mockDto.setUserId(1L);
@@ -113,7 +114,8 @@ public class UserConversionServiceImplTest {
                 "username",
                 "server",
                 "org",
-                "about"
+                "about",
+                "inGameUsername"
         );
 
         assertAll("users convertToDto assertion set: Success",

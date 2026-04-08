@@ -56,8 +56,8 @@ public class ModerationIssueRepositoryIntegrationTest extends AbstractIntegratio
     private Long insertReporter() {
         String uuid = java.util.UUID.randomUUID().toString();
         jdbcTemplate.update(
-                "INSERT INTO users (keycloak_id, user_name, email) VALUES (?, ?, ?)",
-                uuid, "reporter_" + uuid.substring(0, 8), uuid.substring(0, 8) + "@test.com"
+                "INSERT INTO users (keycloak_id, user_name, email, in_game_username) VALUES (?, ?, ?, ?)",
+                uuid, "reporter_" + uuid.substring(0, 8), uuid.substring(0, 8) + "@test.com", "inGameUsername"
         );
         return jdbcTemplate.queryForObject("SELECT MAX(id_user) FROM users", Long.class);
     }

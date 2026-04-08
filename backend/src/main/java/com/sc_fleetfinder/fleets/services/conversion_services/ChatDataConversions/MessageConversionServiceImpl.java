@@ -8,14 +8,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class MessageConversionServiceImpl implements MessageConversionService {
 
-    private final ModelMapper messageMapper;
+    private final ModelMapper modelMapper;
 
-    MessageConversionServiceImpl(ModelMapper messageMapper) {
-        this.messageMapper = messageMapper;
+    MessageConversionServiceImpl(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public GetMessageDto convertToDto(Message entity) {
-        return messageMapper.map(entity, GetMessageDto.class);
+        return modelMapper.map(entity, GetMessageDto.class);
     }
 }

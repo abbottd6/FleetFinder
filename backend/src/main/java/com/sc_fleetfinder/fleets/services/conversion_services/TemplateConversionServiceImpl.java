@@ -11,19 +11,19 @@ import org.springframework.stereotype.Service;
 @Service
 public class TemplateConversionServiceImpl implements TemplateConversionService {
 
-    private final ModelMapper templatesMapper;
+    private final ModelMapper modelMapper;
 
-    public TemplateConversionServiceImpl(@Qualifier("listingTemplateMapper") ModelMapper templatesMapper) {
-        this.templatesMapper = templatesMapper;
+    public TemplateConversionServiceImpl(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public ListingTemplateResponseDto convertToDto(ListingTemplate entity) {
-        return templatesMapper.map(entity, ListingTemplateResponseDto.class);
+        return modelMapper.map(entity, ListingTemplateResponseDto.class);
     }
 
     @Override
     public ListingTemplate convertToEntity(CreateOrEditListingTemplateDto dto) {
-        return templatesMapper.map(dto, ListingTemplate.class);
+        return modelMapper.map(dto, ListingTemplate.class);
     }
 }

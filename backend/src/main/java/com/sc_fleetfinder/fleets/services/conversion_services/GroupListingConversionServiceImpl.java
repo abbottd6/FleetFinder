@@ -10,31 +10,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class GroupListingConversionServiceImpl implements GroupListingConversionService {
 
-    private final ModelMapper groupListingResponseDtoMapper;
-    private final ModelMapper createGroupListingModelMapper;
-    private final ModelMapper updateGroupListingModelMapper;
+    private final ModelMapper modelMapper;
 
-    public GroupListingConversionServiceImpl(ModelMapper createGroupListingModelMapper,
-                                             ModelMapper updateGroupListingModelMapper,
-                                             ModelMapper groupListingResponseDtoMapper) {
-        this.createGroupListingModelMapper = createGroupListingModelMapper;
-        this.updateGroupListingModelMapper = updateGroupListingModelMapper;
-        this.groupListingResponseDtoMapper = groupListingResponseDtoMapper;
+    public GroupListingConversionServiceImpl(ModelMapper modelMapper){
+        this.modelMapper = modelMapper;
     }
 
     @Override
     public GroupListingResponseDto convertListingToResponseDto(GroupListing groupListing) {
-        return groupListingResponseDtoMapper.map(groupListing, GroupListingResponseDto.class);
+        return modelMapper.map(groupListing, GroupListingResponseDto.class);
     }
 
     //need to create an updatelisting version of this
     @Override
     public GroupListing convertToEntity(CreateGroupListingDto createGroupListingDto) {
-        return createGroupListingModelMapper.map(createGroupListingDto, GroupListing.class);
+        return modelMapper.map(createGroupListingDto, GroupListing.class);
     }
 
     @Override
     public GroupListing convertToEntity(UpdateGroupListingDto updateGroupListingDto) {
-        return updateGroupListingModelMapper.map(updateGroupListingDto, GroupListing.class);
+        return modelMapper.map(updateGroupListingDto, GroupListing.class);
     }
 }

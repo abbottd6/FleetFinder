@@ -13,6 +13,7 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberService;
 import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
@@ -64,7 +65,7 @@ class GroupListingServiceImplTest {
     private GroupListingRepository groupListingRepository;
 
     @Mock
-    private ModelMapper createGroupListingModelMapper;
+    private ModelMapper modelMapper;
 
     @Mock
     private MapperLookupService mapperLookupService;
@@ -80,6 +81,9 @@ class GroupListingServiceImplTest {
 
     @Mock
     private NotificationOutboxRepository notificationOutboxRepository;
+
+    @Mock
+    private GroupMemberService memberService;
 
     @Mock
     private NewListingNotifyQueueRepository listingNotifyQueueRepository;
@@ -246,6 +250,8 @@ class GroupListingServiceImplTest {
         Users testUsers = new Users();
             testUsers.setUserId(1L);
             testUsers.setUsername("TestUser");
+            testUsers.setEmail("@email.com");
+            testUsers.setInGameUsername("thatInGameUsername");
 
         //returning new entities from lookup service for test only
         when(mapperLookupService.findUserById(validDto.getUserId())).thenReturn(testUsers);
@@ -258,6 +264,7 @@ class GroupListingServiceImplTest {
 
         when(groupListingConversionService.convertToEntity(validDto)).thenReturn(mappedEntity);
         when(groupListingRepository.save(any(GroupListing.class))).thenReturn(mappedEntity);
+        doNothing().when(memberService).createOwnerMember(any(Users.class), any(GroupListing.class));
 
         //when
         ResponseEntity<?> response = groupListingService.createGroupListing(validDto, testUsers);
@@ -277,7 +284,7 @@ class GroupListingServiceImplTest {
                 () -> verify(groupListingRepository, times(1)).save(any(GroupListing.class)),
                 () -> verify(groupListingRepository, times(1)).flush(),
                 () -> verify(mapperLookupService, times(1)).findUserById(validDto.getUserId()),
-                () -> verifyNoMoreInteractions(createGroupListingModelMapper, groupListingRepository));
+                () -> verifyNoMoreInteractions(modelMapper, groupListingRepository));
     }
 
 
