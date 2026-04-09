@@ -1,5 +1,7 @@
 <div class="generic-input">
-  <mat-label>{{ label }}</mat-label>
+  <ng-container *ngIf="label">
+    <mat-label>{{ label }}</mat-label>
+  </ng-container>
   <mat-form-field>
     <mat-error *ngIf="inputCtrl?.hasError && (inputCtrl.dirty || !inputCtrl.untouched)">
         <span *ngIf="inputCtrl?.hasError?.('minlength')">
@@ -12,7 +14,7 @@
           {{ errorLabel }} is Required
         </span>
     </mat-error>
-    <input
+    <textarea
       matInput
       [formControl]="inputCtrl"
       (input)="updateCharacterCount()"
@@ -20,6 +22,7 @@
       [attr.minlength]="min"
       placeholder="{{ placeholder }}"
       [attr.aria-labelledby]="label">
+    </textarea>
     <mat-hint align="start">{{ characterCount }}/{{ max }}</mat-hint>
   </mat-form-field>
 </div>

@@ -21,6 +21,7 @@ export class AbstractStringDropdownComponent implements OnInit, OnDestroy {
   private destroy$: Subject<void> = new Subject<void>();
 
   @Input() abstractControl!: FormControl;
+  @Input() fieldLabel?: string;
   @Input() options: string[] = [];
   @Input() errorMessage?: string;
   @Input() placeholderLabel?: string;

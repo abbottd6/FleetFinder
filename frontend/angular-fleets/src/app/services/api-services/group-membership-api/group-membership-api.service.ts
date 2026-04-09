@@ -15,10 +15,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
     GroupInviteViewModel
   } from "../../../models/group-management-models/view-models/group-membership/group-invite-view-model";
 
-export const rosterClasses = new Map<string, string>([
-  ['ACTIVE', 'Active'],
-  ['WAITLIST', 'Waitlist']
-]);
+export const rosterClasses: string[] = ['Active', 'Waitlist'];
 
 @Injectable({
   providedIn: 'root'

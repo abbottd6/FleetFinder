@@ -1,1 +1,45 @@
-<p>invite-request-popup works!</p>
+<h2 mat-dialog-title>{{ title }}</h2>
+<mat-dialog-content>
+  <div class="listing-details">
+    <div class="field-row">
+      <span class="field-label">Owner: </span>
+      <span class="field-val">{{ data.listing.userName }}</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">Title: </span>
+      <span>{{ data.listing.listingTitle.length > 42 ? (data.listing.listingTitle|slice: 0: 39) + '...' : data.listing.listingTitle }}</span>
+    </div>
+  </div>
+  <div>
+    <ng-container *ngIf="rosterVals">
+      <app-abstract-string-dropdown
+        [abstractControl]="rosterClassCtrl"
+        [fieldLabel]="'Roster:'"
+        [options]="rosterVals"
+        [errorMessage]="'Requested roster is required'">
+      </app-abstract-string-dropdown>
+    </ng-container>
+  </div>
+  <ng-container *ngIf="data.groupRoles != null">
+    <div>
+      <app-abstract-string-dropdown
+        [abstractControl]="roleCtrl"
+        [options]="groupRoles"
+        [errorMessage]="">
+      </app-abstract-string-dropdown>
+    </div>
+  </ng-container>
+  <div class="dropdown-component">
+    <app-generic-medium-input-field
+      [min]=0
+      [max]=255
+      [placeholder]="'Optional message...'"
+      [inputCtrl]="msgInputCtrl">
+    </app-generic-medium-input-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button class="action-buttons" (click)="onCancel()">Cancel</button>
+  <button class="action-buttons" (click)="onConfirm()">Submit</button>
+</mat-dialog-actions>

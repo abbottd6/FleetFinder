@@ -34,6 +34,8 @@ import {
 import {
   UserMonikerSummaryViewModel
 } from "../../../models/group-management-models/nested-models/user-moniker-summary-view-model";
+import {InviteFormPopupComponent} from "../../../components/pop-ups/invite-form-popup/invite-form-popup.component";
+import {HttpErrorResponse} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'
@@ -124,11 +126,7 @@ export class ListingViewInteractionsService {
     this.isModalVisible = true;
   }
 
-  openRequestInvitePopup(tempListing: GroupListingViewModel) {
-    this.setSelectedListing(tempListing);
-  }
-
-  requestGroupInvite(tempListing: GroupListingViewModel, requestedStatus: string, message: string) {
+  openRequestInvitePopup() {
     if(!this.userSrv.userLoggedIn) {
       this.snackBar.open("You must log in to send invite requests.", 'OK', {
         duration: 5000,
@@ -139,7 +137,25 @@ export class ListingViewInteractionsService {
       return;
     }
 
-    const invRequest = new SendGroupInviteRequest(tempListing.groupId, requestedStatus, message);
+    const dialogRef = this.dialog.open(InviteFormPopupComponent, {
+      data: {
+        listing: this.selectedListing,
+        inviteDirection: 'REQUEST',
+        groupRoles: null,
+      }
+    });
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((inv: SendGroupInviteRequest | null) => {
+        if(!inv) {
+          this.selectedListingSubject.next(null);
+          return;
+        }
+        this.requestGroupInvite(inv);
+      })
+  }
+
+  requestGroupInvite(invRequest: SendGroupInviteRequest) {
 
     this.groupMembershipsApi.sendGroupInviteRequest(invRequest).pipe(take(1))
       .subscribe( {
@@ -152,7 +168,7 @@ export class ListingViewInteractionsService {
           });
         },
         error: (err) => {
-          const msg = err.splice(0, 100);
+          const msg = err.error.message ?? 'Failed: an error occurred.';
           this.snackBar.open(msg, 'OK', {
             duration: 5000,
             verticalPosition: 'top',

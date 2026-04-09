@@ -1,11 +1,15 @@
 @import '../input-field/input-field-styles.css';
+:host {
+  min-width: 100%;
+  margin: 0;
+}
 
 .generic-input {
   display: flex;
   flex: 1;
   padding: 10px;
-  width: 100%;
-  margin-left: 1rem;
+  min-width: 325px;
+  margin-inline: auto;
 }
 
 mat-label {
@@ -15,16 +19,25 @@ mat-label {
 
 /* input text/placeholder text */
 :host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
-  color: rgba(150, 168, 183, 0.5) !important;
+  color: rgba(150, 168, 183, 0.75) !important;
+  min-height: 150px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+:host ::ng-deep .mat-mdc-form-field-infix {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 0;
 }
 
 @media(min-width: 725px) {
   .mat-mdc-form-field {
-    min-width: 75%;
+    min-width: 100%;
     font-family: 'Orbitron', sans-serif;
     transition: color 0.5s ease, font-size 0.5s ease;
-    /*color: rgba(33, 37, 41, .75);*/
     font-size: clamp(0.8rem, 1vw, 1rem);
+    padding: 0;
   }
 }
 
