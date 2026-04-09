@@ -23,9 +23,9 @@ public class GroupMembershipEventListener {
     public void handleNewInviteRequestNotify(NewInviteRequestEvent event) {
         GroupInvite request = event.invite();
 
-        inviteRepo.generateOutboxNotificationsForNewGroupInviteRequest(request.getInviteId());
+        Integer count = inviteRepo.generateOutboxNotificationsForNewGroupInviteRequest(request.getInviteId());
 
-        log.info("Generated a notification outbox entry to user {}, for invite ID: {}",
-                request.getRecipient().getUserId(), request.getInviteId());
+        log.info("Generated {} notification outbox entry to user {}, for invite ID: {}",
+                count, request.getRecipient().getUserId(), request.getInviteId());
     }
 }

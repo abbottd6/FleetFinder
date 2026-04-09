@@ -809,6 +809,15 @@ public class ModelMapperConfig {
                     mapper.map(ModerationIssue::getStatus, ModerationIssueResponseDto::setStatus);
                 });
 
+// NOTIFICATIONS
+        modelMapper.createTypeMap(Notification.class, GetNotificationDto.class)
+                .addMappings(mapper -> {
+                    mapper.using(ctx -> {
+                        NotificationOutbox ob = (NotificationOutbox) ctx.getSource();
+                        return ob != null ? ob.getEntityNewStatus() : null;
+                    }).map(Notification::getOutbox, GetNotificationDto::setEntityNewStatus);
+                });
+
 // CUSTOM NOTIFICATIONS
         // Create/Edit Custom Notification ----->>>> entity
         modelMapper.createTypeMap(CreateOrEditCustomNotificationDto.class, UserCustomNotification.class)

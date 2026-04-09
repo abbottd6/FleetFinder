@@ -9,14 +9,14 @@
       <mat-checkbox (change)="$event ? toggleAllRows() : null"
                     [checked]="selection.hasValue() && isAllSelected()"
                     [indeterminate]="selection.hasValue() && !isAllSelected()"
-                    [aria-label]="checkboxLabel()">
+                    [aria-labelledby]="checkboxLabel()">
       </mat-checkbox>
     </th>
     <td mat-cell *matCellDef="let row; let i = index" class="select-column">
       <mat-checkbox (click)="$event.stopPropagation()"
                     (change)="$event ? selection.toggle(row) : null"
                     [checked]="selection.isSelected(row)"
-                    [aria-label]="checkboxLabel(row)">
+                    [aria-labelledby]="checkboxLabel(row)">
       </mat-checkbox>
     </td>
   </ng-container>

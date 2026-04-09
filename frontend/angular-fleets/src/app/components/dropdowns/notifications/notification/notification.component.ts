@@ -39,7 +39,7 @@ export class NotificationComponent implements OnInit {
         this.header = "Listing visibility status changed";
         this.contextLabel = "New status: ";
         this.context = this.note.targetMetadata?.addContext;
-        this.hasLink = 'user-account'
+        this.hasLink = 'user-account';
         break;
       case ('LISTING_ARCHIVED'):
         this.header = this.note.title;
@@ -54,6 +54,17 @@ export class NotificationComponent implements OnInit {
         this.contextLabel = "Group Status: ";
         this.context = this.note.targetMetadata?.addContext;
         this.hasLink = "listing-details/" + this.note.targetMetadata?.targetId;
+        break;
+      case ('NEW_GROUP_INVITE'):
+        if(this.note.entityNewStatus === 'REQUEST') {
+          this.header = "New request to join your group";
+        } else {
+          this.header = "New group invite"
+        }
+        this.contextLabel = "From: ";
+        this.context = this.note.targetMetadata?.noteTopic;
+        this.hasLink = 'user-account';
+        break;
     }
 
     if (this.note.message.includes("EXPIRED")) {

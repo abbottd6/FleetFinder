@@ -43,9 +43,11 @@ import {
 
 export class InviteFormPopupComponent {
   inGameUsernameCtrl: FormControl<string> = new FormControl<string>('', {nonNullable: true});
-  rosterClassCtrl: FormControl<string> = new FormControl<string>('Active', {nonNullable: true});
+  rosterClassCtrl: FormControl<string> = new FormControl<string>('', {nonNullable: true});
   msgInputCtrl: FormControl<string | null> = new FormControl<string | null>(null);
   roleCtrl: FormControl<RoleClassSummaryViewModel | null> = new FormControl<RoleClassSummaryViewModel | null>(null);
+
+  showRosterFullMessage: boolean = false;
 
   rosterVals: string[] = rosterClasses;
 
@@ -72,6 +74,13 @@ export class InviteFormPopupComponent {
 
     if(data.inGameUsername != null) {
       this.inGameUsernameCtrl.setValue(data.inGameUsername);
+    }
+
+    if(data.listing.currentPartySize >= data.listing.desiredPartySize) {
+      this.showRosterFullMessage = true;
+      this.rosterClassCtrl.setValue('Waitlist');
+    } else {
+      this.rosterClassCtrl.setValue('Active')
     }
 
     if(data.groupRoles) {

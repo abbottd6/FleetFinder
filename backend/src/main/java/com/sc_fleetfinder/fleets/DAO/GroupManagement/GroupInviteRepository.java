@@ -79,7 +79,8 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                 AND push.social_notes_enabled = 1
             WHERE inv.id_invite = :inviteId
                 AND (
-                    (channels.delivery_channel = 'DISCORD'
+                    channels.delivery_channel = 'IN_APP'
+                    OR (channels.delivery_channel = 'DISCORD'
                         AND recipient.discord_user_id IS NOT NULL
                         AND recipient.external_social_notes_enabled = 1)
                     OR (channels.delivery_channel = 'PUSH'

@@ -30,6 +30,9 @@
       </app-generic-small-input-field>
     </div>
     <div>
+      <div *ngIf="showRosterFullMessage">
+        <span>This group's roster is full. You can request to join the waitlist in case a member drops out.</span>
+      </div>
       <ng-container *ngIf="rosterVals">
         <app-abstract-string-dropdown
           [abstractControl]="rosterClassCtrl"
