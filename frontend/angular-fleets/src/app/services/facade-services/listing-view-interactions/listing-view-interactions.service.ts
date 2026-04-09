@@ -140,6 +140,7 @@ export class ListingViewInteractionsService {
     const dialogRef = this.dialog.open(InviteFormPopupComponent, {
       data: {
         listing: this.selectedListing,
+        inGameUsername: this.userSrv.inGameUsername,
         inviteDirection: 'REQUEST',
         groupRoles: null,
       }
@@ -168,7 +169,7 @@ export class ListingViewInteractionsService {
           });
         },
         error: (err) => {
-          const msg = err.error.message ?? 'Failed: an error occurred.';
+          const msg = err.error.message.substring(0, 60) ?? 'Failed: an error occurred.';
           this.snackBar.open(msg, 'OK', {
             duration: 5000,
             verticalPosition: 'top',
@@ -177,6 +178,17 @@ export class ListingViewInteractionsService {
           });
         }
         });
+  }
+
+  copyListingLink(groupId: number | undefined) {
+    const link = environment.webAppBaseUrl + `/listing-details/${this.selectedListing?.groupId}`;
+    navigator.clipboard.writeText(link);
+    this.snackBar.open('Link copied.', 'OK', {
+      duration: 4000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+      panelClass: ['mobile-snackbar']
+    })
   }
 
   //modal popup cancel click for interactable cell
@@ -374,13 +386,6 @@ export class ListingViewInteractionsService {
       console.log("reason: ", reason);
     }
     this.refreshSubject.next(reason);
-  }
-
-  copyListingLink(groupId: number) {
-    const link = environment.webAppBaseUrl + `/listing-details/${groupId}`;
-    navigator.clipboard.writeText(link);
-    this.linkCopied = true;
-    setTimeout(() => this.linkCopied = false, 20000);
   }
 
   //on close instructions for groupListing modal popup

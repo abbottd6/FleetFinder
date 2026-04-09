@@ -20,6 +20,9 @@ import {
   AbstractStringDropdownComponent
 } from "../../dropdowns/abstract-string-string-map-dropdown/abstract-string-dropdown.component";
 import {NgIf, SlicePipe} from "@angular/common";
+import {
+  GenericSmallInputFieldComponent
+} from "../../input-fields/generic-small-input-field/generic-small-input-field.component";
 
 @Component({
   selector: 'app-invite-request-popup',
@@ -33,11 +36,13 @@ import {NgIf, SlicePipe} from "@angular/common";
     MatDialogActions,
     NgIf,
     SlicePipe,
+    GenericSmallInputFieldComponent,
   ],
   styleUrl: './invite-form-popup.component.css'
 })
 
 export class InviteFormPopupComponent {
+  inGameUsernameCtrl: FormControl<string> = new FormControl<string>('', {nonNullable: true});
   rosterClassCtrl: FormControl<string> = new FormControl<string>('Active', {nonNullable: true});
   msgInputCtrl: FormControl<string | null> = new FormControl<string | null>(null);
   roleCtrl: FormControl<RoleClassSummaryViewModel | null> = new FormControl<RoleClassSummaryViewModel | null>(null);
@@ -52,6 +57,7 @@ export class InviteFormPopupComponent {
     @Inject(MAT_DIALOG_DATA)
     public data: {
       listing: GroupListingViewModel,
+      inGameUsername: string,
       inviteDirection: string,
       groupRoles: RoleClassSummaryViewModel[],
     },
@@ -64,6 +70,10 @@ export class InviteFormPopupComponent {
       this.title = "Send Group Invite"
     }
 
+    if(data.inGameUsername != null) {
+      this.inGameUsernameCtrl.setValue(data.inGameUsername);
+    }
+
     if(data.groupRoles) {
       data.groupRoles.forEach(r => this.groupRoles.push(r.roleTitle))
     }
@@ -72,7 +82,7 @@ export class InviteFormPopupComponent {
   /*TODO add rules for invite offer */
   onConfirm(): void {
     if(this.data.inviteDirection === 'REQUEST') {
-      const invRequest = new SendGroupInviteRequest(this.data.listing.groupId,
+      const invRequest = new SendGroupInviteRequest(this.data.listing.groupId, this.inGameUsernameCtrl.value,
         this.rosterClassCtrl.value.toUpperCase(), this.msgInputCtrl.value)
       this.dialogRef.close(invRequest);
     } else if(this.data.inviteDirection === 'OFFER') {

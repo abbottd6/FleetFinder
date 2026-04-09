@@ -10,7 +10,7 @@ h2 {
 }
 
 .listing-details {
-  margin: 1rem 0 0 0;
+  margin: 0;
   padding-left: 0;
 }
 
@@ -30,6 +30,33 @@ h2 {
 
 }
 
+:host ::ng-deep #in-game-username app-generic-small-input-field {
+  margin-left: 0;
+  margin-right: auto;
+  padding-left: 0;
+}
+
+#in-game-username {
+  padding: 0;
+  margin: 0;
+}
+
+:host ::ng-deep #in-game-username .generic-input {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto 0 0;
+  max-width: 400px;
+  gap: 10px;
+}
+
+:host ::ng-deep #in-game-username .generic-input mat-label {
+  margin-top: 0;
+}
+
+:host ::ng-deep #in-game-username .generic-input .mat-mdc-input-element {
+  color: rgb(53, 114, 163) !important;
+}
+
 :host .mat-mdc-dialog-content {
   display: flex;
   flex-direction: column;
@@ -39,15 +66,22 @@ h2 {
   justify-content: flex-start;
 }
 
+.content-section-wrapper {
+  margin: 10px 0 10px 0;
+  background-color: rgba(108, 108, 108, 0.1);
+  box-shadow: 0 0 5px rgba(188, 191, 200, .1);
+}
+
 :host ::ng-deep .dropdown-component .ng-select-searchable {
   margin-left: 0 !important;
   margin-right: auto;
+  margin-bottom: 10px;
   min-width: 250px !important;
   max-height: 100%;
 }
 
 :host ::ng-deep .dropdown-component label {
-  margin-left: 0 !important;
+  margin-left: 10px !important;
   padding-left: 0;
   margin-right: 15px;
 }

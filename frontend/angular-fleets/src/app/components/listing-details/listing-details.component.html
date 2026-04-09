@@ -187,7 +187,7 @@
               Options
               <mat-icon>arrow_drop_down</mat-icon>
             </button>
-            <mat-menu #listingOptionsMenu="matMenu">
+            <mat-menu #listingOptionsMenu="matMenu" yPosition="above">
               <button
                 mat-menu-item
                 class="options-item"
@@ -213,7 +213,7 @@
               <button mat-menu-item
                       class="options-item"
                       (click)="listingInteract.copyListingLink(listing.groupId)">
-                Share Link
+                Copy Link
               </button>
               <button
                 mat-menu-item
@@ -230,10 +230,25 @@
             <ng-template #notOwner>
               <button type="button"
                       class="action-buttons-with-icons"
-                      (click)="chatHostSrv.provisionConversation(listing!)">
+                      [matMenuTriggerFor]="ownerConnectMenu">
                 <mat-icon class="msg-icon">rss_feed</mat-icon>
-                Message
+                Connect
               </button>
+              <mat-menu #ownerConnectMenu="matMenu" yPosition="above">
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="chatHostSrv.provisionConversation(listing!)">
+                  Send Message
+                </button>
+
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="listingInteract.openRequestInvitePopup()">
+                  Join Request
+                </button>
+              </mat-menu>
             </ng-template>
           </div>
           <div id="copied-hint">

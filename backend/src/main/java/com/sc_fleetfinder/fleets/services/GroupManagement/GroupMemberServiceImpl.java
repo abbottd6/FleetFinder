@@ -103,6 +103,11 @@ public class GroupMemberServiceImpl implements GroupMemberService{
         CrewRoleClassification role = null;
         Users recipient = listing.getUsers();
 
+        if(!Objects.equals(sender.getInGameUsername(), dto.getInGameUsername())) {
+            sender.setInGameUsername(dto.getInGameUsername());
+            userRepo.saveAndFlush(sender);
+        }
+
         Instant expiresAt = listing.getEventSchedule();
         if(expiresAt == null) {
             expiresAt = Instant.now().plus(12, ChronoUnit.HOURS);

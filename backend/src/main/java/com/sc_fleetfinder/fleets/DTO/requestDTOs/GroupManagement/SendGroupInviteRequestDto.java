@@ -10,6 +10,8 @@ public class SendGroupInviteRequestDto {
 
     @NotNull(message="SendGroupInviteRequestDto field 'listingId' cannot be null.")
     private Long listingId;
+    @NotBlank(message="SendGroupInviteRequestDto field 'inGameUsername' cannot be null.")
+    private String inGameUsername;
     private GroupMemberStatus memberStatus;
     private String requestMessage;
 }

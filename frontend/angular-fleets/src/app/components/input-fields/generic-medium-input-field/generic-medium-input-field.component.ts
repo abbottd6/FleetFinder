@@ -29,11 +29,13 @@ export class GenericMediumInputFieldComponent {
   characterCount: number = 0;
 
   ngOnInit() {
-    this.characterCount = this.inputCtrl.value.length || '';
+    if(this.inputCtrl.value) {
+      this.characterCount = this.inputCtrl.value.length;
+    }
   }
 
   updateCharacterCount() {
-    const value = this.inputCtrl.value || '';
+    const value = this.inputCtrl.value != null ? this.inputCtrl.value : '';
     this.characterCount = value.length;
   }
 }

@@ -186,8 +186,7 @@
               Options
               <mat-icon>arrow_drop_down</mat-icon>
             </button>
-            <mat-hint *ngIf="linkCopied" id="copied-hint">Copied</mat-hint>
-            <mat-menu #listingOptionsMenu="matMenu">
+            <mat-menu #listingOptionsMenu="matMenu" yPosition="above">
               <button
                 mat-menu-item
                 class="options-item"
@@ -213,8 +212,8 @@
               <button
                 mat-menu-item
                 class="options-item"
-                (click)="copyListingLink()">
-                Share Link
+                (click)="listingInteract.copyListingLink(selectedListing?.groupId)">
+                Copy Link
               </button>
               <button
                 mat-menu-item
@@ -234,10 +233,25 @@
             <ng-template #notOwner>
               <button type="button"
                       class="modal-button-with-icon"
-                      (click)="routeConversation(selectedListing!)">
+                      [matMenuTriggerFor]="ownerConnectMenu">
                 <mat-icon class="msg-icon">rss_feed</mat-icon>
-                Message
+                Connect
               </button>
+              <mat-menu #ownerConnectMenu="matMenu" yPosition="above">
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="routeConversation(selectedListing!)">
+                  Send Message
+                </button>
+
+                <button
+                  mat-menu-item
+                  class="options-item"
+                  (click)="listingInteract.openRequestInvitePopup()">
+                  Join Request
+                </button>
+              </mat-menu>
             </ng-template>
           </div>
         </div>

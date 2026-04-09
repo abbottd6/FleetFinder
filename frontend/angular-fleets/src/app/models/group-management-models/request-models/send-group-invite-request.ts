@@ -1,9 +1,10 @@
 import {SessionUser} from "../../../services/user-services/user.service";
 
 export class SendGroupInviteRequest {
-  constructor(listingId: number, requestedStatus: string, message: string | null) {
+  constructor(listingId: number, inGame: string, requestedStatus: string, message: string | null) {
     Object.assign(this, {
       listingId: listingId,
+      inGameUsername: inGame,
       memberStatus: requestedStatus,
       requestMessage: message
     })

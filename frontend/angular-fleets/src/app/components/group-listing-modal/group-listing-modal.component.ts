@@ -9,8 +9,10 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {environment} from "../../../environments/environment";
-import {MatHint} from "@angular/material/form-field";
 import {BreakpointObserver} from "@angular/cdk/layout";
+import {
+  ListingViewInteractionsService
+} from "../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 
 export interface CloseValue {
   value: 'hide' | 'bookmark' | 'unbookmark' | 'report' | 'delete' | null,
@@ -31,7 +33,6 @@ export interface CloseValue {
     MatMenu,
     MatMenuItem,
     AsyncPipe,
-    MatHint
   ],
   styleUrl: './group-listing-modal.component.css'
 })
@@ -45,11 +46,11 @@ export class GroupListingModalComponent implements OnInit {
   @Output() close = new EventEmitter<CloseValue>
   userListings: GroupListingViewModel[] = [];
 
-  protected linkCopied: boolean = false;
-
   protected isHiding: boolean = false;
 
-  constructor(private userService: UserService, protected chatHostSrv: ChatHostService) {
+  constructor(private userService: UserService, protected chatHostSrv: ChatHostService,
+              protected listingInteract: ListingViewInteractionsService) {
+
     this.userService.sessionUser$.pipe(takeUntilDestroyed(this.modalDestroyRef)).pipe(
       map(user => user?.groupListingsDto ?? [])
     ).subscribe(listings => this.userListings = listings);
@@ -84,12 +85,7 @@ export class GroupListingModalComponent implements OnInit {
     );
   }
 
-  copyListingLink() {
-    const link = environment.webAppBaseUrl + `/listing-details/${this.selectedListing?.groupId}`;
-    navigator.clipboard.writeText(link);
-    this.linkCopied = true;
-    setTimeout(() => this.linkCopied = false, 2000);
-  }
+
 
   closeModal(action: CloseValue['value'], group: GroupListingViewModel | null) {
     this.isHiding = true;

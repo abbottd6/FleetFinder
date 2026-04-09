@@ -254,6 +254,7 @@
   background-color: rgba(33, 37, 41, .4);
   color: rgba(255, 131, 7, .75);
   font-size: clamp(0.9rem, 1.1rem, 1.6rem);
+  margin-inline: .75rem;
   border-radius: .2rem;
   transition: background-color 0.15s ease, color 0.15s ease;
   align-items: center;

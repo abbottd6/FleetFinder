@@ -20,7 +20,7 @@ mat-label {
 /* input text/placeholder text */
 :host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
   color: rgba(150, 168, 183, 0.75) !important;
-  min-height: 150px;
+  min-height: 100px;
   padding-left: 10px;
   padding-right: 10px;
 }
