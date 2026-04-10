@@ -8,25 +8,32 @@
                    [opened]="!(isMobile$ | async)"
                    class="side-nav-the-side-nav">
         <mat-nav-list class="side-nav-list">
-          <a mat-list-item class="mat-nav-list-item"
-             [class.active]="selectedTab==='listings'"
-             (click)="selectTab('listings')">
-            My Listings
-          </a>
+          <mat-expansion-panel class="sidenav-expansion">
+            <mat-expansion-panel-header
+              [class.active]="selectedTab==='groups'"
+              (click)="selectTab('groups')">
+              <mat-panel-title>My Groups</mat-panel-title>
+            </mat-expansion-panel-header>
+            <a mat-list-item class="mat-nav-list-item"
+               [class.active]="selectedTab==='listings'"
+               (click)="selectTab('listings')">
+              My Listings
+            </a>
+            <a mat-list-item class="mat-nav-list-item"
+               [class.active]="selectedTab==='bookmarks'"
+               (click)="selectTab('bookmarks')">
+              Bookmarks
+            </a>
+            <a mat-list-item class="mat-nav-list-item"
+               [class.active]="selectedTab==='templates'"
+               (click)="selectTab('templates')">
+              Templates
+            </a>
+          </mat-expansion-panel>
           <a mat-list-item class="mat-nav-list-item"
              [class.active]="selectedTab==='notifications'"
              (click)="selectTab('notifications')">
             Notifications
-          </a>
-          <a mat-list-item class="mat-nav-list-item"
-            [class.active]="selectedTab==='bookmarks'"
-            (click)="selectTab('bookmarks')">
-            Bookmarks
-          </a>
-          <a mat-list-item class="mat-nav-list-item"
-          [class.active]="selectedTab==='templates'"
-          (click)="selectTab('templates')">
-            Templates
           </a>
           <a mat-list-item class="mat-nav-list-item"
              [class.active]="selectedTab==='profile'"
@@ -63,6 +70,13 @@
         </div>
 
         <div class="account-window-body">
+
+          <!-- MY GROUPS TAB -->
+          <ng-container *ngIf="selectedTab === 'groups'">
+            <app-user-profile-my-groups
+              (emitListing)="onListingSelected($event)">
+            </app-user-profile-my-groups>
+          </ng-container>
 
           <!-- MY LISTINGS TAB -->
           <ng-container *ngIf="selectedTab === 'listings'">

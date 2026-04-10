@@ -1,0 +1,39 @@
+<div class="title-container">
+  <h5>My Groups</h5>
+
+  <div class="header-notice">
+    <ul>
+      <li>Review rosters, activity details, and your assigned roles in groups that you have joined or started.</li>
+      <li>For groups where you are a ranking member:
+        <ul>
+          <li>Respond to or send <span class="fancy-text">group invites</span></li>
+          <li><span class="fancy-text">Define group structure through ship
+            templates</span> with position and role slots, or <span class="fancy-text">create your own subgroups, positions,
+            and roles</span> to match the activity you are planning.</li>
+          <li>Assign ranks to other members to <span class="fancy-text">allow other ranking members to help organize
+            the group.</span></li>
+          <li><span class="fancy-text">Schedule RSVP notifications</span> to remind group members to be prepared
+            for the activity.</li>
+          <li>Manage <span class="fancy-text">'Active' and 'Waitlist'</span> rosters to make sure you have a full crew
+            available when your activity starts.</li>
+        </ul>
+    </ul>
+  </div>
+</div>
+<div class="group-memberships-wrapper">
+  <ng-container *ngIf="groupMemberService.groupMemberships$ | async as groupMemberships; else noMemberships">
+    <ng-container *ngFor="let membership of groupMemberships">
+      <app-groups-chip
+        [membership]="membership"
+        (emitListing)="passEmissionToParent($event)">
+      </app-groups-chip>
+    </ng-container>
+  </ng-container>
+
+
+  <ng-template #noMemberships>
+    <div class="no-memberships-msg">
+      <span>You aren't a member of any active groups.</span>
+    </div>
+  </ng-template>
+</div>

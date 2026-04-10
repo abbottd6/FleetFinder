@@ -68,10 +68,6 @@ export class UserAcctListingsTableComponent implements OnInit, OnChanges, OnDest
 
   ngOnInit() {
     this.dataSource.data = this.userListings;
-    this.groupMembershipsApi.getMyGroupMemberships().pipe(takeUntil(this.destroy$))
-      .subscribe(response => {
-        console.log("THE DTO: " + response);
-      });
   }
 
   ngOnChanges(changes: SimpleChanges) {

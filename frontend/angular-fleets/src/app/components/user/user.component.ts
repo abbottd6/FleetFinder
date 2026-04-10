@@ -46,6 +46,9 @@ import {UpdateUserRequest} from "../../models/private-user/update-user-request";
 import {
   ProfileNotificationsTabComponent
 } from "../user-profile-notification-settings-tab/profile-notifications-tab.component";
+import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from "@angular/material/expansion";
+import {UserProfileMyGroupsComponent} from "../user-profile-my-groups/user-profile-my-groups.component";
+import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
 
 @Component({
     selector: 'app-user',
@@ -56,7 +59,7 @@ import {
   imports: [CommonModule, RouterModule, MatSidenavModule, MatNavList, MatListItem,
     UserAcctListingsTableComponent, MatButtonModule, GroupListingModalComponent,
     UserProfileBookmarksComponent, ModParentPanelComponent, UserProfileTemplatesComponent, ListingTemplateModalComponent,
-    DropdownModule, FormsModule, MatError, MatFormField, MatHint, MatInput, MatLabel, MatFormField, ReactiveFormsModule, ProfileNotificationsTabComponent],
+    DropdownModule, FormsModule, MatError, MatFormField, MatHint, MatInput, MatLabel, MatFormField, ReactiveFormsModule, ProfileNotificationsTabComponent, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanel, UserProfileMyGroupsComponent],
     standalone: true
 })
 export class UserComponent implements OnInit, OnDestroy {
@@ -71,7 +74,7 @@ export class UserComponent implements OnInit, OnDestroy {
   selectedTemplate: ListingTemplateViewModel | null = null;
 
   groupListings: GroupListingViewModel[] = []
-  selectedTab: 'listings' | 'notifications' |'bookmarks'|'templates'|'profile'|'content_mod' = 'listings';
+  selectedTab: 'groups' | 'listings' | 'notifications' | 'bookmarks' | 'templates' | 'profile' | 'content_mod' = 'groups';
   shouldDisplayMod$: boolean = false;
 
   protected editing: boolean = false;

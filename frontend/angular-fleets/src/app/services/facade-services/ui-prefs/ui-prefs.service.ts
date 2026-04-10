@@ -31,7 +31,10 @@ export class UiPrefsService {
 
   constructor(private uiCleanup: UiCleanupService,
               private filter: FilterService,
-              private dialog: MatDialog) { }
+              private dialog: MatDialog) {
+
+    this.uiPrefs = this.loadUiPrefs();
+  }
 
   public loadUiPrefs() {
     try {

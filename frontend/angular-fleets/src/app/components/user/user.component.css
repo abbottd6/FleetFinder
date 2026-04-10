@@ -75,30 +75,93 @@
   width: 100%;
   white-space: nowrap;
   justify-content: start;
-  padding: 1rem 2rem 0 1rem;
+  margin-top: 1rem;
+  padding: 0 0 0 15px;
   font-size: clamp(0.5rem, 1rem, 1.5rem);
   overflow-y: scroll;
   scrollbar-width: none;
   margin-bottom: 5rem;
 }
 
+:host ::ng-deep .mat-expansion-panel-header {
+  padding-left: 0;
+  margin-left: 0;
+}
+
+::ng-deep .sidenav-expansion .mat-expansion-panel-header.mat-expanded {
+  height: 48px !important;
+}
+
+::ng-deep .mat-expansion-panel.mat-expanded mat-expansion-panel-header.active {
+  background-color: rgba(65, 103, 142, 0.2) !important;
+}
+
+:host ::ng-deep .mat-expansion-panel-header-title::before {
+  content: '';
+  overflow: visible;
+  position: absolute;
+  display: block;
+  width: 150px;
+  margin: 6px auto 0 0;
+  bottom: 6px;
+  border-bottom: 2px solid rgba(65, 103, 142, 1);
+}
+
+:host ::ng-deep .mat-expansion-panel-header-title {
+  padding-left: 10px;
+}
+
+:host ::ng-deep .sidenav-expansion {
+  border: 1px solid transparent;
+  border-radius: 10px !important;
+  width: 85%;
+  box-shadow: none !important;
+  transition: font-size 0.2s ease, background-color 0.2s ease;
+}
+
+:host ::ng-deep .mat-expansion-panel-header .mat-expansion-indicator {
+  fill: rgba(223, 241, 255, 0.5);
+}
+
+:host ::ng-deep .mat-expansion-panel-header:hover {
+  background-color: rgba(65, 103, 142, 0.6) !important;
+  font-size: 105%;
+  cursor: pointer;
+}
+
+:host ::ng-deep .mat-expansion-panel .mat-expanded:hover {
+  background-color: transparent;
+}
+
 .mat-nav-list-item {
   clear: both;
-  padding-left: 0.2rem;
-  border-bottom: 3px solid rgba(65, 103, 142, 1);
-  clip-path: polygon(
-    7px 0%,        /* top-left: start */
-    calc(100% - 7px) 0%,   /* top-right: start */
-    100% 7px,      /* top-right: end */
-    100% calc(100% - 7px), /* bottom-right: start */
-    calc(100% - 12px) 100%, /* bottom-right: end */
-    12px 100%,      /* bottom-left: start */
-    0% calc(100% - 7px),   /* bottom-left: end */
-    0% 7px         /* top-left: end */
-  );
+  padding-left: 10px;
+  border: 1px solid transparent;
+  border-radius: 10px !important;
   width: 85%;
-  margin: 0.7rem auto 0 0;
+  margin: 10px auto 0 0;
   transition: 0.2s ease;
+}
+
+::ng-deep .mat-mdc-list-item .mdc-list-item__content {
+  position: relative;
+  overflow: visible;
+}
+
+
+:host ::ng-deep .mat-mdc-list-item .mdc-list-item__content::before {
+  content: '';
+  overflow: visible;
+  position: absolute;
+  display: block;
+  width: 150px;
+  margin: 6px auto 0 0;
+  bottom: -4px;
+  border-bottom: 2px solid rgba(65, 103, 142, 1);
+}
+
+:host ::ng-deep .mat-expansion-panel .mat-mdc-list-item .mdc-list-item__content::before {
+  width: 110px;
 }
 
 .mat-nav-list-item:hover {
