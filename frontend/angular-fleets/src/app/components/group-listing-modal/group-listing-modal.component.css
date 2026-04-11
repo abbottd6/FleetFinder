@@ -98,7 +98,9 @@
   }
 
   .modal-dialog.modal-xl.modal-dialog-centered {
+    margin-top: 50px;
     max-width: 50vw;
+    z-index: 1000;
   }
 
   /* Grid container for modal listing blocks LARGE VW */
@@ -113,7 +115,9 @@
 @media(min-width: 992px) and (max-width: 1367px) {
   /*The actual main container for the modal: MED VW*/
   .modal-dialog.modal-xl.modal-dialog-centered {
+    margin-top: 50px;
     max-width: 70vw;
+    z-index: 1000;
   }
 
   .modal-title {
@@ -133,7 +137,9 @@
   }
 
   .modal-dialog.modal-xl.modal-dialog-centered {
+    margin-top: 50px;
     max-width: 95vw;
+    z-index: 1000;
   }
 
   .modal-content {

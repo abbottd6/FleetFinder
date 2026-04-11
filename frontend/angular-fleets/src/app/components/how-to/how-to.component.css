@@ -2,6 +2,10 @@ ul {
   list-style-position: inside;
 }
 
+#top {
+  padding-top: 15px;
+}
+
 .int-link {
   color: rgba(46,90,136,.9);
   margin-top: 1rem;

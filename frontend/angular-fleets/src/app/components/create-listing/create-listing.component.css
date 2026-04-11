@@ -4,11 +4,10 @@
   flex: 1;
   background-color: rgba(70, 79, 87, 0.4);
   color: rgba(188, 191, 200, .8);
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline: auto;
   padding-top: 2rem;
   padding-bottom: 6rem;
-  min-width: 95%;
+  width: 95%;
   clip-path: polygon(
     3.6% 0%,     /* top edge, a bit right from TL */
     100% 0%,   /* full top-right corner */
@@ -283,7 +282,7 @@ app-comms-service-input {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  margin-bottom: 20vh;
+  margin-bottom: 5vh;
 }
 .submit-button {
   border: 2px solid rgba(255, 131, 7, .75);

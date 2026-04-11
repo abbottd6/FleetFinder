@@ -1,11 +1,26 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 95% !important;
+  position: relative;
+}
+
+.listing-page-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
 .table-container {
-  display: block !important;
-  overflow-y: visible !important;
+  display: block;
+  /*overflow-y: visible !important;*/
   overflow-x: scroll !important;
-  max-height: 85% !important;
-  min-width: 100%;
+  width: 95%;
+  /*height: 100%;*/
+  margin-inline: auto;
   scrollbar-width: none;
-  box-shadow: -3px 0 2px -2px rgba(255, 131, 7, .4);
+  /*box-shadow: -3px 0 2px -2px rgba(255, 131, 7, .4);*/
 }
 
 .background-color-container {
@@ -182,7 +197,6 @@
 
   .table-container {
     padding-bottom: 1rem;
-    max-height: fit-content;
   }
 
   .action-buttons-container {

@@ -8,12 +8,28 @@
 
 .content-container {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex: 1;
-  justify-content: center;
   overflow: auto;
   width: 100vw;
   box-sizing: content-box;
+}
+
+app-footer {
+  margin-top: auto;
+  position: relative;
+  margin-inline: auto;
+  height: 125px;
+  z-index: 1;
+}
+
+app-create-listing {
+  display: flex;
+  margin-inline: auto;
+}
+
+app-group-listings-modal {
+  z-index: 1000;
 }
 
 app-chat-shell {

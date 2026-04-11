@@ -122,7 +122,7 @@ export class UserComponent implements OnInit, OnDestroy {
   selectTab(tab: typeof this.selectedTab){
     this.selectedTab = tab;
     this.isMobile$.pipe(take(1)).subscribe(isMobile => {
-      if(isMobile) {
+      if(isMobile && this.selectedTab != 'groups') {
         setTimeout(() => this.sidenavDrawer.toggle(), 300);
       }
     })

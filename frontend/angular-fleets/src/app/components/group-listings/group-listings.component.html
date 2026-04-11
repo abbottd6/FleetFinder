@@ -1,355 +1,360 @@
-<div class="table-container">
-  <div class="background-color-container">
-    <div class="search-criteria-container">
-      <div class="search-bar-wrapper">
-        <app-search-bar
-          (applySearchAndFilters)="applyFiltersFromChild($event)" [submittedState]="submittedState">
-        </app-search-bar>
+<div class="listing-page-wrapper">
+  <div class="table-container">
+    <div class="background-color-container">
+      <div class="search-criteria-container">
+        <div class="search-bar-wrapper">
+          <app-search-bar
+            (applySearchAndFilters)="applyFiltersFromChild($event)" [submittedState]="submittedState">
+          </app-search-bar>
+        </div>
       </div>
     </div>
-  </div>
-  <table mat-table
-         [dataSource]="dataSource"
-         matSort
-         (matSortChange)="announceSortChange($event)"
-         *ngIf="!((layoutMode$ | async) === 'handheld')">
+    <table mat-table
+           [dataSource]="dataSource"
+           matSort
+           (matSortChange)="announceSortChange($event)"
+           *ngIf="!((layoutMode$ | async) === 'handheld')">
 
-    <!-- Indicators Column -->
-    <ng-container matColumnDef="indicators">
-      <th mat-header-cell *matHeaderCellDef>
-        <!-- none -->
-      </th>
+      <!-- Indicators Column -->
+      <ng-container matColumnDef="indicators">
+        <th mat-header-cell *matHeaderCellDef>
+          <!-- none -->
+        </th>
 
-      <td mat-cell *matCellDef="let row; let i = index" class="indicators-column">
-        <mat-icon
-          [matTooltip]="
+        <td mat-cell *matCellDef="let row; let i = index" class="indicators-column">
+          <mat-icon
+            [matTooltip]="
                         row.visStatus === 'FRESH' ? 'Updated < 3 hours ago' :
                         row.visStatus === 'RECENT' ? 'Updated < 6 hours ago' :
                         row.visStatus === 'STALE' ? 'Updated < 12 hours ago or future event' :
                         row.visStatus === 'INACTIVE' ? 'Updated 12+ hours ago' :
                         'Unknown status'
                        "
-          [matTooltipPosition]="positionOptions[0]"
-          class="status-circle-icon"
-          [class.is-fresh]="row.visStatus === 'FRESH'"
-          [class.is-recent]="row.visStatus === 'RECENT'"
-          [class.is-stale]="row.visStatus === 'STALE'"
-          [class.is-inactive]="row.visStatus === 'INACTIVE'">
-          circle
-        </mat-icon>
-        <ng-container *ngIf="(layoutMode$ | async) == 'full'">
-          <ng-container *ngIf="listingInteract.bookmarkedIds$ | async as bookmarkIds">
-              <button mat-icon-button *ngIf="listingInteract.isBookmarked(row.groupId, bookmarkIds) ; else notBookmarked"
+            [matTooltipPosition]="positionOptions[0]"
+            class="status-circle-icon"
+            [class.is-fresh]="row.visStatus === 'FRESH'"
+            [class.is-recent]="row.visStatus === 'RECENT'"
+            [class.is-stale]="row.visStatus === 'STALE'"
+            [class.is-inactive]="row.visStatus === 'INACTIVE'">
+            circle
+          </mat-icon>
+          <ng-container *ngIf="(layoutMode$ | async) == 'full'">
+            <ng-container *ngIf="listingInteract.bookmarkedIds$ | async as bookmarkIds">
+              <button mat-icon-button
+                      *ngIf="listingInteract.isBookmarked(row.groupId, bookmarkIds) ; else notBookmarked"
                       matTooltip="Remove Bookmark"
                       [matTooltipPosition]="positionOptions[0]"
                       [disabled]="listingInteract.userIsListingOwner(row.groupId) | async"
                       (click)="listingInteract.unmarkWrapper($event, row.groupId)">
                 <mat-icon class="indicators-column-icon">bookmark</mat-icon>
               </button>
-            <ng-template #notBookmarked>
-              <button mat-icon-button
-                      matTooltip="Bookmark"
-                      [matTooltipPosition]="positionOptions[0]"
-                      [disabled]="listingInteract.userIsListingOwner(row.groupId) | async"
-                      (click)="listingInteract.bookmarkWrapper($event, row.groupId)">
-                <mat-icon class="null-circle-icon">circle</mat-icon>
-              </button>
-            </ng-template>
+              <ng-template #notBookmarked>
+                <button mat-icon-button
+                        matTooltip="Bookmark"
+                        [matTooltipPosition]="positionOptions[0]"
+                        [disabled]="listingInteract.userIsListingOwner(row.groupId) | async"
+                        (click)="listingInteract.bookmarkWrapper($event, row.groupId)">
+                  <mat-icon class="null-circle-icon">circle</mat-icon>
+                </button>
+              </ng-template>
+            </ng-container>
           </ng-container>
-        </ng-container>
-      </td>
-    </ng-container>
+        </td>
+      </ng-container>
 
-    <!-- Title Column -->
-    <ng-container matColumnDef='title'>
-      <th mat-header-cell *matHeaderCellDef
-          mat-sort-header="listingTitle"
-          sortActionDescription="Sort alphabetically by Title"> Title</th>
-      <td mat-cell
-          *matCellDef="let row">
-        {{ row.listingTitle.length > 45 ? (row.listingTitle|slice:0:42) + '...' : row.listingTitle}}
-      </td>
-    </ng-container>
+      <!-- Title Column -->
+      <ng-container matColumnDef='title'>
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header="listingTitle"
+            sortActionDescription="Sort alphabetically by Title"> Title
+        </th>
+        <td mat-cell
+            *matCellDef="let row">
+          {{ row.listingTitle.length > 45 ? (row.listingTitle|slice:0:42) + '...' : row.listingTitle }}
+        </td>
+      </ng-container>
 
-    <!-- Status Column -->
-    <ng-container matColumnDef='status'>
-      <th mat-header-cell *matHeaderCellDef
-          mat-sort-header="groupStatus"
-          sortActionDescription="Sort alphabetically by group status">
-        Group Status
-      </th>
-      <td mat-cell
-          *matCellDef="let row">
-        {{ row.groupStatus }}
-      </td>
-    </ng-container>
+      <!-- Status Column -->
+      <ng-container matColumnDef='status'>
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header="groupStatus"
+            sortActionDescription="Sort alphabetically by group status">
+          Group Status
+        </th>
+        <td mat-cell
+            *matCellDef="let row">
+          {{ row.groupStatus }}
+        </td>
+      </ng-container>
 
-    <!-- Category Column -->
-    <ng-container matColumnDef='category'>
-      <th mat-header-cell *matHeaderCellDef
-          mat-sort-header="category"
-          sortActionDescription="Sort alphabetically by category">
-        Category
-      </th>
-      <td mat-cell *matCellDef="let row">
-        {{ row.category }}
-      </td>
-    </ng-container>
+      <!-- Category Column -->
+      <ng-container matColumnDef='category'>
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header="category"
+            sortActionDescription="Sort alphabetically by category">
+          Category
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.category }}
+        </td>
+      </ng-container>
 
-    <!-- PvP Status Column -->
-    <ng-container matColumnDef='pvp'>
-      <th mat-header-cell *matHeaderCellDef
-          mat-sort-header="pvpStatus"
-          sortActionDescription="Sort alphabetically by PvP status">
-        PvP Status
-      </th>
-      <td mat-cell *matCellDef="let row">
-        {{ row.pvpStatus }}
-      </td>
-    </ng-container>
+      <!-- PvP Status Column -->
+      <ng-container matColumnDef='pvp'>
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header="pvpStatus"
+            sortActionDescription="Sort alphabetically by PvP status">
+          PvP Status
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.pvpStatus }}
+        </td>
+      </ng-container>
 
-    <!-- Planetary System Column -->
-    <ng-container matColumnDef='system'>
-      <th mat-header-cell *matHeaderCellDef
-          mat-sort-header="system"
-          sortActionDescription="Sort alphabetically by system">
-        System
-      </th>
-      <td mat-cell *matCellDef="let row">
-        {{ row.system }}
-      </td>
-    </ng-container>
+      <!-- Planetary System Column -->
+      <ng-container matColumnDef='system'>
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header="system"
+            sortActionDescription="Sort alphabetically by system">
+          System
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.system }}
+        </td>
+      </ng-container>
 
-    <!-- Available Roles Column -->
-    <ng-container matColumnDef='roles'>
-      <th mat-header-cell *matHeaderCellDef
-          mat-sort-header="availableRoles"
-          sortActionDescription="Sort alphabetically by listed roles">
-        Avail. Roles
-      </th>
-      <td mat-cell
-          *matCellDef="let row">
-        {{ row.availableRoles?.length > 14 ? (row.availableRoles|slice:0: 11) + '...' : row.availableRoles}}</td>
-    </ng-container>
+      <!-- Available Roles Column -->
+      <ng-container matColumnDef='roles'>
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header="availableRoles"
+            sortActionDescription="Sort alphabetically by listed roles">
+          Avail. Roles
+        </th>
+        <td mat-cell
+            *matCellDef="let row">
+          {{ row.availableRoles?.length > 14 ? (row.availableRoles|slice:0: 11) + '...' : row.availableRoles }}
+        </td>
+      </ng-container>
 
-    <!-- Group size column --->
-    <ng-container matColumnDef='group-size'>
-      <th mat-header-cell *matHeaderCellDef
-          mat-sort-header="group-size"
-          sortActionDescription="Sort by group size">
-        Grp. Size
-      </th>
-      <td mat-cell
-          *matCellDef="let row">
-        {{ row.currentPartySize }} / {{ row.desiredPartySize }}
-      </td>
-    </ng-container>
+      <!-- Group size column --->
+      <ng-container matColumnDef='group-size'>
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header="group-size"
+            sortActionDescription="Sort by group size">
+          Grp. Size
+        </th>
+        <td mat-cell
+            *matCellDef="let row">
+          {{ row.currentPartySize }} / {{ row.desiredPartySize }}
+        </td>
+      </ng-container>
 
-    <!-- Last Updated TS Column -->
-    <ng-container matColumnDef='updated'>
-      <th mat-header-cell *matHeaderCellDef
-          mat-sort-header="lastUpdated"
-          sortActionDescription="Sort by date">
-        Last Updated
-        <mat-icon class="tooltip-icon"
-                  matTooltip="Converted from the user's time-zone to your browser time.">
-          help_outline
-        </mat-icon>
-      </th>
-      <td mat-cell *matCellDef="let row">
-        {{ row.lastUpdated | date: 'MMM d, h:mm a' }}
-      </td>
-    </ng-container>
+      <!-- Last Updated TS Column -->
+      <ng-container matColumnDef='updated'>
+        <th mat-header-cell *matHeaderCellDef
+            mat-sort-header="lastUpdated"
+            sortActionDescription="Sort by date">
+          Last Updated
+          <mat-icon class="tooltip-icon"
+                    matTooltip="Converted from the user's time-zone to your browser time.">
+            help_outline
+          </mat-icon>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{ row.lastUpdated | date: 'MMM d, h:mm a' }}
+        </td>
+      </ng-container>
 
-    <!-- header declarations -->
-    <tr mat-header-row class="header-row" *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns"
-        (click)="listingInteract.onRowClick(row)"
-        (contextmenu)="quickMenu.openContextMenu($event, row)"
-        (touchstart)="quickMenu.onTouchStart($event, row)"
-        (touchend)="quickMenu.onTouchEnd($event)"
-        [class.row-is-clicked]="isRowClicked(row)"></tr>
-    <tr *ngIf="noResults">
-      <td mat-footer-cell *matFooterCellDef [attr.colspan]="displayedColumns.length">
-        No active listings match the search/filter criteria.
-      </td>
-    </tr>
-  </table>
+      <!-- header declarations -->
+      <tr mat-header-row class="header-row" *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"
+          (click)="listingInteract.onRowClick(row)"
+          (contextmenu)="quickMenu.openContextMenu($event, row)"
+          (touchstart)="quickMenu.onTouchStart($event, row)"
+          (touchend)="quickMenu.onTouchEnd($event)"
+          [class.row-is-clicked]="isRowClicked(row)"></tr>
+      <tr *ngIf="noResults">
+        <td mat-footer-cell *matFooterCellDef [attr.colspan]="displayedColumns.length">
+          No active listings match the search/filter criteria.
+        </td>
+      </tr>
+    </table>
 
-  <!-------------------------------- MOBILE/FEED-VIEW TABLE ------------------------------------------------------>
-  <table
-    mat-table
-    class="handheld-table"
-    [dataSource]="dataSource"
-    matSort
-    (matSortChange)="announceSortChange($event)"
-    *ngIf="(layoutMode$ | async) === 'handheld'">
+    <!-------------------------------- MOBILE/FEED-VIEW TABLE ------------------------------------------------------>
+    <table
+      mat-table
+      class="handheld-table"
+      [dataSource]="dataSource"
+      matSort
+      (matSortChange)="announceSortChange($event)"
+      *ngIf="(layoutMode$ | async) === 'handheld'">
 
 
-    <!-- Indicators Column -->
-    <ng-container matColumnDef="indicators">
-      <th mat-header-cell *matHeaderCellDef>
-        <!-- none -->
-      </th>
+      <!-- Indicators Column -->
+      <ng-container matColumnDef="indicators">
+        <th mat-header-cell *matHeaderCellDef>
+          <!-- none -->
+        </th>
 
-      <td mat-cell *matCellDef="let row; let i = index" class="indicators-column">
-        <mat-icon
-          [matTooltip]="
+        <td mat-cell *matCellDef="let row; let i = index" class="indicators-column">
+          <mat-icon
+            [matTooltip]="
                         row.visStatus === 'FRESH' ? 'Updated < 3 hours ago' :
                         row.visStatus === 'RECENT' ? 'Updated < 6 hours ago' :
                         row.visStatus === 'STALE' ? 'Updated < 12 hours ago or future event' :
                         row.visStatus === 'INACTIVE' ? 'Updated 12+ hours ago' :
                         'Unknown status'
                        "
-          [matTooltipPosition]="positionOptions[0]"
-          class="status-circle-icon"
-          [class.is-fresh]="row.visStatus === 'FRESH'"
-          [class.is-recent]="row.visStatus === 'RECENT'"
-          [class.is-stale]="row.visStatus === 'STALE'"
-          [class.is-inactive]="row.visStatus === 'INACTIVE'">
-          circle
-        </mat-icon>
-      </td>
-    </ng-container>
+            [matTooltipPosition]="positionOptions[0]"
+            class="status-circle-icon"
+            [class.is-fresh]="row.visStatus === 'FRESH'"
+            [class.is-recent]="row.visStatus === 'RECENT'"
+            [class.is-stale]="row.visStatus === 'STALE'"
+            [class.is-inactive]="row.visStatus === 'INACTIVE'">
+            circle
+          </mat-icon>
+        </td>
+      </ng-container>
 
-    <ng-container matColumnDef='details'>
-      <th mat-header-cell *matHeaderCellDef>
-        Listing Details
-      </th>
-      <td class="feed-element" mat-cell *matCellDef="let row">
-        <div class="feed-data-row title-row">
-          <span>{{ row.listingTitle }}</span>
-        </div>
-        <div class="feed-data-row">
-          <span>{{ row.userName }}</span>
-          <span>|</span>
-          <span>{{ row.lastUpdated | date: 'MM/d, h:mm a' }}</span>
-          <span>|</span>
-          <span class="feed-label-value-pair"><p class="field-label">Category:</p> {{ row.category }}</span>
-        </div>
-        <div class="feed-data-row">
-          <span class="feed-label-value-pair"><p class="field-label">Legality:</p> {{ row.legality }}</span>
-          <span>|</span>
-          <span class="feed-label-value-pair"><p class="field-label">Pv?:</p> {{ row.pvpStatus }}</span>
-          <span>|</span>
-          <span class="feed-label-value-pair"><p class="field-label">System:</p> {{ row.system }}</span>
-        </div>
-        <div class="feed-data-row description-row">
+      <ng-container matColumnDef='details'>
+        <th mat-header-cell *matHeaderCellDef>
+          Listing Details
+        </th>
+        <td class="feed-element" mat-cell *matCellDef="let row">
+          <div class="feed-data-row title-row">
+            <span>{{ row.listingTitle }}</span>
+          </div>
+          <div class="feed-data-row">
+            <span>{{ row.userName }}</span>
+            <span>|</span>
+            <span>{{ row.lastUpdated | date: 'MM/d, h:mm a' }}</span>
+            <span>|</span>
+            <span class="feed-label-value-pair"><p class="field-label">Category:</p> {{ row.category }}</span>
+          </div>
+          <div class="feed-data-row">
+            <span class="feed-label-value-pair"><p class="field-label">Legality:</p> {{ row.legality }}</span>
+            <span>|</span>
+            <span class="feed-label-value-pair"><p class="field-label">Pv?:</p> {{ row.pvpStatus }}</span>
+            <span>|</span>
+            <span class="feed-label-value-pair"><p class="field-label">System:</p> {{ row.system }}</span>
+          </div>
+          <div class="feed-data-row description-row">
             <span> {{
                 row.listingDescription.length > 110 ?
                   (row.listingDescription|slice: 0:110) + '...' : row.listingDescription
               }}
             </span>
-        </div>
+          </div>
 
-      </td>
-    </ng-container>
-    <!-- header declarations -->
-    <tr mat-header-row class="header-row" *matHeaderRowDef="mobileColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: mobileColumns"
-        (click)="listingInteract.onRowClick(row)"
-        (contextmenu)="quickMenu.openContextMenu($event, row)"
-        (touchstart)="quickMenu.onTouchStart($event, row)"
-        (touchend)="quickMenu.onTouchEnd($event)"
-        [class.row-is-clicked]="isRowClicked(row)"></tr>
-    <tr *ngIf="noResults">
-      <td [attr.colspan]="mobileColumns.length"></td>
-    </tr>
+        </td>
+      </ng-container>
+      <!-- header declarations -->
+      <tr mat-header-row class="header-row" *matHeaderRowDef="mobileColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: mobileColumns"
+          (click)="listingInteract.onRowClick(row)"
+          (contextmenu)="quickMenu.openContextMenu($event, row)"
+          (touchstart)="quickMenu.onTouchStart($event, row)"
+          (touchend)="quickMenu.onTouchEnd($event)"
+          [class.row-is-clicked]="isRowClicked(row)"></tr>
+      <tr *ngIf="noResults">
+        <td [attr.colspan]="mobileColumns.length"></td>
+      </tr>
 
-  </table>
-  <div class="no-results-container" *ngIf="noResults">
-    <p>No active listings match the search/filter criteria.</p>
+    </table>
+    <div class="no-results-container" *ngIf="noResults">
+      <p>No active listings match the search/filter criteria.</p>
+    </div>
+    <!-- Paginator -->
+    <div class="paginator">
+      <mat-paginator
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        [pageIndex]="pageIndex"
+        [pageSize]="pageSize"
+        [length]="totalElements"
+        showFirstLastButtons>
+      </mat-paginator>
+    </div>
   </div>
-  <!-- Paginator -->
-  <div class="paginator">
-    <mat-paginator
-      [pageSizeOptions]="[5, 10, 25, 50]"
-      [pageIndex]="pageIndex"
-      [pageSize]="pageSize"
-      [length]="totalElements"
-      showFirstLastButtons>
-    </mat-paginator>
+
+
+  <app-group-listing-modal
+    *ngIf="listingInteract.isModalVisible && (listingInteract.bookmarkedIds$ | async) as bookmarkedIds"
+    [isVisible]="listingInteract.isModalVisible"
+    [selectedListing]="listingInteract.selectedListing"
+    [isBookmarked$]="listingInteract.selectedIsBookmarked$"
+    (close)="listingInteract.onModalClose($event)"
+  ></app-group-listing-modal>
+
+  <!-- Context Menu -->
+  <div
+    #contextMenuAnchor
+    class="context-menu-anchor"
+    [matMenuTriggerFor]="listingOptionsMenu"
+    #menuTrigger="matMenuTrigger">
   </div>
-</div>
 
-
-
-<app-group-listing-modal
-  *ngIf="listingInteract.isModalVisible && (listingInteract.bookmarkedIds$ | async) as bookmarkedIds"
-  [isVisible]="listingInteract.isModalVisible"
-  [selectedListing]="listingInteract.selectedListing"
-  [isBookmarked$]="listingInteract.selectedIsBookmarked$"
-  (close)="listingInteract.onModalClose($event)"
-></app-group-listing-modal>
-
-<!-- Context Menu -->
-<div
-  #contextMenuAnchor
-  class="context-menu-anchor"
-  [matMenuTriggerFor]="listingOptionsMenu"
-  #menuTrigger="matMenuTrigger">
-</div>
-
-<mat-menu #listingOptionsMenu="matMenu">
-  <ng-container *ngIf="!(listingInteract.userIsListingOwner(listingInteract.selectedListing?.groupId) | async); else ownerMenu">
-    <button
-      mat-menu-item
-      class="options-item"
-      (click)="chatHostSrv.provisionConversation(listingInteract.selectedListing!)">
-      Message
-    </button>
-    <button
-      mat-menu-item
-      class="options-item"
-      (click)="listingInteract.openRequestInvitePopup()">
-      Join Request
-    </button>
-    <button
-      mat-menu-item
-      class="options-item"
-      (click)="listingInteract.hideSelected()">
-      Hide
-    </button>
-    <ng-container *ngIf="(listingInteract.selectedIsBookmarked$ | async) === true; else notBookmarked">
+  <mat-menu #listingOptionsMenu="matMenu">
+    <ng-container
+      *ngIf="!(listingInteract.userIsListingOwner(listingInteract.selectedListing?.groupId) | async); else ownerMenu">
       <button
         mat-menu-item
         class="options-item"
-        (click)="listingInteract.deleteSelectedBookmark()">
-        Unmark
+        (click)="chatHostSrv.provisionConversation(listingInteract.selectedListing!)">
+        Message
+      </button>
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="listingInteract.openRequestInvitePopup()">
+        Join Request
+      </button>
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="listingInteract.hideSelected()">
+        Hide
+      </button>
+      <ng-container *ngIf="(listingInteract.selectedIsBookmarked$ | async) === true; else notBookmarked">
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="listingInteract.deleteSelectedBookmark()">
+          Unmark
+        </button>
+      </ng-container>
+      <ng-template #notBookmarked>
+        <button mat-menu-item
+                class="options-item"
+                (click)="listingInteract.bookmarkSelected()">
+          Bookmark
+        </button>
+      </ng-template>
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="listingInteract.reportSelected()">
+        Report
+      </button>
+      <button mat-menu-item class="options-item">
+        Cancel
       </button>
     </ng-container>
-    <ng-template #notBookmarked>
-      <button mat-menu-item
-              class="options-item"
-              (click)="listingInteract.bookmarkSelected()">
-        Bookmark
+    <ng-template #ownerMenu>
+      <button mat-menu-item class="options-item"
+              (click)="ownerService.userUpdateSelected(listingInteract.selectedListing!)">
+        Update
+      </button>
+      <button mat-menu-item class="options-item"
+              (click)="ownerService.createTemplateFromListing(listingInteract.selectedListing!)">
+        Template
+      </button>
+      <button mat-menu-item class="options-item"
+              (click)="ownerService.openConfirmDelete(listingInteract.selectedListing!)">
+        Delete
+      </button>
+      <button mat-menu-item class="options-item">
+        Cancel
       </button>
     </ng-template>
-    <button
-      mat-menu-item
-      class="options-item"
-      (click)="listingInteract.reportSelected()">
-      Report
-    </button>
-    <button mat-menu-item class="options-item">
-      Cancel
-    </button>
-  </ng-container>
-  <ng-template #ownerMenu>
-    <button mat-menu-item class="options-item"
-            (click)="ownerService.userUpdateSelected(listingInteract.selectedListing!)">
-      Update
-    </button>
-    <button mat-menu-item class="options-item"
-            (click)="ownerService.createTemplateFromListing(listingInteract.selectedListing!)">
-      Template
-    </button>
-    <button mat-menu-item class="options-item"
-            (click)="ownerService.openConfirmDelete(listingInteract.selectedListing!)">
-      Delete
-    </button>
-    <button mat-menu-item class="options-item">
-      Cancel
-    </button>
-  </ng-template>
-</mat-menu>
+  </mat-menu>
+</div>

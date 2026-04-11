@@ -52,30 +52,32 @@ body {
 .body-container {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: 1 1 auto;
   background-color: var(--bs-dark);
-  max-height: 85vh;
+  /*max-height: 85vh;*/
   min-height: 35vh;
   margin-inline: auto;
-  min-width: 90vw;
-  max-width: 95vw;
+  min-width: 90%;
+  max-width: 95%;
   overflow: auto;
   scrollbar-width: none;
   padding: 0.5rem;
   overflow-y: scroll;
+  position: relative;
+  isolation: isolate;
 
 /*rgba(255, 131, 7, .25)*/
   border-left: 1px solid rgba(188, 191, 200, .25);
   border-right: 1px solid rgba(188, 191, 200, .25);
   color: rgba(223, 241, 255, 0.5) !important;
-  clip-path: polygon(
-    4% 0%,     /* top edge, a bit right from TL */
-    100% 0%,   /* full top-right corner */
-    100% 91%,  /* right edge, a bit up from BR */
-    96% 100%,  /* bottom edge, a bit left from BR */
-    0% 100%,   /* full bottom-left corner */
-    0% 9%      /* left edge, a bit down from TL */
-  );
+  /*clip-path: polygon(*/
+  /*  4% 0%,     !* top edge, a bit right from TL *!*/
+  /*  100% 0%,   !* full top-right corner *!*/
+  /*  100% 91%,  !* right edge, a bit up from BR *!*/
+  /*  96% 100%,  !* bottom edge, a bit left from BR *!*/
+  /*  0% 100%,   !* full bottom-left corner *!*/
+  /*  0% 9%      !* left edge, a bit down from TL *!*/
+  /*);*/
 }
 
 .body-container::before {
@@ -86,6 +88,7 @@ body {
   opacity: 0.2;
   filter: blur(4px);
   mix-blend-mode: screen;
+  z-index: 0;
 
   background-image:
     repeating-linear-gradient(
@@ -134,18 +137,25 @@ body {
 html, body { height: 100%; }
 
 app-create-listing {
-  max-width: 90vw;
+  width: 100%;
+  margin-inline: auto;
 }
 
 app-update-listing {
-  max-width: 90vw;
+  width: 100%;
+  margin-inline: auto;
 }
 
-app-group-listings-table {
-  min-width: 95% !important;
-  overflow-y: scroll;
-  scrollbar-width: none;
-}
+/*app-group-listings-table {*/
+/*  display: flex;*/
+/*  flex-direction: column;*/
+/*  flex: 1 1 auto;*/
+/*  height: 100%;*/
+/*  min-width: 95% !important;*/
+/*  position: sticky;*/
+/*  overflow-y: scroll;*/
+/*  scrollbar-width: none;*/
+/*}*/
 
 app-user {
   min-width: 95vw;

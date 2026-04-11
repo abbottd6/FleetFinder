@@ -2,7 +2,7 @@
   display: inline-block;
   position: fixed;
   right: 16px;
-  bottom: calc(var(--footer-height) + 4px);
+  bottom: calc(var(--footer-height) - 120px);
   width: auto;
   z-index: 9999;
   color: rgba(223, 241, 255, 0.5) !important;
