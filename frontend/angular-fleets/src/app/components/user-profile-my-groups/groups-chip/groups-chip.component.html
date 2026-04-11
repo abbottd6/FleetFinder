@@ -13,68 +13,92 @@
     </span>
   </div>
 
-  <div class="chip-body">
-    <div class="data-wrapper">
-      <div class="template-column">
+
+  <div class="data-wrapper">
+    <div class="template-column">
         <span class="template-column-header">
           Listing Details
           <mat-icon class="open-in-new-icon"
-            (click)="showListingModal()">open_in_new</mat-icon></span>
-        <div class="label-val-pair">
-          <span class="field-label">Group Status: </span>
-          <span class="field-val has-val">{{ listingDetails.groupStatus }}</span>
-          <ng-container *ngIf="(listingDetails.groupStatus === 'Future/Scheduled')">
-            <div class="label-val-pair sub-pair">
-              <span class="field-label">Event Schedule:</span>
-              <span class="field-val">{{ listingDetails.eventSchedule | date: 'MM/dd/yyyy hh:mm'}}</span>
-            </div>
-          </ng-container>
-        </div>
-        <div class="label-val-pair">
-          <span class="field-label">Category:</span>
-          <span class="field-val has-val">{{ listingDetails.category }}</span>
-        </div>
-        <ng-container *ngIf="listingDetails.subcategory">
-          <div class="label-val-pair sub-pair">
-            <span class="field-label">Subcategory: </span>
-            <span class="field-val has-val">{{ listingDetails.subcategory }}</span>
-          </div>
-        </ng-container>
+                    (click)="showListingModal()">open_in_new</mat-icon></span>
+      <div class="label-val-pair">
+        <span class="field-label">Group Status: </span>
+        <span class="field-val has-val">{{ listingDetails.groupStatus }}</span>
       </div>
-      <div class="template-column">
-        <span class="template-column-header">Member Details</span>
-        <div class="label-val-pair">
-          <span class="field-label">Assigned to Roster:</span>
-          <span class="field-val has-val">
+      <ng-container *ngIf="(listingDetails.groupStatus === 'Future/Scheduled')">
+        <div class="label-val-pair sub-pair">
+          <span class="field-label">Event Schedule:</span>
+          <span class="field-val has-val">{{ listingDetails.eventSchedule | date: 'MM/dd/yyyy hh:mm' }}</span>
+        </div>
+      </ng-container>
+      <div class="label-val-pair">
+        <span class="field-label">Category:</span>
+        <span class="field-val has-val">{{ listingDetails.category }}</span>
+      </div>
+      <ng-container *ngIf="listingDetails.subcategory">
+        <div class="label-val-pair sub-pair">
+          <span class="field-label">Subcategory: </span>
+          <span class="field-val has-val">{{ listingDetails.subcategory }}</span>
+        </div>
+      </ng-container>
+    </div>
+    <div class="template-column">
+      <span class="template-column-header">Member Details</span>
+      <div class="label-val-pair">
+        <span class="field-label">Assigned to Roster:</span>
+        <span class="field-val has-val">
           {{ membership.memberStatus|titlecase }}
           </span>
-        </div>
-        <div class="label-val-pair">
-          <span class="field-label">Your In-Group Rank:</span>
-          <span class="hoverable-field-val has-val"
-                matTooltip="{{ membership.memberRank.rankNotes }}">
+      </div>
+      <div class="label-val-pair">
+        <span class="field-label">Your In-Group Rank:</span>
+        <span class="hoverable-field-val has-val"
+              matTooltip="{{ membership.memberRank.rankNotes }}">
           {{ membership.memberRank.rankTitle }}
           </span>
-        </div>
-        <div class="label-val-pair">
-          <span class="field-label">Your Role: </span>
-          <span class="field-val" [class.has-val]="membership.memberRole != null">
-          {{ membership.memberRole != null ? membership.memberRole.roleSummary.roleTitle : 'Unassigned' }}
-        </span>
-        </div>
       </div>
-
-
-    <div class="template-column" id="last-column">
-      <div class="button-row">
-        <a id="edit">
-          Edit
-        </a>
-        <span> | </span>
-        <a id="delete">
-          Delete
-        </a>
+      <div class="label-val-pair">
+        <span class="field-label">Your Role: </span>
+        <span class="field-val" [class.has-val]="membership.memberRole != null">
+            {{ membership.memberRole != null ? membership.memberRole.roleSummary.roleTitle : 'Unassigned' }}
+          </span>
       </div>
+      <div class="label-val-pair">
+        <span class="field-label">RSVP Status:</span>
+        <span class="field-val" [class.has-val]="membership.rsvpStatus">
+            {{ membership.rsvpStatus != null ? membership.rsvpStatus : 'Not sent yet.' }}
+          </span>
+      </div>
+    </div>
+    <!--    </div>-->
+
+    <!--    <div class="template-column" id="last-column">-->
+    <div id="last-column">
+      <button class="action-buttons"
+        (click)="toggleCollapse()">
+        View Roster
+      </button>
+      <ng-container *ngIf="membership.isAuthorizedManager; else notOwner">
+        <button class="action-buttons"
+          [routerLink]="'/group-management'">
+          Manage Group
+        </button>
+      </ng-container>
+      <ng-template #notOwner>
+        <button class="action-buttons"
+                (click)="chatHostSrv.provisionConversation(listingDetails)">
+          Message Owner
+        </button>
+      </ng-template>
+      <button class="action-buttons"
+              [disabled]="membership.memberRank.rankTitle === 'Owner'">
+        Leave Group
+      </button>
+    </div>
+  </div>
+  <div class="group-collapsible-container"
+    [class.collapsed]="collapsed">
+    <div class="roster">
+
     </div>
   </div>
 </div>

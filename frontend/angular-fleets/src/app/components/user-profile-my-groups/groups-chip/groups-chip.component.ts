@@ -12,6 +12,8 @@ import {
 } from "../../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 import {UiPrefsService} from "../../../services/facade-services/ui-prefs/ui-prefs.service";
 import {MatDialog} from "@angular/material/dialog";
+import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
+import {RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-groups-chip',
@@ -23,7 +25,8 @@ import {MatDialog} from "@angular/material/dialog";
     NgIf,
     TitleCasePipe,
     MatTooltip,
-    MatIcon
+    MatIcon,
+    RouterLink
   ],
   styleUrl: './groups-chip.component.css'
 })
@@ -35,7 +38,9 @@ export class GroupsChipComponent implements OnInit, OnDestroy {
 
   protected listingDetails!: GroupListingViewModel;
 
-  constructor(protected listingInteract: ListingViewInteractionsService, private dialog: MatDialog) {}
+  protected collapsed: boolean = true;
+
+  constructor(protected listingInteract: ListingViewInteractionsService, protected chatHostSrv: ChatHostService) {}
 
   ngOnInit() {
     this.listingDetails = this.membership.listing;
@@ -44,6 +49,11 @@ export class GroupsChipComponent implements OnInit, OnDestroy {
   showListingModal() {
     this.emitListing.emit(this.listingDetails);
   }
+
+  toggleCollapse() {
+    this.collapsed = !this.collapsed;
+  }
+
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();

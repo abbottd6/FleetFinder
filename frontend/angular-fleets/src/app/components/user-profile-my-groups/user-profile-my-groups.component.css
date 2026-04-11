@@ -23,6 +23,7 @@
 .group-memberships-wrapper {
   width: 95%;
   margin-inline: auto;
+  display: flex;
 }
 
 .no-memberships-msg {

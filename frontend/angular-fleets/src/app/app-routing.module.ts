@@ -11,6 +11,7 @@ import {ListingSuccessComponent} from "./components/listing-success/listing-succ
 import {HowToComponent} from "./components/how-to/how-to.component";
 import {ListingDetailsComponent} from "./components/listing-details/listing-details.component";
 import {NothingHerePageComponent} from "./components/nothing-here-page/nothing-here-page.component";
+import {GroupManagementPageComponent} from "./components/group-management-page/group-management-page.component";
 
 
 const routes: Routes = [
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'create-listing', component: CreateListingComponent, canActivate: [ AuthGuard ] },
   { path: 'user-account', component: UserComponent, canActivate: [ AuthGuard ] },
   { path: 'update-listing', component: UpdateListingComponent, canActivate: [ AuthGuard ] },
+  { path: 'group-management', component: GroupManagementPageComponent, canActivate: [ AuthGuard ] },
   { path: 'about', component: AboutComponent },
   { path: 'listing-success', component: ListingSuccessComponent, canActivate: [ AuthGuard ] },
   { path: 'how-to', component: HowToComponent },
