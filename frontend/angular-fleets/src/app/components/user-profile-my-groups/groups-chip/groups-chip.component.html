@@ -80,7 +80,7 @@
       </button>
       <ng-container *ngIf="membership.isAuthorizedManager; else notOwner">
         <button class="chip-buttons"
-          [routerLink]="'/group-management'">
+          [routerLink]="`/group-management/${membership.listing.groupId}`">
           <mat-icon>manage_accounts</mat-icon>
           Manage Group
         </button>

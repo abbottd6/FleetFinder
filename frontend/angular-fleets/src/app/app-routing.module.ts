@@ -20,7 +20,7 @@ const routes: Routes = [
   { path: 'create-listing', component: CreateListingComponent, canActivate: [ AuthGuard ] },
   { path: 'user-account', component: UserComponent, canActivate: [ AuthGuard ] },
   { path: 'update-listing', component: UpdateListingComponent, canActivate: [ AuthGuard ] },
-  { path: 'group-management', component: GroupManagementPageComponent, canActivate: [ AuthGuard ] },
+  { path: 'group-management/:groupId', component: GroupManagementPageComponent, canActivate: [ AuthGuard ] },
   { path: 'about', component: AboutComponent },
   { path: 'listing-success', component: ListingSuccessComponent, canActivate: [ AuthGuard ] },
   { path: 'how-to', component: HowToComponent },

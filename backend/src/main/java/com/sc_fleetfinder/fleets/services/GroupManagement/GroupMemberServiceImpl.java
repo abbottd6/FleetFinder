@@ -67,8 +67,7 @@ public class GroupMemberServiceImpl implements GroupMemberService{
             dto.setIsAuthorizedManager(isAuthorized);
             dto.setMemberRole(positionSummaryDto);
             return dto;
-            }
-        );
+        });
     }
 
     private Optional<CrewPosition> findGroupMemberCrewPosition(GroupMember member) {

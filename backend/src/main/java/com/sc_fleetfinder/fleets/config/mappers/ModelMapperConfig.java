@@ -1064,6 +1064,36 @@ public class ModelMapperConfig {
                 });
 
 //GROUP INVITES
+        // Group Invite ---->>>> Group Management Response Dto
+        modelMapper.createTypeMap(GroupInvite.class, GroupManagerInviteResponseDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(GroupInvite::getInviteId, GroupManagerInviteResponseDto::setInviteId);
+
+                    mapper.using(ctx -> {
+                        GroupListing listing = (GroupListing) ctx.getSource();
+                        return listing != null ? listing.getGroupId() : null;
+                    }).map(GroupInvite::getGroupListing, GroupManagerInviteResponseDto::setListingId);
+
+                    mapper.map(GroupInvite::getSender, GroupManagerInviteResponseDto::setSenderSummary);
+
+                    mapper.map(GroupInvite::getRecipient, GroupManagerInviteResponseDto::setRecipientSummary);
+
+                    mapper.map(GroupInvite::getMemberStatus, GroupManagerInviteResponseDto::setMemberStatus);
+
+                    mapper.map(GroupInvite::getInviteRole, GroupManagerInviteResponseDto::setRoleSummary);
+
+                    mapper.map(GroupInvite::getInviteDirection, GroupManagerInviteResponseDto::setInviteDirection);
+
+                    mapper.map(GroupInvite::getInviteStatus, GroupManagerInviteResponseDto::setInviteStatus);
+
+                    mapper.map(GroupInvite::getInviteMessage, GroupManagerInviteResponseDto::setInviteMessage);
+
+                    mapper.map(GroupInvite::getExpiresAt, GroupManagerInviteResponseDto::setExpiresAt);
+
+                    mapper.map(GroupInvite::getCreatedAt, GroupManagerInviteResponseDto::setSentAt);
+                });
+
+
         // Group Invite ---->>>> Response Dto
         modelMapper.createTypeMap(GroupInvite.class, GroupInviteRequestOrResponseDto.class)
                 .addMappings(mapper -> {
@@ -1126,8 +1156,10 @@ public class ModelMapperConfig {
                 });
 
         // Group Member ---->>> Group MANAGER Response DTO
-        modelMapper.createTypeMap(GroupMember.class, GroupManagerMemberResponseDto.class)
-                .addMappings(mapper -> {
+        TypeMap<GroupMember, GroupManagerMemberResponseDto> groupMemberToManagerResponseDto =
+                modelMapper.emptyTypeMap(GroupMember.class, GroupManagerMemberResponseDto.class);
+
+        groupMemberToManagerResponseDto.addMappings(mapper -> {
                     mapper.using(ctx -> {
                         GroupListing listing = (GroupListing) ctx.getSource();
                         return listing != null ? listing.getGroupId() : null;
@@ -1139,6 +1171,11 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupMember::getMemberNote, GroupManagerMemberResponseDto::setMemberNote);
 
+                    //this needs to be handled in the method that calls the transformation
+                    mapper.skip(GroupManagerMemberResponseDto::setMemberRole);
+
+                    mapper.map(GroupMember::getMemberRank, GroupManagerMemberResponseDto::setMemberRank);
+
                     mapper.map(GroupMember::getHasComms, GroupManagerMemberResponseDto::setHasComms);
 
                     mapper.map(GroupMember::getHasExtNotes, GroupManagerMemberResponseDto::setHasExtNotes);
@@ -1146,8 +1183,6 @@ public class ModelMapperConfig {
                     mapper.map(GroupMember::getRsvpStatus, GroupManagerMemberResponseDto::setRsvpStatus);
 
                     mapper.map(GroupMember::getCreatedAt, GroupManagerMemberResponseDto::setJoinedAt);
-
-                    mapper.map(GroupMember::getMemberRank, GroupManagerMemberResponseDto::setMemberRank);
                 });
 
 //GROUP RANKS

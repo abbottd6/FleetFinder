@@ -13,9 +13,10 @@ public class GroupManagerMemberResponseDto {
     private UserSummaryResponseDto userSummary;
     private GroupMemberStatus memberStatus;
     private String memberNote;
+    private MemberPositionSummaryDto memberRole;
+    private GroupRankDto memberRank;
     private Boolean hasComms;
     private Boolean hasExtNotes;
     private RsvpStatus rsvpStatus;
     private Instant joinedAt;
-    private InGroupRank memberRank;
 }

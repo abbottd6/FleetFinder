@@ -4,6 +4,8 @@ import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -35,6 +37,11 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
             """)
     void deleteByUserAndGroupListing(@Param("userId") Long userId, @Param("listingId") Long listingId);
 
+    @Query("""
+            SELECT inv FROM GroupInvite inv
+            WHERE inv.groupListing.groupId = :groupId
+            """)
+    Page<GroupInvite> findPageOfAllGroupInvitesByGroupId(@Param("groupId") Long groupId, Pageable pageable);
 
     @Modifying
     @Query(value = """

@@ -19,12 +19,11 @@ public interface InGroupRankRepository extends JpaRepository<InGroupRank, Long> 
     List<InGroupRank> findAllGenericRanks();
 
     @Query(value = """
-            SELECT p.privilegeType FROM GroupRankAssignedPrivilege p
-            JOIN GroupMember m ON m.groupListing.groupId = :listingId
+            SELECT p.privilegeType.privilegeType FROM GroupRankAssignedPrivilege p
+            JOIN InGroupRank r ON r.rankId = p.assignedToRank.rankId
+            JOIN GroupMember m ON m.memberRank.rankId = r.rankId
                         AND m.user.userId = :userId
-            JOIN InGroupRank r ON r.groupListing.groupId = :listingId
-                        AND r.rankId = m.memberRank.rankId
-            WHERE r.rankId = m.memberRank.rankId
+                        AND m.groupListing.groupId = :listingId
             """)
     Set<RankPrivilegeOptions> findPrivilegesByUserIdAndListingId(
             @Param("userId") Long userId, @Param("listingId") Long listingId);

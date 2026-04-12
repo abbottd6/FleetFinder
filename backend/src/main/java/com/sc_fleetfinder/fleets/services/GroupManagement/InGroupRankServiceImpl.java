@@ -1,7 +1,9 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupMemberRepository;
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.InGroupRankRepository;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.InGroupRank;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
@@ -23,10 +25,15 @@ import java.util.stream.Collectors;
 public class InGroupRankServiceImpl implements InGroupRankService {
 
     private final InGroupRankRepository rankRepo;
+    private final GroupMemberRepository memberRepo;
     private Map<GroupRankGenericTypes, InGroupRank> genericRanksCache;
 
     @Override
     public Boolean verifyUserRankPermissions(Users user, GroupListing listing, RankPrivilegeOptions action) {
+        memberRepo.findByUserAndGroupListing(user, listing)
+                .orElseThrow(() -> new ActionNotAuthorizedException(user.getUserId(), action.toString(),
+                        "Group Management entity", listing.getGroupId()));
+
         Set<RankPrivilegeOptions> memberPrivileges = rankRepo.findPrivilegesByUserIdAndListingId(
                 user.getUserId(), listing.getGroupId()
         );

@@ -1,1 +1,58 @@
-<p>group-management-page works!</p>
+<div class="body-container">
+  <span class="page-title">Group Management</span>
+  <span class="header-line"></span>
+  <div class="management-container">
+    <div class="roster-container">
+      <div class="roster-top-buttons-container">
+        <button class="action-buttons-with-icons">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Profile
+        </button>
+      </div>
+      <h5 class="subgroup-header">
+        Rosters
+      </h5>
+      <mat-tab-group class="tab-group-container" mat-stretch-tabs="false" mat-align-tabs="center">
+        <mat-tab
+          label="Active"
+          class="tab-widget">
+          <ng-template matTabContent>
+            <ng-container *ngIf="isLoading; else rosterLoaded">
+              <mat-spinner></mat-spinner>
+            </ng-container>
+            <ng-template #rosterLoaded>
+              <ng-container *ngFor="let member of activeRoster">
+                <span>{{ member.userSummary.username}}</span>
+              </ng-container>
+            </ng-template>
+          </ng-template>
+        </mat-tab>
+        <mat-tab
+          label="Invites"
+          class="tab-widget">
+          <ng-template matTabContent>
+            <ng-container *ngFor="let invite of groupInvites">
+              <span>Invite request from: {{ invite.senderSummary.username}}</span>
+            </ng-container>
+          </ng-template>
+        </mat-tab>
+        <mat-tab
+          label="Waitlist"
+          class="tab-widget">
+          <ng-template matTabContent>
+
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+
+    </div>
+    <div class="subgroups-container">
+      <ng-container *ngIf="isLoading; else doneLoading">
+        <mat-spinner></mat-spinner>
+      </ng-container>
+      <ng-template #doneLoading>
+        <div>some stuff dude.</div>
+      </ng-template>
+    </div>
+  </div>
+</div>
