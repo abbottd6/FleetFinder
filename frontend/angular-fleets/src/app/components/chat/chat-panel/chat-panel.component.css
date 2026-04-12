@@ -1,8 +1,8 @@
 :host {
   display: inline-block;
   position: fixed;
-  right: 16px;
-  bottom: calc(var(--footer-height) - 120px);
+  right: 3%;
+  bottom: calc(var(--footer-height) - 100px);
   width: auto;
   z-index: 9999;
   color: rgba(223, 241, 255, 0.5) !important;
@@ -548,7 +548,7 @@
 @media(max-width: 620px) and (min-width: 411px) {
   :host {
     right: 1vw;
-
+    bottom: calc(var(--footer-height) - 120px);
   }
 
   :host:not(.is-collapsed) .chat-border,
@@ -594,6 +594,7 @@
 @media(max-width: 410px) {
   :host {
     right: 1vw;
+    bottom: calc(var(--footer-height) - 120px);
   }
 
   :host:not(.is-collapsed) .chat-border,

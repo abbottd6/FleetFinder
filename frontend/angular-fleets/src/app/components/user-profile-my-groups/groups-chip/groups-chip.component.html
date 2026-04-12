@@ -73,24 +73,28 @@
 
     <!--    <div class="template-column" id="last-column">-->
     <div id="last-column">
-      <button class="action-buttons"
+      <button class="chip-buttons"
         (click)="toggleCollapse()">
+        <mat-icon>group</mat-icon>
         View Roster
       </button>
       <ng-container *ngIf="membership.isAuthorizedManager; else notOwner">
-        <button class="action-buttons"
+        <button class="chip-buttons"
           [routerLink]="'/group-management'">
+          <mat-icon>manage_accounts</mat-icon>
           Manage Group
         </button>
       </ng-container>
       <ng-template #notOwner>
-        <button class="action-buttons"
+        <button class="chip-buttons"
                 (click)="chatHostSrv.provisionConversation(listingDetails)">
+          <i class="bi bi-chat-fill chat-icon"></i>
           Message Owner
         </button>
       </ng-template>
-      <button class="action-buttons"
-              [disabled]="membership.memberRank.rankTitle === 'Owner'">
+      <button class="chip-buttons"
+         [disabled]="membership.memberRank.rankTitle === 'Owner'">
+        <mat-icon>logout</mat-icon>
         Leave Group
       </button>
     </div>

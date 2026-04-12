@@ -1,10 +1,15 @@
 :host {
   display: flex;
-  flex: 0 0 auto;
-  margin-inline: auto;
+  flex: 1 1 auto;
+  width: 100%;
 }
 
 .chip-self {
+  display: flex;
+  flex-direction: column;
+  margin-inline: auto;
+  flex: 0 0 auto;
+  justify-content: flex-start;
   min-height: 100px;
   max-width: 80vw;
   border: 1px solid rgba(28, 24, 24, 0.1);
@@ -53,18 +58,11 @@
   color: rgb(53, 114, 163);
 }
 
-
-@media(max-width: 725px) {
-  .chip-self {
-    max-width: 80vw;
-  }
-}
-
 .data-wrapper {
-  width: auto;
   display: grid;
   padding-top: 10px;
-  grid-template-columns: 1fr 1fr 0.65fr;
+  grid-template-columns: repeat(2, minmax(200px, 1fr)) minmax(120px, auto);
+  gap: 10px;
 }
 
 .template-column {
@@ -95,14 +93,21 @@
   cursor: pointer;
 }
 
+.open-in-new-icon {
+  color: rgba(150, 168, 183, .85);
+  vertical-align: bottom;
+  transition: 0.2s ease;
+}
+
 #last-column {
   min-width: 100px;
   min-height: 75px;
-  gap: 10%;
+  gap: 20px;
   display: flex;
   flex-direction: column;
-  margin-left: 10px;
   vertical-align: center;
+  justify-content: center;
+  margin-right: 10px;
 }
 
 .label-val-pair {
@@ -132,9 +137,24 @@
   cursor: help;
 }
 
-.action-buttons {
+.chip-buttons {
   font-family: Orbitron, sans-serif;
-  max-width: 155px;
+  max-width: 200px;
+  color: rgba(150, 168, 183, .85);
+  transition: 0.2s ease;
+  background-color: rgba(33, 37, 41, .4);
+  border: 1px solid transparent;
+  border-radius: 8px;
+}
+
+.chip-buttons mat-icon {
+  bottom: 0;
+  vertical-align: bottom;
+}
+
+.chip-buttons:hover {
+  color: rgba(255, 131, 7, .4);
+  cursor: pointer;
 }
 
 .group-collapsible-container {
@@ -164,4 +184,18 @@
   height: 400px;
 }
 
+
+@media(max-width: 725px) {
+  .chip-self {
+    max-width: 80vw;
+  }
+
+  .data-wrapper {
+    grid-template-columns: 1fr;
+  }
+
+  #last-column {
+    margin-inline: auto;
+  }
+}
 

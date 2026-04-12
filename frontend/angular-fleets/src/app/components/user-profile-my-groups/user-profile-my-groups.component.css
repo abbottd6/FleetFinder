@@ -21,9 +21,12 @@
 }
 
 .group-memberships-wrapper {
-  width: 95%;
   margin-inline: auto;
   display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  justify-content: center;
+  gap: 20px;
 }
 
 .no-memberships-msg {
