@@ -5,6 +5,10 @@
     touch-target-display: center,
   ));
 
+  mat-spinner {
+    --mdc-circular-progress-active-indicator-color: rgba(52, 135, 168, 0.75);
+  }
+
   .mat-mdc-paginator .mat-mdc-select-value {
     display: flex;
     padding-left: 1rem;

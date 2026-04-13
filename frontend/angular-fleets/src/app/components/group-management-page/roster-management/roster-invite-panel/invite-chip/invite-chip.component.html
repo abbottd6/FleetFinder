@@ -1,0 +1,48 @@
+<div class="chip-self">
+  <div class="chip-data-row">
+    <ng-container *ngIf="invite.inviteDirection === 'REQUEST'; else sent">
+      <div class="popup-click-target">
+        <mat-icon class="request-icon has-tooltip"
+                  matTooltip="Invite Request">
+          flight_land
+        </mat-icon>
+        <span class="chip-field-val">
+          {{ inviteMember.username }}
+        </span>
+        <span class="chip-field-val has-tooltip"
+              matTooltip="Active Roster or Waitlist">
+          '{{ invite.memberStatus|titlecase}}'
+        </span>
+      </div>
+      <div class="actions-container">
+        <button class="invite-chip-button decline">
+          <mat-icon>close_small</mat-icon>
+        </button>
+        <button class="invite-chip-button accept">
+          <mat-icon>check_small</mat-icon>
+        </button>
+      </div>
+    </ng-container>
+    <ng-template #sent>
+      <mat-icon id="offer-icon" matTooltip="Invite Sent">flight_takeoff</mat-icon>
+    </ng-template>
+
+
+  </div>
+</div>
+
+<!--
+sentAt
+expiresAt
+inviteDirection
+inviteId
+inviteMessage
+inviteStatus
+listingId
+memberStatus
+senderSummary
+recipientSummary
+-->
+
+
+

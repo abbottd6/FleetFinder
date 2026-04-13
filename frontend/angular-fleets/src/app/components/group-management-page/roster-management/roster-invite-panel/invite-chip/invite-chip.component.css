@@ -1,0 +1,71 @@
+:host {
+  width: 100%;
+}
+
+.chip-self {
+  max-width: 80vw;
+  margin-inline: auto;
+  border: 1px solid rgba(28, 24, 24, 0.1);
+  border-radius: 10px;
+  padding: 8px;
+  background-color: rgba(37, 37, 37, 0.25);
+  box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
+  overflow: hidden;
+  font-family: "Exo 2", sans-serif;
+}
+
+.request-icon {
+  color: rgba(52, 135, 168, 0.9);
+  transform: scaleX(-1);
+}
+
+.offer-icon {
+  color: rgba(218, 165, 32, 0.75);
+}
+
+.chip-field-val {
+  margin-inline: 5px;
+}
+
+.has-tooltip:hover {
+  cursor: help;
+}
+
+.chip-data-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.popup-click-target {
+  display: flex;
+  align-items: center;
+}
+
+.actions-container {
+  display: flex;
+  flex-direction: row;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.invite-chip-button {
+  display: flex;
+  border: none;
+  background-color: transparent;
+  color: rgba(150, 168, 183, 1);
+  margin-left: 10px;
+  align-items: center;
+  transition: color 0.2s ease;
+}
+
+.invite-chip-button.accept:hover {
+  color: #478028;
+  transform: scaleY(105%) scaleX(105%);
+}
+
+.invite-chip-button.decline:hover {
+  color: rgba(167, 0, 0, 0.8);
+  transform: scaleY(105%) scaleX(105%);
+}
+
+

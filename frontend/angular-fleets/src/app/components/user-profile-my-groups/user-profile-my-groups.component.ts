@@ -6,7 +6,7 @@ import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {
   GroupMembershipsInteractService
 } from "../../services/facade-services/group-management/group-memberships-interact.service";
-import {Subject} from "rxjs";
+import {Subject, takeUntil} from "rxjs";
 import {GroupsChipComponent} from "./groups-chip/groups-chip.component";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
@@ -24,7 +24,7 @@ import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.s
   styleUrl: './user-profile-my-groups.component.css'
 })
 export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>;
+  private destroy$ = new Subject<void>();
 
   @Output() emitListing = new EventEmitter<GroupListingViewModel>();
   constructor(protected groupMemberService: GroupMembershipsInteractService,

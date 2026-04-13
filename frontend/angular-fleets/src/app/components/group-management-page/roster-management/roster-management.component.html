@@ -1,1 +1,49 @@
-<p>roster-management works!</p>
+<div class="roster-top-buttons-container">
+  <button class="action-buttons-with-icons"
+          [routerLink]="'/user-account'">
+    <mat-icon>arrow_back</mat-icon>
+    Back to Profile
+  </button>
+</div>
+<h5 class="subgroup-header">
+  Rosters
+</h5>
+<ng-container *ngIf="!rosterIsLoading; else rosterLoading">
+  <mat-tab-group class="tab-group-container" mat-stretch-tabs="false" mat-align-tabs="center">
+    <mat-tab
+      label="Active"
+      class="tab-widget">
+      <ng-template matTabContent>
+        <app-active-roster-panel>
+
+        </app-active-roster-panel>
+      </ng-template>
+    </mat-tab>
+    <mat-tab
+      label="Invites"
+      class="tab-widget">
+      <ng-template matTabContent>
+        <app-roster-invite-panel>
+
+        </app-roster-invite-panel>
+      </ng-template>
+    </mat-tab>
+    <mat-tab
+      label="Waitlist"
+      class="tab-widget">
+      <ng-template matTabContent>
+        <app-waitlist-roster-panel>
+
+        </app-waitlist-roster-panel>
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+</ng-container>
+<ng-template #rosterLoading>
+  <div class="mat-spinner-container">
+    <mat-spinner></mat-spinner>
+  </div>
+</ng-template>
+
+
+

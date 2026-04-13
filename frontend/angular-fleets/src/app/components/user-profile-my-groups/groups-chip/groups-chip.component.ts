@@ -13,7 +13,7 @@ import {
 import {UiPrefsService} from "../../../services/facade-services/ui-prefs/ui-prefs.service";
 import {MatDialog} from "@angular/material/dialog";
 import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 
 @Component({
   selector: 'app-groups-chip',
@@ -26,12 +26,11 @@ import {RouterLink} from "@angular/router";
     TitleCasePipe,
     MatTooltip,
     MatIcon,
-    RouterLink
   ],
   styleUrl: './groups-chip.component.css'
 })
 export class GroupsChipComponent implements OnInit, OnDestroy {
-  private destroy$ = new Subject<void>;
+  private destroy$ = new Subject<void>();
 
   @Output() emitListing = new EventEmitter<GroupListingViewModel>();
   @Input() membership!: GroupMembershipViewModel;
@@ -40,10 +39,18 @@ export class GroupsChipComponent implements OnInit, OnDestroy {
 
   protected collapsed: boolean = true;
 
-  constructor(protected listingInteract: ListingViewInteractionsService, protected chatHostSrv: ChatHostService) {}
+  constructor(protected listingInteract: ListingViewInteractionsService,
+              protected chatHostSrv: ChatHostService,
+              private router: Router) {}
 
   ngOnInit() {
     this.listingDetails = this.membership.listing;
+  }
+
+  saveMemberStateAndRouteToManager(manager: GroupMembershipViewModel) {
+    this.router.navigate([`/group-management/${manager.listing.groupId}`], {
+      state: { membership: manager }
+    });
   }
 
   showListingModal() {

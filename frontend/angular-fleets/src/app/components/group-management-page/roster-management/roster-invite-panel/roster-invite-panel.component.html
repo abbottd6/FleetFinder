@@ -1,0 +1,9 @@
+<div class="panel-wrapper">
+  <app-invite-options-panel>
+  </app-invite-options-panel>
+  <ng-container *ngFor="let invite of (managementInteract.groupInvites$ | async)?.content">
+    <app-invite-chip
+      [invite]="invite">
+    </app-invite-chip>
+  </ng-container>
+</div>

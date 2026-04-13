@@ -444,6 +444,13 @@ app-user {
   font-weight: 600;
 }
 
+.mat-spinner-container {
+  margin-top: 15%;
+  margin-inline: auto;
+  justify-content: center;
+  vertical-align: center;
+}
+
 @media(max-width: 1700px) {
   .action-buttons {
     padding: .2rem .5rem .2rem .5rem !important;
