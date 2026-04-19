@@ -1,0 +1,94 @@
+<h2 mat-dialog-title>Invite {{ data.invite.inviteDirection|titlecase }}</h2>
+<mat-dialog-content>
+  <div class="content-subsection">
+    <div class="field-row">
+      <span class="field-label">User: </span>
+      <span class="field-val">{{ data.targetMember.username }}({{ data.targetMember.userId }})</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">Roster {{ data.invite.inviteDirection|titlecase }}ed: </span>
+      <span class="field-val"> {{ data.invite.memberStatus|titlecase }} </span>
+    </div>
+  </div>
+  <div class="content-subsection">
+    <div class="field-row">
+      <span class="field-label">Invite Status: </span>
+      <span class="field-val">{{ data.invite.inviteStatus|titlecase }}</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">Sent At: </span>
+      <span class="field-val">{{ data.invite.sentAt | date: 'MMM, dd hh:mm a'}}</span>
+    </div>
+    <div class="field-row">
+      <span class="field-label">Expires At: </span>
+      <span class="field-val">{{ data.invite.expiresAt | date: 'MMM, dd hh:mm a'}}</span>
+    </div>
+  </div>
+  <div class="content-subsection">
+    <span class="subsection-header field-label">Message: </span>
+    <p>{{ data.invite.inviteMessage }}</p>
+  </div>
+</mat-dialog-content>
+<h2 class="footer-line"></h2>
+<mat-dialog-actions align="end">
+  <button class="action-buttons" (click)="onCancel()">Cancel</button>
+  <ng-container *ngIf="data.invite.inviteDirection == 'OFFER'; else requestMenu">
+    <button type="button"
+            class="popup-button-with-icon"
+            [matMenuTriggerFor]="inviteOfferActionsMenu">
+      <mat-icon>arrow_drop_down</mat-icon>
+      Options
+    </button>
+    <mat-menu #inviteOfferActionsMenu="matMenu" yPosition="above">
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="onConfirmAction(InviteActions.MESSAGE)">
+        Message
+      </button>
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="onConfirmAction(InviteActions.RESCIND)">
+        Rescind
+      </button>
+    </mat-menu>
+  </ng-container>
+  <ng-template #requestMenu>
+    <button type="button"
+            class="popup-button-with-icon"
+            [matMenuTriggerFor]="inviteRequestActionsMenu">
+      <mat-icon class="msg-icon">arrow_drop_down</mat-icon>
+      Options
+    </button>
+    <mat-menu class="invite-popup-menu" #inviteRequestActionsMenu="matMenu" yPosition="above">
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="onConfirmAction(InviteActions.DECLINE)">
+        Decline
+      </button>
+
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="onConfirmAction(InviteActions.WAITLIST)">
+        Waitlist
+      </button>
+
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="onConfirmAction(InviteActions.ACCEPT)">
+        Accept
+      </button>
+
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="onConfirmAction(InviteActions.MESSAGE)">
+        Message
+      </button>
+    </mat-menu>
+  </ng-template>
+</mat-dialog-actions>

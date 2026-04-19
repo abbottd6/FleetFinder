@@ -167,6 +167,10 @@ app-user {
   border-radius: 0.25rem;
 }
 
+.invite-popup-menu .mat-mdc-menu-content {
+  background-color: rgb(44 47 51);
+}
+
 .mat-mdc-dialog-surface.mdc-dialog__surface {
   background-color: rgba(52, 53, 58, 1);
 }

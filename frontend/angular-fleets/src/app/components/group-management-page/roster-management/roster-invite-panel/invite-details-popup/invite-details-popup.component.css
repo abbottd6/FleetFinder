@@ -1,0 +1,70 @@
+:host h2 {
+  border-bottom: 1px solid;
+  max-width: 92%;
+  min-width: 85%;
+  margin-left: 20px;
+  margin-right: auto;
+  padding-left: 0;
+  padding-bottom: 5px;
+  font-size: 1.15rem;
+}
+
+:host .mat-mdc-dialog-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 200px;
+  min-width: 350px;
+  justify-content: flex-start;
+}
+
+.content-subsection {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0;
+  margin-top: 15px;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: row;
+  margin-top: 4px;
+}
+
+.field-label {
+  margin-right: 4px;
+  color: rgb(53, 114, 163);
+}
+
+.field-val {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.subsection-header {
+  margin-bottom: 5px;
+}
+
+.footer-line {
+  color: rgba(150, 168, 183, 1);
+}
+
+.popup-button-with-icon {
+  display: inline-flex;
+  gap: 0.25rem;
+  border: 1px solid rgba(255, 131, 7, .75);
+  padding: .26rem .56rem .25rem .56rem;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(255, 131, 7, .75);
+  font-size: 0.9rem;
+  border-radius: .2rem;
+  transition: 0.2s ease;
+  align-items: center;
+}
+
+.popup-button-with-icon:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+}

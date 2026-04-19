@@ -7,9 +7,9 @@
         </app-roster-management>
       </div>
       <div class="subgroups-container">
-        <ng-template #doneLoading>
-          <div>some stuff dude.</div>
-        </ng-template>
+        <div class="group-header-container">
+          <span class="listing-title">{{ listingTitle.length > 60 ? (listingTitle|slice: 0: 60) + '...' : listingTitle }}</span>
+        </div>
       </div>
     </div>
   </ng-container>

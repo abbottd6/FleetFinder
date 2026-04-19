@@ -2,12 +2,15 @@ package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteRequestDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerInviteResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupMembershipResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
-import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberService;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberManagementService;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberManagementServiceImpl;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -24,7 +27,8 @@ import org.springframework.web.bind.annotation.*;
 public class GroupMembershipController {
 
     private final UserService userService;
-    private final GroupMemberService memberService;
+    private final GroupMemberUserService memberUserService;
+    private final GroupMemberManagementService memberManagementService;
 
     @GetMapping("/my_groups")
     public Page<GroupMembershipResponseDto> getMyGroupMemberships(@AuthenticationPrincipal Jwt jwt) {
@@ -32,7 +36,7 @@ public class GroupMembershipController {
 
         Users user = userService.verifyUser(kcId);
 
-        return memberService.getMyGroupMemberships(user);
+        return memberUserService.getMyGroupMemberships(user);
     }
 
     @PostMapping("/request_invite")
@@ -42,7 +46,7 @@ public class GroupMembershipController {
 
         Users user = userService.verifyUser(kcId);
 
-        GroupInviteRequestOrResponseDto responseDto = memberService.sendGroupInviteRequest(
+        GroupInviteRequestOrResponseDto responseDto = memberUserService.sendGroupInviteRequest(
                 user, dto);
 
         return ResponseEntity.ok(responseDto);
@@ -55,7 +59,7 @@ public class GroupMembershipController {
 
         Users sender = userService.verifyUser(kcId);
 
-        GroupInviteRequestOrResponseDto responseDto = memberService.sendGroupInviteOffer(sender, dto);
+        GroupManagerInviteResponseDto responseDto = memberManagementService.sendGroupInviteOffer(sender, dto);
 
         return ResponseEntity.ok(responseDto);
     }
@@ -66,7 +70,7 @@ public class GroupMembershipController {
         String kcId = jwt.getSubject();
         Users newMember = userService.verifyUser(kcId);
 
-        GroupMembershipResponseDto responseDto = memberService.acceptGroupInviteOffer(newMember, dto);
+        GroupMembershipResponseDto responseDto = memberUserService.acceptGroupInviteOffer(newMember, dto);
 
         return ResponseEntity.ok(responseDto);
     }
@@ -77,7 +81,7 @@ public class GroupMembershipController {
         String kcId = jwt.getSubject();
         Users actingUser = userService.verifyUser(kcId);
 
-        GroupManagerMemberResponseDto responseDto = memberService.acceptGroupInviteRequest(actingUser, dto);
+        GroupManagerMemberResponseDto responseDto = memberManagementService.acceptGroupInviteRequest(actingUser, dto);
 
         return ResponseEntity.ok(responseDto);
     }
@@ -88,7 +92,7 @@ public class GroupMembershipController {
         String kcId = jwt.getSubject();
         Users actingUser = userService.verifyUser(kcId);
 
-        GroupInviteRequestOrResponseDto responseDto = memberService.declineGroupInviteOfferOrRequest(
+        GroupInviteRequestOrResponseDto responseDto = memberUserService.declineGroupInviteOfferOrRequest(
                 actingUser, dto);
 
         return ResponseEntity.ok(responseDto);
@@ -100,7 +104,7 @@ public class GroupMembershipController {
         String kcId = jwt.getSubject();
         Users actingUser = userService.verifyUser(kcId);
 
-        GroupInviteRequestOrResponseDto responseDto = memberService.rescindGroupInviteOfferOrRequest(
+        GroupInviteRequestOrResponseDto responseDto = memberUserService.rescindGroupInviteOfferOrRequest(
                 actingUser, dto);
 
         return ResponseEntity.ok(responseDto);
@@ -113,7 +117,7 @@ public class GroupMembershipController {
         String kcId = jwt.getSubject();
         Users actingUser = userService.verifyUser(kcId);
 
-        memberService.userLeaveGroup(actingUser, groupId);
+        memberUserService.userLeaveGroup(actingUser, groupId);
 
         return ResponseEntity.status(HttpStatus.OK).build();
     }

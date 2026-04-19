@@ -9,14 +9,13 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SearchListingsDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.CommsOption;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.NewListingNotifyQueue;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberService;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberManagementService;
 import com.sc_fleetfinder.fleets.services.archive_services.ArchiveService;
 import com.sc_fleetfinder.fleets.services.conversion_services.GroupListingConversionService;
 import com.sc_fleetfinder.fleets.utils.SearchStopWords;
@@ -42,8 +41,6 @@ import org.springframework.validation.annotation.Validated;
 import java.lang.reflect.Field;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +67,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final ListingReportRepository lrr;
     private final NotificationOutboxRepository outboxRepo;
     private final NewListingNotifyQueueRepository listingNotifyQueueRepository;
-    private final GroupMemberService groupMemberService;
+    private final GroupMemberManagementService memberManagementService;
 
     @PersistenceContext
     private EntityManager em;
@@ -126,7 +123,7 @@ public class GroupListingServiceImpl implements GroupListingService {
 
                 log.info("Listing ID: {}", listingWithId.getGroupId());
 
-                groupMemberService.createOwnerMember(requestingUser, listingWithId);
+                memberManagementService.createOwnerMember(requestingUser, listingWithId);
 
                 NewListingNotifyQueue queued = new NewListingNotifyQueue(listingWithId);
 

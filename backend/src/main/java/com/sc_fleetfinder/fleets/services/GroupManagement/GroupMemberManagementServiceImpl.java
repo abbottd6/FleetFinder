@@ -1,51 +1,55 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
-import com.sc_fleetfinder.fleets.DAO.GroupManagement.CrewPositionRepository;
-import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupInviteRepository;
-import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupMemberRepository;
+import com.sc_fleetfinder.fleets.DAO.GroupManagement.*;
+import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerInviteResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.MemberPositionSummaryDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewPosition;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
+import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.GroupManagement.NewInviteRequestEvent;
+import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
+import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInvitationStatus;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRankGenericTypes;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RankPrivilegeOptions;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
-public class GroupMemberManagementServiceImpl implements GroupMemberManagementService {
+public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl implements GroupMemberManagementService {
 
-    private final GroupMemberRepository groupMemberRepo;
-    private final GroupInviteRepository groupInviteRepo;
-    private final GroupListingRepository glr;
-    private final InGroupRankService rankService;
-    private final CrewPositionRepository cpr;
-    private final ModelMapper modelMapper;
-
-    @Override
-    public Boolean verifyUserIsAuthorizedMember(Users user, Long listingId) {
-        GroupListing listing = glr.findById(listingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Group Listing", listingId));
-
-        RankPrivilegeOptions action = RankPrivilegeOptions.MANAGE_ROSTERS;
-
-        return this.rankService.verifyUserRankPermissions(user, listing, action);
+    protected GroupMemberManagementServiceImpl(GroupMemberRepository memberRepo, InGroupRankService rankService,
+                                               PushSubscriptionRepository pushSubRepo, GroupListingRepository glr,
+                                               GroupInviteRepository inviteRepo, CrewPositionRepository cpr,
+                                               ModelMapper modelMapper,
+                                               GroupRankAssignedPrivilegeRepository assignedPrivilegeRepository,
+                                               CrewRoleClassificationRepository roleRepo,
+                                               UserRepository userRepo,
+                                               ApplicationEventPublisher eventPublisher) {
+        super(memberRepo, rankService, pushSubRepo, glr, inviteRepo, cpr, modelMapper, assignedPrivilegeRepository,
+                eventPublisher, userRepo, roleRepo);
     }
+
 
     @Override
     public Page<GroupManagerMemberResponseDto> getActiveRosterGroupMembers(Users user, Long listingId) {
@@ -58,7 +62,7 @@ public class GroupMemberManagementServiceImpl implements GroupMemberManagementSe
 
         Pageable pageable = PageRequest.of(0, 100);
 
-        Page<GroupMember> memberEntities = this.groupMemberRepo.findActiveRosterMembersByGroup(listingId, pageable);
+        Page<GroupMember> memberEntities = this.memberRepo.findActiveRosterMembersByGroup(listingId, pageable);
 
         return memberEntities.map(m -> {
             GroupManagerMemberResponseDto dto = modelMapper.map(m, GroupManagerMemberResponseDto.class);
@@ -69,10 +73,6 @@ public class GroupMemberManagementServiceImpl implements GroupMemberManagementSe
             dto.setMemberRole(positionSummaryDto);
             return dto;
         });
-    }
-
-    private Optional<CrewPosition> findGroupMemberCrewPosition(GroupMember m) {
-        return cpr.findMemberPositionByAssignedMemberIdAndListingId(m, m.getGroupListing().getGroupId());
     }
 
     @Override
@@ -86,7 +86,7 @@ public class GroupMemberManagementServiceImpl implements GroupMemberManagementSe
 
         Pageable pageable = PageRequest.of(0, 100);
 
-        Page<GroupMember> memberEntities = this.groupMemberRepo.findWaitlistMembersByGroup(listingId, pageable);
+        Page<GroupMember> memberEntities = this.memberRepo.findWaitlistMembersByGroup(listingId, pageable);
 
         return memberEntities.map(m -> {
             GroupManagerMemberResponseDto dto = modelMapper.map(m, GroupManagerMemberResponseDto.class);
@@ -110,15 +110,52 @@ public class GroupMemberManagementServiceImpl implements GroupMemberManagementSe
 
         Pageable pageable = PageRequest.of(0, 100);
 
-        Page<GroupInvite> inviteEntities = this.groupInviteRepo.findPageOfAllGroupInvitesByGroupId(listingId, pageable);
+        Page<GroupInvite> inviteEntities = this.inviteRepo.findPageOfAllGroupInvitesByGroupId(listingId, pageable);
 
         return inviteEntities.map(inv -> modelMapper.map(inv, GroupManagerInviteResponseDto.class));
     }
 
     @Override
     @Transactional
-    public GroupManagerMemberResponseDto acceptGroupInviteRequest(Users user, Long listingId, Long inviteId) {
-        return null;
+    public GroupManagerMemberResponseDto acceptGroupInviteRequest(Users actingUser, GroupInviteRequestOrResponseDto dto) {
+        GroupListing listing = glr.findById(dto.getListingDetails().getGroupId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Group Listing", dto.getListingDetails().getGroupId()));
+
+        GroupInvite invite = inviteRepo.findById(dto.getInviteId()).orElseThrow(() -> new ResourceNotFoundException(
+                "Group Invite", dto.getInviteId()));
+
+        Users newMember = invite.getRecipient();
+
+        rankService.verifyUserRankPermissions(actingUser, listing, RankPrivilegeOptions.MANAGE_ROSTERS);
+
+        //TODO do something with this or remove it?
+        Boolean hasComms = null;
+        Boolean hasExtNotes = getNewMemberHasExternalNotes(newMember);
+        InGroupRank newMemberRank = rankService.getGenericRankByTitle(GroupRankGenericTypes.Member);
+
+        try {
+            GroupMember savedMember = memberRepo.save(new GroupMember(listing, newMember, dto.getMemberStatus(), newMemberRank,
+                    hasComms, hasExtNotes));
+
+            invite.setInviteStatus(GroupInvitationStatus.ACCEPTED);
+            inviteRepo.save(invite);
+
+            //TODO save outbox notification for recipient
+            listing.setCurrentPartySize(listing.getCurrentPartySize() + 1);
+            glr.save(listing);
+
+            return modelMapper.map(savedMember, GroupManagerMemberResponseDto.class);
+
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof ConstraintViolationException cve &&
+                    cve.getConstraintName() != null &&
+                    cve.getConstraintName().contains("PRIMARY")) {
+                throw new DuplicateEntryException("This user has already joined the group.");
+            } else {
+                throw e;
+            }
+        }
     }
 
     @Override
@@ -129,7 +166,53 @@ public class GroupMemberManagementServiceImpl implements GroupMemberManagementSe
 
     @Override
     @Transactional
-    public GroupManagerInviteResponseDto sendGroupInviteOffer(Users sender, Long listingId, Long recipientId) {
-        return null;
+    public GroupManagerInviteResponseDto sendGroupInviteOffer(Users sender, SendGroupInviteOfferDto dto) {
+        GroupListing listing = glr.findById(dto.getListingId())
+                .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getListingId()));
+
+        Boolean groupActionAuth = this.rankService.verifyUserRankPermissions(
+                sender, listing, RankPrivilegeOptions.INVITE);
+
+        if(groupActionAuth != true) {
+            throw new ActionNotAuthorizedException(sender.getUserId(), RankPrivilegeOptions.INVITE.toString(),
+                    "Group Management", dto.getListingId());
+        } else {
+            InviteDirection direction = InviteDirection.OFFER;
+            GroupInvitationStatus pending = GroupInvitationStatus.PENDING;
+
+            Instant expiresAt = dto.getExpiresAt();
+
+            if(expiresAt == null) {
+                if(listing.getEventSchedule() != null) {
+                    expiresAt = listing.getEventSchedule();
+                } else {
+                    expiresAt = Instant.now().plus(12, ChronoUnit.HOURS);
+                }
+            }
+
+            CrewRoleClassification role = roleRepo.findById(dto.getRoleSummary().getRoleId())
+                    .orElse(null);
+
+            Users recipient = userRepo.findById(dto.getRecipientSummary().getUserId())
+                    .orElseThrow(() -> new ResourceNotFoundException("User", dto.getRecipientSummary().getUserId()));
+
+            try {
+                GroupInvite savedInvite = inviteRepo.save(new GroupInvite(sender, recipient, listing, direction,
+                        dto.getMemberStatus(), role, pending, dto.getInviteMessage(), expiresAt));
+
+                eventPublisher.publishEvent(new NewInviteRequestEvent(savedInvite));
+
+                return modelMapper.map(savedInvite, GroupManagerInviteResponseDto.class);
+
+            } catch (DataIntegrityViolationException e) {
+                if(e.getCause() instanceof ConstraintViolationException cve &&
+                        cve.getConstraintName() != null &&
+                        cve.getConstraintName().contains("uq_group_invite_type_sender_recipient_group")) {
+                    throw new DuplicateEntryException("An invite has already been sent to this user for this group.");
+                } else {
+                    throw e;
+                }
+            }
+        }
     }
 }

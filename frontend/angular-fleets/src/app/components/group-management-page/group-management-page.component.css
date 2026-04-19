@@ -5,6 +5,14 @@
   padding: 1rem;
 }
 
+.group-header-container {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 1.25rem;
+  margin: 15px auto 20px 20px;
+  border-bottom: 1px solid rgba(150, 168, 183, .3);
+  max-width: 95%;
+}
+
 .management-container {
   color: rgba(150, 168, 183, 1);
   background-color: rgba(88, 92, 96, .3);

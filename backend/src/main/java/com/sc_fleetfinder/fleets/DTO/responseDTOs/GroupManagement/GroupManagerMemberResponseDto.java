@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement;
 
-import com.sc_fleetfinder.fleets.entities.GroupManagement.InGroupRank;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberStatus;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RsvpStatus;
 import lombok.Data;

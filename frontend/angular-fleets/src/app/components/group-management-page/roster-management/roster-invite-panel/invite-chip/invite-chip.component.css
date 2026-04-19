@@ -3,6 +3,8 @@
 }
 
 .chip-self {
+  display: flex;
+  flex-direction: row;
   max-width: 80vw;
   margin-inline: auto;
   border: 1px solid rgba(28, 24, 24, 0.1);
@@ -12,11 +14,11 @@
   box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
   overflow: hidden;
   font-family: "Exo 2", sans-serif;
+  transition: background-color 0.2s ease;
 }
 
 .request-icon {
   color: rgba(52, 135, 168, 0.9);
-  transform: scaleX(-1);
 }
 
 .offer-icon {
@@ -27,18 +29,30 @@
   margin-inline: 5px;
 }
 
+.username {
+  font-family: 'Orbitron', sans-serif;
+}
+
 .has-tooltip:hover {
   cursor: help;
 }
 
-.chip-data-row {
-  display: flex;
-  flex-direction: row;
-}
-
-.popup-click-target {
+.invite-brief-container {
   display: flex;
   align-items: center;
+}
+
+.invite-details-popup-click-target {
+  padding: 4px;
+  border-radius: 6px;
+  flex: 1 1 auto;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.child-hovered {
+  background-color: rgba(37, 37, 37, 0.5);
+  color: rgba(255, 131, 7, .5);
+  cursor: pointer
 }
 
 .actions-container {
@@ -46,26 +60,39 @@
   flex-direction: row;
   margin-left: auto;
   margin-right: 0;
+  align-items: center;
 }
 
 .invite-chip-button {
   display: flex;
-  border: none;
   background-color: transparent;
   color: rgba(150, 168, 183, 1);
+  border: 1px solid rgba(150, 168, 183, .3);
+  border-radius: 6px;
+  box-shadow: 0 0 0 1px rgba(150, 168, 183, .1);
   margin-left: 10px;
   align-items: center;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, border-color 0.2s ease, transform 0.05s ease;
+}
+
+.invite-chip-button mat-icon {
+  scale: 0.9;
+  pointer-events: none;
 }
 
 .invite-chip-button.accept:hover {
-  color: #478028;
-  transform: scaleY(105%) scaleX(105%);
+  color: rgba(52, 135, 168, 0.9);
+  border-color: rgba(52, 135, 168, 0.35);
+  transform: scaleY(103%) scaleX(103%);
 }
 
 .invite-chip-button.decline:hover {
-  color: rgba(167, 0, 0, 0.8);
-  transform: scaleY(105%) scaleX(105%);
+  color: rgba(255, 131, 7, .5);
+  border-color: rgba(255, 131, 7, .2);
+  transform: scaleY(103%) scaleX(103%);
 }
 
+.invite-chip-button:hover:active {
+  transform: scaleY(92%) scaleX(92%);
+}
 

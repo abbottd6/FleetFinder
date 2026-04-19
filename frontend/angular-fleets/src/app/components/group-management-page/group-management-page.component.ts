@@ -12,7 +12,7 @@ import {UserService} from "../../services/user-services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MemberManagementApiService} from "../../services/api-services/group-management/member-management-api.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {NgForOf, NgIf} from "@angular/common";
+import {NgForOf, NgIf, SlicePipe} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {RosterManagementComponent} from "./roster-management/roster-management.component";
 import {
@@ -29,7 +29,8 @@ import {
   imports: [
     NgIf,
     MatProgressSpinner,
-    RosterManagementComponent
+    RosterManagementComponent,
+    SlicePipe
   ],
   styleUrl: './group-management-page.component.css'
 })
@@ -38,6 +39,8 @@ export class GroupManagementPageComponent implements OnInit, OnDestroy {
 
   protected waitlistRoster: GroupManagementMemberViewModel[] = [];
   protected noWaitlistMembers: boolean = false;
+
+  protected listingTitle!: string;
 
   protected pageIsLoading: boolean = true;
 
@@ -87,6 +90,8 @@ export class GroupManagementPageComponent implements OnInit, OnDestroy {
           }
         }
     });
+
+    this.listingTitle = this.managementInteract.sessionManager.listing.listingTitle;
 
     this.pageIsLoading = false;
   }
