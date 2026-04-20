@@ -14,6 +14,9 @@ import {MatDialog} from "@angular/material/dialog";
 import {
   SendGroupInvitePopupComponent
 } from "../../../components/pop-ups/send-group-invite-popup/send-group-invite-popup.component";
+import {
+  UserMonikerSummaryViewModel
+} from "../../../models/group-management-models/nested-models/user-moniker-summary-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -48,10 +51,12 @@ export class GroupManagementInteractService {
     this.groupInvitesSubject.next(invites);
   }
 
-  openSendInvitePopup(sender: GroupMembershipViewModel) {
+  openSendInvitePopup(sender: GroupMembershipViewModel, recipient: UserMonikerSummaryViewModel | null) {
     const dialogRef = this.dialog.open(SendGroupInvitePopupComponent, {
+      disableClose: true,
       data: {
-        sessionMember: sender
+        listing: sender.listing,
+        recipientSummary: recipient,
       }
     })
   }

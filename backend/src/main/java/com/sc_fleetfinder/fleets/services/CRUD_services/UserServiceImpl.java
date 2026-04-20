@@ -365,15 +365,12 @@ public class UserServiceImpl implements UserService {
                 }
             }
 
-            log.info("SearchTerms: {}, size: {}", searchTerms.getFirst(), searchTerms.size());
             if(!searchTerms.isEmpty()) {
-                log.info("does this run?");
                 spec = spec.and((root, query, cb) -> {
                     List<Predicate> tokenPredicates = new ArrayList<>();
 
                     for(String token : searchTerms) {
                         String like = "%" + token + "%";
-                        log.info("token: {}", like);
                         Predicate perToken = cb.or(
                                 cb.like(cb.lower(root.get("username")), like),
                                 cb.like(cb.lower(root.get("discordUsername")), like),

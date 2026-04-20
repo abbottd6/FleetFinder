@@ -456,6 +456,65 @@ app-user {
   vertical-align: center;
 }
 
+
+/* SEND GROUP INVITE AUTOCOMPLETE TEXT FIELDS -----------------------------------------------*/
+.cdk-overlay-container {
+
+  .mat-mdc-option .mdc-list-item__primary-text .search-results,
+  .no-results-option .mdc-list-item__primary-text {
+    color: rgba(150, 168, 183, 1) !important;
+    font-family: 'Exo 2', sans-serif;
+  }
+
+  .mat-mdc-autocomplete-panel {
+    background-color: rgb(41 45 50);
+  }
+
+  .mat-mdc-autocomplete-panel .mat-mdc-option:hover  {
+    background-color: rgba(150, 168, 183, 0.1);
+  }
+
+  .searching .mdc-list-item__primary-text {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .mat-mdc-autocomplete-panel.autocomplete-packed {
+      .mat-mdc-option.mdc-list-item {
+        border: 1px solid rgba(150, 168, 183, .3);
+        border-radius: 4px;
+        margin: 6px;
+      }
+
+      .mat-mdc-option .mdc-list-item__primary-text {
+        margin-right: 0;
+        width: 100%;
+        font-family: 'Exo 2', sans-serif;
+      }
+  }
+
+  .mat-mdc-autocomplete-panel.autocomplete-packed .search-results {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .autocomplete-footer {
+      display: flex;
+      flex-direction: row;
+
+      .autocomplete-details-left {
+        margin-left: 0;
+        margin-right: auto;
+      }
+
+      .autocomplete-details-right {
+        margin-left: auto;
+        margin-right: 0;
+      }
+    }
+  }
+}
+
 @media(max-width: 1700px) {
   .action-buttons {
     padding: .2rem .5rem .2rem .5rem !important;

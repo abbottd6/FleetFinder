@@ -1,0 +1,32 @@
+<div class="dropdown-component">
+  <mat-form-field>
+    <mat-label>Select A Group</mat-label>
+    <input type="text" matInput
+           [formControl]="groupSelectCtrl"
+           [matAutocomplete]="autoGroups">
+  </mat-form-field>
+  <mat-autocomplete class="autocomplete-packed" #autoGroups="matAutocomplete" [displayWith]="displaySelectedGroup">
+    <ng-container *ngIf="!noAuthorizedGroups; else noGroups">
+      <mat-option *ngFor="let group of inviteAuthorizedGroups" [value]="group">
+        <div class="search-results">
+          <small class="autocomplete-header">{{ group.listingTitle.length > 25 ?
+            (group.listingTitle|slice:0:21) + '...(#' + group.groupId + ')' :
+            (group.listingTitle + '(#' + group.groupId + ')')}}</small>
+          <br>
+          <div class="autocomplete-footer">
+            <small class="autocomplete-details-left">{{ group.userName }}</small>
+            <small class="autocomplete-details-right">
+              {{ group.groupStatus == 'Future/Scheduled' ? (group.eventSchedule | date:'MMM, dd hh:mm a') : group.groupStatus }}
+            </small>
+          </div>
+        </div>
+      </mat-option>
+    </ng-container>
+    <ng-template #noGroups>
+      <mat-option disabled class="no-results-option">
+        No Invite Authorized Groups
+      </mat-option>
+    </ng-template>
+  </mat-autocomplete>
+</div>
+

@@ -12,6 +12,8 @@ import com.sc_fleetfinder.fleets.utils.GroupManagement.RankPrivilegeOptions;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -46,6 +48,11 @@ public class InGroupRankServiceImpl implements InGroupRankService {
             throw new ActionNotAuthorizedException(user.getUserId(),
                     action.toString(), "Group Management", listing.getGroupId());
         }
+    }
+
+    @Override
+    public Page<GroupListing> getMyInviteAuthorizedGroups(Long userId, Pageable pageable) {
+        return rankRepo.findMyInviteAuthorizedGroups(userId, pageable);
     }
 
     @PostConstruct

@@ -9,6 +9,12 @@
     --mdc-circular-progress-active-indicator-color: rgba(52, 135, 168, 0.75);
   }
 
+  .searching mat-progress-bar {
+    min-width: 225px;
+    --mdc-linear-progress-active-indicator-color: deepskyblue;
+    --mdc-linear-progress-track-color: rgba(44, 44, 44, 0.95);
+  }
+
   .mat-mdc-paginator .mat-mdc-select-value {
     display: flex;
     padding-left: 1rem;

@@ -28,14 +28,7 @@ import {UserService} from "../../user-services/user.service";
 import {TemplatesModalService} from "../../component-services/templates-modal-service/templates-modal.service";
 import {GroupMembershipApiService} from "../../api-services/group-membership-api/group-membership-api.service";
 import {SendGroupInviteRequest} from "../../../models/group-management-models/request-models/send-group-invite-request";
-import {
-  GroupInviteViewModel
-} from "../../../models/group-management-models/view-models/group-membership/group-invite-view-model";
-import {
-  UserMonikerSummaryViewModel
-} from "../../../models/group-management-models/nested-models/user-moniker-summary-view-model";
 import {InviteFormPopupComponent} from "../../../components/pop-ups/invite-form-popup/invite-form-popup.component";
-import {HttpErrorResponse} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root'

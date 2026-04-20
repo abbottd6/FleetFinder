@@ -1,7 +1,10 @@
 package com.sc_fleetfinder.fleets.DAO.GroupManagement;
 
+import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.InGroupRank;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RankPrivilegeOptions;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,4 +30,13 @@ public interface InGroupRankRepository extends JpaRepository<InGroupRank, Long> 
             """)
     Set<RankPrivilegeOptions> findPrivilegesByUserIdAndListingId(
             @Param("userId") Long userId, @Param("listingId") Long listingId);
+
+    @Query(value = """
+           SELECT listing FROM GroupListing listing
+           JOIN GroupMember m ON m.groupListing.groupId = listing.groupId
+           JOIN GroupRankAssignedPrivilege p ON p.assignedToRank.rankId = m.memberRank.rankId
+           WHERE m.user.userId = :userId
+                      AND p.privilegeType.privilegeType = 'INVITE'
+           """)
+    Page<GroupListing> findMyInviteAuthorizedGroups(@Param("userId") Long userId, Pageable pageable);
 }

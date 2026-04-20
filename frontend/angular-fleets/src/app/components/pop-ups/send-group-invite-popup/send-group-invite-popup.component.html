@@ -1,8 +1,17 @@
 <h2 mat-dialog-title>Send Group Invite</h2>
 <mat-dialog-content>
-  <app-search-input-auto-complete
-    [abstractCtrl]="recipientCtrl">
-  </app-search-input-auto-complete>
+  <ng-container *ngIf="showGroupSelect">
+    <div class="form-field-container">
+      <app-authorized-member-group-select-dropdown
+        [groupSelectCtrl]="groupSelectCtrl">
+      </app-authorized-member-group-select-dropdown>
+    </div>
+  </ng-container>
+  <div class="form-field-container">
+    <app-search-input-auto-complete
+      [abstractCtrl]="recipientCtrl">
+    </app-search-input-auto-complete>
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button class="action-buttons" (click)="onCancel()">Cancel</button>

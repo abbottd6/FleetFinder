@@ -21,6 +21,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   import {
     GroupManagementMemberViewModel
   } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
+  import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 
 export const rosterClasses: string[] = ['Active', 'Waitlist'];
 
@@ -39,6 +40,10 @@ export class GroupMembershipApiService {
       takeUntilDestroyed(this.destroyRef),
       tap(page => page)
       );
+  }
+
+  getMyInviteAuthorizedMemberships(): Observable<Page<GroupListingViewModel>> {
+    return this.httpClient.get<Page<GroupListingViewModel>>(`${this.baseUrl}/my_invite_authorized_groups`);
   }
 
   sendGroupInviteRequest(invRequest: SendGroupInviteRequest): Observable<GroupInviteViewModel> {

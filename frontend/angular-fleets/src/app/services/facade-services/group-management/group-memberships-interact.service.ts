@@ -6,7 +6,9 @@ import {
 } from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {Page} from "../../api-services/group-listings-fetch-api/group-listing-fetch.service";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, EMPTY, Observable, ReplaySubject} from "rxjs";
+import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +21,9 @@ export class GroupMembershipsInteractService {
 
   public noMemberships: boolean = true;
 
-  constructor(private membershipsApiService: GroupMembershipApiService, private userService: UserService) {}
+  constructor(private membershipsApiService: GroupMembershipApiService,
+              private userService: UserService,
+              private snackBar: MatSnackBar) {}
 
   getMyGroupMemberships() {
     if(this.userService.userLoggedIn) {
@@ -29,6 +33,20 @@ export class GroupMembershipsInteractService {
             this.noMemberships = page.content.length === 0;
         });
     }
+  }
+
+  getMyInviteAuthorizedMemberships() {
+    if(!this.userService.userLoggedIn){
+      this.snackBar.open('You must be logged in to perform this action', 'OK', {
+        duration: 4000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']
+      })
+      return EMPTY;
+    }
+
+    return this.membershipsApiService.getMyInviteAuthorizedMemberships();
   }
 
 }

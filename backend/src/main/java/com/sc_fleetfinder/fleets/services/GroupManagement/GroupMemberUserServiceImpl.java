@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DAO.GroupManagement.*;
 import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteRequestDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupMembershipResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.MemberPositionSummaryDto;
@@ -35,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -67,6 +69,14 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
             dto.setMemberRole(positionSummaryDto);
             return dto;
         });
+    }
+
+    @Override
+    public Page<GroupListingResponseDto> getMyInviteAuthorizedMemberships(Users user) {
+        Pageable pageable = PageRequest.of(0, 50);
+        Page<GroupListing> myAuthorized = rankService.getMyInviteAuthorizedGroups(user.getUserId(), pageable);
+
+        return myAuthorized.map(listing -> modelMapper.map(listing, GroupListingResponseDto.class));
     }
 
     @Override

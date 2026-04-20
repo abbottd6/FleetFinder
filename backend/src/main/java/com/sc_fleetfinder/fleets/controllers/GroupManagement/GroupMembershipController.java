@@ -1,12 +1,14 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteRequestDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupMembershipResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberManagementService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberUserService;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberUserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -23,8 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class GroupMembershipController {
 
     private final UserService userService;
-    private final GroupMemberUserService memberUserService;
-    private final GroupMemberManagementService memberManagementService;
+    private final GroupMemberUserServiceImpl memberUserService;
 
     @GetMapping("/my_groups")
     public Page<GroupMembershipResponseDto> getMyGroupMemberships(@AuthenticationPrincipal Jwt jwt) {
@@ -33,6 +34,15 @@ public class GroupMembershipController {
         Users user = userService.verifyUser(kcId);
 
         return memberUserService.getMyGroupMemberships(user);
+    }
+
+    @GetMapping("/my_invite_authorized_groups")
+    public Page<GroupListingResponseDto> getMyInviteAuthorizedGroupMemberships(@AuthenticationPrincipal Jwt jwt) {
+        String kcId = jwt.getSubject();
+
+        Users user = userService.verifyUser(kcId);
+
+        return memberUserService.getMyInviteAuthorizedMemberships(user);
     }
 
     @PostMapping("/request_invite")

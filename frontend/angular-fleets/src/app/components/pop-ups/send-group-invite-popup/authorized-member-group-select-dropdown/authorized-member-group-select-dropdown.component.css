@@ -1,7 +1,8 @@
-@import '../input-field/input-field-styles.css';
-@import '../../dropdowns/dropdown-module/dropdown-styles.css';
+@import '../../../input-fields/input-field/input-field-styles.css';
+@import '../../../dropdowns/dropdown-module/dropdown-styles.css';
 
 .dropdown-component {
+  padding-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -40,8 +41,10 @@
   top: 50%;
 }
 
-.searching .mdc-list-item__primary-text .mat-mdc-option {
-  margin-left: auto;
-  margin-right: auto;
-  color: rgba(150, 168, 183, 1);
+.mat-mdc-autocomplete-panel {
+  gap: 4px;
 }
+
+
+
+
