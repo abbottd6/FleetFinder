@@ -80,9 +80,9 @@ public class UserController {
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public ResponseEntity<?> searchUsers(@AuthenticationPrincipal Jwt jwt, @RequestParam String searchCriteria) {
         String kcId = jwt.getSubject();
-        userService.verifyUser(kcId);
+        Users user = userService.verifyUser(kcId);
 
-        Page<UserSummaryResponseDto> response = userService.searchUsers(searchCriteria);
+        Page<UserSummaryResponseDto> response = userService.searchUsers(user, searchCriteria);
 
         return ResponseEntity.ok(response);
     }

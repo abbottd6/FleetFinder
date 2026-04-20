@@ -68,6 +68,9 @@ public class UserServiceImplTest {
     private UserConversionServiceImpl userConversionService;
 
     @Mock
+    private ModelMapper modelMapper;
+
+    @Mock
     private static ApplicationEventPublisher eventPublisher;
 
     private static Validator validator;
@@ -83,7 +86,7 @@ public class UserServiceImplTest {
         MockitoAnnotations.openMocks(this);
 
         userService = new UserServiceImpl(userRepository, userConversionService, validator,
-                groupListingRepository, kcAdminService, eventPublisher, serverService);
+                groupListingRepository, kcAdminService, eventPublisher, serverService, modelMapper);
     }
 
     @Test

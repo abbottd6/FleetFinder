@@ -82,7 +82,6 @@ import { HowToComponent } from './components/how-to/how-to.component';
 import { UserDeleteAccountPopupComponent } from './components/pop-ups/user-delete-account-popup/user-delete-account-popup.component';
 import { ConfirmDelinkDiscordPopupComponent } from './components/pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component';
 import { AbstractNumStringDropdownComponent } from './components/dropdowns/abstract-num-string-dropdown/abstract-num-string-dropdown.component';
-import { SearchInputAutoCompleteComponent } from './components/input-fields/search-input-auto-complete/search-input-auto-complete.component';
 
 @NgModule({
   declarations: [
@@ -106,7 +105,6 @@ import { SearchInputAutoCompleteComponent } from './components/input-fields/sear
     UserDeleteAccountPopupComponent,
     ConfirmDelinkDiscordPopupComponent,
     AbstractNumStringDropdownComponent,
-    SearchInputAutoCompleteComponent,
   ],
     imports: [
         BrowserModule,

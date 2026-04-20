@@ -1,1 +1,17 @@
-<p>search-input-auto-complete works!</p>
+<div class="dropdown-component">
+  <mat-form-field>
+    <mat-label>Search Users</mat-label>
+    <input type="text" matInput
+      [formControl]="abstractCtrl"
+      [placeholder]="'username#1234'"
+      (keyup.enter)="searchUsers()"
+      [matAutocomplete]="autoUsers">
+  </mat-form-field>
+  <mat-autocomplete #autoUsers="matAutocomplete">
+    <mat-option *ngFor="let user of (searchResults$ | async)" [value]="user">
+      <span>{{ user.username }}</span>
+      <br>
+      <small>Discord: {{ user.discordUsername }} &nbsp; In-Game: {{ user.inGameUsername }}</small>
+    </mat-option>
+  </mat-autocomplete>
+</div>

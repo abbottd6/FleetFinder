@@ -4,7 +4,8 @@ export class PublicUser {
 
   constructor(public userId: number,
               public username: string,
-              public server: string,
-              public org: string,
-              public about: string) {}
+              public discordUsername: string,
+              public inGameUsername: string,
+              public lastAccess: Date
+  ) {}
 }

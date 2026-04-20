@@ -14,28 +14,28 @@ import com.sc_fleetfinder.fleets.events.UserRemoveDiscLinkEvent;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
+import com.sc_fleetfinder.fleets.projections.UserSearchProjection;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.ServerRegionServiceImpl;
 import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminServiceImpl;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
+import jakarta.persistence.criteria.Predicate;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,12 +51,13 @@ public class UserServiceImpl implements UserService {
     private final KeycloakAdminServiceImpl kcAdminService;
     private final ApplicationEventPublisher eventPublisher;
     private final ServerRegionServiceImpl serverService;
+    private final ModelMapper modelMapper;
 
 
     public UserServiceImpl(UserRepository userRepository, UserConversionServiceImpl userConversionService,
                            Validator beanValidator, GroupListingRepository groupListingRepository,
                            KeycloakAdminServiceImpl kcAdminService, ApplicationEventPublisher eventPublisher,
-                           ServerRegionServiceImpl serverService) {
+                           ServerRegionServiceImpl serverService, ModelMapper modelMapper) {
         this.userRepository = userRepository;
         this.userConversionService = userConversionService;
         this.beanValidator = beanValidator;
@@ -64,6 +65,7 @@ public class UserServiceImpl implements UserService {
         this.kcAdminService = kcAdminService;
         this.eventPublisher = eventPublisher;
         this.serverService = serverService;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -326,8 +328,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<UserSummaryResponseDto> searchUsers(String searchCriteria) {
-        return null;
+    public Page<UserSummaryResponseDto> searchUsers(Users sessionUser, String searchCriteria) {
+
+        Specification<Users> spec = buildUserSearchFilterSpec(sessionUser.getUserId(), searchCriteria);
+
+        Pageable pageable = PageRequest.of(0, 50);
+
+        Page<Users> found = userRepository.findAll(spec, pageable);
+        return found.map(u -> modelMapper.map(u, UserSummaryResponseDto.class));
     }
 
     //helper method for normalizing emails. isolated for testing.
@@ -335,13 +343,14 @@ public class UserServiceImpl implements UserService {
         return email.trim().toLowerCase(Locale.ROOT);
     }
 
-    private Specification<Users> buildUserSearchFilterSpec(String search) {
+    private Specification<Users> buildUserSearchFilterSpec(Long sessionUserId, String search) {
         Specification<Users> spec = (root, query, cb) -> cb.conjunction();
 
-        Long searchId = null;
-        String searchTerm = "";
-
         spec = spec.and((root, query, cb) -> cb.notEqual(root.get("isDeleted"), true));
+        spec = spec.and((root, query, cb) -> cb.notEqual(root.get("userId"), sessionUserId));
+
+        Long searchId = null;
+        List<String> searchTerms = new ArrayList<>();
 
         if(search != null && !search.isBlank()) {
             String[] searchArray = search.trim().split("#");
@@ -352,15 +361,42 @@ public class UserServiceImpl implements UserService {
                 if(term.chars().allMatch(Character::isDigit)) {
                     searchId = Long.parseLong(term);
                 } else {
-                    searchTerm = term.toLowerCase(Locale.ROOT);
+                    searchTerms.add(term.toLowerCase(Locale.ROOT));
                 }
             }
 
-            if(!searchTerm.isBlank() || (searchId != null)) {
+            log.info("SearchTerms: {}, size: {}", searchTerms.getFirst(), searchTerms.size());
+            if(!searchTerms.isEmpty()) {
+                log.info("does this run?");
                 spec = spec.and((root, query, cb) -> {
-                    List<Predicate>
-                })
+                    List<Predicate> tokenPredicates = new ArrayList<>();
+
+                    for(String token : searchTerms) {
+                        String like = "%" + token + "%";
+                        log.info("token: {}", like);
+                        Predicate perToken = cb.or(
+                                cb.like(cb.lower(root.get("username")), like),
+                                cb.like(cb.lower(root.get("discordUsername")), like),
+                                cb.like(cb.lower(root.get("inGameUsername")), like)
+                        );
+                        tokenPredicates.add(perToken);
+                    }
+
+                    if(tokenPredicates.isEmpty()) {
+                        return cb.conjunction();
+                    }
+
+                    return cb.or(tokenPredicates.toArray(new Predicate[0]));
+                });
+            }
+
+            if(searchId != null) {
+                Long finalSearchId = searchId;
+                spec = spec.or((root, query, cb) ->
+                    cb.equal(root.get("userId"), finalSearchId));
             }
         }
+
+        return spec;
     }
 }

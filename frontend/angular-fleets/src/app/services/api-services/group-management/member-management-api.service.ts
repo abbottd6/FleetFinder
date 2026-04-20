@@ -5,7 +5,7 @@ import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
 import {
   GroupManagementMemberViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
-import {Observable, tap} from "rxjs";
+import {Observable} from "rxjs";
 import {
   GroupManagementInviteViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";

@@ -187,6 +187,7 @@ app-user {
   background-color: rgb(52, 53, 58);
   font-size: 1rem;
   font-family: "Exo 2", sans-serif;
+  color: rgba(150, 168, 183, 1);
 }
 
 .tooltip-icon:hover {

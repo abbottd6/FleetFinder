@@ -1,4 +1,11 @@
-<div>
-  <span>Is authorized: {{ data.sessionMember.isAuthorizedManager }}</span>
-  <span>Username: {{ data.sessionMember.userSummary.username }}</span>
-</div>
+<h2 mat-dialog-title>Send Group Invite</h2>
+<mat-dialog-content>
+  <app-search-input-auto-complete
+    [abstractCtrl]="recipientCtrl">
+  </app-search-input-auto-complete>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button class="action-buttons" (click)="onCancel()">Cancel</button>
+  <button class="action-buttons" (click)="onConfirm()">Submit</button>
+</mat-dialog-actions>
+
