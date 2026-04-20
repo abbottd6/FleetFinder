@@ -27,6 +27,11 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid rgba(44, 44, 44, 0.5);
+  flex: 1 1 auto;
+}
+
+app-roster-management {
+  height: 100%;
 }
 
 

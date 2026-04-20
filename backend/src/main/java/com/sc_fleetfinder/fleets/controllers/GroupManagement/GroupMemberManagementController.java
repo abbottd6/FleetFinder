@@ -1,5 +1,7 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerInviteResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -11,10 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,5 +72,28 @@ public class GroupMemberManagementController {
         Page<GroupManagerInviteResponseDto> invitesPage = memberManagementService.getGroupInvitesPage(user, groupId);
 
         return ResponseEntity.ok(invitesPage);
+    }
+
+    @PostMapping("/accept_group_invite_request")
+    public ResponseEntity<?> acceptGroupInviteRequest(@AuthenticationPrincipal Jwt jwt,
+                                                      @RequestBody GroupManagerInviteResponseDto dto) {
+        String kcId = jwt.getSubject();
+        Users actingUser = userService.verifyUser(kcId);
+
+        GroupManagerMemberResponseDto responseDto = memberManagementService.acceptGroupInviteRequest(actingUser, dto);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PostMapping("/send_invite")
+    public ResponseEntity<?> sendGroupInvite(@AuthenticationPrincipal Jwt jwt,
+                                             @RequestBody SendGroupInviteOfferDto dto) {
+        String kcId = jwt.getSubject();
+
+        Users sender = userService.verifyUser(kcId);
+
+        GroupManagerInviteResponseDto responseDto = memberManagementService.sendGroupInviteOffer(sender, dto);
+
+        return ResponseEntity.ok(responseDto);
     }
 }

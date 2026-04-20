@@ -117,10 +117,10 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
     @Override
     @Transactional
-    public GroupManagerMemberResponseDto acceptGroupInviteRequest(Users actingUser, GroupInviteRequestOrResponseDto dto) {
-        GroupListing listing = glr.findById(dto.getListingDetails().getGroupId())
+    public GroupManagerMemberResponseDto acceptGroupInviteRequest(Users actingUser, GroupManagerInviteResponseDto dto) {
+        GroupListing listing = glr.findById(dto.getListingId())
                 .orElseThrow(() -> new ResourceNotFoundException(
-                        "Group Listing", dto.getListingDetails().getGroupId()));
+                        "Group Listing", dto.getListingId()));
 
         GroupInvite invite = inviteRepo.findById(dto.getInviteId()).orElseThrow(() -> new ResourceNotFoundException(
                 "Group Invite", dto.getInviteId()));

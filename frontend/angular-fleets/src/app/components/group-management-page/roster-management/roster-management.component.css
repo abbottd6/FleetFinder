@@ -11,20 +11,29 @@
 .subgroup-header {
   width: 90%;
   text-align: center;
-  border-bottom: 1px solid;
+  border-bottom: 1px solid rgba(150, 168, 183, .3);
   margin-inline: auto;
   padding-bottom: 4px;
+  font-size: 1.15rem;
 }
 
 /* MAT TABS ROSTER PANEL ----------------------------------------------------------------------------*/
 
+:host ::ng-deep .mat-mdc-tab-group {
+  height: 100%;
+  overflow-y: scroll;
+}
+
 :host ::ng-deep .mat-mdc-tab-labels {
-  /*gap: 2rem;*/
+  font-size: clamp(0.9rem, 0.65vw, 1.2rem);
+  display: flex;
 }
 
 :host ::ng-deep .mat-mdc-tab-label-container {
   border-bottom: 1px solid rgba(150, 168, 183, .2);
   max-width: 95%;
+  flex: 0 0 auto;
+  margin-inline: auto;
 }
 
 :host ::ng-deep .mdc-tab--active .mdc-tab-indicator {
@@ -39,7 +48,7 @@
 
 :host ::ng-deep .mdc-tab {
   border-left: 1px solid rgba(150, 168, 183, .2);
-
+  padding-inline: clamp(15px, 30px, 1.4rem) !important;
   transition: color 0.15s ease, border 1s ease;
 }
 
@@ -55,6 +64,11 @@
   margin-top: 1rem;
   margin-inline: auto;
   width: 95%;
+}
+
+:host ::ng-deep .mat-mdc-tab-body-wrapper {
+  display: flex;
+  height: 100%;
 }
 
 @media(max-width: 875px) {

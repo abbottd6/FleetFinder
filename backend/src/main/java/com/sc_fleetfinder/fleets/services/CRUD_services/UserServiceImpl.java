@@ -5,6 +5,7 @@ import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdateUserNotePrefDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.UserSummaryResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -22,6 +23,8 @@ import jakarta.validation.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -321,8 +325,42 @@ public class UserServiceImpl implements UserService {
         toUpdate.forEach(userRepository::updateUserLastAccess);
     }
 
+    @Override
+    public Page<UserSummaryResponseDto> searchUsers(String searchCriteria) {
+        return null;
+    }
+
     //helper method for normalizing emails. isolated for testing.
     String normalizeEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private Specification<Users> buildUserSearchFilterSpec(String search) {
+        Specification<Users> spec = (root, query, cb) -> cb.conjunction();
+
+        Long searchId = null;
+        String searchTerm = "";
+
+        spec = spec.and((root, query, cb) -> cb.notEqual(root.get("isDeleted"), true));
+
+        if(search != null && !search.isBlank()) {
+            String[] searchArray = search.trim().split("#");
+
+            for(String term : searchArray) {
+                if(term.isBlank()) continue;
+
+                if(term.chars().allMatch(Character::isDigit)) {
+                    searchId = Long.parseLong(term);
+                } else {
+                    searchTerm = term.toLowerCase(Locale.ROOT);
+                }
+            }
+
+            if(!searchTerm.isBlank() || (searchId != null)) {
+                spec = spec.and((root, query, cb) -> {
+                    List<Predicate>
+                })
+            }
+        }
     }
 }

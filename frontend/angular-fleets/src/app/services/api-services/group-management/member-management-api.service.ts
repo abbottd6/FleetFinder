@@ -6,10 +6,10 @@ import {
   GroupManagementMemberViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
 import {Observable, tap} from "rxjs";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import {
   GroupManagementInviteViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
+import {SendGroupInviteOffer} from "../../../models/group-management-models/request-models/send-group-invite-offer";
 
 @Injectable({
   providedIn: 'root'
@@ -38,5 +38,13 @@ export class MemberManagementApiService {
   getGroupInvites(listingId: number): Observable<Page<GroupManagementInviteViewModel>> {
     return this.httpClient.get<Page<GroupManagementInviteViewModel>>(
       `${this.baseUrl}/get_group_invites/${listingId}`);
+  }
+
+  acceptGroupInviteRequest(invRequest: GroupManagementInviteViewModel): Observable<GroupManagementMemberViewModel> {
+    return this.httpClient.post<GroupManagementMemberViewModel>(`${this.baseUrl}/accept_group_invite_request`, invRequest);
+  }
+
+  sendGroupInviteOffer(invOffer: SendGroupInviteOffer): Observable<GroupManagementInviteViewModel> {
+    return this.httpClient.post<GroupManagementInviteViewModel>(`${this.baseUrl}/send_invite`, invOffer);
   }
 }

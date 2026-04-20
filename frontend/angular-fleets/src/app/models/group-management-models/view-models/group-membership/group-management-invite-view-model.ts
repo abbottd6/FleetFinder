@@ -1,5 +1,4 @@
 import {UserMonikerSummaryViewModel} from "../../nested-models/user-moniker-summary-view-model";
-import {GroupListingViewModel} from "../../../group-listing/group-listing-view-model";
 
 export class GroupManagementInviteViewModel {
   constructor(

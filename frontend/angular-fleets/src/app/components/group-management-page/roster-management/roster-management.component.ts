@@ -43,7 +43,7 @@ export class RosterManagementComponent implements OnInit, OnDestroy{
 
   ngOnInit() {
     this.rosterIsLoading = true;
-    setTimeout(() => this.rosterIsLoading = false, 2000)
+    setTimeout(() => this.rosterIsLoading = false, 1000)
   }
 
   ngOnDestroy() {

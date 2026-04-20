@@ -1,0 +1,24 @@
+:host {
+  height: 100%;
+  width: 100%;
+}
+
+.panel-wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.proliferation-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  margin-bottom: 10px;
+}
+
+.bottom-button-container {
+  margin-top: auto;
+  margin-bottom: 35px;
+  margin-inline: auto;
+}

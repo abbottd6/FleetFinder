@@ -15,7 +15,7 @@ public interface GroupMemberManagementService extends GroupMemberService {
 
     Page<GroupManagerInviteResponseDto> getGroupInvitesPage(Users user, Long listingId);
 
-    GroupManagerMemberResponseDto acceptGroupInviteRequest(Users user, GroupInviteRequestOrResponseDto dto);
+    GroupManagerMemberResponseDto acceptGroupInviteRequest(Users user, GroupManagerInviteResponseDto dto);
 
     void declineGroupInviteRequest(Users user, Long listingId, Long inviteId);
 

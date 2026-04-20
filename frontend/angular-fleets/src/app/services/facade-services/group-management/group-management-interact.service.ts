@@ -10,6 +10,10 @@ import {Page} from "../../api-services/group-listings-fetch-api/group-listing-fe
 import {
   GroupMembershipViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
+import {MatDialog} from "@angular/material/dialog";
+import {
+  SendGroupInvitePopupComponent
+} from "../../../components/pop-ups/send-group-invite-popup/send-group-invite-popup.component";
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +34,7 @@ export class GroupManagementInteractService {
 
   public sessionManager: GroupMembershipViewModel | undefined = undefined;
 
-  constructor() { }
+  constructor(protected dialog: MatDialog) { }
 
   setActiveRoster(roster: Page<GroupManagementMemberViewModel>) {
     this.activeRosterSubject.next(roster);
@@ -42,5 +46,13 @@ export class GroupManagementInteractService {
 
   setGroupInvites(invites: Page<GroupManagementInviteViewModel>) {
     this.groupInvitesSubject.next(invites);
+  }
+
+  openSendInvitePopup(sender: GroupMembershipViewModel) {
+    const dialogRef = this.dialog.open(SendGroupInvitePopupComponent, {
+      data: {
+        sessionMember: sender
+      }
+    })
   }
 }

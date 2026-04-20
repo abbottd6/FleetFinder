@@ -11,6 +11,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.Up
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdateUserNotePrefDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.UserSummaryResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPushSubDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
@@ -33,14 +34,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -76,11 +70,21 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    //TODO This can be used once user profiles are viewable by others
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public PublicUserResponseDto getUserById(@PathVariable Long id) {
         return userService.getUserById(id);
+    }
+
+    @GetMapping("/search_users")
+    @PreAuthorize("isAuthenticated() and hasRole('user')")
+    public ResponseEntity<?> searchUsers(@AuthenticationPrincipal Jwt jwt, @RequestParam String searchCriteria) {
+        String kcId = jwt.getSubject();
+        userService.verifyUser(kcId);
+
+        Page<UserSummaryResponseDto> response = userService.searchUsers(searchCriteria);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")

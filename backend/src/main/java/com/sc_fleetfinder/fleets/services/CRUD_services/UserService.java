@@ -2,11 +2,13 @@ package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdateUserNotePrefDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.UserSummaryResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 
 import java.time.Instant;
 import java.util.HashMap;
@@ -50,4 +52,6 @@ public interface UserService {
     Users verifyUser(String kcId);
 
     void updateLastActive(HashMap<String, Instant> toUpdate);
+
+    Page<UserSummaryResponseDto> searchUsers(String searchCriteria);
 }
