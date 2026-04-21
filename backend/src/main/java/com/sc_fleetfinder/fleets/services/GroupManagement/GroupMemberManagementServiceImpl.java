@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -190,8 +191,10 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
                 }
             }
 
-            CrewRoleClassification role = roleRepo.findById(dto.getRoleSummary().getRoleId())
-                    .orElse(null);
+
+            CrewRoleClassification role = Optional.ofNullable(dto.getRoleSummary())
+                    .flatMap(r -> roleRepo.findById(r.getRoleId()))
+                        .orElse(null);
 
             Users recipient = userRepo.findById(dto.getRecipientSummary().getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("User", dto.getRecipientSummary().getUserId()));

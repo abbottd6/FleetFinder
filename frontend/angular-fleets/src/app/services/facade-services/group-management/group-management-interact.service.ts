@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {DestroyRef, inject, Injectable} from '@angular/core';
 import {BehaviorSubject} from "rxjs";
 import {
   GroupManagementMemberViewModel
@@ -17,11 +17,18 @@ import {
 import {
   UserMonikerSummaryViewModel
 } from "../../../models/group-management-models/nested-models/user-moniker-summary-view-model";
+import {UserService} from "../../user-services/user.service";
+import {MatSnackBar} from "@angular/material/snack-bar";
+import {SendGroupInviteOffer} from "../../../models/group-management-models/request-models/send-group-invite-offer";
+import {MemberManagementApiService} from "../../api-services/group-management/member-management-api.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupManagementInteractService {
+
+  private destroyRef = inject(DestroyRef);
 
   private activeRosterSubject: BehaviorSubject<Page<GroupManagementMemberViewModel> | undefined> =
     new BehaviorSubject<Page<GroupManagementMemberViewModel> | undefined>(undefined)
@@ -37,7 +44,10 @@ export class GroupManagementInteractService {
 
   public sessionManager: GroupMembershipViewModel | undefined = undefined;
 
-  constructor(protected dialog: MatDialog) { }
+  constructor(private managementApi: MemberManagementApiService,
+              protected dialog: MatDialog,
+              private userService: UserService,
+              private snackBar: MatSnackBar) { }
 
   setActiveRoster(roster: Page<GroupManagementMemberViewModel>) {
     this.activeRosterSubject.next(roster);
@@ -52,12 +62,74 @@ export class GroupManagementInteractService {
   }
 
   openSendInvitePopup(sender: GroupMembershipViewModel, recipient: UserMonikerSummaryViewModel | null) {
+    if(!this.userService.userLoggedIn) {
+      this.snackBar.open('You must be logged in to perform this action.', 'OK', {
+        duration: 4000,
+        verticalPosition: 'top',
+        horizontalPosition: 'center',
+        panelClass: ['mobile-snackbar']
+      })
+      return;
+    }
+
     const dialogRef = this.dialog.open(SendGroupInvitePopupComponent, {
       disableClose: true,
       data: {
         listing: sender.listing,
         recipientSummary: recipient,
       }
-    })
+    });
+
+    dialogRef.afterClosed().subscribe((invite: SendGroupInviteOffer | null) => {
+      if(invite) {
+        this.managementApi.sendGroupInviteOffer(invite).pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: (responseInv: GroupManagementInviteViewModel)=> {
+              this.snackBar.open('Invite sent to ' + responseInv.recipientSummary.username, 'OK', {
+                duration: 4000,
+                verticalPosition: 'top',
+                horizontalPosition: 'center',
+                panelClass: ['mobile-snackbar']
+              })
+
+              const current = this.groupInvitesSubject.getValue();
+              if(current) {
+                this.groupInvitesSubject.next({
+                  ...current,
+                  content: [...current.content, responseInv]
+                });
+              } else {
+                this.groupInvitesSubject.next({
+                  content: [responseInv],
+                  page: {
+                    size: 1,
+                    number: 0,
+                    totalElements: 1,
+                    totalPages: 1,
+                  },
+                  sort: {
+                    empty: true,
+                    sorted: false,
+                    unsorted: true,
+                    asc: false,
+                    desc: true,
+                  },
+
+                })
+              }
+            },
+            error: (err) => {
+              this.snackBar.open('There was an error sending this invite.', 'OK', {
+                duration: 5000,
+                verticalPosition: 'top',
+                horizontalPosition: 'center',
+                panelClass: ['mobile-snackbar']
+              })
+
+              console.log(err.message);
+            }
+          });
+      }
+    });
   }
 }

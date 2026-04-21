@@ -1,12 +1,17 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
 import {
   BehaviorSubject,
-  combineLatest, distinctUntilChanged, exhaustMap,
+  combineLatest,
+  distinctUntilChanged,
+  exhaustMap,
   filter,
   map,
-  Observable, of,
+  Observable,
+  of,
   shareReplay,
-  switchMap, take, tap
+  switchMap,
+  take,
+  tap
 } from "rxjs";
 import {PrivateUser} from "../../models/private-user/private-user";
 import {AuthService} from "../auth/auth-services/auth.service";
@@ -18,6 +23,7 @@ import {
   ConfirmDelinkDiscordPopupComponent
 } from "../../components/pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component";
 import {MatDialog} from "@angular/material/dialog";
+import {EventTypes, PublicEventsService} from "angular-auth-oidc-client";
 
 export enum UserRole {
   admin = 'admin',
@@ -78,7 +84,8 @@ export class UserService {
       shareReplay({bufferSize: 1, refCount: true})
   );
 
-  constructor(private dialog: MatDialog, private userApiService: UserApiService) {
+  constructor(private dialog: MatDialog, private userApiService: UserApiService,
+              private eventService: PublicEventsService) {
 
     this.auth.authClaims$.pipe(
       filter(data => !!data && !!data.userData)
@@ -119,6 +126,14 @@ export class UserService {
         this.userSubject.next(user);
       }
     });
+
+    //logoff on token expiry
+    this.eventService.registerForEvents().pipe(
+      filter(event => event.type === EventTypes.TokenExpired),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(() => {
+      this.auth.logout();
+    })
 
     combineLatest([this.auth.tokenReady$, this.ws.isConnected$]).pipe(
       filter(([token, connected]) => !!token && !connected),

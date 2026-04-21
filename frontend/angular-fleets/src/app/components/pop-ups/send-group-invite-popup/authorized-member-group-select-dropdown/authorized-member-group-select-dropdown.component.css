@@ -2,7 +2,7 @@
 @import '../../../dropdowns/dropdown-module/dropdown-styles.css';
 
 .dropdown-component {
-  padding-top: 10px;
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;

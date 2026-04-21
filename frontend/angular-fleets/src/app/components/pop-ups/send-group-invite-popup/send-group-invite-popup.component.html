@@ -3,18 +3,37 @@
   <ng-container *ngIf="showGroupSelect">
     <div class="form-field-container">
       <app-authorized-member-group-select-dropdown
-        [groupSelectCtrl]="groupSelectCtrl">
+        [groupSelectCtrl]="inviteForm.controls.listingCtrl">
       </app-authorized-member-group-select-dropdown>
     </div>
   </ng-container>
   <div class="form-field-container">
     <app-search-input-auto-complete
-      [abstractCtrl]="recipientCtrl">
+      [abstractCtrl]="inviteForm.controls.recipientCtrl">
     </app-search-input-auto-complete>
+  </div>
+  <div class="form-field-container">
+    <ng-container *ngIf="rosterVals">
+      <app-abstract-string-dropdown
+        [abstractControl]="inviteForm.controls.rosterClassCtrl"
+        [fieldLabel]="'Roster:'"
+        [placeholderLabel]="'invite roster'"
+        [options]="rosterVals"
+        [errorMessage]="'Roster type is required for invite'">
+      </app-abstract-string-dropdown>
+    </ng-container>
+  </div>
+  <div class="dropdown-component">
+    <app-generic-medium-input-field
+      [min]=0
+      [max]=255
+      [placeholder]="'Optional message...'"
+      [inputCtrl]="inviteForm.controls.messageCtrl">
+    </app-generic-medium-input-field>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button class="action-buttons" (click)="onCancel()">Cancel</button>
-  <button class="action-buttons" (click)="onConfirm()">Submit</button>
+  <button class="action-buttons" (click)="onConfirm()">Send</button>
 </mat-dialog-actions>
 

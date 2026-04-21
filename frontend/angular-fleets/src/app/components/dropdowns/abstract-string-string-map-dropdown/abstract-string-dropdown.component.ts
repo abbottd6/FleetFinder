@@ -29,7 +29,9 @@ export class AbstractStringDropdownComponent implements OnInit, OnDestroy {
   protected placeholder!: string;
 
   ngOnInit() {
-    this.placeholder = 'Select ' + this.placeholderLabel + '...';
+    if(this.placeholderLabel) {
+      this.placeholder = 'Select ' + this.placeholderLabel + '...';
+    }
   }
 
   ngOnDestroy() {

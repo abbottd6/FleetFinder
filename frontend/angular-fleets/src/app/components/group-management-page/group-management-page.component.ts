@@ -1,13 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {MatIcon} from "@angular/material/icon";
-import {MatTab, MatTabContent, MatTabGroup} from "@angular/material/tabs";
 import {Subject, takeUntil} from "rxjs";
 import {
   GroupManagementMemberViewModel
 } from "../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
-import {
-  GroupManagementInviteViewModel
-} from "../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
 import {UserService} from "../../services/user-services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MemberManagementApiService} from "../../services/api-services/group-management/member-management-api.service";

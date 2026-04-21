@@ -1,16 +1,17 @@
-import {UserMonikerSummaryViewModel} from "../nested-models/user-moniker-summary-view-model";
-import {RoleClassSummaryViewModel} from "../nested-models/role-class-summary-view-model";
+import {
+  InviteOfferFormShape
+} from "../../../components/pop-ups/send-group-invite-popup/send-group-invite-popup.component";
+import {FormGroup} from "@angular/forms";
 
 export class SendGroupInviteOffer {
-  constructor(listingId: number, recipient: UserMonikerSummaryViewModel, rosterClass: string,
-              roleSummary: RoleClassSummaryViewModel, message: string, expiresAt: Date){
+  constructor(inviteForm: FormGroup<InviteOfferFormShape>){
     Object.assign(this, {
-      listingId: listingId,
-      recipientSummary: recipient,
-      memberStatus: rosterClass,
-      roleSummary: roleSummary,
-      inviteMessage: message,
-      expiresAt: expiresAt
+      listingId: inviteForm.controls.listingCtrl.value?.groupId,
+      recipientSummary: inviteForm.controls.recipientCtrl.value,
+      memberStatus: inviteForm.controls.rosterClassCtrl.value?.toUpperCase(),
+      roleSummary: inviteForm.controls.roleSummaryCtrl.value,
+      inviteMessage: inviteForm.controls.messageCtrl.value,
+      expiresAt: inviteForm.controls.expiryCtrl.value
     })
   }
 }
