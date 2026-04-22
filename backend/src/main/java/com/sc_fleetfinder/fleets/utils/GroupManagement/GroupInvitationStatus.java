@@ -4,5 +4,10 @@ public enum GroupInvitationStatus {
     PENDING,
     ACCEPTED,
     DECLINED,
-    RESCINDED
+    RESCINDED;
+
+    public boolean isTerminal() {
+        return this == RESCINDED || this == DECLINED || this == ACCEPTED;
+    }
 }
+

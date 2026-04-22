@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.DAO.GroupManagement;
 
-import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
@@ -40,6 +39,8 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
     @Query("""
             SELECT inv FROM GroupInvite inv
             WHERE inv.groupListing.groupId = :groupId
+                AND((inv.inviteDirection = "REQUEST" AND inv.recipientDismissed = false)
+                OR (inv.inviteDirection = "OFFER" AND inv.senderDismissed = false))
             """)
     Page<GroupInvite> findPageOfAllGroupInvitesByGroupId(@Param("groupId") Long groupId, Pageable pageable);
 
@@ -94,5 +95,62 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                         AND push.social_notes_enabled = 1)
                 )
             """, nativeQuery = true)
-    int generateOutboxNotificationsForNewGroupInviteRequest(@Param("inviteId") Long inviteId);
+    int generateOutboxNotificationsForNewBidirectionalGroupInvite(@Param("inviteId") Long inviteId);
+
+    @Modifying
+    @Query(value = """
+           INSERT IGNORE INTO notification_outbox (
+            event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
+            parent_entity_id, parent_entity_type, payload_json, status, push_sub_id,
+            delivery_channel, do_not_duplicate, sibling_key, created_at
+            )
+           SELECT
+                'NEW_GROUP_MEMBER'              AS event_type,
+                'group_member'                  AS entity_type,
+                :newMemberUserId                AS entity_id,
+                :recipientId                    AS entity_owner_id,
+                member.member_status            AS entity_new_status,
+                :listingId                      AS parent_entity_id,
+                'group_listing'                 AS parent_entity_type,
+                JSON_OBJECT(
+                    'noteTopic',                SUBSTRING(listing.listing_title, 1, 64), 
+                    'targetId',                 inv.role_id,
+                    'targetLabel',              role.role_title,
+                    'targetCreatedAt',          member.created_at,
+                    'addContext',               inv.direction       
+                )                               AS payload_json,
+                'PENDING'                       AS status,
+                push.id_push_sub                AS push_sub_id,
+                channels.delivery_channel       AS delivery_channel,
+                channels.do_not_duplicate       AS do_not_duplicate,
+                SHA2(CONCAT('NEW_GROUP_MEMBER', '|', 'group_member', :newMemberUserId, '|', :recipientId, '|', member.member_status), 256) AS sibling_key,
+                NOW()                           AS created_at
+           FROM users user
+           JOIN group_member member ON member.user_id = :newMemberUserId
+                AND member.listing_id = :listingId          
+           JOIN group_listing listing ON member.listing_id = listing.id_group 
+           JOIN group_invite inv ON inv.id_invite = :inviteId
+           LEFT JOIN crew_role_classification role ON role.id_role = inv.role_id
+           CROSS JOIN (
+                SELECT 'IN_APP' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'DISCORD' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'PUSH' AS delivery_channel, NULL AS do_not_duplicate                                                                       
+           ) AS channels
+           LEFT JOIN push_subscription push
+                ON push.user_id = :recipientId
+                AND channels.delivery_channel = 'PUSH'
+                AND push.group_notes_enabled = 1
+           WHERE user.id_user = :recipientId
+                AND (
+                    channels.delivery_channel = 'IN_APP'
+                    OR (channels.delivery_channel = 'DISCORD'
+                        AND user.discord_user_id IS NOT NULL
+                        AND user.external_group_notes_enabled = 1)               
+                    OR (channels.delivery_channel = 'PUSH')
+                        AND push.group_notes_enabled = 1)
+           """, nativeQuery = true)
+    int generateOutboxNotificationsForNewGroupMember(@Param("recipientId") Long notificationRecipientId,
+                                                     @Param("listingId") Long listingId,
+                                                     @Param("newMemberUserId") Long newMemberUserId,
+                                                     @Param("inviteId") Long inviteId);
 }

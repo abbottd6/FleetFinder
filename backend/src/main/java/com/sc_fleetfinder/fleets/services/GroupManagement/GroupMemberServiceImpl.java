@@ -4,35 +4,18 @@ import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.*;
 import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteRequestDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupMembershipResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.MemberPositionSummaryDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.PushSubscription;
 import com.sc_fleetfinder.fleets.entities.Users;
-import com.sc_fleetfinder.fleets.events.GroupManagement.NewInviteRequestEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
-import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.*;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.exception.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,6 +52,38 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
         this.eventPublisher = eventPublisher;
         this.userRepo = userRepo;
         this.roleRepo = roleRepo;
+    }
+
+    @Override
+    public void throwIfUserIsAlreadyAMember(Users user, Long listingId) {
+        GroupMemberId id = new GroupMemberId(listingId, user.getUserId());
+        if(memberRepo.findById(id).isPresent()) {
+            throw new IllegalArgumentException("already a member of this group.");
+        }
+    }
+
+    @Override
+    public void userDismissInvite(Users user, Long inviteId) {
+        GroupInvite invite = inviteRepo.findById(inviteId)
+                .orElseThrow(() -> new ResourceNotFoundException("Group Invite", inviteId));
+
+        if(Objects.equals(invite.getRecipient().getUserId(), user.getUserId())) {
+            if(invite.getSenderDismissed()) {
+                inviteRepo.delete(invite);
+            } else {
+                invite.setRecipientDismissed(true);
+                inviteRepo.save(invite);
+            }
+        } else if(rankService.verifyUserRankPermissions(user, invite.getGroupListing(), RankPrivilegeOptions.MANAGE_ROSTERS)) {
+            if (invite.getRecipientDismissed()) {
+                inviteRepo.delete(invite);
+            } else {
+                invite.setSenderDismissed(true);
+                inviteRepo.save(invite);
+            }
+        } else {
+            throw new ActionNotAuthorizedException(user.getUserId(), "dismiss", "Group Invite", inviteId);
+        }
     }
 
     @Override
@@ -126,6 +141,7 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
                         "Group Invite", dto.getInviteId());
             } else {
                 invite.setInviteStatus(GroupInvitationStatus.DECLINED);
+                invite.setActive(null);
                 inviteRepo.save(invite);
             }
         } else if(Objects.equals(invite.getInviteDirection(), InviteDirection.REQUEST)) {
@@ -136,6 +152,7 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
                     RankPrivilegeOptions.MANAGE_ROSTERS);
 
             invite.setInviteStatus(GroupInvitationStatus.DECLINED);
+            invite.setActive(null);
             inviteRepo.save(invite);
 
             //TODO save outbox notification for recipient
@@ -156,6 +173,7 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
                         "Group Invite", dto.getInviteId());
             } else {
                 invite.setInviteStatus(GroupInvitationStatus.RESCINDED);
+                invite.setActive(null);
                 inviteRepo.save(invite);
                 //TODO save outbox notification for recipient
             }
@@ -167,6 +185,7 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
                     RankPrivilegeOptions.MANAGE_ROSTERS);
 
             invite.setInviteStatus(GroupInvitationStatus.RESCINDED);
+            invite.setActive(null);
             inviteRepo.save(invite);
             //TODO save outbox notification for recipient
         }

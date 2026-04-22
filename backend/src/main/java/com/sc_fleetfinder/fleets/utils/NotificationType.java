@@ -6,5 +6,6 @@ public enum NotificationType {
     MOD_DELETE,
     NEW_LISTING_MATCH,
     NEW_CHAT_MESSAGE,
-    NEW_GROUP_INVITE
+    NEW_GROUP_INVITE,
+    NEW_GROUP_MEMBER
 }

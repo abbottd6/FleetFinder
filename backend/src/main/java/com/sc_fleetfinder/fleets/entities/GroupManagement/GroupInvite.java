@@ -38,6 +38,9 @@ public class GroupInvite {
         this.inviteStatus = status;
         this.inviteMessage = message;
         this.expiresAt = expiresAt;
+        this.active = true;
+        this.senderDismissed = false;
+        this.recipientDismissed = false;
     }
 
     @Id
@@ -84,4 +87,15 @@ public class GroupInvite {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name="created_at")
     private Instant createdAt;
+
+    //deduplication column. set to 1 for pending invites, set to null on all other actions
+    //enables unique constraint on un-actioned invites, while allowing duplicates when active is null
+    @Column(name="active", nullable = true)
+    private Boolean active;
+
+    @Column(name="sender_dismissed", nullable = false)
+    private Boolean senderDismissed;
+
+    @Column(name="recipient_dismissed", nullable = false)
+    private Boolean recipientDismissed;
 }

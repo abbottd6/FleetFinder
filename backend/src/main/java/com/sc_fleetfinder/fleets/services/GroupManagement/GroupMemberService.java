@@ -11,6 +11,10 @@ import java.util.Optional;
 
 public interface GroupMemberService {
 
+    void throwIfUserIsAlreadyAMember(Users user, Long listingId);
+
+    void userDismissInvite(Users user, Long inviteId);
+
     Boolean verifyUserIsAuthorizedMember(Users user, Long listingId);
 
     Optional<CrewPosition> findGroupMemberCrewPosition(GroupMember member);

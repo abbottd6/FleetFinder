@@ -1,9 +1,6 @@
 package com.sc_fleetfinder.fleets.exceptions.handlers;
 
-import com.sc_fleetfinder.fleets.exceptions.ConfirmationRequiredException;
-import com.sc_fleetfinder.fleets.exceptions.ContentLimitException;
-import com.sc_fleetfinder.fleets.exceptions.ConversationIntegrityException;
-import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -55,6 +52,27 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 Map.of("error", "FORBIDDEN",
                         "message", e.getMessage())
+        );
+    }
+
+    @ExceptionHandler(InviteStateConflictException.class)
+    public ResponseEntity<Map<String, Object>> handleInviteStateConflict(InviteStateConflictException e) {
+        log.warn("Invite state conflict occurred for invite: {}. \n" +
+                "Persisted state: {} \n Auxiliary state: {}",
+                e.getInviteId(), e.getPersistenceStatus(), e.getAuxiliaryStatus());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                Map.of("error", "CONFLICT",
+                        "message", e.getMessage())
+        );
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgument(IllegalArgumentException e) {
+        log.warn(e.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                e.getMessage()
         );
     }
 }

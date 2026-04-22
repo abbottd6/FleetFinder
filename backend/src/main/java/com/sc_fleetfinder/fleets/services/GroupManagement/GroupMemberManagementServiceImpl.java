@@ -5,14 +5,14 @@ import com.sc_fleetfinder.fleets.DAO.GroupManagement.*;
 import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerInviteResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.MemberPositionSummaryDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
-import com.sc_fleetfinder.fleets.events.GroupManagement.NewInviteRequestEvent;
+import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupMemberNotifyEvent;
+import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupInviteOrRequestNotifyEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
@@ -128,6 +128,8 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
         Users newMember = invite.getRecipient();
 
+        throwIfUserIsAlreadyAMember(newMember, listing.getGroupId());
+
         rankService.verifyUserRankPermissions(actingUser, listing, RankPrivilegeOptions.MANAGE_ROSTERS);
 
         //TODO do something with this or remove it?
@@ -140,9 +142,11 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
                     hasComms, hasExtNotes));
 
             invite.setInviteStatus(GroupInvitationStatus.ACCEPTED);
+            invite.setActive(null);
             inviteRepo.save(invite);
 
-            //TODO save outbox notification for recipient
+            eventPublisher.publishEvent(new NewGroupMemberNotifyEvent(newMember, invite, savedMember));
+
             listing.setCurrentPartySize(listing.getCurrentPartySize() + 1);
             glr.save(listing);
 
@@ -199,11 +203,13 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
             Users recipient = userRepo.findById(dto.getRecipientSummary().getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("User", dto.getRecipientSummary().getUserId()));
 
+            throwIfUserIsAlreadyAMember(recipient, dto.getListingId());
+
             try {
                 GroupInvite savedInvite = inviteRepo.save(new GroupInvite(sender, recipient, listing, direction,
                         dto.getMemberStatus(), role, pending, dto.getInviteMessage(), expiresAt));
 
-                eventPublisher.publishEvent(new NewInviteRequestEvent(savedInvite));
+                eventPublisher.publishEvent(new NewGroupInviteOrRequestNotifyEvent(savedInvite));
 
                 return modelMapper.map(savedInvite, GroupManagerInviteResponseDto.class);
 

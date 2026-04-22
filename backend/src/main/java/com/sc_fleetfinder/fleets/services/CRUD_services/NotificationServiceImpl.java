@@ -1,16 +1,19 @@
 package com.sc_fleetfinder.fleets.services.CRUD_services;
 
 import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
+import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupInviteRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ListingArchiveRepository;
 import com.sc_fleetfinder.fleets.DAO.ModerationAndReporting.ModListingActionRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationOutboxRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
+import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DAO.chat.MessageRepository;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GetNotificationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationUnreadCountDto;
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
 import com.sc_fleetfinder.fleets.config.discord.DiscordBotService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBasis;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
@@ -67,6 +70,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final MessageRepository msgRepo;
     private final PushNotificationService pushNotificationService;
     private final DiscordBotService discordBotService;
+    private final GroupInviteRepository inviteRepo;
+    private final UserRepository userRepository;
 
     @Override
     public Page<GetNotificationDto> getMyDropdownNotifications(Users user, Pageable pageable) {
@@ -156,6 +161,11 @@ public class NotificationServiceImpl implements NotificationService {
             case NotificationType.NEW_GROUP_INVITE:
                 Notification savedInviteNote = buildNewGroupInviteNotification(outboxEntity);
                 identifyDeliveryChannel_andSend(savedInviteNote, outboxEntity);
+                break;
+
+            case NotificationType.NEW_GROUP_MEMBER:
+                Notification savedNewMemberNote = buildNewGroupMemberNotification(outboxEntity);
+                identifyDeliveryChannel_andSend(savedNewMemberNote, outboxEntity);
                 break;
 
             case NotificationType.LISTING_VIS_STATUS_CHANGED:
@@ -259,6 +269,11 @@ public class NotificationServiceImpl implements NotificationService {
             case NotificationType.NEW_GROUP_INVITE:
                 payload.setTag("New Group Request");
                 dataField.setUrl("https://scfleetfinder.com/user-account");
+                break;
+            case NotificationType.NEW_GROUP_MEMBER:
+                payload.setTag("New Group Member");
+                dataField.setUrl("https://scfleetfinder.com/user-account");
+                break;
             case NotificationType.MOD_DELETE:
                 payload.setTag("Mod Action");
                 dataField.setUrl("https://scfleetfinder.com/user-account");
@@ -323,6 +338,8 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private Notification buildNewListingMatchNotification(NotificationOutbox outboxEntity) {
+        checkSiblingReadStatus(outboxEntity);
+
         String title = "Your custom notification '" + outboxEntity.getPayloadJson().getNoteTopic() + "' " +
                 "matched a new listing";
 
@@ -330,41 +347,50 @@ public class NotificationServiceImpl implements NotificationService {
 
         Notification newNote = new Notification(outboxEntity, title, message);
 
-        Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
-                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
-                .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
-
-        if (readAt.isPresent()) {
-            throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
-        }
-
         return notificationRepo.save(newNote);
     }
 
     private Notification buildNewGroupInviteNotification(NotificationOutbox outboxEntity) {
-        String title = "Someone as sent you a group request.";
+        checkSiblingReadStatus(outboxEntity);
+
+        String title = "Someone sent you a group request.";
 
         if(Objects.equals(outboxEntity.getEntityNewStatus(), InviteDirection.REQUEST.toString())) {
-            title = "'" + outboxEntity.getPayloadJson().getNoteTopic() + "'" + " would like to join your group.";
+            title = "Group join request from '" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
         } else if(Objects.equals(outboxEntity.getEntityNewStatus(), InviteDirection.OFFER.toString())) {
-            title = "'" + outboxEntity.getPayloadJson().getNoteTopic() + "'" + " would like you to join their group.";
+            title = "Group invite from '" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
         }
         String message = outboxEntity.getPayloadJson().getAddContext();
 
         Notification newNote = new Notification(outboxEntity, title, message);
 
-        Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
-                        outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
-                .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
+        return notificationRepo.save(newNote);
+    }
 
-        if (readAt.isPresent()) {
-            throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
+    private Notification buildNewGroupMemberNotification(NotificationOutbox outboxEntity) {
+        checkSiblingReadStatus(outboxEntity);
+
+        String title;
+        String message;
+
+        if(Objects.equals(InviteDirection.valueOf(outboxEntity.getPayloadJson().getAddContext()), InviteDirection.REQUEST)) {
+            title = "Your request to join a group was accepted";
+            message = "'" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
+        } else {
+            Users newMember = userRepository.findById(outboxEntity.getEntityId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Users", outboxEntity.getEntityId()));
+            title = "New member joined your group";
+            message = "'" + newMember.getUsername() + "' joined the " + toTitleCase(outboxEntity.getEntityNewStatus()) + " roster";
         }
+
+        Notification newNote = new Notification(outboxEntity, title, message);
 
         return notificationRepo.save(newNote);
     }
 
     private Notification buildListingStatusChangeNotification(NotificationOutbox outboxEntity) {
+        checkSiblingReadStatus(outboxEntity);
+
         String title = "The status of one of your listings has changed to " +
                 outboxEntity.getEntityNewStatus();
 
@@ -375,18 +401,12 @@ public class NotificationServiceImpl implements NotificationService {
 
         Notification newNote = new Notification(outboxEntity, title, msg);
 
-        Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
-                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
-                .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
-
-        if (readAt.isPresent()) {
-            throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
-        }
-
         return notificationRepo.save(newNote);
     }
 
     private Notification buildListingArchiveNotification(NotificationOutbox outboxEntity) {
+        checkSiblingReadStatus(outboxEntity);
+
         String msg = archiveRepo.findByGroupId(outboxEntity.getEntityId())
                 .map(ListingArchive::getListingTitle)
                 .orElseThrow(() -> new ResourceNotFoundException(
@@ -396,18 +416,12 @@ public class NotificationServiceImpl implements NotificationService {
 
         Notification newNote = new Notification(outboxEntity, title, msg);
 
-        Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
-                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
-                .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
-
-        if (readAt.isPresent()) {
-            throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
-        }
-
         return notificationRepo.save(newNote);
     }
 
     private Notification buildModDeleteNotification(NotificationOutbox outboxEntity) {
+        checkSiblingReadStatus(outboxEntity);
+
         String title = "One of your listings was removed by a moderator";
         String msg = modActionRepo.findById(outboxEntity.getParentEntityId())
                 .map(ModListingAction::getActionBasis)
@@ -419,15 +433,21 @@ public class NotificationServiceImpl implements NotificationService {
 
         Notification newNote = new Notification(outboxEntity, title, msg);
 
+        return notificationRepo.save(newNote);
+    }
+
+    private String toTitleCase(String term) {
+        return term.substring(0,1).toUpperCase() + term.substring(1).toLowerCase();
+    }
+
+    private void checkSiblingReadStatus(NotificationOutbox outboxEntity) {
         Optional<Instant> readAt = notificationRepo.checkSiblingNotificationReadStatus(
-                outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
+                        outboxEntity.getEntityOwner().getUserId(), outboxEntity.getSiblingKey())
                 .map(ldt -> ldt.toInstant(ZoneOffset.UTC));
 
         if (readAt.isPresent()) {
             throw new SkipExternalNotificationProcessingException("Sibling notification already read.");
         }
-
-        return notificationRepo.save(newNote);
     }
 
     @TransactionalEventListener

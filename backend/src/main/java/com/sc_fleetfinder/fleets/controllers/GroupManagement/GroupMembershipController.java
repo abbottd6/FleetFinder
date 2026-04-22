@@ -71,7 +71,7 @@ public class GroupMembershipController {
 
     @PutMapping("/decline_group_invite_offer")
     public ResponseEntity<?> declineGroupInviteOffer(@AuthenticationPrincipal Jwt jwt,
-                                                             @RequestBody GroupInviteRequestOrResponseDto dto) {
+                                                     @RequestBody GroupInviteRequestOrResponseDto dto) {
         String kcId = jwt.getSubject();
         Users actingUser = userService.verifyUser(kcId);
 

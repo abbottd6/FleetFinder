@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.config.discord;
 
+import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.NotificationRepository;
 import com.sc_fleetfinder.fleets.entities.Notification;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
@@ -23,6 +24,7 @@ public class DiscordBotServiceImpl implements DiscordBotService {
 
     private final RestClient discordRestClient;
     private final NotificationRepository notificationRepository;
+    private final GroupListingRepository glr;
 
     @Override
     public void sendDiscordNotification(String discordUserId, Notification note) {
@@ -63,7 +65,6 @@ public class DiscordBotServiceImpl implements DiscordBotService {
                 field1 = "Group Status";
                 value1 = note.getTargetMetadata().getAddContext();
 
-                //TODO add this page and routing
                 field2 = "Check it out: ";
                 value2 = "https://scfleetfinder.com/listing-details/" + note.getTargetMetadata().getTargetId();
 
@@ -75,6 +76,22 @@ public class DiscordBotServiceImpl implements DiscordBotService {
                 field2 = "Check it out: ";
                 value2 = "https://scfleetfinder.com/user-account";
 
+                break;
+            case NotificationType.NEW_GROUP_INVITE:
+                field1 = "Group Status: ";
+                value1 = glr.findById(note.getOutbox().getParentEntityId())
+                        .map(g -> g.getGroupStatus().getGroupStatus())
+                        .orElse(null);
+
+                field2 = "Check it out: ";
+                value2 = "https://scfleetfinder.com/user-account";
+                break;
+            case NotificationType.NEW_GROUP_MEMBER:
+                field1 = "Role: ";
+                value1 = note.getTargetMetadata().getTargetLabel();
+
+                field2 = "Check it out: ";
+                value2 = "https://scfleetfinder.com/user-account";
                 break;
             case NotificationType.MOD_DELETE:
                 field1 = "Action performed by a(n): ";

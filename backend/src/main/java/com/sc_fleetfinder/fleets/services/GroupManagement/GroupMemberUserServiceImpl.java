@@ -15,13 +15,12 @@ import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.InGroupRank;
 import com.sc_fleetfinder.fleets.entities.Users;
-import com.sc_fleetfinder.fleets.events.GroupManagement.NewInviteRequestEvent;
+import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupMemberNotifyEvent;
+import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupInviteOrRequestNotifyEvent;
 import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
+import com.sc_fleetfinder.fleets.exceptions.InviteStateConflictException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInvitationStatus;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRankGenericTypes;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.RankPrivilegeOptions;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
@@ -36,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -85,6 +83,8 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
         GroupListing listing = glr.findById(dto.getListingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Group Listing", dto.getListingId()));
 
+        throwIfUserIsAlreadyAMember(sender, dto.getListingId());
+
         InviteDirection direction = InviteDirection.REQUEST;
         GroupInvitationStatus pending = GroupInvitationStatus.PENDING;
         CrewRoleClassification role = null;
@@ -103,7 +103,7 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
             GroupInvite savedInv = inviteRepo.save(new GroupInvite(sender, recipient, listing, direction,
                     dto.getMemberStatus(), role, pending, dto.getRequestMessage(), expiresAt));
 
-            eventPublisher.publishEvent(new NewInviteRequestEvent(savedInv));
+            eventPublisher.publishEvent(new NewGroupInviteOrRequestNotifyEvent(savedInv));
 
             return modelMapper.map(savedInv, GroupInviteRequestOrResponseDto.class);
         } catch (DataIntegrityViolationException e) {
@@ -124,8 +124,15 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Group Listing", dto.getListingDetails().getGroupId()));
 
+        throwIfUserIsAlreadyAMember(newMember, listing.getGroupId());
+
         GroupInvite invite = inviteRepo.findById(dto.getInviteId()).orElseThrow(() -> new ResourceNotFoundException(
                 "Group Invite", dto.getInviteId()));
+
+        if(invite.getInviteStatus().isTerminal()) {
+            throw new InviteStateConflictException(invite.getInviteStatus(), dto.getInviteStatus(),
+                    invite.getInviteId());
+        }
 
         Users sender = userRepo.findById(dto.getSenderSummary().getUserId()).orElseThrow(
                 () -> new ResourceNotFoundException("Sender User", dto.getSenderSummary().getUserId())
@@ -145,9 +152,14 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
                     hasComms, hasExtNotes));
 
             invite.setInviteStatus(GroupInvitationStatus.ACCEPTED);
+            invite.setActive(null);
             inviteRepo.save(invite);
 
-            //TODO save outbox notification for recipient
+            eventPublisher.publishEvent(new NewGroupMemberNotifyEvent(listing.getUsers(), invite, savedMember));
+
+            if(!Objects.equals(invite.getSender().getUserId(), listing.getUsers().getUserId())) {
+                eventPublisher.publishEvent(new NewGroupMemberNotifyEvent(invite.getSender(), invite, savedMember));
+            }
 
             listing.setCurrentPartySize(listing.getCurrentPartySize() + 1);
             glr.save(listing);

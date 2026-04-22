@@ -109,6 +109,11 @@ mat-panel-title {
 :host ::ng-deep .mat-mdc-slide-toggle {
   /*fill: ;*/
   --mdc-switch-selected-icon-color: rgba(52, 58, 64, 1);
+  --mdc-switch-unselected-icon-color: rgba(52, 58, 64, 1);
+}
+
+:host ::ng-deep .mdc-switch__icon .mdc-switch__icon--off {
+  fill: rgba(52, 58, 64, 1);
 }
 
 ::ng-deep .radio-row .mat-mdc-radio-button .mdc-radio {
