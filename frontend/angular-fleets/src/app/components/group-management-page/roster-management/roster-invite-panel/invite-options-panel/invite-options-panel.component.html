@@ -1,1 +1,28 @@
-<p>invite-options-panel works!</p>
+<mat-accordion class="options-accordion-panel">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Options
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="options-body-container">
+      <div class="toggle-row">
+        <mat-label class="toggle-label">Pending Only:</mat-label>
+        <mat-slide-toggle
+          [formControl]="showAllCtrl"
+          (change)="onStatusChange()">
+        </mat-slide-toggle>
+      </div>
+
+      <div>
+        <mat-radio-group [value]="(inviteFilterState$ | async)?.direction"
+                         (change)="onDirectionChange($event.value)"
+                         class="radio-row">
+          <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
+          <mat-radio-button value="OFFER" labelPosition="before">Offers:</mat-radio-button>
+          <mat-radio-button value="REQUEST" labelPosition="before">Requests:</mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

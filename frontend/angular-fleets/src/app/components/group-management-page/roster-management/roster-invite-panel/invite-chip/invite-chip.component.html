@@ -14,16 +14,36 @@
     </div>
     <div class="actions-container">
       <button class="invite-chip-button decline"
-        (click)="emitDeclineInviteRequest()">
+              matTooltip="Decline Request"
+              (click)="emitDeclineInviteRequest()">
         <mat-icon>close_small</mat-icon>
       </button>
-      <button class="invite-chip-button accept">
+      <button class="invite-chip-button accept"
+              matTooltip="Accept Request">
         <mat-icon>check_small</mat-icon>
       </button>
     </div>
   </ng-container>
   <ng-template #sent>
-    <mat-icon id="offer-icon" matTooltip="Invite Sent">call_made</mat-icon>
+    <div class="invite-brief-container invite-details-popup-click-target"
+         (click)="openInviteDetailsPopup()"
+         (mouseenter)="isHovered = true"
+         (mouseleave)="isHovered = false">
+      <mat-icon class="offer-icon has-tooltip"
+                matTooltip="Invite Sent">
+        call_made
+      </mat-icon>
+      <span class="chip-field-val username">
+            {{ inviteMember.username }}
+          </span>
+    </div>
+    <div class="actions-container">
+      <button class="invite-chip-button decline"
+              matTooltip="Rescind"
+              (click)="emitDeclineInviteRequest()">
+        <mat-icon>undo</mat-icon>
+      </button>
+    </div>
   </ng-template>
 </div>
 

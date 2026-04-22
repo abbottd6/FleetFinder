@@ -1,5 +1,6 @@
 import {
-  Component,
+  AfterViewInit,
+  Component, ElementRef,
   inject, OnDestroy,
   OnInit, ViewChild,
 } from '@angular/core';
@@ -62,12 +63,15 @@ import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.s
     DropdownModule, FormsModule, MatError, MatFormField, MatHint, MatInput, MatLabel, MatFormField, ReactiveFormsModule, ProfileNotificationsTabComponent, MatExpansionPanelHeader, MatExpansionPanelTitle, MatExpansionPanel, UserProfileMyGroupsComponent],
     standalone: true
 })
-export class UserComponent implements OnInit, OnDestroy {
+export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
   private breakpointObserver = inject(BreakpointObserver);
 
   @ViewChild('bookmarks') bookmarks!: UserProfileBookmarksComponent;
   @ViewChild('drawer') sidenavDrawer!: MatSidenav;
+
+  @ViewChild('profileContainer') profileContainer!: ElementRef;
+  protected containerHeight!: string;
 
   //modal popup vars
   selectedListing: GroupListingViewModel | null = null;
@@ -189,6 +193,11 @@ export class UserComponent implements OnInit, OnDestroy {
           this.editing = false;
       }
     )
+  }
+
+  ngAfterViewInit() {
+    const top = this.profileContainer.nativeElement.getBoundingClientRect().top;
+    this.containerHeight = `calc(99vh - ${top}px)`;
   }
 
   isMobile$ = this.breakpointObserver

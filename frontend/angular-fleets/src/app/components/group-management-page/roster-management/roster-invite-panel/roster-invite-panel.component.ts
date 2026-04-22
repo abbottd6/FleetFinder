@@ -1,5 +1,5 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, switchMap, takeUntil} from "rxjs";
 import {
   MemberManagementApiService
 } from "../../../../services/api-services/group-management/member-management-api.service";
@@ -9,6 +9,24 @@ import {
 import {InviteOptionsPanelComponent} from "./invite-options-panel/invite-options-panel.component";
 import {AsyncPipe, NgForOf} from "@angular/common";
 import {InviteChipComponent} from "./invite-chip/invite-chip.component";
+import {
+  GroupManagementInviteViewModel
+} from "../../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
+
+export interface InvitePanelFilterState {
+  direction: 'OFFER' | 'REQUEST' | 'BOTH',
+  status: 'PENDING' | 'ACTIONED' | 'BOTH'
+}
+
+type InvitePredicate = (invite: GroupManagementInviteViewModel) => boolean;
+
+const INVITE_FILTER_PREDICATES: Record<string, InvitePredicate> = {
+  OFFER: (i) => i.inviteDirection === 'OFFER',
+  REQUEST: (i) => i.inviteDirection === 'REQUEST',
+  PENDING: (i) => i.inviteStatus === 'PENDING',
+  ACTIONED: (i) => ['ACCEPTED', 'DECLINED', 'RESCINDED'].includes(i.inviteStatus),
+};
+
 
 @Component({
   selector: 'app-roster-invite-panel',
@@ -29,6 +47,12 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
 
   protected noGroupInvites: boolean = true;
 
+  inviteFilterState$ = new BehaviorSubject<InvitePanelFilterState>({
+    direction: 'BOTH', status: 'PENDING'
+  });
+
+  protected invitesForDisplay$!: Observable<GroupManagementInviteViewModel[]>;
+
   constructor(private memberManagementApi: MemberManagementApiService,
               protected managementInteract: GroupManagementInteractService){}
 
@@ -42,6 +66,23 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
         this.managementInteract.setGroupInvites(page);
         this.noGroupInvites = page.content.length === 0;
       });
+
+    this.invitesForDisplay$ = combineLatest([
+      this.managementInteract.groupInvites$,
+      this.inviteFilterState$
+    ]).pipe(
+      filter(([invites]) => !!invites),
+      map(([invites, filterState]) =>
+        this.filterInvites(invites.content, filterState))
+    )
+  }
+
+  filterInvites(invites: GroupManagementInviteViewModel[], filterState: InvitePanelFilterState): GroupManagementInviteViewModel[] {
+    return invites.filter(invite => {
+      const directionMatch = filterState.direction === 'BOTH' || INVITE_FILTER_PREDICATES[filterState.direction](invite);
+      const statusMatch = filterState.status === 'BOTH' || INVITE_FILTER_PREDICATES[filterState.status](invite);
+      return directionMatch && statusMatch;
+    });
   }
 
   ngOnDestroy() {

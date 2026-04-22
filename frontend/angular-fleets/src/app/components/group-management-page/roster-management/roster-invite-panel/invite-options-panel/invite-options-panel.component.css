@@ -1,0 +1,139 @@
+.options-accordion-panel {
+  display: flex;
+  flex-direction: column;
+  width: 96%;
+  margin: 10px auto 10px 0;
+}
+
+.mat-expansion-panel {
+  background-color: rgba(136, 138, 143, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mat-expansion-panel-header,
+.mat-expansion-panel-header:focus:not(:hover) {
+  &.cdk-mouse-focused:not(:hover),
+  &.cdk-touch-focused:not(:hover) {
+    background-color: transparent;
+  }
+}
+
+.mat-expansion-panel-header,
+.mat-expansion-panel-header.mat-expanded {
+  height: 45px;
+  transition: color 0.25s ease !important;
+}
+
+mat-panel-title {
+  flex: 0 0 auto;
+  color: rgba(150, 168, 183, .7);
+  transition: color 0.2s ease;
+}
+
+:host ::ng-deep .mat-expansion-indicator svg {
+  fill: rgba(150, 168, 183, .6);
+  transition: fill 0.25s ease;
+}
+
+.mat-expansion-panel-header:hover mat-panel-title {
+  color: rgba(255, 131, 7, .4);
+}
+
+:host ::ng-deep .mat-expansion-panel-header:hover .mat-expansion-indicator svg {
+  opacity: 1;
+  fill: rgba(255, 131, 7, .3);
+}
+
+.child-container-header {
+  margin: 10px 10px 10px 10px;
+  padding: 2px;
+  font-size: clamp(100%, 101%, 105%);
+}
+
+.options-body-container {
+  width: 100%;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 102%;
+}
+
+.toggle-row {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr;
+  align-content: baseline;
+  margin-top: 5px;
+  margin-bottom: 15px;
+}
+
+.toggle-label {
+  align-content: center;
+}
+
+.toggle-row mat-slide-toggle {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: right;
+  margin-bottom: 0;
+}
+
+:host ::ng-deep .mat-mdc-slide-toggle {
+  display: flex;
+  align-items: center;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+:host ::ng-deep .mdc-switch__track {
+  color: rgba(136, 138, 143, 0.75) !important;
+  border-radius: 100px;
+  scale: 0.85;
+}
+
+:host ::ng-deep .mdc-switch--checked .mdc-switch__track {
+  /*background-color:rgba(255, 131, 7, .35);*/
+  background-color: rgba(53, 114, 163, 0.5);
+  border: 1px solid rgba(52, 58, 64, 0.85);
+}
+
+:host ::ng-deep .mdc-switch--unselected .mdc-switch__track {
+  /*background-color: rgba(136, 138, 143, 0.3);*/
+  background-color: rgba(255, 131, 7, .1);
+}
+
+:host ::ng-deep .mdc-switch__shadow {
+  background-color: rgba(150, 168, 183, 1);
+  border-radius: 100px;
+}
+
+:host ::ng-deep .mat-mdc-slide-toggle {
+  /*fill: ;*/
+  --mdc-switch-selected-icon-color: rgba(52, 58, 64, 1);
+}
+
+::ng-deep .radio-row .mat-mdc-radio-button .mdc-radio {
+  padding: 0;
+}
+
+::ng-deep .radio-row .mat-mdc-radio-button .mdc-radio__inner-circle,
+::ng-deep .radio-row .mat-mdc-radio-button .mdc-radio__outer-circle {
+  transition: color 0.2s ease;
+}
+
+::ng-deep .radio-row .mat-mdc-radio-button .mdc-radio__inner-circle {
+  color: rgba(53, 114, 163, 0.7);
+}
+
+::ng-deep .mat-mdc-radio-button.mat-mdc-radio-checked .mdc-radio__outer-circle {
+  color: rgba(53, 114, 163, 0.7);
+}
+
+::ng-deep .mat-mdc-radio-button:not(.mat-mdc-radio-checked):hover .mdc-radio__outer-circle {
+  color: rgba(255, 131, 7, .5);
+}
+
+.radio-row {
+  width: 100%;
+  display: flex;
+  gap: 15px;
+}

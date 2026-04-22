@@ -1,4 +1,4 @@
-<div class="body-container">
+<div class="body-container" #profileContainer [style.min-height]="containerHeight">
   <ng-container *ngIf="userService.sessionUser$ | async as user; else notLoggedIn">
     <div class="page-title"><h2>User Profile:</h2></div>
     <div class="header-line"></div>

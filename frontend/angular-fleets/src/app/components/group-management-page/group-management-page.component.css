@@ -2,7 +2,7 @@
   display: inline-block;
   font-size: clamp(1.1rem, 3vw, 2rem);
   margin-left: 5rem;
-  padding: 1rem;
+  padding: clamp(0.35rem, 5px, 2rem);
 }
 
 .group-header-container {
@@ -20,7 +20,7 @@
   width: 98%;
   align-self: center;
   display: grid;
-  grid-template-columns: 20% 80%;
+  grid-template-columns: 360px 1fr;
 }
 
 .roster-container {

@@ -47,6 +47,8 @@ export class InviteChipComponent implements OnInit, OnDestroy {
   ngOnInit() {
     if(this.invite.inviteDirection === 'REQUEST') {
       this.inviteMember = this.invite.senderSummary;
+    } else {
+      this.inviteMember = this.invite.recipientSummary;
     }
   }
 

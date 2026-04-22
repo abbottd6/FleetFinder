@@ -5,7 +5,7 @@ import {AfterViewInit, Directive, ElementRef, OnDestroy} from "@angular/core";
   standalone: true
 })
 
-export class MeasureFooterHeightDirective implements AfterViewInit, OnDestroy {
+export class MeasureNavbarHeightDirective implements AfterViewInit, OnDestroy {
   private resizeObserver?: ResizeObserver;
 
   constructor(private el: ElementRef<HTMLElement>) {}

@@ -54,6 +54,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   @ViewChild('contextMenuAnchor', { read: ElementRef })
   protected contextMenuAnchor!: ElementRef<HTMLElement>;
 
+  @ViewChild('listingsPageContainer') listingsPageContainer!: ElementRef;
+  protected containerHeight!: string;
 
   @Output() filtersUpToDate = new EventEmitter<boolean>();
 
@@ -113,6 +115,9 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngAfterViewInit() {
+    const top = this.listingsPageContainer.nativeElement.getBoundingClientRect().top;
+    this.containerHeight = `calc(99vh - ${top}px)`;
+
     this.paginator.page.pipe(takeUntil(this.destroy$))
       .subscribe((event: PageEvent) => {
       this.pageIndex = event.pageIndex;

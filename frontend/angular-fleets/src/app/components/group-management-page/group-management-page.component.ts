@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Subject, takeUntil} from "rxjs";
 import {
   GroupManagementMemberViewModel
@@ -29,8 +29,11 @@ import {
   ],
   styleUrl: './group-management-page.component.css'
 })
-export class GroupManagementPageComponent implements OnInit, OnDestroy {
+export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
+
+  @ViewChild('managementContainer') managementContainer!: ElementRef;
+  protected containerHeight!: string;
 
   protected waitlistRoster: GroupManagementMemberViewModel[] = [];
   protected noWaitlistMembers: boolean = false;
@@ -96,4 +99,8 @@ export class GroupManagementPageComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+  ngAfterViewInit() {
+    const top = this.managementContainer.nativeElement.getBoundingClientRect().top;
+    this.containerHeight = `calc(99vh - ${top}px)`;
+  }
 }

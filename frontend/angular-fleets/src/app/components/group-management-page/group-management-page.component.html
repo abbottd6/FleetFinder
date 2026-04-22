@@ -1,7 +1,7 @@
 <div class="body-container">
   <span class="page-title">Group Management</span>
   <ng-container *ngIf="!pageIsLoading; else loading">
-    <div class="management-container">
+    <div class="management-container" #managementContainer [style.min-height]="containerHeight">
       <div class="roster-container">
         <app-roster-management>
         </app-roster-management>

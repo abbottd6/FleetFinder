@@ -38,8 +38,23 @@ export class GroupManagementInteractService {
     new BehaviorSubject<Page<GroupManagementMemberViewModel> | undefined>(undefined)
   public waitlistRoster$ = this.waitlistRosterSubject.asObservable();
 
-  private groupInvitesSubject: BehaviorSubject<Page<GroupManagementInviteViewModel> | undefined> =
-    new BehaviorSubject<Page<GroupManagementInviteViewModel> | undefined>(undefined)
+  private groupInvitesSubject: BehaviorSubject<Page<GroupManagementInviteViewModel>> =
+    new BehaviorSubject<Page<GroupManagementInviteViewModel>>({
+      content: [],
+      page: {
+        size: 0,
+        number: 0,
+        totalElements: 0,
+        totalPages: 0,
+      },
+      sort: {
+        empty: true,
+        sorted: false,
+        unsorted: true,
+        asc: false,
+        desc: true
+      }
+    });
   public groupInvites$ = this.groupInvitesSubject.asObservable();
 
   public sessionManager: GroupMembershipViewModel | undefined = undefined;

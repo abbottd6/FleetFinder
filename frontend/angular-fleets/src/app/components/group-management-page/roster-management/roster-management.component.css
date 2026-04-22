@@ -25,7 +25,7 @@
 }
 
 :host ::ng-deep .mat-mdc-tab-labels {
-  font-size: clamp(0.9rem, 0.65vw, 1.2rem);
+  font-size: 0.9rem;
   display: flex;
 }
 
