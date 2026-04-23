@@ -126,7 +126,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
         GroupInvite invite = inviteRepo.findById(dto.getInviteId()).orElseThrow(() -> new ResourceNotFoundException(
                 "Group Invite", dto.getInviteId()));
 
-        Users newMember = invite.getRecipient();
+        Users newMember = invite.getSender();
 
         throwIfUserIsAlreadyAMember(newMember, listing.getGroupId());
 
@@ -161,12 +161,6 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
                 throw e;
             }
         }
-    }
-
-    @Override
-    @Transactional
-    public void declineGroupInviteRequest(Users user, Long listingId, Long inviteId) {
-
     }
 
     @Override

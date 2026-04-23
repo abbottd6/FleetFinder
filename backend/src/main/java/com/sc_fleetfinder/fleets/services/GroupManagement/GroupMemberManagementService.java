@@ -17,7 +17,5 @@ public interface GroupMemberManagementService extends GroupMemberService {
 
     GroupManagerMemberResponseDto acceptGroupInviteRequest(Users user, GroupManagerInviteResponseDto dto);
 
-    void declineGroupInviteRequest(Users user, Long listingId, Long inviteId);
-
     GroupManagerInviteResponseDto sendGroupInviteOffer(Users sender, SendGroupInviteOfferDto dto);
 }

@@ -6,8 +6,6 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupMembershi
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
-import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberManagementService;
-import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberUserService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberUserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

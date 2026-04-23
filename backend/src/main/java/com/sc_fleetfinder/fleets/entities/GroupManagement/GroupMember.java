@@ -35,7 +35,7 @@ public class GroupMember {
     //JOINING MEMBER CONSTRUCTOR
     public GroupMember(GroupListing listing, Users newMember, GroupMemberStatus memberStatus,
                        InGroupRank rank, Boolean hasComms, Boolean hasExtNotes) {
-        this.groupMemberId = new GroupMemberId(listing.getGroupId(), user.getUserId());
+        this.groupMemberId = new GroupMemberId(listing.getGroupId(), newMember.getUserId());
         this.groupListing = listing;
         this.user = newMember;
         this.memberStatus = memberStatus;

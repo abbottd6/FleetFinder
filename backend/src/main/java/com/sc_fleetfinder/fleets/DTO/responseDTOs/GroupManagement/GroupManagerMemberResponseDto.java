@@ -8,6 +8,7 @@ import java.time.Instant;
 
 @Data
 public class GroupManagerMemberResponseDto {
+
     private Long listingId;
     private UserSummaryResponseDto userSummary;
     private GroupMemberStatus memberStatus;
