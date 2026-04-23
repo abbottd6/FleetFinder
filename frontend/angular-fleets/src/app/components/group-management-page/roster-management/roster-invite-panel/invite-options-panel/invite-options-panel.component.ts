@@ -35,12 +35,12 @@ export class InviteOptionsPanelComponent {
   @Input() inviteFilterState$!: BehaviorSubject<InvitePanelFilterState>;
 
   @Output() emitFilterState = new EventEmitter<InvitePanelFilterState>();
-  protected showAllCtrl = new FormControl<boolean>(false);
+  protected showPendingOnlyCtrl = new FormControl<boolean>(true);
 
   onStatusChange() {
     this.inviteFilterState$.next({
       ...this.inviteFilterState$.getValue(),
-      status: this.showAllCtrl.value == true ? 'BOTH' : 'PENDING'
+      status: this.showPendingOnlyCtrl.value == true ? 'PENDING' : 'BOTH'
     })
     this.emitFilterState.emit(this.inviteFilterState$.getValue());
   }

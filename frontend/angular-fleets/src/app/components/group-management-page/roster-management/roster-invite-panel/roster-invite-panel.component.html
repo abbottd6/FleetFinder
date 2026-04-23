@@ -6,7 +6,9 @@
   <div class="proliferation-container">
     <ng-container *ngFor="let invite of (invitesForDisplay$ | async)">
       <app-invite-chip
-        [invite]="invite">
+        [invite]="invite"
+        (inviteStatusChangeEmitter)="changeInviteStatus($event)"
+        (inviteAltActionEmitter)="performAltAction()">
       </app-invite-chip>
     </ng-container>
   </div>

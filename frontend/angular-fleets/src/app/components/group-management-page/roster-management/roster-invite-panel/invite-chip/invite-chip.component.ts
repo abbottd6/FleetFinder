@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnDestroy, OnInit, Output} from '@angular/core';
 import {Subject} from "rxjs";
 import {
   GroupManagementInviteViewModel
@@ -13,14 +13,20 @@ import {MatDialog} from "@angular/material/dialog";
 import {InviteDetailsPopupComponent} from "../invite-details-popup/invite-details-popup.component"
 
 export const InviteActions = {
-  RESCIND: 'RESCIND',
-  ACCEPT: 'ACCEPT',
-  DECLINE: 'DECLINE',
+  RESCIND: 'RESCINDED',
+  ACCEPT: 'ACCEPTED',
+  DECLINE: 'DECLINED',
   MESSAGE: 'MESSAGE',
   WAITLIST: 'WAITLIST',
+  DISMISS: 'DISMISS',
 } as const;
 
 export type InviteActions = typeof InviteActions[keyof typeof InviteActions];
+
+export type InviteStatusChange = {
+  newStatus: InviteActions,
+  newInvite: GroupManagementInviteViewModel
+}
 
 @Component({
   selector: 'app-invite-chip',
@@ -30,15 +36,21 @@ export type InviteActions = typeof InviteActions[keyof typeof InviteActions];
     NgIf,
     MatIcon,
     MatTooltip,
+    TitleCasePipe,
   ],
   styleUrl: './invite-chip.component.css'
 })
 export class InviteChipComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
+  protected readonly inviteActions = InviteActions;
+
   protected inviteMember!: UserMonikerSummaryViewModel;
 
   protected isHovered: boolean = false;
+
+  @Output() inviteStatusChangeEmitter = new EventEmitter<InviteStatusChange>();
+  @Output() inviteAltActionEmitter = new EventEmitter<InviteActions>();
 
   @Input() invite!: GroupManagementInviteViewModel;
 
@@ -61,7 +73,13 @@ export class InviteChipComponent implements OnInit, OnDestroy {
     })
   }
 
-  emitDeclineInviteRequest() {
+  emitInviteStatusChange(action: InviteActions) {
+    this.invite.inviteStatus = action;
+    const statusChange: InviteStatusChange = { newStatus: action, newInvite: this.invite};
+    this.inviteStatusChangeEmitter.emit(statusChange);
+  }
+
+  emitInviteAltAction(action: InviteActions) {
 
   }
 

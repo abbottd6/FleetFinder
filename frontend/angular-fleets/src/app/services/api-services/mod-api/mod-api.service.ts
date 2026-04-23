@@ -5,8 +5,8 @@ import {BehaviorSubject, map, Observable, Subject} from "rxjs";
 import {tap} from "rxjs/operators";
 import {HttpClient} from "@angular/common/http";
 import {ModIssueViewModel} from "../../../models/moderation/ModIssueViewModel";
-import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
 import {ModListingActionViewModel} from "../../../models/moderation/ModListingActionViewModel";
+import {Page} from "../../../models/page-interface";
 
 interface GetResponse {
   _embedded: {

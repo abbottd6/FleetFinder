@@ -29,12 +29,12 @@ import {MatCheckbox} from "@angular/material/checkbox";
 import {ListingTemplateViewModel} from "../../models/listing-templates/listing-template-view-model";
 import {MatSort, Sort} from "@angular/material/sort";
 import {LiveAnnouncer} from "@angular/cdk/a11y";
-import {Page} from "../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {Router} from "@angular/router";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmGenericComponent} from "../pop-ups/confirm-generic/confirm-generic.component";
 import {TemplatesModalService} from "../../services/component-services/templates-modal-service/templates-modal.service";
+import {Page} from "../../models/page-interface";
 
 @Component({
   selector: 'app-user-profile-templates',

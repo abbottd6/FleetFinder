@@ -3,7 +3,8 @@ import {HttpClient, HttpParams} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {PublicUser} from "../../../models/public-user/public-user";
 import {environment} from "../../../../environments/environment";
-import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
+
+import {Page} from "../../../models/page-interface";
 
 @Injectable({
   providedIn: 'root'

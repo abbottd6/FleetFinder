@@ -16,10 +16,10 @@ import {
   CustomNoteStateRequest
 } from "../../facade-services/custom-notification-service/custom-notification.service";
 import {PushSubViewModel} from "../../../models/NotificationPrefAndCustomNotesModels/PushSubViewModel";
-import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
 import {
   PushSubPrefChangeRequest
 } from "../../../components/user-profile-notification-settings-tab/push-subscription-chip/push-subscription-chip.component";
+import {Page} from "../../../models/page-interface";
 
 export interface NewPushSubscription {
   userLabel: string,

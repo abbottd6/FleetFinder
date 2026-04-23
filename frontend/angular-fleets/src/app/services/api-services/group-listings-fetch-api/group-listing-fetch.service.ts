@@ -1,26 +1,10 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable, tap} from "rxjs";
 import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 import {environment} from '../../../../environments/environment';
 import {ListingFilterRequest} from "../../../models/listing-filter/listing-filter-request";
-
-export interface Page<T> {
-  content: T[];
-  page: {
-    size: number;
-    number: number;
-    totalElements: number;
-    totalPages: number;
-  }
-  sort: {
-    empty: boolean;
-    sorted: boolean;
-    unsorted: boolean;
-    asc: boolean;
-    desc: boolean;
-  }
-}
+import {Page} from "../../../models/page-interface";
 
 @Injectable({
   providedIn: 'root'

@@ -5,10 +5,10 @@ import {
   GroupMembershipViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {Page} from "../../api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {BehaviorSubject, EMPTY, Observable, ReplaySubject} from "rxjs";
 import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {Page} from "../../../models/page-interface";
 
 @Injectable({
   providedIn: 'root'

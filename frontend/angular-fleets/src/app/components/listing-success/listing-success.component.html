@@ -1,5 +1,5 @@
 <div class="container-clip-path-wrapper">
-  <div class="body-container">
+  <div class="body-container" #successPageContainer [style.min-height]="containerHeight">
     <h1>Success!</h1>
     <div class="success-body">
       <ng-container *ngIf="successLayoutMode$ | async as mode">

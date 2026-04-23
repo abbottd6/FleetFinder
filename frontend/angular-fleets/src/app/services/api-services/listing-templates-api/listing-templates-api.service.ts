@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
 import {ListingTemplateViewModel} from "../../../models/listing-templates/listing-template-view-model";
 import {Observable, tap} from "rxjs";
 import {CreateTemplateRequest} from "../../../models/listing-templates/create-template-request";
+import {Page} from "../../../models/page-interface";
 
 @Injectable({
   providedIn: 'root'

@@ -18,7 +18,8 @@ import {ModListingActionViewModel} from "../../../models/moderation/ModListingAc
 import {ModApiService} from "../../../services/api-services/mod-api/mod-api.service";
 import {UiPrefsService} from "../../../services/facade-services/ui-prefs/ui-prefs.service";
 import {LayoutMode} from "../../input-fields/search-bar/search-bar.component";
-import {Page} from "../../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
+
+import {Page} from "../../../models/page-interface";
 
 @Component({
   selector: 'app-mod-actions-table',

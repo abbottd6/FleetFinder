@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
 import {map, Observable} from "rxjs";
 import {NotificationViewModel} from "../../../models/NotificationViewModel";
 import {UpdateNotificationPreferenceRequest} from "../../../models/NotificationPrefAndCustomNotesModels/update-notification-preference-request";
@@ -11,6 +10,7 @@ import {
 import {
   CustomNotificationViewModel
 } from "../../../models/NotificationPrefAndCustomNotesModels/CustomNotificationViewModel";
+import {Page} from "../../../models/page-interface";
 
 @Injectable({
   providedIn: 'root'

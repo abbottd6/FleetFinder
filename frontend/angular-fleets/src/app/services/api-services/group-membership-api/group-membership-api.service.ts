@@ -1,7 +1,6 @@
   import {DestroyRef, inject, Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {HttpClient, HttpResponse} from "@angular/common/http";
-import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
 import {Observable} from "rxjs";
 import {
   GroupMembershipViewModel
@@ -22,6 +21,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
     GroupManagementMemberViewModel
   } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
   import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
+  import {Page} from "../../../models/page-interface";
 
 export const rosterClasses: string[] = ['Active', 'Waitlist'];
 

@@ -1,6 +1,5 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
 import {BehaviorSubject, firstValueFrom, map, Observable} from "rxjs";
-import {Page} from "../../api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {
   CustomNotificationViewModel
 } from "../../../models/NotificationPrefAndCustomNotesModels/CustomNotificationViewModel";
@@ -11,6 +10,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
+import {Page} from "../../../models/page-interface";
 
 export interface CustomNoteStateRequest {
   idCustomNote: number,

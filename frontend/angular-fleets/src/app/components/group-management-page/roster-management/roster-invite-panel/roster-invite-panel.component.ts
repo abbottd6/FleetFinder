@@ -8,7 +8,7 @@ import {
 } from "../../../../services/facade-services/group-management/group-management-interact.service";
 import {InviteOptionsPanelComponent} from "./invite-options-panel/invite-options-panel.component";
 import {AsyncPipe, NgForOf} from "@angular/common";
-import {InviteChipComponent} from "./invite-chip/invite-chip.component";
+import {InviteChipComponent, InviteStatusChange} from "./invite-chip/invite-chip.component";
 import {
   GroupManagementInviteViewModel
 } from "../../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
@@ -83,6 +83,16 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
       const statusMatch = filterState.status === 'BOTH' || INVITE_FILTER_PREDICATES[filterState.status](invite);
       return directionMatch && statusMatch;
     });
+  }
+
+  changeInviteStatus(inviteStatusChange: InviteStatusChange) {
+    if(inviteStatusChange.newStatus === 'ACCEPTED') {
+      this.managementInteract.acceptGroupInviteRequest(inviteStatusChange.newInvite);
+    }
+  }
+
+  performAltAction() {
+
   }
 
   ngOnDestroy() {

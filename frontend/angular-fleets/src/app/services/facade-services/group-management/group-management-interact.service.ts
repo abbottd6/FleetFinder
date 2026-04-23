@@ -6,7 +6,6 @@ import {
 import {
   GroupManagementInviteViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
-import {Page} from "../../api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {
   GroupMembershipViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
@@ -22,6 +21,9 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {SendGroupInviteOffer} from "../../../models/group-management-models/request-models/send-group-invite-offer";
 import {MemberManagementApiService} from "../../api-services/group-management/member-management-api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {environment} from "../../../../environments/environment";
+import {newEmptyPage, Page} from "../../../models/page-interface";
+import {toTitleCase} from "../../../utils/string-to-title-case";
 
 @Injectable({
   providedIn: 'root'
@@ -39,22 +41,7 @@ export class GroupManagementInteractService {
   public waitlistRoster$ = this.waitlistRosterSubject.asObservable();
 
   private groupInvitesSubject: BehaviorSubject<Page<GroupManagementInviteViewModel>> =
-    new BehaviorSubject<Page<GroupManagementInviteViewModel>>({
-      content: [],
-      page: {
-        size: 0,
-        number: 0,
-        totalElements: 0,
-        totalPages: 0,
-      },
-      sort: {
-        empty: true,
-        sorted: false,
-        unsorted: true,
-        asc: false,
-        desc: true
-      }
-    });
+    new BehaviorSubject<Page<GroupManagementInviteViewModel>>(newEmptyPage());
   public groupInvites$ = this.groupInvitesSubject.asObservable();
 
   public sessionManager: GroupMembershipViewModel | undefined = undefined;
@@ -74,6 +61,53 @@ export class GroupManagementInteractService {
 
   setGroupInvites(invites: Page<GroupManagementInviteViewModel>) {
     this.groupInvitesSubject.next(invites);
+  }
+
+  acceptGroupInviteRequest(inviteWithNewStatus: GroupManagementInviteViewModel) {
+    this.managementApi.acceptGroupInviteRequest(inviteWithNewStatus).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (newMember: GroupManagementMemberViewModel) => {
+          if(newMember.memberStatus === 'ACTIVE') {
+            const current = this.activeRosterSubject.getValue() ?? newEmptyPage();
+            this.activeRosterSubject.next({
+              ...current,
+              content: [...(current?.content ?? []), newMember]
+            });
+          } else if(newMember.memberStatus === 'WAITLIST') {
+            const current = this.waitlistRosterSubject.getValue() ?? newEmptyPage();
+            this.waitlistRosterSubject.next({
+              ...current,
+              content: [...(current?.content ?? []), newMember]
+            });
+          }
+
+          const currentInvites = this.groupInvitesSubject.getValue() ?? newEmptyPage();
+          const idx = currentInvites.content.findIndex(
+            inv => inv.inviteId === inviteWithNewStatus.inviteId);
+          this.groupInvitesSubject.next({
+            ...currentInvites,
+            content: [
+              ...currentInvites.content.slice(0, idx),
+              inviteWithNewStatus,
+              ...currentInvites.content.slice(idx + 1)]
+          })
+
+          this.snackBar.open(`${inviteWithNewStatus.senderSummary.username} added to ${toTitleCase(newMember.memberStatus)}`, 'OK', {
+            duration: 4000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+            panelClass: ['mobile-snackbar']
+          })
+        },
+        error: (e)=> {
+          this.snackBar.open('There was an issue adding this group member.', 'OK', {
+            duration: 5000,
+            verticalPosition: 'top',
+            horizontalPosition: 'center',
+            panelClass: ['mobile-snackbar']
+          });
+        }
+      })
   }
 
   openSendInvitePopup(sender: GroupMembershipViewModel, recipient: UserMonikerSummaryViewModel | null) {
@@ -129,7 +163,6 @@ export class GroupManagementInteractService {
                     asc: false,
                     desc: true,
                   },
-
                 })
               }
             },
@@ -140,8 +173,9 @@ export class GroupManagementInteractService {
                 horizontalPosition: 'center',
                 panelClass: ['mobile-snackbar']
               })
-
-              console.log(err.message);
+              if(!environment.production) {
+                console.log(err.message);
+              }
             }
           });
       }

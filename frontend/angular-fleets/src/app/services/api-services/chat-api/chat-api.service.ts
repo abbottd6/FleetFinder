@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {HttpClient} from "@angular/common/http";
-import {Page} from "../group-listings-fetch-api/group-listing-fetch.service";
 import {ConversationViewModel} from "../../../models/chat/conversation-view-model";
 import {Observable} from "rxjs";
 import {MessageViewModel} from "../../../models/chat/message-view-model";
 import {ConversationProvisionRequest} from "../../../models/chat/conversation-provision-request";
 import {SendMessageRequest} from "../../../models/chat/send-message-request";
 import {UnmuteAndProvisionRequest} from "../../../models/chat/unmute-and-provision-request";
+import {Page} from "../../../models/page-interface";
 
 @Injectable({
   providedIn: 'root'

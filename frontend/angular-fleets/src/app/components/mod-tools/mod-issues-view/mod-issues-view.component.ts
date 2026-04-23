@@ -13,8 +13,7 @@ import {
 import {ModIssueViewModel} from "../../../models/moderation/ModIssueViewModel";
 import {ModApiService} from "../../../services/api-services/mod-api/mod-api.service";
 import {
-  GroupListingFetchService,
-  Page
+  GroupListingFetchService
 } from "../../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
 import {LayoutMode} from "../../input-fields/search-bar/search-bar.component";
 import {BreakpointObserver} from "@angular/cdk/layout";
@@ -35,6 +34,7 @@ import {ModIssueDetailedComponent} from "../../pop-ups/mod-issue-detailed/mod-is
 import {
   ListingViewInteractionsService
 } from "../../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
+import {Page} from "../../../models/page-interface";
 
 @Component({
   selector: 'app-mod-issues-view',

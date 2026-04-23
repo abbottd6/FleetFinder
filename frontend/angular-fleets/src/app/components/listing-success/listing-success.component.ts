@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
@@ -9,9 +9,12 @@ import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
   templateUrl: './listing-success.component.html',
   styleUrl: './listing-success.component.css'
 })
-export class ListingSuccessComponent implements OnDestroy {
+export class ListingSuccessComponent implements OnDestroy, AfterViewInit {
   private breakpointObserver = new BreakpointObserver();
   private destroy$ = new Subject<void>();
+
+  @ViewChild('successPageContainer') successPageContainer!: ElementRef;
+  protected containerHeight!: string;
 
   successLayoutMode$: Observable<LayoutMode> = this.breakpointObserver
     .observe([
@@ -28,6 +31,11 @@ export class ListingSuccessComponent implements OnDestroy {
       }),
       shareReplay(1)
     );
+
+  ngAfterViewInit() {
+    const top = this.successPageContainer.nativeElement.getBoundingClientRect().top;
+    this.containerHeight = `calc(99vh - ${top}px)`;
+  }
 
   ngOnDestroy() {
     this.destroy$.next();

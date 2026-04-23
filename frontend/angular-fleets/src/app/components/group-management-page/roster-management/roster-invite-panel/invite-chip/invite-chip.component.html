@@ -1,47 +1,74 @@
 <div class="chip-self" [class.child-hovered]="isHovered">
-  <ng-container *ngIf="invite.inviteDirection === 'REQUEST'; else sent">
+  <ng-container *ngIf="invite.inviteStatus === 'PENDING'; else actioned">
+    <ng-container *ngIf="invite.inviteDirection === 'REQUEST'; else offer">
+      <div class="invite-brief-container invite-details-popup-click-target"
+           (click)="openInviteDetailsPopup()"
+           (mouseenter)="isHovered = true"
+           (mouseleave)="isHovered = false">
+        <mat-icon class="request-icon has-tooltip"
+                  matTooltip="Invite Request">
+          call_received
+        </mat-icon>
+        <span class="chip-field-val username">
+            {{ inviteMember.username }}
+        </span>
+      </div>
+      <div class="actions-container">
+        <button class="invite-chip-button decline"
+                matTooltip="Decline Request"
+                (click)="emitInviteStatusChange(inviteActions.DECLINE)">
+          <mat-icon>close_small</mat-icon>
+        </button>
+        <button class="invite-chip-button accept"
+                matTooltip="Accept Request"
+                (click)="emitInviteStatusChange(inviteActions.ACCEPT)">
+          <mat-icon>check_small</mat-icon>
+        </button>
+      </div>
+    </ng-container>
+    <ng-template #offer>
+      <div class="invite-brief-container invite-details-popup-click-target"
+           (click)="openInviteDetailsPopup()"
+           (mouseenter)="isHovered = true"
+           (mouseleave)="isHovered = false">
+        <mat-icon class="offer-icon has-tooltip"
+                  matTooltip="Invite Sent">
+          call_made
+        </mat-icon>
+        <span class="chip-field-val username">
+            {{ inviteMember.username }}
+          </span>
+      </div>
+      <div class="actions-container">
+        <button class="invite-chip-button decline"
+                matTooltip="Rescind"
+                (click)="emitInviteStatusChange(inviteActions.RESCIND)">
+          <mat-icon>undo</mat-icon>
+        </button>
+      </div>
+    </ng-template>
+  </ng-container>
+  <ng-template #actioned>
     <div class="invite-brief-container invite-details-popup-click-target"
-          (click)="openInviteDetailsPopup()"
-          (mouseenter)="isHovered = true"
-          (mouseleave)="isHovered = false">
+         (click)="openInviteDetailsPopup()"
+         (mouseenter)="isHovered = true"
+         (mouseleave)="isHovered = false">
       <mat-icon class="request-icon has-tooltip"
                 matTooltip="Invite Request">
         call_received
       </mat-icon>
       <span class="chip-field-val username">
             {{ inviteMember.username }}
-          </span>
+      </span>
+      <span class="chip-field-val">
+        '{{ invite.inviteStatus|titlecase }}'
+      </span>
     </div>
     <div class="actions-container">
       <button class="invite-chip-button decline"
-              matTooltip="Decline Request"
-              (click)="emitDeclineInviteRequest()">
-        <mat-icon>close_small</mat-icon>
-      </button>
-      <button class="invite-chip-button accept"
-              matTooltip="Accept Request">
-        <mat-icon>check_small</mat-icon>
-      </button>
-    </div>
-  </ng-container>
-  <ng-template #sent>
-    <div class="invite-brief-container invite-details-popup-click-target"
-         (click)="openInviteDetailsPopup()"
-         (mouseenter)="isHovered = true"
-         (mouseleave)="isHovered = false">
-      <mat-icon class="offer-icon has-tooltip"
-                matTooltip="Invite Sent">
-        call_made
-      </mat-icon>
-      <span class="chip-field-val username">
-            {{ inviteMember.username }}
-          </span>
-    </div>
-    <div class="actions-container">
-      <button class="invite-chip-button decline"
-              matTooltip="Rescind"
-              (click)="emitDeclineInviteRequest()">
-        <mat-icon>undo</mat-icon>
+              matTooltip="Dismiss"
+              (click)="emitInviteAltAction(inviteActions.DISMISS)">
+        <mat-icon>delete_forever</mat-icon>
       </button>
     </div>
   </ng-template>
