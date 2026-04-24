@@ -67,28 +67,39 @@ public class GroupMembershipController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping("/decline_group_invite_offer")
+    @PutMapping("/decline_group_invite_offer/{inviteId}")
     public ResponseEntity<?> declineGroupInviteOffer(@AuthenticationPrincipal Jwt jwt,
-                                                     @RequestBody GroupInviteRequestOrResponseDto dto) {
+                                                     @PathVariable Long inviteId) {
         String kcId = jwt.getSubject();
         Users actingUser = userService.verifyUser(kcId);
 
-        GroupInviteRequestOrResponseDto responseDto = memberUserService.declineGroupInviteOfferOrRequest(
-                actingUser, dto);
+        GroupInviteRequestOrResponseDto responseDto = memberUserService.declineGroupInviteOffer(
+                actingUser, inviteId);
 
         return ResponseEntity.ok(responseDto);
     }
 
-    @PutMapping("/rescind_group_invite_join_request")
+    @PutMapping("/rescind_group_invite_join_request/{inviteId}")
     public ResponseEntity<?> rescindGroupInviteJoinRequest(@AuthenticationPrincipal Jwt jwt,
-                                                             @RequestBody GroupInviteRequestOrResponseDto dto) {
+                                                             @PathVariable Long inviteId) {
         String kcId = jwt.getSubject();
         Users actingUser = userService.verifyUser(kcId);
 
-        GroupInviteRequestOrResponseDto responseDto = memberUserService.rescindGroupInviteOfferOrRequest(
-                actingUser, dto);
+        GroupInviteRequestOrResponseDto responseDto = memberUserService.rescindGroupInviteRequest(
+                actingUser, inviteId);
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/member_dismiss_invite/{inviteId}")
+    public ResponseEntity<?> memberDismissInvite(@AuthenticationPrincipal Jwt jwt,
+                                                 @PathVariable Long inviteId) {
+        String kcId = jwt.getSubject();
+        Users actingUser = userService.verifyUser(kcId);
+
+        memberUserService.userDismissInvite(actingUser, inviteId);
+
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/user_leave_group/{groupId}")

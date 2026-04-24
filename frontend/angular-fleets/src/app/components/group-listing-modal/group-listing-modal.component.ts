@@ -71,7 +71,7 @@ export class GroupListingModalComponent implements OnInit {
       }
     })
 
-    setTimeout(() => this.chatHostSrv.provisionConversation(listing), 300);
+    setTimeout(() => this.chatHostSrv.provisionConversation(listing.listingTitle, listing.userId), 300);
   }
 
   userIsListingOwner(): boolean {

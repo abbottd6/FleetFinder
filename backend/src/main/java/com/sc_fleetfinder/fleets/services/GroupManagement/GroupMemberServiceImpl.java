@@ -10,6 +10,7 @@ import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.PushSubscription;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
+import com.sc_fleetfinder.fleets.exceptions.InviteStateConflictException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.*;
 import org.modelmapper.ModelMapper;
@@ -63,6 +64,7 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
     }
 
     @Override
+    @Transactional
     public void userDismissInvite(Users user, Long inviteId) {
         GroupInvite invite = inviteRepo.findById(inviteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Group Invite", inviteId));
@@ -130,70 +132,6 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
     }
 
     @Override
-    @Transactional
-    public GroupInviteRequestOrResponseDto declineGroupInviteOfferOrRequest(Users actingUser, GroupInviteRequestOrResponseDto dto) {
-        GroupInvite invite = inviteRepo.findById(dto.getInviteId()).orElseThrow(() -> new ResourceNotFoundException(
-                "Group Invite", dto.getInviteId()));
-
-        if(Objects.equals(invite.getInviteDirection(), InviteDirection.OFFER)) {
-            if(!Objects.equals(actingUser.getUserId(), dto.getRecipientSummary().getUserId())) {
-                throw new ActionNotAuthorizedException(actingUser.getUserId(), "Accept Group Invite",
-                        "Group Invite", dto.getInviteId());
-            } else {
-                invite.setInviteStatus(GroupInvitationStatus.DECLINED);
-                invite.setActive(null);
-                inviteRepo.save(invite);
-            }
-        } else if(Objects.equals(invite.getInviteDirection(), InviteDirection.REQUEST)) {
-            GroupListing listing = glr.findById(dto.getListingDetails().getGroupId())
-                            .orElseThrow(() -> new ResourceNotFoundException("Group Listing", dto.getListingDetails().getGroupId()));
-
-            rankService.verifyUserRankPermissions(actingUser, listing,
-                    RankPrivilegeOptions.MANAGE_ROSTERS);
-
-            invite.setInviteStatus(GroupInvitationStatus.DECLINED);
-            invite.setActive(null);
-            inviteRepo.save(invite);
-
-            //TODO save outbox notification for recipient
-        }
-
-        return modelMapper.map(invite, GroupInviteRequestOrResponseDto.class);
-    }
-
-    @Override
-    @Transactional
-    public GroupInviteRequestOrResponseDto rescindGroupInviteOfferOrRequest(Users actingUser, GroupInviteRequestOrResponseDto dto) {
-        GroupInvite invite = inviteRepo.findById(dto.getInviteId()).orElseThrow(() -> new ResourceNotFoundException(
-                "Group Invite", dto.getInviteId()));
-
-        if(Objects.equals(invite.getInviteDirection(), InviteDirection.OFFER)) {
-            if(!Objects.equals(actingUser.getUserId(), dto.getRecipientSummary().getUserId())) {
-                throw new ActionNotAuthorizedException(actingUser.getUserId(), "Accept Group Invite",
-                        "Group Invite", dto.getInviteId());
-            } else {
-                invite.setInviteStatus(GroupInvitationStatus.RESCINDED);
-                invite.setActive(null);
-                inviteRepo.save(invite);
-                //TODO save outbox notification for recipient
-            }
-        } else if(Objects.equals(invite.getInviteDirection(), InviteDirection.REQUEST)) {
-            GroupListing listing = glr.findById(dto.getListingDetails().getGroupId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Group Listing", dto.getListingDetails().getGroupId()));
-
-            rankService.verifyUserRankPermissions(actingUser, listing,
-                    RankPrivilegeOptions.MANAGE_ROSTERS);
-
-            invite.setInviteStatus(GroupInvitationStatus.RESCINDED);
-            invite.setActive(null);
-            inviteRepo.save(invite);
-            //TODO save outbox notification for recipient
-        }
-
-        return modelMapper.map(invite, GroupInviteRequestOrResponseDto.class);
-    }
-
-    @Override
     public Boolean getNewMemberHasExternalNotes(Users newMember) {
         Boolean hasExtNotes = newMember.getExternalGroupNotesEnabled();
 
@@ -203,5 +141,13 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
         }
 
         return hasExtNotes;
+    }
+
+    @Override
+    public void evaluateForInviteStatusConflict(GroupInvite invite) {
+        if (invite.getInviteStatus() != GroupInviteStatus.PENDING) {
+            throw new InviteStateConflictException(invite.getInviteStatus(),
+                    GroupInviteStatus.RESCINDED, invite.getInviteId());
+        }
     }
 }

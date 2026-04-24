@@ -1,14 +1,14 @@
 <div class="panel-wrapper">
   <app-invite-options-panel
     [inviteFilterState$]="inviteFilterState$"
-    (emitFilterState)="inviteFilterState$.next($event)">
+    (emitFilterState)="catchFilterStateChange($event)">
   </app-invite-options-panel>
   <div class="proliferation-container">
     <ng-container *ngFor="let invite of (invitesForDisplay$ | async)">
       <app-invite-chip
         [invite]="invite"
-        (inviteStatusChangeEmitter)="changeInviteStatus($event)"
-        (inviteAltActionEmitter)="performAltAction()">
+        (inviteActionEmitter)="changeInviteStatus($event)"
+        (messageRequestEmitter)="managementInteract.openConversation($event)">
       </app-invite-chip>
     </ng-container>
   </div>

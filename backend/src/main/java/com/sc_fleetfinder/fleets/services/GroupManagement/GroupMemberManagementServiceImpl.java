@@ -15,8 +15,9 @@ import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupMemberNotifyEven
 import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupInviteOrRequestNotifyEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
+import com.sc_fleetfinder.fleets.exceptions.InviteStateConflictException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInvitationStatus;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInviteStatus;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRankGenericTypes;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RankPrivilegeOptions;
@@ -141,7 +142,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
             GroupMember savedMember = memberRepo.save(new GroupMember(listing, newMember, dto.getMemberStatus(), newMemberRank,
                     hasComms, hasExtNotes));
 
-            invite.setInviteStatus(GroupInvitationStatus.ACCEPTED);
+            invite.setInviteStatus(GroupInviteStatus.ACCEPTED);
             invite.setActive(null);
             inviteRepo.save(invite);
 
@@ -164,6 +165,23 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
     }
 
     @Override
+    public GroupManagerInviteResponseDto declineGroupInviteRequest(Users actingUser, Long inviteId) {
+        GroupInvite invite = inviteRepo.findById(inviteId).orElseThrow(() -> new ResourceNotFoundException(
+                "Group Invite", inviteId));
+
+        evaluateForInviteStatusConflict(invite);
+
+        rankService.verifyUserRankPermissions(actingUser, invite.getGroupListing(),
+                RankPrivilegeOptions.MANAGE_ROSTERS);
+
+        invite.setInviteStatus(GroupInviteStatus.DECLINED);
+        invite.setActive(null);
+        GroupInvite saved = inviteRepo.save(invite);
+
+        return modelMapper.map(saved, GroupManagerInviteResponseDto.class);
+    }
+
+    @Override
     @Transactional
     public GroupManagerInviteResponseDto sendGroupInviteOffer(Users sender, SendGroupInviteOfferDto dto) {
         GroupListing listing = glr.findById(dto.getListingId())
@@ -172,17 +190,17 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
         Boolean groupActionAuth = this.rankService.verifyUserRankPermissions(
                 sender, listing, RankPrivilegeOptions.INVITE);
 
-        if(groupActionAuth != true) {
+        if (groupActionAuth != true) {
             throw new ActionNotAuthorizedException(sender.getUserId(), RankPrivilegeOptions.INVITE.toString(),
                     "Group Management", dto.getListingId());
         } else {
             InviteDirection direction = InviteDirection.OFFER;
-            GroupInvitationStatus pending = GroupInvitationStatus.PENDING;
+            GroupInviteStatus pending = GroupInviteStatus.PENDING;
 
             Instant expiresAt = dto.getExpiresAt();
 
-            if(expiresAt == null) {
-                if(listing.getEventSchedule() != null) {
+            if (expiresAt == null) {
+                if (listing.getEventSchedule() != null) {
                     expiresAt = listing.getEventSchedule();
                 } else {
                     expiresAt = Instant.now().plus(12, ChronoUnit.HOURS);
@@ -192,7 +210,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
             CrewRoleClassification role = Optional.ofNullable(dto.getRoleSummary())
                     .flatMap(r -> roleRepo.findById(r.getRoleId()))
-                        .orElse(null);
+                    .orElse(null);
 
             Users recipient = userRepo.findById(dto.getRecipientSummary().getUserId())
                     .orElseThrow(() -> new ResourceNotFoundException("User", dto.getRecipientSummary().getUserId()));
@@ -208,7 +226,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
                 return modelMapper.map(savedInvite, GroupManagerInviteResponseDto.class);
 
             } catch (DataIntegrityViolationException e) {
-                if(e.getCause() instanceof ConstraintViolationException cve &&
+                if (e.getCause() instanceof ConstraintViolationException cve &&
                         cve.getConstraintName() != null &&
                         cve.getConstraintName().contains("uq_group_invite_type_sender_recipient_group")) {
                     throw new DuplicateEntryException("An invite has already been sent to this user for this group.");
@@ -217,5 +235,24 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
                 }
             }
         }
+    }
+
+    @Override
+    @Transactional
+    public GroupManagerInviteResponseDto rescindGroupInviteOffer(Users manager, Long inviteId) {
+        GroupInvite invite = inviteRepo.findById(inviteId).orElseThrow(() -> new ResourceNotFoundException(
+                "Group Invite", inviteId));
+
+        evaluateForInviteStatusConflict(invite);
+
+        rankService.verifyUserRankPermissions(manager, invite.getGroupListing(), RankPrivilegeOptions.MANAGE_ROSTERS);
+
+        invite.setInviteStatus(GroupInviteStatus.RESCINDED);
+        invite.setActive(null);
+        GroupInvite saved = inviteRepo.save(invite);
+
+        //TODO save outbox notification for recipient
+
+        return modelMapper.map(saved, GroupManagerInviteResponseDto.class);
     }
 }

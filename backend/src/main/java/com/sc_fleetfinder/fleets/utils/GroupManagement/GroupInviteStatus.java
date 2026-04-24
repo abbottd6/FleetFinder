@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.utils.GroupManagement;
 
-public enum GroupInvitationStatus {
+public enum GroupInviteStatus {
     PENDING,
     ACCEPTED,
     DECLINED,

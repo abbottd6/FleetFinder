@@ -1,6 +1,6 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpResponse, HttpStatusCode} from "@angular/common/http";
 import {
   GroupManagementMemberViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
@@ -27,7 +27,8 @@ export class MemberManagementApiService {
   }
 
   getActiveRosterGroupMembers(listingId: number): Observable<Page<GroupManagementMemberViewModel>> {
-    return this.httpClient.get<Page<GroupManagementMemberViewModel>>(`${this.baseUrl}/get_active_roster/${listingId}`);
+    return this.httpClient.get<Page<GroupManagementMemberViewModel>>(
+      `${this.baseUrl}/get_active_roster/${listingId}`);
   }
 
   getWaitListMembers(listingId: number): Observable<Page<GroupManagementMemberViewModel>> {
@@ -41,10 +42,26 @@ export class MemberManagementApiService {
   }
 
   acceptGroupInviteRequest(invRequest: GroupManagementInviteViewModel): Observable<GroupManagementMemberViewModel> {
-    return this.httpClient.post<GroupManagementMemberViewModel>(`${this.baseUrl}/accept_group_invite_request`, invRequest);
+    return this.httpClient.post<GroupManagementMemberViewModel>(
+      `${this.baseUrl}/accept_group_invite_request`, invRequest);
+  }
+
+  declineGroupInviteRequest(invId: number): Observable<GroupManagementInviteViewModel> {
+    return this.httpClient.put<GroupManagementInviteViewModel>(
+      `${this.baseUrl}/decline_group_invite_request/${invId}`, {})
   }
 
   sendGroupInviteOffer(invOffer: SendGroupInviteOffer): Observable<GroupManagementInviteViewModel> {
-    return this.httpClient.post<GroupManagementInviteViewModel>(`${this.baseUrl}/send_invite`, invOffer);
+    return this.httpClient.post<GroupManagementInviteViewModel>(
+      `${this.baseUrl}/send_invite`, invOffer);
+  }
+
+  rescindGroupInviteOffer(invId: number): Observable<GroupManagementInviteViewModel> {
+    return this.httpClient.put<GroupManagementInviteViewModel>(
+      `${this.baseUrl}/rescind_invite_offer/${invId}`, {});
+  }
+
+  managerDismissInvite(invId: number): Observable<void> {
+    return this.httpClient.put<void>(`${this.baseUrl}/manager_dismiss_invite/${invId}`, {});
   }
 }

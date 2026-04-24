@@ -1,3 +1,17 @@
+<!--
+INVITATION
+sentAt
+expiresAt
+inviteDirection
+inviteId
+inviteMessage
+inviteStatus
+listingId
+memberStatus
+senderSummary
+recipientSummary
+-->
+
 <div class="chip-self" [class.child-hovered]="isHovered">
   <ng-container *ngIf="invite.inviteStatus === 'PENDING'; else actioned">
     <ng-container *ngIf="invite.inviteDirection === 'REQUEST'; else offer">
@@ -53,10 +67,18 @@
          (click)="openInviteDetailsPopup()"
          (mouseenter)="isHovered = true"
          (mouseleave)="isHovered = false">
-      <mat-icon class="request-icon has-tooltip"
-                matTooltip="Invite Request">
-        call_received
-      </mat-icon>
+      <ng-container *ngIf="invite.inviteStatus === 'ACCEPTED'; else otherAction">
+        <mat-icon class="request-icon has-tooltip"
+                  matTooltip="Accepted">
+          check_mark
+        </mat-icon>
+      </ng-container>
+      <ng-template #otherAction>
+        <mat-icon class="offer-icon has-tooltip"
+                  matTooltip="Accepted">
+          block
+        </mat-icon>
+      </ng-template>
       <span class="chip-field-val username">
             {{ inviteMember.username }}
       </span>
@@ -74,18 +96,6 @@
   </ng-template>
 </div>
 
-<!--
-sentAt
-expiresAt
-inviteDirection
-inviteId
-inviteMessage
-inviteStatus
-listingId
-memberStatus
-senderSummary
-recipientSummary
--->
 
 
 

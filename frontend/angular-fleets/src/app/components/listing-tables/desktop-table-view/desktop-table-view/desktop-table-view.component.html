@@ -91,7 +91,8 @@
     <button
       mat-menu-item
       class="options-item"
-      (click)="chatHostSrv.provisionConversation(listingInteract.selectedListing!)">
+      (click)="chatHostSrv.provisionConversation(listingInteract.selectedListing!.listingTitle,
+                                                 listingInteract.selectedListing!.userId)">
       Message
     </button>
     <button

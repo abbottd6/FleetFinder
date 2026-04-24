@@ -87,7 +87,7 @@
       </ng-container>
       <ng-template #notOwner>
         <button class="chip-buttons"
-                (click)="chatHostSrv.provisionConversation(listingDetails)">
+                (click)="chatHostSrv.provisionConversation(listingDetails.listingTitle, listingDetails.userId)">
           <i class="bi bi-chat-fill chat-icon"></i>
           Message Owner
         </button>

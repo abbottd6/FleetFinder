@@ -14,6 +14,7 @@ import {
 import {RosterInvitePanelComponent} from "./roster-invite-panel/roster-invite-panel.component";
 import {WaitlistRosterPanelComponent} from "./waitlist-roster-panel/waitlist-roster-panel.component";
 import {RouterLink} from "@angular/router";
+import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
 
 @Component({
     selector: 'app-roster-management',
@@ -39,7 +40,8 @@ export class RosterManagementComponent implements OnInit, OnDestroy{
   protected rosterIsLoading: boolean = true;
 
   constructor(private memberManagementApi: MemberManagementApiService,
-              protected managementInteract: GroupManagementInteractService){}
+              protected managementInteract: GroupManagementInteractService,
+              protected chatHostSrv: ChatHostService) {}
 
   ngOnInit() {
     this.rosterIsLoading = true;

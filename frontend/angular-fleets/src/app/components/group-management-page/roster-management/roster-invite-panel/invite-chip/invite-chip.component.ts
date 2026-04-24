@@ -23,9 +23,9 @@ export const InviteActions = {
 
 export type InviteActions = typeof InviteActions[keyof typeof InviteActions];
 
-export type InviteStatusChange = {
-  newStatus: InviteActions,
-  newInvite: GroupManagementInviteViewModel
+export type InviteWithActionInterface = {
+  action: InviteActions,
+  invite: GroupManagementInviteViewModel
 }
 
 @Component({
@@ -49,8 +49,8 @@ export class InviteChipComponent implements OnInit, OnDestroy {
 
   protected isHovered: boolean = false;
 
-  @Output() inviteStatusChangeEmitter = new EventEmitter<InviteStatusChange>();
-  @Output() inviteAltActionEmitter = new EventEmitter<InviteActions>();
+  @Output() inviteActionEmitter = new EventEmitter<InviteWithActionInterface>();
+  @Output() messageRequestEmitter = new EventEmitter<UserMonikerSummaryViewModel>;
 
   @Input() invite!: GroupManagementInviteViewModel;
 
@@ -75,12 +75,16 @@ export class InviteChipComponent implements OnInit, OnDestroy {
 
   emitInviteStatusChange(action: InviteActions) {
     this.invite.inviteStatus = action;
-    const statusChange: InviteStatusChange = { newStatus: action, newInvite: this.invite};
-    this.inviteStatusChangeEmitter.emit(statusChange);
+    const statusChange: InviteWithActionInterface = { action: action, invite: this.invite};
+    this.inviteActionEmitter.emit(statusChange);
   }
 
   emitInviteAltAction(action: InviteActions) {
-
+    if(action === InviteActions.MESSAGE) {
+      this.messageRequestEmitter.emit(this.inviteMember);
+    }
+    const altAction: InviteWithActionInterface = { action: action, invite: this.invite };
+    this.inviteActionEmitter.emit(altAction);
   }
 
   ngOnDestroy() {

@@ -2,7 +2,7 @@ package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInvitationStatus;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInviteStatus;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberStatus;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
 import jakarta.persistence.*;
@@ -28,7 +28,7 @@ public class GroupInvite {
     //Invite request
     public GroupInvite(Users sender, Users recipient, GroupListing listing, InviteDirection dir,
                        GroupMemberStatus memberStatus, CrewRoleClassification role,
-                       GroupInvitationStatus status, String message, Instant expiresAt) {
+                       GroupInviteStatus status, String message, Instant expiresAt) {
         this.groupListing = listing;
         this.sender = sender;
         this.recipient = recipient;
@@ -74,7 +74,7 @@ public class GroupInvite {
 
     @Enumerated(EnumType.STRING)
     @Column(name="invite_status", nullable = false)
-    private GroupInvitationStatus inviteStatus;
+    private GroupInviteStatus inviteStatus;
 
     @Column(name="invite_message", nullable = true)
     private String inviteMessage;

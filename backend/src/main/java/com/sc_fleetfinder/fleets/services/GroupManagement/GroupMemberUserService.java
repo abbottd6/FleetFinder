@@ -15,7 +15,11 @@ public interface GroupMemberUserService extends GroupMemberService {
 
     GroupInviteRequestOrResponseDto sendGroupInviteRequest(Users sender, SendGroupInviteRequestDto dto);
 
+    GroupInviteRequestOrResponseDto rescindGroupInviteRequest(Users sender, Long inviteId);
+
     GroupMembershipResponseDto acceptGroupInviteOffer(Users newMember, GroupInviteRequestOrResponseDto dto);
+
+    GroupInviteRequestOrResponseDto declineGroupInviteOffer(Users invRecipient, Long inviteId);
 
     void userLeaveGroup(Users user, Long groupId);
 

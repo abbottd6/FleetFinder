@@ -1,5 +1,5 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, switchMap, takeUntil} from "rxjs";
+import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, switchMap, take, takeUntil} from "rxjs";
 import {
   MemberManagementApiService
 } from "../../../../services/api-services/group-management/member-management-api.service";
@@ -8,14 +8,23 @@ import {
 } from "../../../../services/facade-services/group-management/group-management-interact.service";
 import {InviteOptionsPanelComponent} from "./invite-options-panel/invite-options-panel.component";
 import {AsyncPipe, NgForOf} from "@angular/common";
-import {InviteChipComponent, InviteStatusChange} from "./invite-chip/invite-chip.component";
+import {InviteActions, InviteChipComponent, InviteWithActionInterface} from "./invite-chip/invite-chip.component";
 import {
   GroupManagementInviteViewModel
 } from "../../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
+import {
+  GroupManagementUiPrefsService
+} from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
+import {ConversationProvisionInterface} from "../../../../services/facade-services/chat/chat-host.service";
+import {
+  GroupListingFetchService
+} from "../../../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
+import {GroupListingViewModel} from "../../../../models/group-listing/group-listing-view-model";
 
 export interface InvitePanelFilterState {
   direction: 'OFFER' | 'REQUEST' | 'BOTH',
-  status: 'PENDING' | 'ACTIONED' | 'BOTH'
+  status: 'PENDING' | 'ACTIONED' | 'BOTH',
+  terms: string | null;
 }
 
 type InvitePredicate = (invite: GroupManagementInviteViewModel) => boolean;
@@ -48,13 +57,15 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
   protected noGroupInvites: boolean = true;
 
   inviteFilterState$ = new BehaviorSubject<InvitePanelFilterState>({
-    direction: 'BOTH', status: 'PENDING'
+    direction: 'BOTH', status: 'PENDING', terms: null
   });
 
   protected invitesForDisplay$!: Observable<GroupManagementInviteViewModel[]>;
 
   constructor(private memberManagementApi: MemberManagementApiService,
-              protected managementInteract: GroupManagementInteractService){}
+              protected managementInteract: GroupManagementInteractService,
+              private mgmtUiPrefs: GroupManagementUiPrefsService,
+              private listingFetch: GroupListingFetchService){}
 
   ngOnInit() {
     if(this.managementInteract.sessionManager) {
@@ -66,6 +77,12 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
         this.managementInteract.setGroupInvites(page);
         this.noGroupInvites = page.content.length === 0;
       });
+
+    const tempFilterState = this.mgmtUiPrefs.storedInviteFilters;
+    this.inviteFilterState$.next({
+      ...tempFilterState,
+      terms: null
+    });
 
     this.invitesForDisplay$ = combineLatest([
       this.managementInteract.groupInvites$,
@@ -85,14 +102,31 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
     });
   }
 
-  changeInviteStatus(inviteStatusChange: InviteStatusChange) {
-    if(inviteStatusChange.newStatus === 'ACCEPTED') {
-      this.managementInteract.acceptGroupInviteRequest(inviteStatusChange.newInvite);
+  changeInviteStatus(inviteStatusChange: InviteWithActionInterface) {
+    switch (inviteStatusChange.action) {
+      case 'ACCEPTED':
+        this.managementInteract.acceptGroupInviteRequest(inviteStatusChange.invite);
+        break;
+      case 'DECLINED':
+        this.managementInteract.declineGroupInviteRequest(inviteStatusChange.invite);
+        break;
+      case 'RESCINDED':
+        this.managementInteract.rescindGroupInviteOffer(inviteStatusChange.invite);
+        break;
+      case 'DISMISS':
+        this.managementInteract.dismissGroupInvite(inviteStatusChange.invite);
+        break;
+      case 'WAITLIST':
+        //TODO implement
+        break;
     }
+
   }
 
-  performAltAction() {
 
+  catchFilterStateChange(state: InvitePanelFilterState) {
+    this.inviteFilterState$.next(state);
+    this.mgmtUiPrefs.saveInviteUiPrefs(state);
   }
 
   ngOnDestroy() {

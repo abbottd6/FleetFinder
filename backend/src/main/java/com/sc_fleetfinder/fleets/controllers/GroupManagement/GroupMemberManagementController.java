@@ -85,6 +85,18 @@ public class GroupMemberManagementController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PutMapping("/decline_group_invite_request/{inviteId}")
+    public ResponseEntity<?> declineGroupInviteRequest(@AuthenticationPrincipal Jwt jwt,
+                                                       @PathVariable Long inviteId) {
+        String kcId = jwt.getSubject();
+        Users actingUser = userService.verifyUser(kcId);
+
+        GroupManagerInviteResponseDto responseDto = memberManagementService.declineGroupInviteRequest(
+                actingUser, inviteId);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
     @PostMapping("/send_invite")
     public ResponseEntity<?> sendGroupInvite(@AuthenticationPrincipal Jwt jwt,
                                              @RequestBody SendGroupInviteOfferDto dto) {
@@ -95,5 +107,28 @@ public class GroupMemberManagementController {
         GroupManagerInviteResponseDto responseDto = memberManagementService.sendGroupInviteOffer(sender, dto);
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/rescind_invite_offer/{inviteId}")
+    public ResponseEntity<?> rescindInviteOffer(@AuthenticationPrincipal Jwt jwt,
+                                                @PathVariable Long inviteId) {
+        String kcId = jwt.getSubject();
+
+        Users manager = userService.verifyUser(kcId);
+
+        GroupManagerInviteResponseDto responseDto = memberManagementService.rescindGroupInviteOffer(manager, inviteId);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/manager_dismiss_invite/{inviteId}")
+    public ResponseEntity<?> managerDismissInvite(@AuthenticationPrincipal Jwt jwt,
+                                                  @PathVariable Long inviteId) {
+        String kcId = jwt.getSubject();
+        Users actingUser = userService.verifyUser(kcId);
+
+        memberManagementService.userDismissInvite(actingUser, inviteId);
+
+        return ResponseEntity.ok().build();
     }
 }

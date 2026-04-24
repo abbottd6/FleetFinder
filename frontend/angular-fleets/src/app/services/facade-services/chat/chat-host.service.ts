@@ -3,7 +3,6 @@ import {BehaviorSubject, distinctUntilChanged, filter, take, takeUntil} from "rx
 import {AuthService} from "../../auth/auth-services/auth.service";
 import {Router} from "@angular/router";
 import {ChatWindowState, collapsed, expanded} from "../../../components/chat/shell-component/chat-shell.component";
-import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
 import {ConversationProvisionRequest} from "../../../models/chat/conversation-provision-request";
 import {ChatApiService} from "../../api-services/chat-api/chat-api.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
@@ -13,11 +12,10 @@ import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-gener
 import { HttpErrorResponse } from '@angular/common/http';
 import {UnmuteAndProvisionRequest} from "../../../models/chat/unmute-and-provision-request";
 
-// export interface convRequest {
-//   convType: string,
-//   title: string,
-//   recipientId: number
-// }
+export interface ConversationProvisionInterface {
+  title: string,
+  recipientId: number
+}
 
 export interface UnmuteDto {
   otherUsername: string,
@@ -57,9 +55,9 @@ export class ChatHostService {
       })
   }
 
-  provisionConversation(listing: GroupListingViewModel) {
+  provisionConversation(title: string, recipientId: number) {
     const request = new ConversationProvisionRequest(
-      listing.listingTitle, listing.userId);
+      title, recipientId);
 
     this.auth.isLoggedIn$.pipe(take(1)).subscribe(isAuth => {
       if (!isAuth) {

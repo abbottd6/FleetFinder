@@ -23,7 +23,8 @@ import {MemberManagementApiService} from "../../api-services/group-management/me
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {environment} from "../../../../environments/environment";
 import {newEmptyPage, Page} from "../../../models/page-interface";
-import {toTitleCase} from "../../../utils/string-to-title-case";
+import {toTitleCase} from "../../../utils/global-functions";
+import {ChatHostService} from "../chat/chat-host.service";
 
 @Injectable({
   providedIn: 'root'
@@ -47,9 +48,12 @@ export class GroupManagementInteractService {
   public sessionManager: GroupMembershipViewModel | undefined = undefined;
 
   constructor(private managementApi: MemberManagementApiService,
+              private chatHostSrv: ChatHostService,
               protected dialog: MatDialog,
               private userService: UserService,
-              private snackBar: MatSnackBar) { }
+              private snackBar: MatSnackBar) {
+
+  }
 
   setActiveRoster(roster: Page<GroupManagementMemberViewModel>) {
     this.activeRosterSubject.next(roster);
@@ -81,43 +85,35 @@ export class GroupManagementInteractService {
             });
           }
 
-          const currentInvites = this.groupInvitesSubject.getValue() ?? newEmptyPage();
-          const idx = currentInvites.content.findIndex(
-            inv => inv.inviteId === inviteWithNewStatus.inviteId);
-          this.groupInvitesSubject.next({
-            ...currentInvites,
-            content: [
-              ...currentInvites.content.slice(0, idx),
-              inviteWithNewStatus,
-              ...currentInvites.content.slice(idx + 1)]
-          })
+          this.spliceInviteSubjectForStatusChange(inviteWithNewStatus);
 
-          this.snackBar.open(`${inviteWithNewStatus.senderSummary.username} added to ${toTitleCase(newMember.memberStatus)}`, 'OK', {
-            duration: 4000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-            panelClass: ['mobile-snackbar']
-          })
+          const msg = `${inviteWithNewStatus.senderSummary.username} added to ${toTitleCase(newMember.memberStatus)}`;
+          this.showSnackBarMessage(msg);
         },
         error: (e)=> {
-          this.snackBar.open('There was an issue adding this group member.', 'OK', {
-            duration: 5000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-            panelClass: ['mobile-snackbar']
-          });
+          const msg = 'There was an issue adding this group member.';
+          this.showSnackBarMessage(msg);
+        }
+      })
+  }
+
+  declineGroupInviteRequest(inviteWithNewStatus: GroupManagementInviteViewModel) {
+    this.managementApi.declineGroupInviteRequest(inviteWithNewStatus.inviteId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (declined: GroupManagementInviteViewModel) => {
+
+          this.spliceInviteSubjectForStatusChange(declined);
+
+          const msg =`Join request from ${inviteWithNewStatus.recipientSummary.username} declined.`;
+          this.showSnackBarMessage(msg);
         }
       })
   }
 
   openSendInvitePopup(sender: GroupMembershipViewModel, recipient: UserMonikerSummaryViewModel | null) {
     if(!this.userService.userLoggedIn) {
-      this.snackBar.open('You must be logged in to perform this action.', 'OK', {
-        duration: 4000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']
-      })
+      const msg = 'You must be logged in to perform this action.';
+      this.showSnackBarMessage(msg);
       return;
     }
 
@@ -134,12 +130,8 @@ export class GroupManagementInteractService {
         this.managementApi.sendGroupInviteOffer(invite).pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: (responseInv: GroupManagementInviteViewModel)=> {
-              this.snackBar.open('Invite sent to ' + responseInv.recipientSummary.username, 'OK', {
-                duration: 4000,
-                verticalPosition: 'top',
-                horizontalPosition: 'center',
-                panelClass: ['mobile-snackbar']
-              })
+              const msg = 'Invite sent to ' + responseInv.recipientSummary.username;
+              this.showSnackBarMessage(msg);
 
               const current = this.groupInvitesSubject.getValue();
               if(current) {
@@ -167,12 +159,8 @@ export class GroupManagementInteractService {
               }
             },
             error: (err) => {
-              this.snackBar.open('There was an error sending this invite.', 'OK', {
-                duration: 5000,
-                verticalPosition: 'top',
-                horizontalPosition: 'center',
-                panelClass: ['mobile-snackbar']
-              })
+              const msg ='There was an error sending this invite.';
+              this.showSnackBarMessage(msg);
               if(!environment.production) {
                 console.log(err.message);
               }
@@ -180,5 +168,76 @@ export class GroupManagementInteractService {
           });
       }
     });
+  }
+
+  rescindGroupInviteOffer(inviteWithNewStatus: GroupManagementInviteViewModel) {
+    this.managementApi.rescindGroupInviteOffer(inviteWithNewStatus.inviteId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (rescinded: GroupManagementInviteViewModel) => {
+
+          this.spliceInviteSubjectForStatusChange(rescinded);
+
+          const msg =`Group invite to ${inviteWithNewStatus.recipientSummary.username} rescinded.`;
+          this.showSnackBarMessage(msg);
+        },
+        error: (e) => {
+          if(e.status === 409){
+            const msg = 'The status of this invite has been changed by another user already.';
+            this.showSnackBarMessage(msg);
+          } else {
+            const msg = 'There was an error rescinding this invite.';
+            this.showSnackBarMessage(msg);
+          }
+        }
+      })
+  }
+
+  dismissGroupInvite(invite: GroupManagementInviteViewModel) {
+    this.managementApi.managerDismissInvite(invite.inviteId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const current = this.groupInvitesSubject.getValue();
+          const idx = current.content.findIndex(
+            inv => inv.inviteId === invite.inviteId);
+          this.groupInvitesSubject.next({
+            ...current,
+            content: [
+              ...current.content.slice(0, idx),
+              ...current.content.slice(idx + 1),
+            ]
+          })
+        },
+        error: (e) => {
+          const msg = 'There was an error dismissing this invite.';
+          this.showSnackBarMessage(msg);
+        }
+      })
+  }
+
+  openConversation(recipient: UserMonikerSummaryViewModel) {
+    const title = this.sessionManager?.listing.listingTitle ?? 'Group Invite';
+    this.chatHostSrv.provisionConversation(title, recipient.userId);
+  }
+
+  spliceInviteSubjectForStatusChange(inviteWithNewStatus: GroupManagementInviteViewModel) {
+    const current = this.groupInvitesSubject.getValue() ?? newEmptyPage();
+    const idx = current.content.findIndex(
+      inv => inv.inviteId === inviteWithNewStatus.inviteId);
+    this.groupInvitesSubject.next({
+      ...current,
+      content: [
+        ...current.content.slice(0, idx),
+        inviteWithNewStatus,
+        ...current.content.slice(idx + 1)]
+    })
+  }
+
+  showSnackBarMessage(message: string) {
+    this.snackBar.open(`${message}`, 'OK', {
+      duration: 4000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+      panelClass: ['mobile-snackbar']
+    })
   }
 }
