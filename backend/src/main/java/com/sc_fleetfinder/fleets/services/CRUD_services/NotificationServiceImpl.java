@@ -360,7 +360,7 @@ public class NotificationServiceImpl implements NotificationService {
         } else if(Objects.equals(outboxEntity.getEntityNewStatus(), InviteDirection.OFFER.toString())) {
             title = "Group invite from '" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
         }
-        String message = outboxEntity.getPayloadJson().getAddContext();
+        String message = outboxEntity.getPayloadJson().getTargetLabel();
 
         Notification newNote = new Notification(outboxEntity, title, message);
 
