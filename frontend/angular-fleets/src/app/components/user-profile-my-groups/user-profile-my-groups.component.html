@@ -28,7 +28,7 @@
         Invites & Requests
       </mat-panel-title>
       <mat-panel-description>
-        Group invites you have received and join requests you've sent
+        Group invites you've received and join requests you've sent for other people's groups
       </mat-panel-description>
     </mat-expansion-panel-header>
 
@@ -62,6 +62,10 @@
       <ng-container *ngIf="noInvites">
         <span class="no-memberships-msg">You don't have any active group invites or requests.</span>
       </ng-container>
+      <span class="no-memberships-msg">
+          Join requests and invites you have sent for your groups are found in the 'Group Memberships' section:
+      </span>
+      <span class="no-memberships-msg">'View Roster' or 'Manage Group'</span>
     </div>
   </mat-expansion-panel>
 

@@ -1,7 +1,6 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerInviteResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -74,15 +73,29 @@ public class GroupMemberManagementController {
         return ResponseEntity.ok(invitesPage);
     }
 
-    @PostMapping("/accept_group_invite_request")
-    public ResponseEntity<?> acceptGroupInviteRequest(@AuthenticationPrincipal Jwt jwt,
+    @PostMapping("/new_member_from_join_request")
+    public ResponseEntity<?> newMemberFromJoinRequest(@AuthenticationPrincipal Jwt jwt,
                                                       @RequestBody GroupManagerInviteResponseDto dto) {
         String kcId = jwt.getSubject();
         Users actingUser = userService.verifyUser(kcId);
 
-        GroupManagerMemberResponseDto responseDto = memberManagementService.acceptGroupInviteRequest(actingUser, dto);
+        GroupManagerMemberResponseDto responseDto = memberManagementService.provisionNewGroupMember_ActiveOrWaitlist(
+                actingUser, dto);
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/convert_active_roster_request_to_waitlist_invite/{inviteId}")
+    public ResponseEntity<?> mirrorActiveRosterJoinRequestToWaitlistInvite(@AuthenticationPrincipal Jwt jwt,
+                                                                           @PathVariable Long inviteId) {
+        String kcId = jwt.getSubject();
+        Users actingUser = userService.verifyUser(kcId);
+
+        GroupManagerInviteResponseDto newDto = memberManagementService.mirrorJoinRequestForActiveRosterToWaitlistInvite(
+                actingUser, inviteId);
+
+        //returns void if successful because frontend will refetch page on success
+        return ResponseEntity.ok(newDto.getListingId());
     }
 
     @PutMapping("/decline_group_invite_request/{inviteId}")

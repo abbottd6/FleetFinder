@@ -14,15 +14,16 @@ import java.util.Optional;
 
 public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> {
 
+    @Modifying
     @Query("""
-            SELECT i FROM GroupInvite i
-            WHERE i.sender = :sender
-                AND i.recipient = :recipient
-                AND i.groupListing.groupId = :listingId
-                AND i.inviteDirection = :dir
+            UPDATE GroupInvite inv
+            SET inv.inviteStatus = 'RESCINDED'
+            WHERE inv.recipient = :recipient
+                AND inv.groupListing.groupId = :listingId
+                AND inv.inviteDirection = :dir
+                AND inv.memberStatus = 'WAITLIST'
             """)
-    Optional<GroupInvite> findBySenderListingAndDirection(
-            @Param("sender") Users sender,
+    int setExistingWaitlistInviteToRescinded (
             @Param("recipient") Users recip,
             @Param("listingId") Long listingId,
             @Param("dir") InviteDirection dir);
@@ -30,9 +31,11 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
     @Query("""
             SELECT inv FROM GroupInvite inv
             WHERE (inv.inviteDirection = InviteDirection.OFFER
-                        AND inv.recipient.userId = :userId)
+                        AND inv.recipient.userId = :userId
+                        AND inv.recipientDismissed = false)
                   OR (inv.inviteDirection = InviteDirection.REQUEST
-                        AND inv.sender.userId = :userId)
+                        AND inv.sender.userId = :userId
+                        AND inv.senderDismissed = false)
             ORDER BY inv.createdAt DESC
             """)
     Page<GroupInvite> findInvitesByUserId(@Param("userId") Long userId, Pageable pageable);
@@ -115,7 +118,7 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
             delivery_channel, do_not_duplicate, sibling_key, created_at
             )
            SELECT
-                'NEW_GROUP_MEMBER'              AS event_type,
+                :noteType                       AS event_type,
                 'group_member'                  AS entity_type,
                 :newMemberUserId                AS entity_id,
                 :recipientId                    AS entity_owner_id,
@@ -162,5 +165,6 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
     int generateOutboxNotificationsForNewGroupMember(@Param("recipientId") Long notificationRecipientId,
                                                      @Param("listingId") Long listingId,
                                                      @Param("newMemberUserId") Long newMemberUserId,
-                                                     @Param("inviteId") Long inviteId);
+                                                     @Param("inviteId") Long inviteId,
+                                                     @Param("noteType") String noteType);
 }

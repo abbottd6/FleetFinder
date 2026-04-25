@@ -33,12 +33,12 @@ export class GroupManagementInteractService {
 
   private destroyRef = inject(DestroyRef);
 
-  private activeRosterSubject: BehaviorSubject<Page<GroupManagementMemberViewModel> | undefined> =
-    new BehaviorSubject<Page<GroupManagementMemberViewModel> | undefined>(undefined)
+  private activeRosterSubject: BehaviorSubject<Page<GroupManagementMemberViewModel>> =
+    new BehaviorSubject<Page<GroupManagementMemberViewModel>>(newEmptyPage());
   public activeRoster$ = this.activeRosterSubject.asObservable();
 
-  private waitlistRosterSubject: BehaviorSubject<Page<GroupManagementMemberViewModel> | undefined> =
-    new BehaviorSubject<Page<GroupManagementMemberViewModel> | undefined>(undefined)
+  private waitlistRosterSubject: BehaviorSubject<Page<GroupManagementMemberViewModel>> =
+    new BehaviorSubject<Page<GroupManagementMemberViewModel>>(newEmptyPage());
   public waitlistRoster$ = this.waitlistRosterSubject.asObservable();
 
   private groupInvitesSubject: BehaviorSubject<Page<GroupManagementInviteViewModel>> =
@@ -59,35 +59,48 @@ export class GroupManagementInteractService {
     this.activeRosterSubject.next(roster);
   }
 
+  fetchActiveRoster(groupId: number) {
+    this.managementApi.getActiveRosterGroupMembers(groupId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(page => {
+        this.setActiveRoster(page);
+      });
+  }
+
   setWaitlistRoster(roster: Page<GroupManagementMemberViewModel>){
     this.waitlistRosterSubject.next(roster);
+  }
+
+  fetchWaitlistRoster(groupId: number) {
+    this.managementApi.getWaitListMembers(groupId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(page => {
+        this.setWaitlistRoster(page);
+      })
   }
 
   setGroupInvites(invites: Page<GroupManagementInviteViewModel>) {
     this.groupInvitesSubject.next(invites);
   }
 
-  acceptGroupInviteRequest(inviteWithNewStatus: GroupManagementInviteViewModel) {
-    this.managementApi.acceptGroupInviteRequest(inviteWithNewStatus).pipe(takeUntilDestroyed(this.destroyRef))
+  fetchGroupInvites(groupId: number) {
+    this.managementApi.getGroupInvites(groupId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(page => {
+        this.setGroupInvites(page);
+      })
+  }
+
+  acceptGroupInviteRequest(acceptedInvite: GroupManagementInviteViewModel) {
+    this.managementApi.newMemberFromJoinRequest(acceptedInvite).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (newMember: GroupManagementMemberViewModel) => {
-          if(newMember.memberStatus === 'ACTIVE') {
             const current = this.activeRosterSubject.getValue() ?? newEmptyPage();
             this.activeRosterSubject.next({
               ...current,
               content: [...(current?.content ?? []), newMember]
             });
-          } else if(newMember.memberStatus === 'WAITLIST') {
-            const current = this.waitlistRosterSubject.getValue() ?? newEmptyPage();
-            this.waitlistRosterSubject.next({
-              ...current,
-              content: [...(current?.content ?? []), newMember]
-            });
-          }
 
-          this.spliceInviteSubjectForStatusChange(inviteWithNewStatus);
+          this.spliceInviteSubjectForStatusChange(acceptedInvite);
 
-          const msg = `${inviteWithNewStatus.senderSummary.username} added to ${toTitleCase(newMember.memberStatus)}`;
+          const msg = `${acceptedInvite.senderSummary.username} added to ${toTitleCase(newMember.memberStatus)}`;
           this.showSnackBarMessage(msg);
         },
         error: (e)=> {
@@ -107,6 +120,42 @@ export class GroupManagementInteractService {
           const msg =`Join request from ${inviteWithNewStatus.senderSummary.username} declined.`;
           this.showSnackBarMessage(msg);
         }
+      })
+  }
+
+  mirrorActiveRequestToWaitlistInvite(invId: number) {
+    this.managementApi.mirrorActiveRequestToWaitlistInvite(invId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (inviteListingId) => {
+          this.fetchGroupInvites(inviteListingId);
+          this.showSnackBarMessage('New Waitlist invite sent to user');
+        },
+        error: (e) => {
+          this.showSnackBarMessage('There was an error. Try creating a new Waitlist invite instead.');
+        }
+      })
+  }
+
+  waitlistMemberFromJoinRequest(waitlistInvite: GroupManagementInviteViewModel) {
+    this.managementApi.newMemberFromJoinRequest(waitlistInvite).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (newMember: GroupManagementMemberViewModel) => {
+          const current = this.waitlistRosterSubject.getValue() ?? newEmptyPage();
+          this.waitlistRosterSubject.next({
+            ...current,
+            content: [...(current?.content ?? []), newMember]
+          });
+
+          this.spliceInviteSubjectForStatusChange(waitlistInvite);
+
+          const msg = `${waitlistInvite.senderSummary.username} added to ${toTitleCase(newMember.memberStatus)}`;
+          this.showSnackBarMessage(msg);
+        },
+        error: (e)=> {
+          const msg = `There was an issue adding ${waitlistInvite.senderSummary.username} to the waitlist.`;
+          this.showSnackBarMessage(msg);
+        }
+
       })
   }
 

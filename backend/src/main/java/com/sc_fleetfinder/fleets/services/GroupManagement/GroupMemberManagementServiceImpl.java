@@ -5,9 +5,7 @@ import com.sc_fleetfinder.fleets.DAO.GroupManagement.*;
 import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerInviteResponseDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.MemberPositionSummaryDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -17,10 +15,7 @@ import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
 import com.sc_fleetfinder.fleets.exceptions.InviteStateConflictException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInviteStatus;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupRankGenericTypes;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.RankPrivilegeOptions;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
@@ -119,7 +114,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
     @Override
     @Transactional
-    public GroupManagerMemberResponseDto acceptGroupInviteRequest(Users actingUser, GroupManagerInviteResponseDto dto) {
+    public GroupManagerMemberResponseDto provisionNewGroupMember_ActiveOrWaitlist(Users actingUser, GroupManagerInviteResponseDto dto) {
         GroupListing listing = glr.findById(dto.getListingId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Group Listing", dto.getListingId()));
@@ -165,6 +160,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
     }
 
     @Override
+    @Transactional
     public GroupManagerInviteResponseDto declineGroupInviteRequest(Users actingUser, Long inviteId) {
         GroupInvite invite = inviteRepo.findById(inviteId).orElseThrow(() -> new ResourceNotFoundException(
                 "Group Invite", inviteId));
@@ -178,7 +174,41 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
         invite.setActive(null);
         GroupInvite saved = inviteRepo.save(invite);
 
+        // TODO send notification?
+
         return modelMapper.map(saved, GroupManagerInviteResponseDto.class);
+    }
+
+    @Override
+    @Transactional
+    public GroupManagerInviteResponseDto mirrorJoinRequestForActiveRosterToWaitlistInvite(Users actingUser,
+                                                                                           Long inviteId) {
+        GroupInvite invite = inviteRepo.findById(inviteId).orElseThrow(() -> new ResourceNotFoundException(
+                "Group Invite", inviteId));
+
+        evaluateForInviteStatusConflict(invite);
+
+        rankService.verifyUserRankPermissions(actingUser, invite.getGroupListing(),
+                RankPrivilegeOptions.MANAGE_ROSTERS);
+
+        inviteRepo.setExistingWaitlistInviteToRescinded(invite.getSender(),
+                invite.getGroupListing().getGroupId(), InviteDirection.OFFER);
+
+        invite.setInviteStatus(GroupInviteStatus.DECLINED);
+        invite.setActive(null);
+        inviteRepo.save(invite);
+
+        String message = "You've been offered a waitlist position in response to your join request.";
+        UserMonikerSummary recipientSummary = modelMapper.map(invite.getSender(), UserMonikerSummary.class);
+
+
+        GroupRoleSummaryDto waitlistRoleSummary = modelMapper.map(Optional.ofNullable(invite.getInviteRole()), GroupRoleSummaryDto.class);
+
+
+        SendGroupInviteOfferDto waitlistOfferDto = new SendGroupInviteOfferDto(invite,
+                GroupMemberStatus.WAITLIST, recipientSummary, waitlistRoleSummary, message);
+
+        return sendGroupInviteOffer(actingUser, waitlistOfferDto);
     }
 
     @Override

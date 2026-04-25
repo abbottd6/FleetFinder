@@ -58,7 +58,6 @@ export class ListingViewInteractionsService {
               private hideService: HiddenListingsApiService,
               protected uiPrefService: UiPrefsService,
               private userSrv: UserService,
-              private templatesModal: TemplatesModalService,
               private snackBar: MatSnackBar,
               private dialog: MatDialog,
               private groupMembershipsApi: GroupMembershipApiService) {
@@ -121,12 +120,7 @@ export class ListingViewInteractionsService {
 
   openRequestInvitePopup() {
     if(!this.userSrv.userLoggedIn) {
-      this.snackBar.open("You must log in to send invite requests.", 'OK', {
-        duration: 5000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']
-      })
+      this.showSnackBarMessage("You must log in to send invite requests.")
       return;
     }
 
@@ -154,21 +148,11 @@ export class ListingViewInteractionsService {
     this.groupMembershipsApi.sendGroupInviteRequest(invRequest).pipe(take(1))
       .subscribe( {
         next: (inv) => {
-          this.snackBar.open(`Invite request sent to "${inv.recipientSummary.username}"`, 'OK', {
-            duration: 5000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-            panelClass: ['mobile-snackbar']
-          });
+          this.showSnackBarMessage(`Group join-request sent to "${inv.recipientSummary.username}"`)
         },
         error: (err) => {
           const msg = err.error.message.substring(0, 60) ?? 'Failed: an error occurred.';
-          this.snackBar.open(msg, 'OK', {
-            duration: 5000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-            panelClass: ['mobile-snackbar']
-          });
+          this.showSnackBarMessage(msg);
         }
         });
   }
@@ -176,12 +160,7 @@ export class ListingViewInteractionsService {
   copyListingLink(groupId: number | undefined) {
     const link = environment.webAppBaseUrl + `/listing-details/${this.selectedListing?.groupId}`;
     navigator.clipboard.writeText(link);
-    this.snackBar.open('Link copied.', 'OK', {
-      duration: 4000,
-      verticalPosition: 'top',
-      horizontalPosition: 'center',
-      panelClass: ['mobile-snackbar']
-    })
+    this.showSnackBarMessage('Link copied.')
   }
 
   //modal popup cancel click for interactable cell
@@ -214,22 +193,13 @@ export class ListingViewInteractionsService {
 
   addBookmark(listingId: number) {
     if(!this.isLoggedIn) {
-      this.snackBar.open("You must log in to access bookmarks.", 'OK', {
-        duration: 5000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']})
+      this.showSnackBarMessage("You must log in to access bookmarks.");
       return;
     }
     const request = new AddBookmarkRequest(listingId);
     this.bmService.addBookmark(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe( {
       next: (response: { listingTitle: string; }) => {
-        this.snackBar.open(`"${response.listingTitle}" added to bookmarks.`, 'OK', {
-          duration: 4000,
-          verticalPosition: 'top',
-          horizontalPosition: 'center',
-          panelClass: ['mobile-snackbar']
-        });
+        this.showSnackBarMessage(`"${response.listingTitle}" added to bookmarks.`);
 
         this.uiPrefService.displayBookmarkListingHint();
         this.emitRefresh('bookmark');
@@ -253,12 +223,7 @@ export class ListingViewInteractionsService {
     }
     this.bmService.deleteBookmark(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe( {
         next: (response: { message: string; }) => {
-          this.snackBar.open(`${response.message}`, 'OK', {
-            duration: 3000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-            panelClass: ['mobile-snackbar']
-          });
+          this.showSnackBarMessage(`${response.message}`);
           this.emitRefresh('unbookmark');
         }
       }
@@ -270,12 +235,7 @@ export class ListingViewInteractionsService {
 
     this.bmService.deleteMultipleBookmarks(bmGroupIds).pipe(takeUntilDestroyed(this.destroyRef)).subscribe( {
       next: (response: { message: string; }) => {
-        this.snackBar.open(`${response.message}`, 'OK', {
-          duration: 3000,
-          verticalPosition: 'top',
-          horizontalPosition: 'center',
-          panelClass: ['mobile-snackbar']
-        });
+        this.showSnackBarMessage(`${response.message}`)
         this.emitRefresh('unbookmark')
       }
     })
@@ -289,22 +249,14 @@ export class ListingViewInteractionsService {
 
   userHideListing(listingId: number) {
     if(!this.isLoggedIn) {
-      this.snackBar.open("You must log in to hide listings.", 'OK', {
-        duration: 5000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']})
+      this.showSnackBarMessage("You must log in to hide listings.");
       return;
     }
     const request = new HideListingRequest(listingId);
     this.hideService.addHidden(request).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response: { Response: string; }) => {
-        this.snackBar.open(`${response.Response}`, 'OK', {
-          duration: 4000,
-          verticalPosition: 'top',
-          horizontalPosition: 'center',
-          panelClass: ['mobile-snackbar']
-        });
+        const msg = `${response.Response}`;
+        this.showSnackBarMessage(msg);
         this.uiPrefService.displayHideListingHint();
         this.emitRefresh('hide');
       },
@@ -325,11 +277,8 @@ export class ListingViewInteractionsService {
     const action: string = 'report';
 
     if(!this.isLoggedIn) {
-      this.snackBar.open("You must log in to submit reports.", 'OK', {
-        duration: 5000,
-        verticalPosition: 'top',
-        horizontalPosition: 'center',
-        panelClass: ['mobile-snackbar']})
+      const msg = 'You must log in to submit reports.';
+      this.showSnackBarMessage(msg)
       return;
     }
 
@@ -357,18 +306,22 @@ export class ListingViewInteractionsService {
 
     this.reportApiService.submitReport(lr).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (response: { reportId: string; }) => {
-        this.snackBar.open(`Report submitted. Thank you.`, 'OK', {
-          duration: 5000,
-          verticalPosition: 'top',
-          horizontalPosition: 'center',
-          panelClass: ['mobile-snackbar']
-        });
+        const msg = 'Report submitted. Thank you.';
+        this.showSnackBarMessage(msg);
 
         this.uiPrefService.displayReportedListingHint();
         this.emitRefresh('report');
       },
 
       error: (err) => {
+        if(err.status === 409) {
+          const msg = 'You already reported this listing';
+          this.showSnackBarMessage(msg);
+        } else {
+          const msg = 'There was an error submitting this report';
+          this.showSnackBarMessage(msg);
+        }
+
         console.error(err);
       }
     });
@@ -379,6 +332,15 @@ export class ListingViewInteractionsService {
       console.log("reason: ", reason);
     }
     this.refreshSubject.next(reason);
+  }
+
+  showSnackBarMessage(message: string) {
+    this.snackBar.open(`${message}`, 'OK', {
+      duration: 4000,
+      verticalPosition: 'top',
+      horizontalPosition: 'center',
+      panelClass: ['mobile-snackbar']
+    })
   }
 
   //on close instructions for groupListing modal popup

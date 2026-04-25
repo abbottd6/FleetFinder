@@ -13,7 +13,6 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationUnreadCountDto;
 import com.sc_fleetfinder.fleets.DTO.websocketDTOs.ReceiveReadNotesDto;
 import com.sc_fleetfinder.fleets.config.discord.DiscordBotService;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingReportBasis;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingAction;
@@ -32,6 +31,7 @@ import com.sc_fleetfinder.fleets.messaging.push.PushNotificationPayload;
 import com.sc_fleetfinder.fleets.messaging.push.PushNotificationService;
 import com.sc_fleetfinder.fleets.utils.DeliveryChannel;
 import com.sc_fleetfinder.fleets.utils.ExternalNotifcationResult;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberStatus;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import lombok.RequiredArgsConstructor;
@@ -49,7 +49,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -164,8 +163,8 @@ public class NotificationServiceImpl implements NotificationService {
                 break;
 
             case NotificationType.NEW_GROUP_MEMBER:
-                Notification savedNewMemberNote = buildNewGroupMemberNotification(outboxEntity);
-                identifyDeliveryChannel_andSend(savedNewMemberNote, outboxEntity);
+                Notification savedNewActiveMemberNote = buildNewGroupMemberNotification(outboxEntity);
+                identifyDeliveryChannel_andSend(savedNewActiveMemberNote, outboxEntity);
                 break;
 
             case NotificationType.LISTING_VIS_STATUS_CHANGED:
@@ -358,7 +357,13 @@ public class NotificationServiceImpl implements NotificationService {
         if(Objects.equals(outboxEntity.getEntityNewStatus(), InviteDirection.REQUEST.toString())) {
             title = "Group join request from '" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
         } else if(Objects.equals(outboxEntity.getEntityNewStatus(), InviteDirection.OFFER.toString())) {
-            title = "Group invite from '" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
+            String roster;
+            if(outboxEntity.getEntityNewStatus().equals("WAITLIST")) {
+                roster = "Waitlist invite";
+            } else {
+                roster = "Group invite";
+            }
+            title = roster + " from '" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
         }
         String message = outboxEntity.getPayloadJson().getTargetLabel();
 
@@ -374,7 +379,7 @@ public class NotificationServiceImpl implements NotificationService {
         String message;
 
         if(Objects.equals(InviteDirection.valueOf(outboxEntity.getPayloadJson().getAddContext()), InviteDirection.REQUEST)) {
-            title = "Your request to join a group was accepted";
+            title = "Group join-request accepted";
             message = "'" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
         } else {
             Users newMember = userRepository.findById(outboxEntity.getEntityId())

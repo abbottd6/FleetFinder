@@ -27,8 +27,7 @@ export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
 
   protected groupId!: number;
 
-  constructor(protected memberManagementApi: MemberManagementApiService,
-              protected managementInteract: GroupManagementInteractService){}
+  constructor(protected managementInteract: GroupManagementInteractService){}
 
   ngOnInit() {
     if(this.managementInteract.sessionManager) {
@@ -37,10 +36,7 @@ export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.memberManagementApi.getActiveRosterGroupMembers(this.groupId).pipe(takeUntil(this.destroy$))
-      .subscribe(page => {
-        this.managementInteract.setActiveRoster(page);
-      });
+    this.managementInteract.fetchActiveRoster(this.groupId);
   }
 
   ngOnDestroy() {

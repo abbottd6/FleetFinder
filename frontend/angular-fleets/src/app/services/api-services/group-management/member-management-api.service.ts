@@ -41,14 +41,18 @@ export class MemberManagementApiService {
       `${this.baseUrl}/get_group_invites/${listingId}`);
   }
 
-  acceptGroupInviteRequest(invRequest: GroupManagementInviteViewModel): Observable<GroupManagementMemberViewModel> {
+  newMemberFromJoinRequest(invRequest: GroupManagementInviteViewModel): Observable<GroupManagementMemberViewModel> {
     return this.httpClient.post<GroupManagementMemberViewModel>(
-      `${this.baseUrl}/accept_group_invite_request`, invRequest);
+      `${this.baseUrl}/accept_or_waitlist_from_join_request`, invRequest);
   }
 
   declineGroupInviteRequest(invId: number): Observable<GroupManagementInviteViewModel> {
     return this.httpClient.put<GroupManagementInviteViewModel>(
       `${this.baseUrl}/decline_group_invite_request/${invId}`, {})
+  }
+
+  mirrorActiveRequestToWaitlistInvite(invId: number): Observable<number> {
+    return this.httpClient.put<number>(`${this.baseUrl}/convert_active_roster_request_to_waitlist_invite/${invId}`, {});
   }
 
   sendGroupInviteOffer(invOffer: SendGroupInviteOffer): Observable<GroupManagementInviteViewModel> {

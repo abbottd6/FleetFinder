@@ -7,5 +7,5 @@ public enum NotificationType {
     NEW_LISTING_MATCH,
     NEW_CHAT_MESSAGE,
     NEW_GROUP_INVITE,
-    NEW_GROUP_MEMBER
+    NEW_GROUP_MEMBER,
 }

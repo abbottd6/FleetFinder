@@ -71,10 +71,17 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
                 .orElseThrow(() -> new ResourceNotFoundException("Group Invite", inviteId));
 
         if(Objects.equals(invite.getRecipient().getUserId(), user.getUserId())) {
-            if(invite.getSenderDismissed()) {
+            if (invite.getSenderDismissed()) {
                 inviteRepo.delete(invite);
             } else {
                 invite.setRecipientDismissed(true);
+                inviteRepo.save(invite);
+            }
+        } else if(Objects.equals(invite.getSender().getUserId(), user.getUserId())) {
+            if (invite.getRecipientDismissed()) {
+                inviteRepo.delete(invite);
+            } else {
+                invite.setSenderDismissed(true);
                 inviteRepo.save(invite);
             }
         } else if(rankService.verifyUserRankPermissions(user, invite.getGroupListing(), RankPrivilegeOptions.MANAGE_ROSTERS)) {

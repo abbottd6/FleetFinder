@@ -1,1 +1,12 @@
-<p>waitlist-roster-panel works!</p>
+<div class="panel-wrapper">
+  <app-active-roster-options-panel>
+  </app-active-roster-options-panel>
+  <ng-container *ngFor="let member of (managementInteract.waitlistRoster$ | async)?.content">
+    <app-member-chip
+      [member]="member">
+    </app-member-chip>
+  </ng-container>
+  <ng-container *ngIf="(managementInteract.waitlistRoster$ | async)?.content?.length === 0">
+    <span>No waitlist members</span>
+  </ng-container>
+</div>

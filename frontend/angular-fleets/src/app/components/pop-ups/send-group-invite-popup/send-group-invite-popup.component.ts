@@ -7,12 +7,8 @@ import {
   MatDialogTitle
 } from "@angular/material/dialog";
 import {
-  GroupMembershipViewModel
-} from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
-import {
   SearchInputAutoCompleteComponent
 } from "../../input-fields/search-input-auto-complete/search-input-auto-complete.component";
-import {PublicUser} from "../../../models/public-user/public-user";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {
   UserMonikerSummaryViewModel

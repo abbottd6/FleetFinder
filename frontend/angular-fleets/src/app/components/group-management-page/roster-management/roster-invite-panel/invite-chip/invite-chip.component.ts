@@ -21,6 +21,17 @@ export const InviteActions = {
   DISMISS: 'DISMISS',
 } as const;
 
+export const StatusChangeActions = [
+  InviteActions.ACCEPT,
+  InviteActions.DECLINE,
+  InviteActions.RESCIND,
+  InviteActions.DISMISS
+] as const
+
+export function isStatusChangeAction(action: InviteActions) {
+  return (StatusChangeActions as readonly InviteActions[]).includes(action);
+}
+
 export type InviteActions = typeof InviteActions[keyof typeof InviteActions];
 
 export type InviteWithActionInterface = {
@@ -69,6 +80,16 @@ export class InviteChipComponent implements OnInit, OnDestroy {
       data: {
         invite: this.invite,
         targetMember: this.inviteMember
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((action: InviteActions | null) => {
+      if(action) {
+        if(isStatusChangeAction(action)) {
+          this.emitInviteStatusChange(action);
+        } else {
+          this.emitInviteAltAction(action);
+        }
       }
     })
   }

@@ -54,8 +54,6 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
 
   protected groupId!: number;
 
-  protected noGroupInvites: boolean = true;
-
   inviteFilterState$ = new BehaviorSubject<InvitePanelFilterState>({
     direction: 'BOTH', status: 'PENDING', terms: null
   });
@@ -72,11 +70,7 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
       this.groupId = this.managementInteract.sessionManager?.listing.groupId;
     }
 
-    this.memberManagementApi.getGroupInvites(this.groupId).pipe(takeUntil(this.destroy$))
-      .subscribe(page => {
-        this.managementInteract.setGroupInvites(page);
-        this.noGroupInvites = page.content.length === 0;
-      });
+    this.managementInteract.fetchGroupInvites(this.groupId);
 
     const tempFilterState = this.mgmtUiPrefs.storedInviteFilters;
     this.inviteFilterState$.next({
@@ -104,25 +98,28 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
 
   changeInviteStatus(inviteStatusChange: InviteWithActionInterface) {
     switch (inviteStatusChange.action) {
-      case 'ACCEPTED':
+
+      case InviteActions.ACCEPT:
         this.managementInteract.acceptGroupInviteRequest(inviteStatusChange.invite);
         break;
-      case 'DECLINED':
+      case InviteActions.DECLINE:
         this.managementInteract.declineGroupInviteRequest(inviteStatusChange.invite);
         break;
-      case 'RESCINDED':
+      case InviteActions.RESCIND:
         this.managementInteract.rescindGroupInviteOffer(inviteStatusChange.invite);
         break;
-      case 'DISMISS':
+      case InviteActions.DISMISS:
         this.managementInteract.dismissGroupInvite(inviteStatusChange.invite);
         break;
-      case 'WAITLIST':
-        //TODO implement
+      case InviteActions.WAITLIST:
+        if(inviteStatusChange.invite.memberStatus === 'WAITLIST') {
+          this.managementInteract.waitlistMemberFromJoinRequest(inviteStatusChange.invite);
+        } else {
+          this.managementInteract.mirrorActiveRequestToWaitlistInvite(inviteStatusChange.invite.inviteId);
+        }
         break;
     }
-
   }
-
 
   catchFilterStateChange(state: InvitePanelFilterState) {
     this.inviteFilterState$.next(state);

@@ -25,18 +25,15 @@ import {newEmptyPage, Page} from "../../models/page-interface";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {MemberInviteActionInterface, MyInvitesChipComponent} from "./my-invite-chip/my-invites-chip.component";
 import {
-  InviteStatus
-} from "../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
-import {
   InviteActions
 } from "../group-management-page/roster-management/roster-invite-panel/invite-chip/invite-chip.component";
-import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {
   InvitePanelFilterState
 } from "../group-management-page/roster-management/roster-invite-panel/roster-invite-panel.component";
 import {
   InviteOptionsPanelComponent
 } from "../group-management-page/roster-management/roster-invite-panel/invite-options-panel/invite-options-panel.component";
+import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 
 @Component({
   selector: 'app-user-profile-my-groups',
@@ -76,7 +73,8 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
   constructor(protected memberInteract: GroupMembershipsInteractService,
               private uiPrefs: UiPrefsService,
               private memberApi: GroupMembershipApiService,
-              private snackBar: MatSnackBar) {}
+              private snackBar: MatSnackBar,
+              private chatHostSrv: ChatHostService) {}
 
   ngOnInit() {
     this.memberInteract.getMyGroupMemberships();
@@ -119,7 +117,9 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
     const invId = actionInvite.invite.inviteId;
 
     switch (actionInvite.action) {
+
       case InviteActions.ACCEPT:
+
         actionInvite.invite.inviteStatus = InviteActions.ACCEPT;
         this.memberApi.acceptGroupInviteOffer(actionInvite.invite).pipe(takeUntil(this.destroy$))
           .subscribe({
@@ -140,7 +140,9 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
             }
           });
         break;
+
       case InviteActions.DECLINE:
+
         this.memberApi.declineGroupInviteOffer(invId).pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (inviteNewStatus: GroupInviteViewModel) => {
@@ -159,7 +161,9 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
             }
           });
         break;
+
       case InviteActions.RESCIND:
+
         this.memberApi.rescindJoinRequest(invId).pipe(takeUntil(this.destroy$))
           .subscribe({
             next: (inviteNewStatus: GroupInviteViewModel) => {
@@ -178,7 +182,9 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
             }
           });
         break;
+
       case InviteActions.DISMISS:
+
         this.memberApi.dismissActionedInvite(actionInvite.invite.inviteId).pipe(takeUntil(this.destroy$))
           .subscribe({
             next: () => {
@@ -191,6 +197,15 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
             }
           });
         break;
+
+      case InviteActions.MESSAGE:
+        const title = actionInvite.invite.listingDetails.listingTitle;
+
+        if(actionInvite.invite.inviteDirection === 'OFFER') {
+          this.chatHostSrv.provisionConversation(title, actionInvite.invite.senderSummary.userId);
+        } else  {
+          this.chatHostSrv.provisionConversation(title, actionInvite.invite.recipientSummary.userId);
+        }
     }
   }
 

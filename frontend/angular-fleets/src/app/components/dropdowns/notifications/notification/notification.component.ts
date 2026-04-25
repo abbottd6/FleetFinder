@@ -59,7 +59,7 @@ export class NotificationComponent implements OnInit {
         if(this.note.entityNewStatus === 'REQUEST') {
           this.header = "New request to join your group";
         } else {
-          this.header = "New group invite"
+          this.header = `${ this.note.title }`
         }
         this.contextLabel = "From: ";
         this.context = this.note.targetMetadata?.noteTopic;
