@@ -10,8 +10,6 @@ import {MatIcon} from "@angular/material/icon";
 import {
   ListingViewInteractionsService
 } from "../../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
-import {UiPrefsService} from "../../../services/facade-services/ui-prefs/ui-prefs.service";
-import {MatDialog} from "@angular/material/dialog";
 import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
 import {Router, RouterLink} from "@angular/router";
 

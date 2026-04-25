@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.*;
 import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
@@ -68,6 +69,14 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
             dto.setMemberRole(positionSummaryDto);
             return dto;
         });
+    }
+
+    @Override
+    public Page<GroupInviteRequestOrResponseDto> getMyGroupInvites(Users user, GenericPageRequestDto pageDto) {
+        Pageable pageable =  PageRequest.of(pageDto.getPageIdx(), pageDto.getPageSize());
+        Page<GroupInvite> myInvites = inviteRepo.findInvitesByUserId(user.getUserId(), pageable);
+
+        return myInvites.map(inv -> modelMapper.map(inv, GroupInviteRequestOrResponseDto.class));
     }
 
     @Override

@@ -27,6 +27,16 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
             @Param("listingId") Long listingId,
             @Param("dir") InviteDirection dir);
 
+    @Query("""
+            SELECT inv FROM GroupInvite inv
+            WHERE (inv.inviteDirection = InviteDirection.OFFER
+                        AND inv.recipient.userId = :userId)
+                  OR (inv.inviteDirection = InviteDirection.REQUEST
+                        AND inv.sender.userId = :userId)
+            ORDER BY inv.createdAt DESC
+            """)
+    Page<GroupInvite> findInvitesByUserId(@Param("userId") Long userId, Pageable pageable);
+
     @Modifying
     @Query("""
             DELETE FROM GroupInvite gi

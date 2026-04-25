@@ -10,6 +10,7 @@ import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.PushSubscription;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
+import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
 import com.sc_fleetfinder.fleets.exceptions.InviteStateConflictException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.*;
@@ -59,7 +60,7 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
     public void throwIfUserIsAlreadyAMember(Users user, Long listingId) {
         GroupMemberId id = new GroupMemberId(listingId, user.getUserId());
         if(memberRepo.findById(id).isPresent()) {
-            throw new IllegalArgumentException("already a member of this group.");
+            throw new DuplicateEntryException("already a member of this group.");
         }
     }
 

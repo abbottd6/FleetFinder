@@ -5,10 +5,12 @@ import {
   GroupMembershipViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {BehaviorSubject, EMPTY, Observable, ReplaySubject} from "rxjs";
-import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
+import {BehaviorSubject, EMPTY} from "rxjs";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Page} from "../../../models/page-interface";
+import {
+  GroupInviteViewModel
+} from "../../../models/group-management-models/view-models/group-membership/group-invite-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +49,14 @@ export class GroupMembershipsInteractService {
     }
 
     return this.membershipsApiService.getMyInviteAuthorizedMemberships();
+  }
+
+  addAcceptedInviteNewMembership(newMembership: GroupMembershipViewModel) {
+    const current = this.groupMembershipsSubject.getValue();
+    this.groupMembershipsSubject.next([
+      ...current,
+      newMembership
+    ])
   }
 
 }

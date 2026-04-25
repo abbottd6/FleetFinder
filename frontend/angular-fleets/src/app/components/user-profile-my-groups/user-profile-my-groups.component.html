@@ -20,19 +20,77 @@
     </ul>
   </div>
 </div>
-<div class="group-memberships-wrapper">
-  <ng-container *ngIf="groupMemberService.groupMemberships$ | async as groupMemberships; else noMemberships">
-    <ng-container *ngFor="let membership of groupMemberships">
-      <app-groups-chip
-        [membership]="membership"
-        (emitListing)="passEmissionToParent($event)">
-      </app-groups-chip>
-    </ng-container>
-  </ng-container>
+<mat-accordion class="groups-accordion-container" [multi]="true">
 
-  <ng-template #noMemberships>
-    <div class="no-memberships-msg">
-      <span>You aren't a member of any active groups.</span>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Invites & Requests
+      </mat-panel-title>
+      <mat-panel-description>
+        Group invites you have received and join requests you've sent
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div class="group-memberships-wrapper">
+      <div class="options-panel">
+        <app-invite-options-panel
+          [inviteFilterState$]="inviteFilterState$"
+          (emitFilterState)="catchFilterStateChange($event)">
+        </app-invite-options-panel>
+      </div>
+      <ng-container *ngIf="myInvitesSubject$ | async as myInvites">
+        <ng-container *ngFor="let invite of myInvites">
+          <app-my-invites-chip
+            [invite]="invite"
+            (emitListing)="passListingEmissionToParent($event)"
+            (inviteActionEmitter)="handleInviteChipAction($event)">
+          </app-my-invites-chip>
+        </ng-container>
+        <ng-container *ngIf="invIdx < (invTotalPages - 1)">
+          <div class="invites-page-info-container">
+            <button class="show-more-invites-button"
+              (click)="getMoreInvites()">
+              Show More
+            </button>
+          </div>
+        </ng-container>
+        <div class="invites-page-info-container">
+          <span>( {{ myInvites.length }} of {{ invTotalElements }} )</span>
+        </div>
+      </ng-container>
+      <ng-container *ngIf="noInvites">
+        <span class="no-memberships-msg">You don't have any active group invites or requests.</span>
+      </ng-container>
     </div>
-  </ng-template>
-</div>
+  </mat-expansion-panel>
+
+
+  <mat-expansion-panel [expanded]="true">
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Group Memberships
+      </mat-panel-title>
+      <mat-panel-description>
+        Active or upcoming groups that you have joined
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+
+  <div class="group-memberships-wrapper">
+    <ng-container *ngIf="memberInteract.groupMemberships$ | async as groupMemberships; else noMemberships">
+      <ng-container *ngFor="let membership of groupMemberships">
+        <app-groups-chip
+          [membership]="membership"
+          (emitListing)="passListingEmissionToParent($event)">
+        </app-groups-chip>
+      </ng-container>
+    </ng-container>
+
+    <ng-template #noMemberships>
+      <div class="no-memberships-msg">
+        <span>You aren't a member of any active groups.</span>
+      </div>
+    </ng-template>
+  </div>
+  </mat-expansion-panel>
+</mat-accordion>

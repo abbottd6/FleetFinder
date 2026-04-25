@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupMembershipResponseDto;
@@ -32,6 +33,17 @@ public class GroupMembershipController {
         Users user = userService.verifyUser(kcId);
 
         return memberUserService.getMyGroupMemberships(user);
+    }
+
+    @PostMapping("/my_invites")
+    public ResponseEntity<?> getMyGroupInvites(@AuthenticationPrincipal Jwt jwt,
+                                               @RequestBody GenericPageRequestDto pageDto) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        Page<GroupInviteRequestOrResponseDto> responseDtos = memberUserService.getMyGroupInvites(user, pageDto);
+
+        return ResponseEntity.ok(responseDtos);
     }
 
     @GetMapping("/my_invite_authorized_groups")

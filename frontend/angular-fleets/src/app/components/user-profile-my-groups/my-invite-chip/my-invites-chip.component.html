@@ -1,0 +1,120 @@
+<div class="chip-self">
+  <div class="header-row">
+    <div id="header-left">
+      <span id="header-left-label">{{ invite.inviteDirection === 'OFFER' ? 'Invited To:' : 'Requested To Join:' }}</span>
+      <span id="header-left-value">{{ listingDetails.listingTitle.length > 120 ?
+        (listingDetails.listingTitle|slice:0: 120) : listingDetails.listingTitle }}</span>
+    </div>
+    <span id="header-right">
+      <span class="field-label">
+        Sent At: {{ invite.sentAt | date:'MM/dd/yyyy'}}
+      </span>
+    </span>
+  </div>
+
+
+  <div class="data-wrapper">
+    <div class="direction-indicator-column">
+      <ng-container *ngIf="invite.inviteDirection === 'OFFER'; else joinRequest">
+        <mat-icon class="really-big-icon offer">call_received</mat-icon>
+      </ng-container>
+      <ng-template #joinRequest>
+        <mat-icon class="really-big-icon request">call_made</mat-icon>
+      </ng-template>
+    </div>
+    <div class="template-column">
+        <span class="template-column-header">
+          Listing Details
+          <mat-icon class="open-in-new-icon"
+                    (click)="showListingModal()">open_in_new</mat-icon></span>
+      <div class="label-val-pair">
+        <span class="field-label">Group Status: </span>
+        <span class="field-val has-val">{{ listingDetails.groupStatus }}</span>
+      </div>
+      <ng-container *ngIf="(listingDetails.groupStatus === 'Future/Scheduled')">
+        <div class="label-val-pair sub-pair">
+          <span class="field-label">Event Schedule:</span>
+          <span class="field-val has-val">{{ listingDetails.eventSchedule | date: 'MM/dd/yyyy hh:mm' }}</span>
+        </div>
+      </ng-container>
+      <div class="label-val-pair">
+        <span class="field-label">Category:</span>
+        <span class="field-val has-val">{{ listingDetails.category }}</span>
+      </div>
+      <ng-container *ngIf="listingDetails.subcategory">
+        <div class="label-val-pair sub-pair">
+          <span class="field-label">Subcategory: </span>
+          <span class="field-val has-val">{{ listingDetails.subcategory }}</span>
+        </div>
+      </ng-container>
+    </div>
+    <div class="template-column">
+      <span class="template-column-header">Invite Details</span>
+      <div class="label-val-pair">
+        <span class="field-label">
+          {{ invite.inviteDirection === 'OFFER' ? 'Sent By:' : 'Sent To:'}}
+        </span>
+        <span class="field-val has-val">
+          {{ invite.inviteDirection === 'OFFER' ? invite.senderSummary.username : invite.recipientSummary.username}}
+        </span>
+      </div>
+      <div class="label-val-pair">
+        <span class="field-label">Status:</span>
+        <span class="field-val has-val" [class.actioned]="invite.inviteStatus !== 'PENDING'">
+          {{ invite.inviteStatus|titlecase }}
+        </span>
+      </div>
+      <div class="label-val-pair">
+        <span class="field-label">For Roster:</span>
+        <span class="field-val has-val">
+          {{ invite.memberStatus|titlecase }}
+        </span>
+      </div>
+      <div class="label-val-pair">
+        <span class="field-label">Message:</span>
+        <span class="field-val">{{ invite.inviteMessage }}</span>
+      </div>
+    </div>
+    <!--    </div>-->
+
+    <!--    <div class="template-column" id="last-column">-->
+    <div id="last-column">
+      <ng-container *ngIf="invite.inviteStatus === 'PENDING'; else actioned">
+        <ng-container *ngIf="invite.inviteDirection === 'REQUEST'; else pendingOffer">
+          <button class="chip-buttons"
+                  (click)="emitInviteAction(InviteActions.RESCIND)">
+            <mat-icon>undo</mat-icon>
+            Rescind
+          </button>
+        </ng-container>
+        <ng-template #pendingOffer>
+          <button class="chip-buttons"
+                  (click)="emitInviteAction(InviteActions.ACCEPT)">
+            <mat-icon>check</mat-icon>
+            Accept
+          </button>
+
+          <button class="chip-buttons"
+                  (click)="emitInviteAction(InviteActions.DECLINE)">
+            <mat-icon>close</mat-icon>
+            Decline
+          </button>
+        </ng-template>
+      </ng-container>
+      <ng-template #actioned>
+        <button class="chip-buttons"
+                (click)="emitInviteAction(InviteActions.DISMISS)">
+          <mat-icon>delete</mat-icon>
+          Dismiss
+        </button>
+      </ng-template>
+
+      <button class="chip-buttons"
+              (click)="emitInviteAction(InviteActions.MESSAGE)">
+        <i class="bi bi-chat-fill chat-icon"></i>
+        Message
+      </button>
+    </div>
+  </div>
+</div>
+

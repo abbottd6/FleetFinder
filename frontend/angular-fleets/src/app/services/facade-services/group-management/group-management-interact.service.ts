@@ -104,7 +104,7 @@ export class GroupManagementInteractService {
 
           this.spliceInviteSubjectForStatusChange(declined);
 
-          const msg =`Join request from ${inviteWithNewStatus.recipientSummary.username} declined.`;
+          const msg =`Join request from ${inviteWithNewStatus.senderSummary.username} declined.`;
           this.showSnackBarMessage(msg);
         }
       })
@@ -159,10 +159,15 @@ export class GroupManagementInteractService {
               }
             },
             error: (err) => {
-              const msg ='There was an error sending this invite.';
-              this.showSnackBarMessage(msg);
-              if(!environment.production) {
-                console.log(err.message);
+              if(err.status === 409) {
+                const msg = 'This user is already a member of this group.';
+                this.showSnackBarMessage(msg);
+              } else {
+                const msg = 'There was an error sending this invite.';
+                this.showSnackBarMessage(msg);
+                if (!environment.production) {
+                  console.log(err.message);
+                }
               }
             }
           });

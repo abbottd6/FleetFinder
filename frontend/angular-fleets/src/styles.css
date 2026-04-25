@@ -14,6 +14,8 @@
   /*--stark-blue: rgba(57, 98, 143, 1);*/
   --button-hover-color: rgba(255, 131, 7, .5);
   --footer-height: 0px;
+  --border-bottom-fade-gray: rgba(150, 168, 183, .3);
+  --global-font-color: rgba(150, 168, 183, 1);
 }
 
 body {

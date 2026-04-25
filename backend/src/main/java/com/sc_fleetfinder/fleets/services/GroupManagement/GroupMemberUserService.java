@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
@@ -10,6 +11,8 @@ import org.springframework.data.domain.Page;
 public interface GroupMemberUserService extends GroupMemberService {
 
     Page<GroupMembershipResponseDto> getMyGroupMemberships(Users user);
+
+    Page<GroupInviteRequestOrResponseDto> getMyGroupInvites(Users user, GenericPageRequestDto dto);
 
     Page<GroupListingResponseDto> getMyInviteAuthorizedMemberships(Users user);
 

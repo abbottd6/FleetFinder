@@ -41,7 +41,7 @@
 .mat-expansion-panel-header {
   min-height: 60px;
   font-size: 110%;
-  transition: color 0.25s ease !important;
+  transition: color 0.25s ease, font-size 0.2s ease !important;
 }
 
 mat-panel-title {
@@ -76,11 +76,6 @@ mat-panel-description.mat-expansion-panel-header-description {
 :host ::ng-deep .mat-expansion-indicator svg {
   fill: rgba(150, 168, 183, .8);
   transition: fill 0.25s ease;
-}
-
-.mat-expansion-panel-header:hover {
-  color: rgba(65, 103, 142, 0.9);
-  fill: rgba(65, 103, 142, 0.9);
 }
 
 .mat-expansion-panel-header:hover mat-panel-description,

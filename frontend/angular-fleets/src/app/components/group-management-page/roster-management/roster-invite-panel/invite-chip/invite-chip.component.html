@@ -13,6 +13,8 @@ recipientSummary
 -->
 
 <div class="chip-self" [class.child-hovered]="isHovered">
+
+  <!-- PENDING && REQUEST CHIP -->
   <ng-container *ngIf="invite.inviteStatus === 'PENDING'; else actioned">
     <ng-container *ngIf="invite.inviteDirection === 'REQUEST'; else offer">
       <div class="invite-brief-container invite-details-popup-click-target"
@@ -23,9 +25,12 @@ recipientSummary
                   matTooltip="Invite Request">
           call_received
         </mat-icon>
-        <span class="chip-field-val username">
-            {{ inviteMember.username }}
-        </span>
+        <div class="user-column">
+          <span class="chip-field-val username">
+              {{ inviteMember.username }}
+          </span>
+          <small class="chip-field-val">For: {{ invite.memberStatus|titlecase }} {{ invite.memberStatus === 'ACTIVE' ? 'roster' : ''}}</small>
+        </div>
       </div>
       <div class="actions-container">
         <button class="invite-chip-button decline"
@@ -40,6 +45,8 @@ recipientSummary
         </button>
       </div>
     </ng-container>
+
+    <!-- PENDING && OFFER CHIP -->
     <ng-template #offer>
       <div class="invite-brief-container invite-details-popup-click-target"
            (click)="openInviteDetailsPopup()"
@@ -49,9 +56,12 @@ recipientSummary
                   matTooltip="Invite Sent">
           call_made
         </mat-icon>
-        <span class="chip-field-val username">
-            {{ inviteMember.username }}
+        <div class="user-column">
+          <span class="chip-field-val username">
+              {{ inviteMember.username }}
           </span>
+          <small class="chip-field-val">For: {{ invite.memberStatus|titlecase }} {{ invite.memberStatus === 'ACTIVE' ? 'roster' : ''}}</small>
+        </div>
       </div>
       <div class="actions-container">
         <button class="invite-chip-button decline"
@@ -62,6 +72,8 @@ recipientSummary
       </div>
     </ng-template>
   </ng-container>
+
+  <!-- ACTIONED CHIP -->
   <ng-template #actioned>
     <div class="invite-brief-container invite-details-popup-click-target"
          (click)="openInviteDetailsPopup()"
@@ -79,9 +91,12 @@ recipientSummary
           block
         </mat-icon>
       </ng-template>
-      <span class="chip-field-val username">
-            {{ inviteMember.username }}
-      </span>
+      <div class="user-column">
+          <span class="chip-field-val username">
+              {{ inviteMember.username }}
+          </span>
+        <small class="chip-field-val">For: {{ invite.memberStatus|titlecase }} {{ invite.memberStatus === 'ACTIVE' ? 'roster' : ''}}</small>
+      </div>
       <span class="chip-field-val">
         '{{ invite.inviteStatus|titlecase }}'
       </span>

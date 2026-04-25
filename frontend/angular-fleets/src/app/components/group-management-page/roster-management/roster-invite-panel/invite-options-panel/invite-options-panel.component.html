@@ -6,15 +6,19 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
     <div class="options-body-container">
-      <div class="toggle-row">
-        <mat-label class="toggle-label">Pending Only:</mat-label>
-        <mat-slide-toggle
-          [formControl]="showPendingOnlyCtrl"
-          (change)="onStatusChange()">
-        </mat-slide-toggle>
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">Status</span>
+        <mat-radio-group [value]="(inviteFilterState$ | async)?.status"
+                         (change)="onStatusChange($event.value)"
+                         class="radio-row">
+          <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
+          <mat-radio-button value="PENDING" labelPosition="before">Pending:</mat-radio-button>
+          <mat-radio-button value="ACTIONED" labelPosition="before">Actioned:</mat-radio-button>
+        </mat-radio-group>
       </div>
 
-      <div>
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">Direction</span>
         <mat-radio-group [value]="(inviteFilterState$ | async)?.direction"
                          (change)="onDirectionChange($event.value)"
                          class="radio-row">

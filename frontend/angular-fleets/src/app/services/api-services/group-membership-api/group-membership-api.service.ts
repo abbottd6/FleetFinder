@@ -13,13 +13,6 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   import {
     GroupInviteViewModel
   } from "../../../models/group-management-models/view-models/group-membership/group-invite-view-model";
-  import {SendGroupInviteOffer} from "../../../models/group-management-models/request-models/send-group-invite-offer";
-  import {
-    GroupManagementInviteViewModel
-  } from "../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
-  import {
-    GroupManagementMemberViewModel
-  } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
   import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
   import {Page} from "../../../models/page-interface";
 
@@ -42,6 +35,15 @@ export class GroupMembershipApiService {
       );
   }
 
+  getMyGroupInvites(pageIdx: number, pageSize: number): Observable<Page<GroupInviteViewModel>> {
+    const pageRequest = {
+      pageIdx: pageIdx,
+      pageSize: pageSize
+    }
+
+    return this.httpClient.post<Page<GroupInviteViewModel>>(`${this.baseUrl}/my_invites`, pageRequest);
+  }
+
   getMyInviteAuthorizedMemberships(): Observable<Page<GroupListingViewModel>> {
     return this.httpClient.get<Page<GroupListingViewModel>>(`${this.baseUrl}/my_invite_authorized_groups`);
   }
@@ -54,12 +56,16 @@ export class GroupMembershipApiService {
     return this.httpClient.post<GroupMembershipViewModel>(`${this.baseUrl}/accept_group_invite_offer`, invOffer);
   }
 
-  declineGroupInviteOffer(invOffer: GroupInviteViewModel): Observable<GroupInviteViewModel> {
-    return this.httpClient.put<GroupInviteViewModel>(`${this.baseUrl}/decline_group_invite_offer`, invOffer);
+  declineGroupInviteOffer(invId: number): Observable<GroupInviteViewModel> {
+    return this.httpClient.put<GroupInviteViewModel>(`${this.baseUrl}/decline_group_invite_offer/${invId}`, {});
   }
 
-  rescindGroupInviteJoinRequest(invRequest: GroupInviteViewModel): Observable<GroupInviteViewModel> {
-    return this.httpClient.put<GroupInviteViewModel>(`${this.baseUrl}/rescind_group_invite_join_request`, invRequest);
+  rescindJoinRequest(invId: number): Observable<GroupInviteViewModel> {
+    return this.httpClient.put<GroupInviteViewModel>(`${this.baseUrl}/rescind_group_invite_join_request/${invId}`, {});
+  }
+
+  dismissActionedInvite(invId: number): Observable<void> {
+    return this.httpClient.put<void>(`${this.baseUrl}/member_dismiss_invite/${invId}`, {})
   }
 
   memberLeaveGroup(listingId: number): Observable<HttpResponse<any>> {
