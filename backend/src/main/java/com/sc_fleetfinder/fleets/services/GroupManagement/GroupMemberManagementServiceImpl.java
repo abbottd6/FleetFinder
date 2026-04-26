@@ -143,8 +143,10 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
             eventPublisher.publishEvent(new NewGroupMemberNotifyEvent(newMember, invite, savedMember));
 
-            listing.setCurrentPartySize(listing.getCurrentPartySize() + 1);
-            glr.save(listing);
+            if(savedMember.getMemberStatus() == GroupMemberStatus.ACTIVE) {
+                listing.setCurrentPartySize(listing.getCurrentPartySize() + 1);
+                glr.save(listing);
+            }
 
             return modelMapper.map(savedMember, GroupManagerMemberResponseDto.class);
 

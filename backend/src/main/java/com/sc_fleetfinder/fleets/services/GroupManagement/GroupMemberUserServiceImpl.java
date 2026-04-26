@@ -182,7 +182,7 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
         InGroupRank newMemberRank = rankService.getGenericRankByTitle(GroupRankGenericTypes.Member);
 
         try {
-            GroupMember savedMember = memberRepo.save(new GroupMember(listing, newMember, dto.getMemberStatus(), newMemberRank,
+            GroupMember savedMember = memberRepo.saveAndFlush(new GroupMember(listing, newMember, dto.getMemberStatus(), newMemberRank,
                     hasComms, hasExtNotes));
 
             invite.setInviteStatus(GroupInviteStatus.ACCEPTED);

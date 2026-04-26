@@ -5,11 +5,15 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.UserMonikerSum
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberStatus;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class SendGroupInviteOfferDto {
 
     //Convert Join Request to waitlist offer constructor
