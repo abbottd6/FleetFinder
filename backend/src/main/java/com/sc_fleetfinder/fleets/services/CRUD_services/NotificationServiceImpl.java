@@ -358,14 +358,14 @@ public class NotificationServiceImpl implements NotificationService {
             title = "Group join request from '" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
         } else if(Objects.equals(outboxEntity.getEntityNewStatus(), InviteDirection.OFFER.toString())) {
             String roster;
-            if(outboxEntity.getEntityNewStatus().equals("WAITLIST")) {
+            if(outboxEntity.getPayloadJson().getTargetStatus().equals("WAITLIST")) {
                 roster = "Waitlist invite";
             } else {
                 roster = "Group invite";
             }
             title = roster + " from '" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
         }
-        String message = outboxEntity.getPayloadJson().getTargetLabel();
+        String message = outboxEntity.getPayloadJson().getContextElementLabel();
 
         Notification newNote = new Notification(outboxEntity, title, message);
 
@@ -382,10 +382,8 @@ public class NotificationServiceImpl implements NotificationService {
             title = "Group join-request accepted";
             message = "'" + outboxEntity.getPayloadJson().getNoteTopic() + "'";
         } else {
-            Users newMember = userRepository.findById(outboxEntity.getEntityId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Users", outboxEntity.getEntityId()));
             title = "New member joined your group";
-            message = "'" + newMember.getUsername() + "' joined the " + toTitleCase(outboxEntity.getEntityNewStatus()) + " roster";
+            message = outboxEntity.getPayloadJson().getNoteTopic();
         }
 
         Notification newNote = new Notification(outboxEntity, title, message);

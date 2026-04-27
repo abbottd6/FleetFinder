@@ -37,9 +37,8 @@ public class ArchiveServiceImpl implements ArchiveService {
     // manual mod deletions and AutoMod records preparation is handled in the mod service
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void prepareUserDeleteRecords(GroupListing listing, Users user) {
+    public ListingArchive prepareUserDeleteRecords(GroupListing listing, Users user) {
         ModerationIssue issue;
-        ListingArchive archive;
         String note;
 
         //check for existing moderation issue
@@ -52,17 +51,15 @@ public class ArchiveServiceImpl implements ArchiveService {
             issue = new ModerationIssue(listing, user);
             issue.setStatus("No Reports");
             mir.save(issue);
-            mir.flush();
             note = "User deleted listing with no recorded moderation issue.";
         }
 
         String actionType = "None";
 
-        archive = archiveListing(listing, issue, actionType, note);
-        lar.save(archive);
-
         log.info("Archive records generated for listing: {}, in response to user delete.",
                 listing.getGroupId());
+
+        return new ListingArchive(listing, issue, actionType, note);
     }
 
 //    @Override
@@ -121,5 +118,11 @@ public class ArchiveServiceImpl implements ArchiveService {
         lar.save(archive);
 
         return archive;
+    }
+
+    @Override
+    @Transactional
+    public ListingArchive archiveListing(ListingArchive transientArchive) {
+        return lar.save(transientArchive);
     }
 }

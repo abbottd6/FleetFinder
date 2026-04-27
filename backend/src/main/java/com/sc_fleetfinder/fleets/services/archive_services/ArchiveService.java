@@ -8,9 +8,11 @@ import com.sc_fleetfinder.fleets.entities.Users;
 
 public interface ArchiveService {
 
-    void prepareUserDeleteRecords(GroupListing groupListing, Users user);
+    ListingArchive prepareUserDeleteRecords(GroupListing groupListing, Users user);
     ListingArchive archiveListing(GroupListing listing, ModerationIssue issue,
                                   String actionType, String note);
     ListingArchive archiveListing(GroupListing listing, ModerationIssue issue,
                                   String modNote, Users mod);
+
+    ListingArchive archiveListing(ListingArchive transientArchive);
 }

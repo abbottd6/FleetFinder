@@ -73,11 +73,15 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                 inv.listing_id                  AS parent_entity_id,
                 'GROUP_LISTING'                 AS parent_entity_type,
                 JSON_OBJECT(
-                    'noteTopic',        sender.user_name,
-                    'targetId',         inv.sender_id,
-                    'targetLabel',      grp.listing_title,
-                    'targetCreatedAt',  inv.created_at,
-                    'addContext',       SUBSTRING(inv.invite_message, 1, 64)
+                    'noteTopic',            sender.user_name,
+                    'targetId',             inv.sender_id,
+                    'targetLabel',          inv.roster_class,
+                    'targetStatus',         inv.invite_status,
+                    'targetCreatedAt',      inv.created_at,
+                    'contextElementLabel',  grp.listing_title,
+                    'contextElementStatus', grpStatus.group_status,
+                    'contextElementDate',   grp.event_schedule,
+                    'addContext',           SUBSTRING(inv.invite_message, 0, 64)
                 )                               AS payload_json,
                 'PENDING'                       AS status,
                 push.id_push_sub                AS push_sub_id,
@@ -87,6 +91,7 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                 NOW()                           AS created_at
             FROM group_invite inv
             JOIN group_listing grp ON inv.listing_id = grp.id_group
+            JOIN group_status grpStatus ON grp.group_status_id = grpStatus.group_status_id
             JOIN users recipient ON inv.recipient_id = recipient.id_user
             JOIN users sender ON inv.sender_id = sender.id_user
             CROSS JOIN (
@@ -126,11 +131,15 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                 :listingId                      AS parent_entity_id,
                 'group_listing'                 AS parent_entity_type,
                 JSON_OBJECT(
-                    'noteTopic',                SUBSTRING(listing.listing_title, 1, 64), 
-                    'targetId',                 inv.role_id,
-                    'targetLabel',              role.role_title,
-                    'targetCreatedAt',          member.created_at,
-                    'addContext',               inv.direction       
+                    'noteTopic',                SUBSTRING(listing.listing_title, 1, 64),
+                    'targetId',                 :newMemberUserId,
+                    'targetLabel',              u.user_name,
+                    'targetStatus',             inv.invite_status,
+                    'targetCreatedAt',          inv.created_at,
+                    'contextElementLabel',      listing.listing_title,
+                    'contextElementStatus',     grpStatus.group_status,
+                    'contextElementDate',       listing.event_schedule,
+                    'addContext',               inv.direction
                 )                               AS payload_json,
                 'PENDING'                       AS status,
                 push.id_push_sub                AS push_sub_id,
@@ -140,14 +149,16 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                 NOW()                           AS created_at
            FROM users user
            JOIN group_member member ON member.user_id = :newMemberUserId
-                AND member.listing_id = :listingId          
-           JOIN group_listing listing ON member.listing_id = listing.id_group 
+                AND member.listing_id = :listingId
+           JOIN users u ON member.user_id = u.id_user
+           JOIN group_listing listing ON member.listing_id = listing.id_group
+           JOIN group_status grpStatus ON listing.group_status_id = grpStatus.group_status_id
            JOIN group_invite inv ON inv.id_invite = :inviteId
            LEFT JOIN crew_role_classification role ON role.id_role = inv.role_id
            CROSS JOIN (
                 SELECT 'IN_APP' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
                 SELECT 'DISCORD' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
-                SELECT 'PUSH' AS delivery_channel, NULL AS do_not_duplicate                                                                       
+                SELECT 'PUSH' AS delivery_channel, NULL AS do_not_duplicate
            ) AS channels
            LEFT JOIN push_subscription push
                 ON push.user_id = :recipientId
@@ -158,7 +169,7 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                     channels.delivery_channel = 'IN_APP'
                     OR (channels.delivery_channel = 'DISCORD'
                         AND user.discord_user_id IS NOT NULL
-                        AND user.external_group_notes_enabled = 1)               
+                        AND user.external_group_notes_enabled = 1)
                     OR (channels.delivery_channel = 'PUSH')
                         AND push.group_notes_enabled = 1)
            """, nativeQuery = true)

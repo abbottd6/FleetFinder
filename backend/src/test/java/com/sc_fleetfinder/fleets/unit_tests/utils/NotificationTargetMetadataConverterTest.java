@@ -26,7 +26,9 @@ class NotificationTargetMetadataConverterTest {
     @Test
     void convertToDatabaseColumn_ValidObject_ReturnsJsonString() {
         NotificationTargetMetadata metadata = new NotificationTargetMetadata(
-                "Test topic", 32L, "My Fleet", null, "1");
+                "Test topic", 32L, "My Fleet", "Test Status",
+                Instant.parse("2026-03-23T08:06:31Z"), "Context Label",
+                "Context status", null, "1");
 
         String result = converter.convertToDatabaseColumn(metadata);
 
@@ -40,7 +42,8 @@ class NotificationTargetMetadataConverterTest {
     @Test
     void convertToDatabaseColumn_WithTimestamp_SerializesInMySqlFormat() {
         NotificationTargetMetadata metadata = new NotificationTargetMetadata(
-                null, 32L, "My Fleet", Instant.parse("2026-03-23T08:06:31Z"), null);
+                null, 32L, "My Fleet", "Test Status", Instant.parse("2026-03-23T08:06:31Z"),
+                "Context Label", "Context Status", Instant.parse("2026-03-23T08:06:31Z"), null);
 
         String result = converter.convertToDatabaseColumn(metadata);
 

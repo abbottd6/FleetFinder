@@ -22,8 +22,17 @@ public class NotificationTargetMetadata {
 
     private String targetLabel;
 
+    private String  targetStatus;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS", timezone = "UTC")
     private Instant targetCreatedAt;
+
+    private String contextElementLabel;
+
+    private String contextElementStatus;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss.SSSSSS", timezone = "UTC")
+    private Instant contextElementDate;
 
     private String addContext;
 }

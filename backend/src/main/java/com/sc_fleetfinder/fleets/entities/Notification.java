@@ -112,7 +112,7 @@ public class Notification {
     private Boolean dropdownPriority = true;
 
     @Convert(converter = NotificationTargetMetadataConverter.class)
-    @Column(name="target_metadata", nullable = true)
+    @Column(name="target_metadata", columnDefinition = "JSON NULL", nullable = true)
     private NotificationTargetMetadata targetMetadata;
 
     @CreationTimestamp

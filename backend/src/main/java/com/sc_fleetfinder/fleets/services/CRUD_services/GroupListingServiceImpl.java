@@ -11,6 +11,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.CommsOption;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.NewListingNotifyQueue;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
@@ -189,7 +190,7 @@ public class GroupListingServiceImpl implements GroupListingService {
 
                 if (Objects.equals(listing.getUsers().getUserId(), user.getUserId())) {
 
-                    archiveService.prepareUserDeleteRecords(listing, user);
+                    ListingArchive transientArchive = archiveService.prepareUserDeleteRecords(listing, user);
 
                     //probably move all the deletes to the event handler
                     user.getGroupListings().remove(listing);
@@ -197,6 +198,8 @@ public class GroupListingServiceImpl implements GroupListingService {
 
                     groupListingRepository.delete(listing);
                     groupListingRepository.flush();
+
+                    archiveService.archiveListing(transientArchive);
 
                     Map<String, String> response = new HashMap<>();
                     response.put("listingId", String.valueOf(listing.getGroupId()));
