@@ -15,6 +15,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
   } from "../../../models/group-management-models/view-models/group-membership/group-invite-view-model";
   import {GroupListingViewModel} from "../../../models/group-listing/group-listing-view-model";
   import {Page} from "../../../models/page-interface";
+  import {SortablePageRequest} from "../../../utils/sortable-page-request";
 
 export const rosterClasses: string[] = ['Active', 'Waitlist'];
 
@@ -28,11 +29,8 @@ export class GroupMembershipApiService {
 
   constructor(private httpClient: HttpClient) {}
 
-  getMyGroupMemberships(): Observable<Page<GroupMembershipViewModel>> {
-    return this.httpClient.get<Page<GroupMembershipViewModel>>(`${this.baseUrl}/my_groups`).pipe(
-      takeUntilDestroyed(this.destroyRef),
-      tap(page => page)
-      );
+  getMyGroupMemberships(page: SortablePageRequest): Observable<Page<GroupMembershipViewModel>> {
+    return this.httpClient.post<Page<GroupMembershipViewModel>>(`${this.baseUrl}/my_groups`, page);
   }
 
   getMyGroupInvites(pageIdx: number, pageSize: number): Observable<Page<GroupInviteViewModel>> {
@@ -68,7 +66,7 @@ export class GroupMembershipApiService {
     return this.httpClient.put<void>(`${this.baseUrl}/member_dismiss_invite/${invId}`, {})
   }
 
-  memberLeaveGroup(listingId: number): Observable<HttpResponse<any>> {
-    return this.httpClient.delete<HttpResponse<any>>(`${this.baseUrl}/user_leave_group/${listingId}`)
+  memberLeaveGroup(listingId: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.baseUrl}/user_leave_group/${listingId}`)
   }
 }

@@ -43,7 +43,7 @@ export class MemberManagementApiService {
 
   newMemberFromJoinRequest(invRequest: GroupManagementInviteViewModel): Observable<GroupManagementMemberViewModel> {
     return this.httpClient.post<GroupManagementMemberViewModel>(
-      `${this.baseUrl}/accept_or_waitlist_from_join_request`, invRequest);
+      `${this.baseUrl}/new_member_from_join_request`, invRequest);
   }
 
   declineGroupInviteRequest(invId: number): Observable<GroupManagementInviteViewModel> {

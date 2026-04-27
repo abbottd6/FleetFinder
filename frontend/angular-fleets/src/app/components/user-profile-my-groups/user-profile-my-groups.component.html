@@ -90,7 +90,7 @@
   </mat-expansion-panel>
 
 
-  <mat-expansion-panel id="memberships" [expanded]="true">
+  <mat-expansion-panel id="memberships" [expanded]="routeSubsectionSelect !== 'invites'">
     <mat-expansion-panel-header>
       <mat-panel-title class="child-container-header">
         Group Memberships
@@ -101,13 +101,81 @@
     </mat-expansion-panel-header>
 
   <div class="group-memberships-wrapper">
-    <ng-container *ngIf="memberInteract.groupMemberships$ | async as groupMemberships; else noMemberships">
+
+    <div class="options-panel">
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">Group Schedule</span>
+        <mat-radio-group [value]="(membershipFilterState$ | async)?.groupStatus"
+                         (change)="onMembershipGroupScheduleFilterChange($event.value)"
+                         class="radio-row">
+          <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
+          <mat-radio-button value="UPCOMING" labelPosition="before">Upcoming:</mat-radio-button>
+          <mat-radio-button value="PAST" labelPosition="before">Past:</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">Management Privileges</span>
+        <mat-radio-group [value]="(membershipFilterState$ | async)?.managementPrivileges"
+                         (change)="onMembershipPrivilegesFilterChange($event.value)"
+                         class="radio-row">
+          <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
+          <mat-radio-button value="PRIVILEGES" labelPosition="before">Privileges:</mat-radio-button>
+          <mat-radio-button value="NO_PRIVILEGES" labelPosition="before">None:</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">Ownership</span>
+        <mat-radio-group [value]="(membershipFilterState$ | async)?.ownership"
+                         (change)="onMembershipOwnershipFilterChange($event.value)"
+                         class="radio-row">
+          <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
+          <mat-radio-button value="OWNER" labelPosition="before">Owner:</mat-radio-button>
+          <mat-radio-button value="NOT_OWNER" labelPosition="before">Not Owner:</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">Roster</span>
+        <mat-radio-group [value]="(membershipFilterState$ | async)?.roster"
+                         (change)="onMembershipRosterFilterChange($event.value)"
+                         class="radio-row">
+          <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
+          <mat-radio-button value="ACTIVE" labelPosition="before">Active:</mat-radio-button>
+          <mat-radio-button value="WAITLIST" labelPosition="before">Waitlist:</mat-radio-button>
+        </mat-radio-group>
+      </div>
+
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">Sort By</span>
+        <mat-radio-group [value]="memberInteract.membershipSortField"
+                          (change)="sortMemberships($event.value)"
+                          class="radio-row">
+          <mat-radio-button value="joinedAt" labelPosition="before">Joined At:</mat-radio-button>
+          <mat-radio-button value="nearest" labelPosition="before">Nearest:</mat-radio-button>
+        </mat-radio-group>
+      </div>
+    </div>
+
+    <ng-container *ngIf="myMembershipsForDisplay$ | async as groupMemberships; else noMemberships">
       <ng-container *ngFor="let membership of groupMemberships">
         <app-groups-chip
           [membership]="membership"
           (emitListing)="passListingEmissionToParent($event)">
         </app-groups-chip>
       </ng-container>
+      <ng-container *ngIf="memberInteract.membershipIdx < (memberInteract.membershipTotalPages - 1)">
+        <div class="invites-page-info-container">
+          <button class="show-more-invites-button"
+                  (click)="getMoreMemberships()">
+            Show More
+          </button>
+        </div>
+      </ng-container>
+      <div class="invites-page-info-container">
+        <span>( {{ groupMemberships.length }} of {{ memberInteract.membershipTotalEl }} )</span>
+      </div>
     </ng-container>
 
     <ng-template #noMemberships>

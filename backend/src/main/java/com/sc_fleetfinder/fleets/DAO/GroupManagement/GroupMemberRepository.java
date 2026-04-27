@@ -14,7 +14,22 @@ import java.util.Optional;
 
 public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupMemberId> {
 
-    Page<GroupMember> findAllByUser(Users user, Pageable pageable);
+    Page<GroupMember> findAllByUserOrderByCreatedAtDesc(Users user, Pageable pageable);
+
+    @Query(value = """
+            SELECT * FROM group_member m
+            JOIN group_listing l ON m.listing_id = l.id_group
+            WHERE m.user_id = :userId
+            ORDER BY
+                CASE
+                    WHEN l.event_schedule IS NOT NULL
+                    THEN ABS(TIMESTAMPDIFF(SECOND, NOW(), l.event_schedule))
+                    ELSE ABS(TIMESTAMPDIFF(SECOND, NOW(), l.creation_timestamp))
+                END
+            """,
+            countQuery = "SELECT count(*) FROM group_member WHERE user_id = :userId",
+            nativeQuery = true)
+    Page<GroupMember> findAllByUserOrderByEventTimeProximity(@Param("userId") Long userId, Pageable pageable);
 
     Optional<GroupMember> findByUserAndGroupListing(Users user, GroupListing listing);
 

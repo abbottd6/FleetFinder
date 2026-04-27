@@ -51,12 +51,13 @@ export class NotificationComponent implements OnInit {
       case ('NEW_GROUP_INVITE'):
         if(this.note.entityNewStatus === 'REQUEST') {
           this.header = "New request to join your group";
+          this.hasLink = 'user-account/groups?section=memberships'
         } else {
           this.header = `${ this.note.title }`
+          this.hasLink = 'user-account/groups?section=invites';
         }
         this.contextLabel = "Roster: ";
         this.context = toTitleCase(this.note.targetMetadata?.targetLabel ?? '');
-        this.hasLink = 'user-account/groups?section=invites';
         break;
       case ('NEW_GROUP_MEMBER'):
         this.header = this.note.title;

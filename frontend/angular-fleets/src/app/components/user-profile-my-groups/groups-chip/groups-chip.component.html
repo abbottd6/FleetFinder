@@ -27,7 +27,7 @@
       <ng-container *ngIf="(listingDetails.groupStatus === 'Future/Scheduled')">
         <div class="label-val-pair sub-pair">
           <span class="field-label">Event Schedule:</span>
-          <span class="field-val has-val">{{ listingDetails.eventSchedule | date: 'MM/dd/yyyy hh:mm' }}</span>
+          <span class="field-val has-val">{{ listingDetails.eventSchedule | date: 'MM/dd/yyyy hh:mm a' }}</span>
         </div>
       </ng-container>
       <div class="label-val-pair">
@@ -93,7 +93,8 @@
         </button>
       </ng-template>
       <button class="chip-buttons"
-         [disabled]="membership.memberRank.rankTitle === 'Owner'">
+              (click)="memberInteract.memberLeaveGroup(membership)"
+              [disabled]="membership.memberRank.rankTitle === 'Owner'">
         <mat-icon>logout</mat-icon>
         Leave Group
       </button>

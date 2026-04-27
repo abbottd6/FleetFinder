@@ -12,6 +12,9 @@ import {
 } from "../../../services/facade-services/listing-view-interactions/listing-view-interactions.service";
 import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
 import {Router, RouterLink} from "@angular/router";
+import {
+  GroupMembershipsInteractService
+} from "../../../services/facade-services/group-management/group-memberships-interact.service";
 
 @Component({
   selector: 'app-groups-chip',
@@ -39,6 +42,7 @@ export class GroupsChipComponent implements OnInit, OnDestroy {
 
   constructor(protected listingInteract: ListingViewInteractionsService,
               protected chatHostSrv: ChatHostService,
+              protected memberInteract: GroupMembershipsInteractService,
               private router: Router) {}
 
   ngOnInit() {

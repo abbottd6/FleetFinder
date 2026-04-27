@@ -5,18 +5,24 @@ import {
   GroupMembershipViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {BehaviorSubject, EMPTY} from "rxjs";
+import {BehaviorSubject, EMPTY, Observable, takeUntil} from "rxjs";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Page} from "../../../models/page-interface";
-import {
-  GroupInviteViewModel
-} from "../../../models/group-management-models/view-models/group-membership/group-invite-view-model";
+import {SortablePageRequest} from "../../../utils/sortable-page-request";
+import {MembershipSortFields} from "../../../components/user-profile-my-groups/user-profile-my-groups.component";
 
 @Injectable({
   providedIn: 'root'
 })
 export class GroupMembershipsInteractService {
   private destroyRef = inject(DestroyRef);
+
+  public membershipIdx: number = 0;
+  private membershipSize: number = 10;
+  public membershipTotalEl!: number;
+  public membershipTotalPages!: number;
+  private membershipSortDir: string = 'DESC';
+  public membershipSortField: MembershipSortFields = MembershipSortFields.joinedAt;
 
   private groupMembershipsSubject = new BehaviorSubject<GroupMembershipViewModel[]>([]);
   public groupMemberships$ = this.groupMembershipsSubject.asObservable();
@@ -29,12 +35,27 @@ export class GroupMembershipsInteractService {
 
   getMyGroupMemberships() {
     if(this.userService.userLoggedIn) {
-      this.membershipsApiService.getMyGroupMemberships().pipe(takeUntilDestroyed(this.destroyRef))
+      const pageRequest: SortablePageRequest = {
+        page: this.membershipIdx,
+        size: this.membershipSize,
+        sortField: this.membershipSortField,
+        sortDirection: this.membershipSortDir
+      }
+      this.membershipsApiService.getMyGroupMemberships(pageRequest).pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((page: Page<GroupMembershipViewModel>) => {
             this.groupMembershipsSubject.next(page.content);
             this.noMemberships = page.content.length === 0;
+            this.membershipIdx = page.page.number;
+            this.membershipSize = page.page.size;
+            this.membershipTotalEl = page.page.totalElements;
+            this.membershipTotalPages = page.page.totalPages;
         });
     }
+  }
+
+  sortMembershipsPage(field: MembershipSortFields) {
+    this.membershipSortField = field;
+    this.getMyGroupMemberships();
   }
 
   getMyInviteAuthorizedMemberships() {
@@ -54,9 +75,23 @@ export class GroupMembershipsInteractService {
   addAcceptedInviteNewMembership(newMembership: GroupMembershipViewModel) {
     const current = this.groupMembershipsSubject.getValue();
     this.groupMembershipsSubject.next([
-      ...current,
-      newMembership
+      newMembership,
+      ...current
     ])
+  }
+
+  memberLeaveGroup(membership: GroupMembershipViewModel): void {
+    this.membershipsApiService.memberLeaveGroup(membership.listing.groupId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          const before = this.groupMembershipsSubject.getValue();
+          const idx = before.findIndex(m => m.listing.groupId === membership.listing.groupId);
+          this.groupMembershipsSubject.next({
+            ...before.slice(0, idx),
+            ...before.slice(idx + 1)
+          })
+        }
+      })
   }
 
 }

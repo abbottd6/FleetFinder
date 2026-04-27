@@ -6,6 +6,7 @@ import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteRequestDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupMembershipResponseDto;
@@ -55,9 +56,16 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
     }
 
     @Override
-    public Page<GroupMembershipResponseDto> getMyGroupMemberships(Users user) {
-        Pageable pageable = PageRequest.of(0, 50);
-        Page<GroupMember> myMemberships = memberRepo.findAllByUser(user, pageable);
+    public Page<GroupMembershipResponseDto> getMyGroupMemberships(Users user, SortablePageRequestDto pageDto) {
+        Pageable pageable = PageRequest.of(pageDto.getPage(), pageDto.getSize());
+
+        Page<GroupMember> myMemberships;
+
+        if(Objects.equals(pageDto.getSortField(), "nearest")) {
+            myMemberships = memberRepo.findAllByUserOrderByEventTimeProximity(user.getUserId(), pageable);
+        } else {
+            myMemberships = memberRepo.findAllByUserOrderByCreatedAtDesc(user, pageable);
+        }
 
         return myMemberships.map(m -> {
             GroupMembershipResponseDto dto = modelMapper.map(m, GroupMembershipResponseDto.class);

@@ -56,6 +56,46 @@ const INVITE_FILTER_PREDICATES: Record<string, InvitePredicate> = {
   ACTIONED: (i) => ['ACCEPTED', 'DECLINED', 'RESCINDED'].includes(i.inviteStatus),
 };
 
+export interface MembershipProfileFilterState {
+  groupStatus: 'PAST' | 'UPCOMING' | 'BOTH',
+  managementPrivileges: 'PRIVILEGES' | 'NO_PRIVILEGES' | 'BOTH',
+  ownership: 'OWNER' | 'NOT_OWNER' | 'BOTH',
+  roster: 'ACTIVE' | 'WAITLIST' | 'BOTH',
+}
+
+type MembershipPredicate = (membership: GroupMembershipViewModel) => boolean;
+
+const MEMBERSHIP_FILTER_PREDICATES: Record<string, MembershipPredicate> = {
+  UPCOMING: (m) => {
+    const now = Date.now();
+    const oneHourAgo = now - 60 * 60 * 1000;
+    const eventTime = m.listing.eventSchedule ? new Date(m.listing.eventSchedule).getTime() : new Date(m.listing.creationTimestamp).getTime();
+
+    return (eventTime > oneHourAgo)
+  },
+  PAST: (m) => {
+    const now = Date.now();
+    const oneHourAgo = now - 60 * 60 * 1000;
+    const eventTime = m.listing.eventSchedule ? new Date(m.listing.eventSchedule).getTime() : new Date(m.listing.creationTimestamp).getTime();
+
+    return (eventTime < oneHourAgo);
+  },
+  PRIVILEGES: (m) => m.isAuthorizedManager,
+  NO_PRIVILEGES: (m) => (!m.isAuthorizedManager),
+  OWNER: (m) => m.memberRank.rankTitle === 'Owner',
+  NOT_OWNER: (m) => m.memberRank.rankTitle !== 'Owner',
+  ACTIVE: (m) => m.memberStatus === 'ACTIVE',
+  WAITLIST: (m) => m.memberStatus === 'WAITLIST',
+};
+
+export const MembershipSortFields = {
+  joinedAt: 'joinedAt',
+  nearest: 'nearest'
+};
+
+export type MembershipSortFields = (typeof MembershipSortFields)[keyof typeof MembershipSortFields];
+
+
 @Component({
   selector: 'app-user-profile-my-groups',
   standalone: true,
@@ -84,6 +124,11 @@ export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnDe
   protected inviteFilterState$ = new BehaviorSubject<InvitePanelFilterState>({
     direction: 'BOTH', status: 'BOTH', terms: null
   });
+
+  protected myMembershipsForDisplay$ = new Observable<GroupMembershipViewModel[]>;
+  protected membershipFilterState$ = new BehaviorSubject<MembershipProfileFilterState>({
+    groupStatus: 'UPCOMING', ownership: 'BOTH', managementPrivileges: 'BOTH', roster: 'BOTH'
+  })
 
   @Input() routeSubsectionSelect?: string;
   groupsSubsections = ['invites', 'memberships'];
@@ -114,6 +159,16 @@ export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnDe
       filter(([invites]) => !!invites),
       map(([invites, filterState]) =>
         this.filterInvites(invites, filterState))
+    )
+
+    this.myMembershipsForDisplay$ = combineLatest([
+      this.memberInteract.groupMemberships$,
+      this.membershipFilterState$
+    ]).pipe(
+      takeUntil(this.destroy$),
+      filter(([memberships]) => !!memberships),
+      map(([memberships, filterState]) =>
+        this.filterMemberships(memberships, filterState))
     )
   }
 
@@ -157,9 +212,37 @@ export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnDe
     });
   }
 
+  filterMemberships(memberships: GroupMembershipViewModel[], filterState: MembershipProfileFilterState): GroupMembershipViewModel[] {
+    return memberships.filter(member => {
+
+      const statusMatch = filterState.groupStatus === 'BOTH' ||
+        MEMBERSHIP_FILTER_PREDICATES[filterState.groupStatus](member);
+
+      const privilegeMatch = filterState.managementPrivileges === 'BOTH' ||
+        MEMBERSHIP_FILTER_PREDICATES[filterState.managementPrivileges](member);
+
+      const ownershipMatch = filterState.ownership === 'BOTH' ||
+        MEMBERSHIP_FILTER_PREDICATES[filterState.ownership](member);
+
+      const rosterMatch = filterState.roster === 'BOTH' ||
+        MEMBERSHIP_FILTER_PREDICATES[filterState.roster](member);
+
+      return statusMatch && privilegeMatch && ownershipMatch && rosterMatch;
+    })
+  }
+
+  sortMemberships(field: MembershipSortFields) {
+    this.memberInteract.sortMembershipsPage(field);
+  }
+
   getMoreInvites() {
     this.invIdx++
     this.getMyGroupInvites();
+  }
+
+  getMoreMemberships() {
+    this.memberInteract.membershipIdx++
+    this.memberInteract.getMyGroupMemberships();
   }
 
   handleInviteChipAction(actionInvite: MemberInviteActionInterface) {
@@ -258,6 +341,8 @@ export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnDe
     }
   }
 
+  //INVITE FILTERS
+
   onStatusFilterChange(status: InvitePanelFilterState['status']) {
     this.inviteFilterState$.next({
       ...this.inviteFilterState$.getValue(),
@@ -269,6 +354,36 @@ export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnDe
     this.inviteFilterState$.next({
       ...this.inviteFilterState$.getValue(),
       direction
+    })
+  }
+
+  //MEMBERSHIP FILTERS
+
+  onMembershipGroupScheduleFilterChange(groupStatus: MembershipProfileFilterState['groupStatus']) {
+    this.membershipFilterState$.next({
+      ...this.membershipFilterState$.getValue(),
+      groupStatus
+    })
+  }
+
+  onMembershipPrivilegesFilterChange(managementPrivileges: MembershipProfileFilterState['managementPrivileges']) {
+    this.membershipFilterState$.next({
+      ...this.membershipFilterState$.getValue(),
+      managementPrivileges
+    })
+  }
+
+  onMembershipOwnershipFilterChange(ownership: MembershipProfileFilterState['ownership']) {
+    this.membershipFilterState$.next({
+      ...this.membershipFilterState$.getValue(),
+      ownership
+    })
+  }
+
+  onMembershipRosterFilterChange(roster: MembershipProfileFilterState['roster']) {
+    this.membershipFilterState$.next({
+      ...this.membershipFilterState$.getValue(),
+      roster
     })
   }
 
