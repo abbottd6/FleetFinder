@@ -74,7 +74,8 @@
           <!-- MY GROUPS TAB -->
           <ng-container *ngIf="selectedTab === 'groups'">
             <app-user-profile-my-groups
-              (emitListing)="onListingSelected($event)">
+              (emitListing)="onListingSelected($event)"
+              [routeSubsectionSelect]="routeSubsection">
             </app-user-profile-my-groups>
           </ng-container>
 
@@ -88,7 +89,8 @@
 
           <!-- NOTIFICATIONS TAB -->
           <ng-container *ngIf="selectedTab === 'notifications'">
-            <app-profile-notifications-tab>
+            <app-profile-notifications-tab
+              [routeSubsectionSelect]="routeSubsection">
             </app-profile-notifications-tab>
           </ng-container>
 

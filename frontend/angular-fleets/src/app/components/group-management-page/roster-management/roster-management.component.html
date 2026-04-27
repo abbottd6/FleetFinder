@@ -8,42 +8,45 @@
 <h5 class="subgroup-header">
   Roster
 </h5>
-<ng-container *ngIf="!rosterIsLoading; else rosterLoading">
-  <mat-tab-group class="tab-group-container" mat-stretch-tabs="false" mat-align-tabs="center">
-    <mat-tab
-      label="Active"
-      class="tab-widget">
-      <ng-template matTabContent>
-        <app-active-roster-panel>
+<mat-tab-group class="tab-group-container"
+               mat-stretch-tabs="false"
+               mat-align-tabs="center"
+               (selectedTabChange)="onTabSwitch($event)">
 
+  <mat-tab
+    label="Active"
+    class="tab-widget">
+    <ng-template matTabContent>
+      <ng-container *ngIf="(selectedTab$ | async) === RosterTabOptions.Active">
+        <app-active-roster-panel
+          [groupId]="groupId">
         </app-active-roster-panel>
-      </ng-template>
-    </mat-tab>
-    <mat-tab
-      label="Invites"
-      class="tab-widget">
-      <ng-template matTabContent>
-        <app-roster-invite-panel>
-
+      </ng-container>
+    </ng-template>
+  </mat-tab>
+  <mat-tab
+    label="Invites"
+    class="tab-widget">
+    <ng-template matTabContent>
+      <ng-container *ngIf="(selectedTab$ | async) === RosterTabOptions.Invite">
+        <app-roster-invite-panel
+          [groupId]="groupId">
         </app-roster-invite-panel>
-      </ng-template>
-    </mat-tab>
-    <mat-tab
-      label="Waitlist"
-      class="tab-widget">
-      <ng-template matTabContent>
-        <app-waitlist-roster-panel>
-
+      </ng-container>
+    </ng-template>
+  </mat-tab>
+  <mat-tab
+    label="Waitlist"
+    class="tab-widget">
+    <ng-template matTabContent>
+      <ng-container *ngIf="(selectedTab$ | async) === RosterTabOptions.Waitlist">
+        <app-waitlist-roster-panel
+          [groupId]="groupId">
         </app-waitlist-roster-panel>
-      </ng-template>
-    </mat-tab>
-  </mat-tab-group>
-</ng-container>
-<ng-template #rosterLoading>
-  <div class="mat-spinner-container">
-    <mat-spinner></mat-spinner>
-  </div>
-</ng-template>
+      </ng-container>
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>
 
 
 

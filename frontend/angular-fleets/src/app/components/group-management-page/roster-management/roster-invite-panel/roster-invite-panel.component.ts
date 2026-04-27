@@ -1,5 +1,5 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
-import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, switchMap, take, takeUntil} from "rxjs";
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, takeUntil} from "rxjs";
 import {
   MemberManagementApiService
 } from "../../../../services/api-services/group-management/member-management-api.service";
@@ -7,7 +7,7 @@ import {
   GroupManagementInteractService
 } from "../../../../services/facade-services/group-management/group-management-interact.service";
 import {InviteOptionsPanelComponent} from "./invite-options-panel/invite-options-panel.component";
-import {AsyncPipe, NgForOf} from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {InviteActions, InviteChipComponent, InviteWithActionInterface} from "./invite-chip/invite-chip.component";
 import {
   GroupManagementInviteViewModel
@@ -15,11 +15,10 @@ import {
 import {
   GroupManagementUiPrefsService
 } from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
-import {ConversationProvisionInterface} from "../../../../services/facade-services/chat/chat-host.service";
 import {
   GroupListingFetchService
 } from "../../../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
-import {GroupListingViewModel} from "../../../../models/group-listing/group-listing-view-model";
+import {RosterTabOptions} from "../roster-management.component";
 
 export interface InvitePanelFilterState {
   direction: 'OFFER' | 'REQUEST' | 'BOTH',
@@ -45,14 +44,14 @@ const INVITE_FILTER_PREDICATES: Record<string, InvitePredicate> = {
     InviteOptionsPanelComponent,
     AsyncPipe,
     InviteChipComponent,
-    NgForOf
+    NgForOf,
   ],
   styleUrl: './roster-invite-panel.component.css'
 })
 export class RosterInvitePanelComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  protected groupId!: number;
+  @Input() groupId!: number;
 
   inviteFilterState$ = new BehaviorSubject<InvitePanelFilterState>({
     direction: 'BOTH', status: 'PENDING', terms: null
@@ -66,12 +65,6 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
               private listingFetch: GroupListingFetchService){}
 
   ngOnInit() {
-    if(this.managementInteract.sessionManager) {
-      this.groupId = this.managementInteract.sessionManager?.listing.groupId;
-    }
-
-    this.managementInteract.fetchGroupInvites(this.groupId);
-
     const tempFilterState = this.mgmtUiPrefs.storedInviteFilters;
     this.inviteFilterState$.next({
       ...tempFilterState,
@@ -82,6 +75,7 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
       this.managementInteract.groupInvites$,
       this.inviteFilterState$
     ]).pipe(
+      takeUntil(this.destroy$),
       filter(([invites]) => !!invites),
       map(([invites, filterState]) =>
         this.filterInvites(invites.content, filterState))
@@ -130,4 +124,6 @@ export class RosterInvitePanelComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  protected readonly RosterTabOptions = RosterTabOptions;
 }

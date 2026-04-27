@@ -1,10 +1,10 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
-import {MatTab, MatTabContent, MatTabGroup} from "@angular/material/tabs";
-import {NgIf} from "@angular/common";
+import {MatTab, MatTabChangeEvent, MatTabContent, MatTabGroup} from "@angular/material/tabs";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {ActiveRosterPanelComponent} from "./active-roster-panel/active-roster-panel.component";
-import {Subject} from "rxjs";
+import {BehaviorSubject, Subject} from "rxjs";
 import {
   MemberManagementApiService
 } from "../../../services/api-services/group-management/member-management-api.service";
@@ -16,13 +16,18 @@ import {WaitlistRosterPanelComponent} from "./waitlist-roster-panel/waitlist-ros
 import {RouterLink} from "@angular/router";
 import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
 
+export enum RosterTabOptions {
+  Active = 'Active',
+  Invite = 'Invite',
+  Waitlist = 'Waitlist'
+}
+
 @Component({
     selector: 'app-roster-management',
     standalone: true,
     templateUrl: './roster-management.component.html',
   imports: [
     MatIcon,
-    MatProgressSpinner,
     MatTab,
     MatTabContent,
     MatTabGroup,
@@ -30,26 +35,55 @@ import {ChatHostService} from "../../../services/facade-services/chat/chat-host.
     ActiveRosterPanelComponent,
     RosterInvitePanelComponent,
     WaitlistRosterPanelComponent,
-    RouterLink
+    RouterLink,
+    AsyncPipe,
   ],
     styleUrl: './roster-management.component.css'
 })
 export class RosterManagementComponent implements OnInit, OnDestroy{
   private destroy$ = new Subject<void>();
 
-  protected rosterIsLoading: boolean = true;
+  groupId!: number;
+
+  public selectedTab$ = new BehaviorSubject<RosterTabOptions | null>(RosterTabOptions.Active);
 
   constructor(private memberManagementApi: MemberManagementApiService,
               protected managementInteract: GroupManagementInteractService,
               protected chatHostSrv: ChatHostService) {}
 
   ngOnInit() {
-    this.rosterIsLoading = true;
-    setTimeout(() => this.rosterIsLoading = false, 1000)
+    if(this.managementInteract.sessionManager) {
+      this.groupId = this.managementInteract.sessionManager?.listing.groupId;
+    } else {
+      return;
+    }
+
+    this.selectedTab$.next(RosterTabOptions.Active);
+    this.handleTabLoad(0);
+  }
+
+  onTabSwitch(event: MatTabChangeEvent) {
+    this.selectedTab$.next(null);
+    this.handleTabLoad(event.index)
+  }
+
+  handleTabLoad(idx: number) {
+    if (idx === 0) {
+      this.selectedTab$.next(RosterTabOptions.Active);
+      this.managementInteract.fetchActiveRoster(this.groupId);
+    } else if (idx === 1) {
+      this.selectedTab$.next(RosterTabOptions.Invite);
+      this.managementInteract.fetchGroupInvites(this.groupId);
+    } else if (idx === 2) {
+      this.selectedTab$.next(RosterTabOptions.Waitlist);
+      this.managementInteract.fetchWaitlistRoster(this.groupId);
+    }
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  protected readonly RosterTabOptions = RosterTabOptions;
 }

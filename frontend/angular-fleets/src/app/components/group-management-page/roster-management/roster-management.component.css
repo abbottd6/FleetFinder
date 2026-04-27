@@ -17,6 +17,10 @@
   font-size: 1.15rem;
 }
 
+.mat-spinner-container {
+
+}
+
 /* MAT TABS ROSTER PANEL ----------------------------------------------------------------------------*/
 
 :host ::ng-deep .mat-mdc-tab-group {

@@ -1,14 +1,12 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Subject, takeUntil} from "rxjs";
-import {
-  MemberManagementApiService
-} from "../../../../services/api-services/group-management/member-management-api.service";
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Observable, Subject, takeUntil} from "rxjs";
 import {
   GroupManagementInteractService
 } from "../../../../services/facade-services/group-management/group-management-interact.service";
 import {ActiveRosterOptionsPanelComponent} from "./active-roster-options-panel/active-roster-options-panel.component";
-import {AsyncPipe, NgForOf} from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {MemberChipComponent} from "../member-chip/member-chip.component";
+import {RosterTabOptions} from "../roster-management.component";
 
 @Component({
   selector: 'app-active-roster-panel',
@@ -18,29 +16,25 @@ import {MemberChipComponent} from "../member-chip/member-chip.component";
     ActiveRosterOptionsPanelComponent,
     NgForOf,
     AsyncPipe,
-    MemberChipComponent
+    MemberChipComponent,
   ],
   styleUrl: './active-roster-panel.component.css'
 })
 export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  protected groupId!: number;
+  @Input() groupId!: number;
 
   constructor(protected managementInteract: GroupManagementInteractService){}
 
   ngOnInit() {
-    if(this.managementInteract.sessionManager) {
-      this.groupId = this.managementInteract.sessionManager?.listing.groupId;
-    } else {
-      return;
-    }
 
-    this.managementInteract.fetchActiveRoster(this.groupId);
   }
 
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  protected readonly RosterTabOptions = RosterTabOptions;
 }

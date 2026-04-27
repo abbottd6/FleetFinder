@@ -4,6 +4,7 @@ import {DatePipe, NgIf, SlicePipe} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {NotificationService} from "../../../../services/facade-services/notifications/notification.service";
 import {Router} from "@angular/router";
+import {toTitleCase} from "../../../../utils/global-functions";
 
 @Component({
   selector: 'app-notification',
@@ -38,21 +39,13 @@ export class NotificationComponent implements OnInit {
       case ('LISTING_VIS_STATUS_CHANGED'):
         this.header = "Listing visibility status changed";
         this.contextLabel = "New status: ";
-        this.context = this.note.targetMetadata?.addContext;
-        this.hasLink = 'user-account';
-        break;
-      case ('LISTING_ARCHIVED'):
-        this.header = this.note.title;
-        break;
-      case ('MOD_DELETE'):
-        this.header = "Listing removed by a moderator";
-        this.contextLabel = "Performed by: ";
-        this.context = this.note.targetMetadata?.targetLabel;
+        this.context = toTitleCase(this.note.targetMetadata?.addContext ?? '');
+        this.hasLink = 'user-account/listings';
         break;
       case ('NEW_LISTING_MATCH'):
         this.header = this.note.title;
         this.contextLabel = "Group Status: ";
-        this.context = this.note.targetMetadata?.addContext;
+        this.context = toTitleCase(this.note.targetMetadata?.addContext ?? '');
         this.hasLink = "listing-details/" + this.note.targetMetadata?.targetId;
         break;
       case ('NEW_GROUP_INVITE'):
@@ -61,9 +54,23 @@ export class NotificationComponent implements OnInit {
         } else {
           this.header = `${ this.note.title }`
         }
-        this.contextLabel = "From: ";
-        this.context = this.note.targetMetadata?.noteTopic;
-        this.hasLink = 'user-account';
+        this.contextLabel = "Roster: ";
+        this.context = toTitleCase(this.note.targetMetadata?.targetLabel ?? '');
+        this.hasLink = 'user-account/groups?section=invites';
+        break;
+      case ('NEW_GROUP_MEMBER'):
+        this.header = this.note.title;
+        this.contextLabel = "Member: ";
+        this.context = this.note.targetMetadata?.targetLabel;
+        this.hasLink = 'user-account/groups?section=memberships';
+        break;
+      case ('LISTING_ARCHIVED'):
+        this.header = this.note.title;
+        break;
+      case ('MOD_DELETE'):
+        this.header = "Listing removed by a moderator";
+        this.contextLabel = "Performed by: ";
+        this.context = this.note.targetMetadata?.targetLabel;
         break;
     }
 
@@ -78,7 +85,6 @@ export class NotificationComponent implements OnInit {
   }
 
   routeLink(url: string) {
-    console.warn("THIS IS THE URL: ", url);
     this.router.navigateByUrl(url);
   }
 }

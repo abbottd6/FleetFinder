@@ -47,6 +47,14 @@
   flex-direction: column;
 }
 
+.accepted {
+  color: var(--stark-blue);
+}
+
+.terminal {
+  color: var(--border-bottom-fade-gray)
+}
+
 .invite-details-popup-click-target {
   padding: 4px;
   border-radius: 6px;

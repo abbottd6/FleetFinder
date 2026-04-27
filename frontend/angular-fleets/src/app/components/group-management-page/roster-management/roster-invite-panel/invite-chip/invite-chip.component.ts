@@ -3,7 +3,7 @@ import {Subject} from "rxjs";
 import {
   GroupManagementInviteViewModel
 } from "../../../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
-import {NgIf, TitleCasePipe} from "@angular/common";
+import {NgClass, NgIf, TitleCasePipe} from "@angular/common";
 import {
   UserMonikerSummaryViewModel
 } from "../../../../../models/group-management-models/nested-models/user-moniker-summary-view-model";
@@ -11,6 +11,9 @@ import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {MatDialog} from "@angular/material/dialog";
 import {InviteDetailsPopupComponent} from "../invite-details-popup/invite-details-popup.component"
+import {
+  InviteStatus
+} from "../../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
 
 export const InviteActions = {
   RESCIND: 'RESCINDED',
@@ -48,6 +51,7 @@ export type InviteWithActionInterface = {
     MatIcon,
     MatTooltip,
     TitleCasePipe,
+    NgClass,
   ],
   styleUrl: './invite-chip.component.css'
 })
@@ -112,4 +116,7 @@ export class InviteChipComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  protected readonly InviteStatus = InviteStatus;
+  protected readonly InviteActions = InviteActions;
 }

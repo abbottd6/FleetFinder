@@ -19,6 +19,7 @@ const routes: Routes = [
   { path: 'group-listings', component: GroupListingsComponent },
   { path: 'create-listing', component: CreateListingComponent, canActivate: [ AuthGuard ] },
   { path: 'user-account', component: UserComponent, canActivate: [ AuthGuard ] },
+  { path: 'user-account/:tab', component: UserComponent, canActivate: [ AuthGuard ] },
   { path: 'update-listing', component: UpdateListingComponent, canActivate: [ AuthGuard ] },
   { path: 'group-management/:groupId', component: GroupManagementPageComponent, canActivate: [ AuthGuard ] },
   { path: 'about', component: AboutComponent },

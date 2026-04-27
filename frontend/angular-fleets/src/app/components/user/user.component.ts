@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {map, shareReplay, Subject, take, takeUntil} from "rxjs";
-import {RouterModule} from "@angular/router";
+import {ActivatedRoute, RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
 import {MatListItem, MatNavList} from "@angular/material/list";
@@ -49,7 +49,18 @@ import {
 } from "../user-profile-notification-settings-tab/profile-notifications-tab.component";
 import {MatExpansionPanel, MatExpansionPanelHeader, MatExpansionPanelTitle} from "@angular/material/expansion";
 import {UserProfileMyGroupsComponent} from "../user-profile-my-groups/user-profile-my-groups.component";
-import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
+
+const VALID_TABS = [
+  'groups',
+  'listings',
+  'notifications',
+  'bookmarks',
+  'templates',
+  'profile',
+  'content_mod'
+] as const;
+
+type ProfileSelectedTab = typeof VALID_TABS[number];
 
 @Component({
     selector: 'app-user',
@@ -73,12 +84,14 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('profileContainer') profileContainer!: ElementRef;
   protected containerHeight!: string;
 
+  routeSubsection?: string;
+
   //modal popup vars
   selectedListing: GroupListingViewModel | null = null;
   selectedTemplate: ListingTemplateViewModel | null = null;
 
   groupListings: GroupListingViewModel[] = []
-  selectedTab: 'groups' | 'listings' | 'notifications' | 'bookmarks' | 'templates' | 'profile' | 'content_mod' = 'groups';
+  selectedTab: ProfileSelectedTab = 'groups';
   shouldDisplayMod$: boolean = false;
 
   protected editing: boolean = false;
@@ -90,7 +103,8 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
               private chatHostSrv: ChatHostService,
               private userApiSrv: UserApiService,
               private dialog: MatDialog,
-              protected userFormSrv: UpdateUserFormService) {
+              protected userFormSrv: UpdateUserFormService,
+              private route: ActivatedRoute) {
 
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
       if(reason != null) {
@@ -112,6 +126,18 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
       map(user => user?.groupListingsDto ?? []),
       takeUntil(this.destroy$)
     ).subscribe(listings => this.groupListings = listings);
+
+    this.route.paramMap.subscribe(params => {
+      const tab = params.get('tab') ?? 'groups';
+      if(this.isValidTabParam(tab)) {
+        this.selectTab(tab as ProfileSelectedTab);
+
+        this.route.queryParams.subscribe(params => {
+          this.routeSubsection = params['section'];
+          
+        })
+      }
+    })
   }
 
   ngOnDestroy() {
@@ -123,7 +149,7 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.userService.primaryRole == UserRole.mod;
   }
 
-  selectTab(tab: typeof this.selectedTab){
+  selectTab(tab: ProfileSelectedTab){
     this.selectedTab = tab;
     this.isMobile$.pipe(take(1)).subscribe(isMobile => {
       if(isMobile && this.selectedTab != 'groups') {
@@ -193,6 +219,10 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
           this.editing = false;
       }
     )
+  }
+
+  isValidTabParam(tab: string | null) {
+    return !!tab && VALID_TABS.includes(tab as ProfileSelectedTab);
   }
 
   ngAfterViewInit() {

@@ -1,4 +1,4 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
     ActiveRosterOptionsPanelComponent
 } from "../active-roster-panel/active-roster-options-panel/active-roster-options-panel.component";
@@ -9,12 +9,6 @@ import {
 } from "../../../../services/facade-services/group-management/group-management-interact.service";
 import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, takeUntil} from "rxjs";
 import {
-  GroupManagementInviteViewModel
-} from "../../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
-import {
-  MemberManagementApiService
-} from "../../../../services/api-services/group-management/member-management-api.service";
-import {
   GroupManagementUiPrefsService
 } from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
 import {
@@ -24,6 +18,7 @@ import {InviteActions, InviteWithActionInterface} from "../roster-invite-panel/i
 import {
   GroupManagementMemberViewModel
 } from "../../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
+import {RosterTabOptions} from "../roster-management.component";
 
 export const WaitlistRosterActions = {
   MOVE_TO_ACTIVE: 'ACTIVE',
@@ -51,14 +46,14 @@ export interface WaitlistPanelFilterState {
     AsyncPipe,
     MemberChipComponent,
     NgForOf,
-    NgIf
+    NgIf,
   ],
     styleUrl: './waitlist-roster-panel.component.css'
 })
 export class WaitlistRosterPanelComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  protected groupId!: number;
+  @Input() groupId!: number;
 
   waitlistFilterState$ = new BehaviorSubject<WaitlistPanelFilterState>({
     terms: null
@@ -71,11 +66,6 @@ export class WaitlistRosterPanelComponent implements OnInit, OnDestroy {
               private listingFetch: GroupListingFetchService){}
 
   ngOnInit() {
-    if(this.managementInteract.sessionManager) {
-      this.groupId = this.managementInteract.sessionManager?.listing.groupId;
-    }
-
-    this.managementInteract.fetchWaitlistRoster(this.groupId);
 
     // uiPrefs does not store waitlist filters yet because only field is 'terms'
     // const tempFilterState = this.mgmtUiPrefs.storedWaitlistFilters;
@@ -139,4 +129,6 @@ export class WaitlistRosterPanelComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  protected readonly RosterTabOptions = RosterTabOptions;
 }

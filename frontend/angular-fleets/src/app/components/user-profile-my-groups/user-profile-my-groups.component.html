@@ -20,9 +20,10 @@
     </ul>
   </div>
 </div>
-<mat-accordion class="groups-accordion-container" [multi]="true">
+<mat-accordion class="groups-accordion-container"
+               [multi]="true">
 
-  <mat-expansion-panel>
+  <mat-expansion-panel id="invites" [expanded]="routeSubsectionSelect === 'invites'">
     <mat-expansion-panel-header>
       <mat-panel-title class="child-container-header">
         Invites & Requests
@@ -33,13 +34,32 @@
     </mat-expansion-panel-header>
 
     <div class="group-memberships-wrapper">
+
       <div class="options-panel">
-        <app-invite-options-panel
-          [inviteFilterState$]="inviteFilterState$"
-          (emitFilterState)="catchFilterStateChange($event)">
-        </app-invite-options-panel>
+        <div class="options-subgroup">
+          <span class="options-subgroup-header">Status</span>
+          <mat-radio-group [value]="(inviteFilterState$ | async)?.status"
+                           (change)="onStatusFilterChange($event.value)"
+                           class="radio-row">
+            <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
+            <mat-radio-button value="PENDING" labelPosition="before">Pending:</mat-radio-button>
+            <mat-radio-button value="ACTIONED" labelPosition="before">Actioned:</mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <div class="options-subgroup">
+          <span class="options-subgroup-header">Direction</span>
+          <mat-radio-group [value]="(inviteFilterState$ | async)?.direction"
+                           (change)="onDirectionFilterChange($event.value)"
+                           class="radio-row">
+            <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
+            <mat-radio-button value="OFFER" labelPosition="before">Offers:</mat-radio-button>
+            <mat-radio-button value="REQUEST" labelPosition="before">Requests:</mat-radio-button>
+          </mat-radio-group>
+        </div>
       </div>
-      <ng-container *ngIf="myInvitesSubject$ | async as myInvites">
+
+      <ng-container *ngIf="myInvitesForDisplay$ | async as myInvites">
         <ng-container *ngFor="let invite of myInvites">
           <app-my-invites-chip
             [invite]="invite"
@@ -70,7 +90,7 @@
   </mat-expansion-panel>
 
 
-  <mat-expansion-panel [expanded]="true">
+  <mat-expansion-panel id="memberships" [expanded]="true">
     <mat-expansion-panel-header>
       <mat-panel-title class="child-container-header">
         Group Memberships

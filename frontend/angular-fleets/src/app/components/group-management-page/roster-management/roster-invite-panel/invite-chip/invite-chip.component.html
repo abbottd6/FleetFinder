@@ -97,7 +97,11 @@ recipientSummary
           </span>
         <small class="chip-field-val">For: {{ invite.memberStatus|titlecase }} {{ invite.memberStatus === 'ACTIVE' ? 'roster' : ''}}</small>
       </div>
-      <span class="chip-field-val">
+      <span class="chip-field-val"
+            [ngClass]="{
+            accepted: invite.inviteStatus === InviteActions.ACCEPT,
+            terminal: invite.inviteStatus !== InviteActions.ACCEPT,
+            }">
         '{{ invite.inviteStatus|titlecase }}'
       </span>
     </div>

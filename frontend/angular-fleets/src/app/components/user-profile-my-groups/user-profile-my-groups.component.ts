@@ -1,4 +1,12 @@
-import {Component, EventEmitter, OnDestroy, OnInit, Output} from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+} from '@angular/core';
 import {
   GroupMembershipViewModel
 } from "../../models/group-management-models/view-models/group-membership/group-membership-view-model";
@@ -6,7 +14,7 @@ import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {
   GroupMembershipsInteractService
 } from "../../services/facade-services/group-management/group-memberships-interact.service";
-import {BehaviorSubject, Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, takeUntil} from "rxjs";
 import {GroupsChipComponent} from "./groups-chip/groups-chip.component";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {UiPrefsService} from "../../services/facade-services/ui-prefs/ui-prefs.service";
@@ -34,6 +42,19 @@ import {
   InviteOptionsPanelComponent
 } from "../group-management-page/roster-management/roster-invite-panel/invite-options-panel/invite-options-panel.component";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
+import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
+import {
+  GroupManagementInviteViewModel
+} from "../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
+
+type InvitePredicate = (invite: GroupInviteViewModel) => boolean;
+
+const INVITE_FILTER_PREDICATES: Record<string, InvitePredicate> = {
+  OFFER: (i) => i.inviteDirection === 'OFFER',
+  REQUEST: (i) => i.inviteDirection === 'REQUEST',
+  PENDING: (i) => i.inviteStatus === 'PENDING',
+  ACTIONED: (i) => ['ACCEPTED', 'DECLINED', 'RESCINDED'].includes(i.inviteStatus),
+};
 
 @Component({
   selector: 'app-user-profile-my-groups',
@@ -50,18 +71,22 @@ import {ChatHostService} from "../../services/facade-services/chat/chat-host.ser
     MatExpansionPanelDescription,
     MatAccordion,
     MyInvitesChipComponent,
-    InviteOptionsPanelComponent
+    MatRadioButton,
+    MatRadioGroup,
   ],
   styleUrl: './user-profile-my-groups.component.css'
 })
-export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
+export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   protected myInvitesSubject$ = new BehaviorSubject<GroupInviteViewModel[]>([]);
+  protected myInvitesForDisplay$ = new Observable<GroupInviteViewModel[]>
   protected inviteFilterState$ = new BehaviorSubject<InvitePanelFilterState>({
     direction: 'BOTH', status: 'BOTH', terms: null
   });
 
+  @Input() routeSubsectionSelect?: string;
+  groupsSubsections = ['invites', 'memberships'];
 
   protected invIdx: number = 0;
   protected invSize: number = 10;
@@ -80,6 +105,22 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
     this.memberInteract.getMyGroupMemberships();
     this.getMyGroupInvites();
     this.uiPrefs.loadUiPrefs();
+
+    this.myInvitesForDisplay$ = combineLatest([
+      this.myInvitesSubject$,
+      this.inviteFilterState$
+    ]).pipe(
+      takeUntil(this.destroy$),
+      filter(([invites]) => !!invites),
+      map(([invites, filterState]) =>
+        this.filterInvites(invites, filterState))
+    )
+  }
+
+  ngAfterViewInit() {
+    if(this.routeSubsectionSelect) {
+      setTimeout(() => this.scrollToSection(this.routeSubsectionSelect), 300);
+    }
   }
 
   passListingEmissionToParent(listing: GroupListingViewModel) {
@@ -106,6 +147,14 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
           this.showSnackBarMessage(msg);
         }
       })
+  }
+
+  filterInvites(invites: GroupInviteViewModel[], filterState: InvitePanelFilterState): GroupInviteViewModel[] {
+    return invites.filter(invite => {
+      const directionMatch = filterState.direction === 'BOTH' || INVITE_FILTER_PREDICATES[filterState.direction](invite);
+      const statusMatch = filterState.status === 'BOTH' || INVITE_FILTER_PREDICATES[filterState.status](invite);
+      return directionMatch && statusMatch;
+    });
   }
 
   getMoreInvites() {
@@ -209,8 +258,18 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
     }
   }
 
-  catchFilterStateChange(state: InvitePanelFilterState) {
-    this.inviteFilterState$.next(state);
+  onStatusFilterChange(status: InvitePanelFilterState['status']) {
+    this.inviteFilterState$.next({
+      ...this.inviteFilterState$.getValue(),
+      status
+    })
+  }
+
+  onDirectionFilterChange(direction: InvitePanelFilterState['direction']) {
+    this.inviteFilterState$.next({
+      ...this.inviteFilterState$.getValue(),
+      direction
+    })
   }
 
   showSnackBarMessage(message: string) {
@@ -231,6 +290,17 @@ export class UserProfileMyGroupsComponent implements OnInit, OnDestroy {
       updated,
       ...currentInvs.slice(idx + 1)
     ])
+  }
+
+  scrollToSection(section: string | undefined) {
+    if (!section) return;
+
+    if(this.groupsSubsections.includes(section)) {
+      document.getElementById(section)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    }
   }
 
   ngOnDestroy() {

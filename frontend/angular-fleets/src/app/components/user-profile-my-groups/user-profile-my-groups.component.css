@@ -37,8 +37,33 @@
 }
 
 .options-panel {
-  width: 100%;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 350px);
+  width: 96%;
+  margin-top: 15px;
+  margin-inline: auto;
+  background-color: rgba(150, 168, 183, .1);
+  padding: 10px;
+  justify-content: space-around;
+  font-family: 'Exo 2', sans-serif;
+  border-radius: 12px;
+  box-shadow: 0 0 5px rgba(37, 37, 37, 0.35);
+}
+
+.options-subgroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.options-subgroup mat-radio-button {
+  margin-right: 20px;
+}
+
+.options-subgroup-header {
+  border-bottom: 1px solid var(--border-bottom-fade-gray);
+  width: 340px;
+  font-size: 16px;
+  font-family: 'Orbitron', sans-serif;
 }
 
 :host ::ng-deep .options-panel app-invite-options-panel .options-accordion-panel {

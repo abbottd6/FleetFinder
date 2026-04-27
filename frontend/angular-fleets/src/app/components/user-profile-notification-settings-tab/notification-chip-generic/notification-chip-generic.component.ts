@@ -3,6 +3,7 @@ import {DatePipe, NgIf} from "@angular/common";
 import {NotificationViewModel} from "../../../models/NotificationViewModel";
 import {MatIcon} from "@angular/material/icon";
 import {Router} from "@angular/router";
+import {toTitleCase} from "../../../utils/global-functions";
 
 @Component({
   selector: 'app-notification-chip-generic',
@@ -45,9 +46,37 @@ export class NotificationChipGenericComponent implements OnInit {
         }
 
         this.contextLabel = "New status: ";
-        this.context = this.inputNote.targetMetadata?.addContext;
+        this.context = toTitleCase(this.inputNote.targetMetadata?.addContext ?? '');
         break;
 
+      case ('NEW_GROUP_INVITE'):
+        this.header = this.inputNote.title;
+        if(this.inputNote.message.length > 50) {
+          this.targetTitle = "For Group: " + "\"" + this.inputNote.targetMetadata?.targetLabel.substring(0, 47) + "...\"";
+        } else {
+          this.targetTitle = "For Group: " + "\"" + this.inputNote.targetMetadata?.targetLabel;
+        }
+
+        this.contextLabel = "For roster: ";
+        this.context = toTitleCase(this.inputNote.targetMetadata?.addContext ?? '');
+        break;
+
+      case ('NEW_GROUP_MEMBER'):
+        break;
+
+      case ('NEW_LISTING_MATCH'):
+        this.header = this.inputNote.title;
+
+        if(this.inputNote.message.length > 42) {
+          this.targetTitle = "Your listing: " + "\"" + this.inputNote.message.substring(0, 42) + "\"";
+        } else {
+          this.targetTitle = "Listing title: " + "\"" + this.inputNote.message + "\""
+        }
+
+        this.contextLabel = "Group Status: ";
+        this.context = this.inputNote.targetMetadata?.addContext;
+        this.hasLink = "listing-details/" + this.inputNote.targetMetadata?.targetId
+        break;
 
       case ('LISTING_ARCHIVED'):
         this.header = this.inputNote.title;
@@ -57,7 +86,6 @@ export class NotificationChipGenericComponent implements OnInit {
         } else {
           this.targetTitle = "Your listing: " + "\"" + this.inputNote.message + "\""
         }
-
         break;
 
 
@@ -73,20 +101,6 @@ export class NotificationChipGenericComponent implements OnInit {
         this.contextLabel = "Performed by: ";
         this.context = this.inputNote.targetMetadata?.targetLabel;
         break;
-
-
-      case ('NEW_LISTING_MATCH'):
-        this.header = this.inputNote.title;
-
-        if(this.inputNote.message.length > 42) {
-          this.targetTitle = "Your listing: " + "\"" + this.inputNote.message.substring(0, 42) + "\"";
-        } else {
-          this.targetTitle = "Listing title: " + "\"" + this.inputNote.message + "\""
-        }
-
-        this.contextLabel = "Group Status: ";
-        this.context = this.inputNote.targetMetadata?.addContext;
-        this.hasLink = "listing-details/" + this.inputNote.targetMetadata?.targetId
     }
 
     if (this.inputNote.message.includes("EXPIRED")) {

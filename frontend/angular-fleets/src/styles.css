@@ -10,7 +10,7 @@
   --clip-t-right-b-left: polygon(0% 0%, 87.5% 0%, 100% 12.5%, 100% 100%, 12.5% 100%, 0% 87.5%);
   --clip-t-right-b-left-border: polygon(0% 0%, 95% 0%, 100% 5%, 100% 100%, 5% 100%, 0% 95%);
   /*--stark-blue: rgba(65, 103, 142, 1);*/
-  --stark-blue: rgba(60, 96, 133, 1);
+  --stark-blue: rgb(63 105 149);
   /*--stark-blue: rgba(57, 98, 143, 1);*/
   --button-hover-color: rgba(255, 131, 7, .5);
   --footer-height: 0px;
@@ -452,6 +452,7 @@ app-user {
 }
 
 .mat-spinner-container {
+  display: flex;
   margin-top: 15%;
   margin-inline: auto;
   justify-content: center;

@@ -1,4 +1,4 @@
-import {Component, OnDestroy} from '@angular/core';
+import {Component, Input, OnDestroy} from '@angular/core';
 import {Subject, takeUntil} from "rxjs";
 import {UserService} from "../../services/user-services/user.service";
 import {MatSlideToggle} from "@angular/material/slide-toggle";
@@ -63,6 +63,8 @@ import {NotificationService} from "../../services/facade-services/notifications/
 export class ProfileNotificationsTabComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
   protected checkBrowser: boolean = false;
+
+  @Input() routeSubsectionSelect?: string;
 
   public hasDiscordAcct!: boolean;
   public doNotShowCustomNotesForm: boolean = true;

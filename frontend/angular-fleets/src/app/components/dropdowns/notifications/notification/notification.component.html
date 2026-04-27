@@ -4,7 +4,7 @@
          (click)="routeLink(hasLink)"
          [class.closing]="noteService.closingIds.has(note.notificationId)">
       <h1>{{ header }}</h1>
-      <p>"{{ note.message.length >= 30 ? (note.message|slice: 0: 30) + '...' : note.message }}"
+      <p>"{{ note.message.length >= 45 ? (note.message|slice: 0: 42) + '...' : note.message }}"
         @if (isExpired) {
           <span class="note-msg">{{ note.entityNewStatus }}</span>
         }
