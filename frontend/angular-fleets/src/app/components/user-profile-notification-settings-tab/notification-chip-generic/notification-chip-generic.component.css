@@ -82,6 +82,12 @@
   margin-inline: auto;
 }
 
+.header-context-left {
+  font-size: 110%;
+  color: var(--button-hover-color);
+  margin-right: 10px;
+}
+
 .header-left {
   margin-left: 0;
   margin-right: auto;

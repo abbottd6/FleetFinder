@@ -50,10 +50,10 @@ export class NotificationComponent implements OnInit {
         break;
       case ('NEW_GROUP_INVITE'):
         if(this.note.entityNewStatus === 'REQUEST') {
-          this.header = "New request to join your group";
+          this.header = this.note.title;
           this.hasLink = 'user-account/groups?section=memberships'
         } else {
-          this.header = `${ this.note.title }`
+          this.header = this.note.title;
           this.hasLink = 'user-account/groups?section=invites';
         }
         this.contextLabel = "Roster: ";
@@ -61,8 +61,19 @@ export class NotificationComponent implements OnInit {
         break;
       case ('NEW_GROUP_MEMBER'):
         this.header = this.note.title;
-        this.contextLabel = "Member: ";
-        this.context = this.note.targetMetadata?.targetLabel;
+        if(this.note.targetMetadata?.addContext === 'REQUEST') {
+          this.contextLabel = "Roster: ";
+          this.context = toTitleCase(this.note.entityNewStatus);
+        } else {
+          this.contextLabel = "Member: ";
+          this.context = this.note.targetMetadata?.targetLabel;
+        }
+        this.hasLink = 'user-account/groups?section=memberships';
+        break;
+      case ('GROUP_MEMBER_LEFT'):
+        this.header = this.note.title;
+        this.contextLabel = "From Roster: ";
+        this.context = toTitleCase(this.note.targetMetadata?.targetStatus ?? '');
         this.hasLink = 'user-account/groups?section=memberships';
         break;
       case ('LISTING_ARCHIVED'):

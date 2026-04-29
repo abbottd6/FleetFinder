@@ -133,7 +133,7 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                 JSON_OBJECT(
                     'noteTopic',                SUBSTRING(listing.listing_title, 1, 64),
                     'targetId',                 :newMemberUserId,
-                    'targetLabel',              u.user_name,
+                    'targetLabel',              :newMemberUsername,
                     'targetStatus',             inv.invite_status,
                     'targetCreatedAt',          inv.created_at,
                     'contextElementLabel',      listing.listing_title,
@@ -145,16 +145,14 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                 push.id_push_sub                AS push_sub_id,
                 channels.delivery_channel       AS delivery_channel,
                 channels.do_not_duplicate       AS do_not_duplicate,
-                SHA2(CONCAT('NEW_GROUP_MEMBER', '|', 'group_member', :newMemberUserId, '|', :recipientId, '|', member.member_status), 256) AS sibling_key,
+                SHA2(CONCAT('NEW_GROUP_MEMBER', '|', 'group_member', :inviteId, '|', :recipientId, '|', member.member_status), 256) AS sibling_key,
                 NOW()                           AS created_at
            FROM users user
            JOIN group_member member ON member.user_id = :newMemberUserId
                 AND member.listing_id = :listingId
-           JOIN users u ON member.user_id = u.id_user
-           JOIN group_listing listing ON member.listing_id = listing.id_group
+           JOIN group_listing listing ON listing.id_group = :listingId
            JOIN group_status grpStatus ON listing.group_status_id = grpStatus.group_status_id
            JOIN group_invite inv ON inv.id_invite = :inviteId
-           LEFT JOIN crew_role_classification role ON role.id_role = inv.role_id
            CROSS JOIN (
                 SELECT 'IN_APP' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
                 SELECT 'DISCORD' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
@@ -170,12 +168,14 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                     OR (channels.delivery_channel = 'DISCORD'
                         AND user.discord_user_id IS NOT NULL
                         AND user.external_group_notes_enabled = 1)
-                    OR (channels.delivery_channel = 'PUSH')
+                    OR (channels.delivery_channel = 'PUSH'
                         AND push.group_notes_enabled = 1)
+                )
            """, nativeQuery = true)
     int generateOutboxNotificationsForNewGroupMember(@Param("recipientId") Long notificationRecipientId,
                                                      @Param("listingId") Long listingId,
                                                      @Param("newMemberUserId") Long newMemberUserId,
+                                                     @Param("newMemberUsername") String newMemberUsername,
                                                      @Param("inviteId") Long inviteId,
                                                      @Param("noteType") String noteType);
 }

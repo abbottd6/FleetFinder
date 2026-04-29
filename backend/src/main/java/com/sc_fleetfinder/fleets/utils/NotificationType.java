@@ -8,4 +8,5 @@ public enum NotificationType {
     NEW_CHAT_MESSAGE,
     NEW_GROUP_INVITE,
     NEW_GROUP_MEMBER,
+    GROUP_MEMBER_LEFT,
 }

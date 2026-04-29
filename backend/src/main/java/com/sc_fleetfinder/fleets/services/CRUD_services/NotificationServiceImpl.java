@@ -167,6 +167,11 @@ public class NotificationServiceImpl implements NotificationService {
                 identifyDeliveryChannel_andSend(savedNewActiveMemberNote, outboxEntity);
                 break;
 
+            case NotificationType.GROUP_MEMBER_LEFT:
+                Notification savedMemberLeftNote = buildGroupMemberLeftNotification(outboxEntity);
+                identifyDeliveryChannel_andSend(savedMemberLeftNote, outboxEntity);
+                break;
+
             case NotificationType.LISTING_VIS_STATUS_CHANGED:
                 Notification savedVisNote = buildListingStatusChangeNotification(outboxEntity);
                 identifyDeliveryChannel_andSend(savedVisNote, outboxEntity);
@@ -261,22 +266,32 @@ public class NotificationServiceImpl implements NotificationService {
                 payload.setTag("New Listing Match");
                 dataField.setUrl("https://scfleetfinder.com/listing-details/" + id);
                 break;
+
             case NotificationType.NEW_CHAT_MESSAGE:
                 payload.setTag("New Chat Message");
                 dataField.setUrl("https://scfleetfinder.com/user-account");
                 break;
+
             case NotificationType.NEW_GROUP_INVITE:
                 payload.setTag("New Group Request");
-                dataField.setUrl("https://scfleetfinder.com/user-account");
+                dataField.setUrl("https://scfleetfinder.com/user-account/groups?section=invites");
                 break;
+
             case NotificationType.NEW_GROUP_MEMBER:
                 payload.setTag("New Group Member");
-                dataField.setUrl("https://scfleetfinder.com/user-account");
+                dataField.setUrl("https://scfleetfinder.com/user-account/groups?section=memberships");
                 break;
+
+            case NotificationType.GROUP_MEMBER_LEFT:
+                payload.setTag("Member Left Your Group");
+                dataField.setUrl("https://scfleetfinder.com/user-account/groups?section=memberships");
+                break;
+
             case NotificationType.MOD_DELETE:
                 payload.setTag("Mod Action");
-                dataField.setUrl("https://scfleetfinder.com/user-account");
+                dataField.setUrl("https://scfleetfinder.com/user-account/notifications");
                 break;
+
             default:
                 payload.setTag("Listing Status Change");
                 dataField.setUrl("https://scfleetfinder.com/user-account");
@@ -388,6 +403,18 @@ public class NotificationServiceImpl implements NotificationService {
 
         Notification newNote = new Notification(outboxEntity, title, message);
 
+        return notificationRepo.save(newNote);
+    }
+
+    private Notification buildGroupMemberLeftNotification(NotificationOutbox outboxEntity) {
+        checkSiblingReadStatus(outboxEntity);
+
+        String title = outboxEntity.getPayloadJson().getNoteTopic();
+        String message = outboxEntity.getPayloadJson().getContextElementLabel();
+
+        Notification newNote = new Notification(outboxEntity, title, message);
+
+        //TODO SET DISCORD VALUES
         return notificationRepo.save(newNote);
     }
 

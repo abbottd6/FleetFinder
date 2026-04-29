@@ -25,7 +25,6 @@ import {SubmitListingReport} from "../../../models/report-requests/submit-listin
 import {UiPrefsService} from "../ui-prefs/ui-prefs.service";
 import {CloseValue} from "../../../components/group-listing-modal/group-listing-modal.component";
 import {UserService} from "../../user-services/user.service";
-import {TemplatesModalService} from "../../component-services/templates-modal-service/templates-modal.service";
 import {GroupMembershipApiService} from "../../api-services/group-membership-api/group-membership-api.service";
 import {SendGroupInviteRequest} from "../../../models/group-management-models/request-models/send-group-invite-request";
 import {InviteFormPopupComponent} from "../../../components/pop-ups/invite-form-popup/invite-form-popup.component";

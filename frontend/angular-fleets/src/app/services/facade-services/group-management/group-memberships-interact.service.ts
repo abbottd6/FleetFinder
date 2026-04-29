@@ -10,6 +10,8 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 import {Page} from "../../../models/page-interface";
 import {SortablePageRequest} from "../../../utils/sortable-page-request";
 import {MembershipSortFields} from "../../../components/user-profile-my-groups/user-profile-my-groups.component";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +33,8 @@ export class GroupMembershipsInteractService {
 
   constructor(private membershipsApiService: GroupMembershipApiService,
               private userService: UserService,
-              private snackBar: MatSnackBar) {}
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog) {}
 
   getMyGroupMemberships() {
     if(this.userService.userLoggedIn) {
@@ -81,17 +84,36 @@ export class GroupMembershipsInteractService {
   }
 
   memberLeaveGroup(membership: GroupMembershipViewModel): void {
-    this.membershipsApiService.memberLeaveGroup(membership.listing.groupId).pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: () => {
-          const before = this.groupMembershipsSubject.getValue();
-          const idx = before.findIndex(m => m.listing.groupId === membership.listing.groupId);
-          this.groupMembershipsSubject.next({
-            ...before.slice(0, idx),
-            ...before.slice(idx + 1)
-          })
+    const message: string = "You will be removed from this group's roster and no longer receive " +
+      "notifications for this group."
+
+    const title: string = 'Group: ' + (membership.listing.listingTitle.length > 50 ?
+      membership.listing.listingTitle.substring(0, 47) + "..." : membership.listing.listingTitle);
+
+    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
+      data: {
+        title: title,
+        message: message
+      }
+    })
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if(result) {
+          this.membershipsApiService.memberLeaveGroup(membership.listing.groupId).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: () => {
+                const before = this.groupMembershipsSubject.getValue();
+                const idx = before.findIndex(m => m.listing.groupId === membership.listing.groupId);
+                this.groupMembershipsSubject.next([
+                  ...before.slice(0, idx),
+                  ...before.slice(idx + 1)
+                ])
+              }
+            })
+        } else {
+          return;
         }
       })
   }
-
 }

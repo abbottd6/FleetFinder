@@ -17,6 +17,7 @@ import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.InGroupRank;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.GroupManagement.GroupMemberLeftNotifyEvent;
 import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupMemberNotifyEvent;
 import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupInviteOrRequestNotifyEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
@@ -245,18 +246,25 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
         GroupListing listing = glr.findById(groupId)
                 .orElseThrow(() -> new ResourceNotFoundException("Group Listing", groupId));
 
-        Integer deletedMember = memberRepo.deleteByUserAndGroupListing(actingUser, listing);
+        GroupMember deletedMember = memberRepo.findByUserAndGroupListing(actingUser, listing)
+                .orElseThrow(() -> new ResourceNotFoundException("Group Membership", actingUser.getUserId(), groupId));
+
+        memberRepo.delete(deletedMember);
 
         inviteRepo.deleteByUserAndGroupListing(
                 actingUser.getUserId(), listing.getGroupId());
 
-        if(deletedMember == 0) {
-            throw new ResourceNotFoundException("Group Membership", actingUser.getUserId(), groupId);
-        }
+        //TODO remove user role/position assignments? might cascade from delete
 
         listing.setCurrentPartySize(listing.getCurrentPartySize() - 1);
         glr.save(listing);
 
-        //TODO save outbox notification for group owner
+        Instant now = Instant.now();
+        if((listing.getEventSchedule() != null) && (now.isBefore(listing.getEventSchedule().plus(1, ChronoUnit.HOURS)))) {
+            eventPublisher.publishEvent(new GroupMemberLeftNotifyEvent(deletedMember, listing));
+        } else if(listing.getGroupStatus().getGroupStatus().equals("Current/Live")
+                && now.isBefore(listing.getCreationTimestamp().plus(2, ChronoUnit.HOURS))) {
+            eventPublisher.publishEvent(new GroupMemberLeftNotifyEvent(deletedMember, listing));
+        }
     }
 }

@@ -114,7 +114,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
     @Override
     @Transactional
-    public GroupManagerMemberResponseDto provisionNewGroupMember_ActiveOrWaitlist(Users actingUser, GroupManagerInviteResponseDto dto) {
+    public GroupManagerMemberResponseDto provisionNewGroupMemberFromJoinRequest(Users actingUser, GroupManagerInviteResponseDto dto) {
         GroupListing listing = glr.findById(dto.getListingId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Group Listing", dto.getListingId()));
@@ -122,26 +122,26 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
         GroupInvite invite = inviteRepo.findById(dto.getInviteId()).orElseThrow(() -> new ResourceNotFoundException(
                 "Group Invite", dto.getInviteId()));
 
-        Users newMember = invite.getSender();
+        Users userMember = invite.getSender();
 
-        throwIfUserIsAlreadyAMember(newMember, listing.getGroupId());
+        throwIfUserIsAlreadyAMember(userMember, listing.getGroupId());
 
         rankService.verifyUserRankPermissions(actingUser, listing, RankPrivilegeOptions.MANAGE_ROSTERS);
 
         //TODO do something with this or remove it?
         Boolean hasComms = null;
-        Boolean hasExtNotes = getNewMemberHasExternalNotes(newMember);
+        Boolean hasExtNotes = getNewMemberHasExternalNotes(userMember);
         InGroupRank newMemberRank = rankService.getGenericRankByTitle(GroupRankGenericTypes.Member);
 
         try {
-            GroupMember savedMember = memberRepo.save(new GroupMember(listing, newMember, dto.getMemberStatus(), newMemberRank,
+            GroupMember savedMember = memberRepo.save(new GroupMember(listing, userMember, dto.getMemberStatus(), newMemberRank,
                     hasComms, hasExtNotes));
 
             invite.setInviteStatus(GroupInviteStatus.ACCEPTED);
             invite.setActive(null);
             inviteRepo.save(invite);
 
-            eventPublisher.publishEvent(new NewGroupMemberNotifyEvent(newMember, invite, savedMember));
+            eventPublisher.publishEvent(new NewGroupMemberNotifyEvent(userMember, invite, savedMember));
 
             if(savedMember.getMemberStatus() == GroupMemberStatus.ACTIVE) {
                 listing.setCurrentPartySize(listing.getCurrentPartySize() + 1);

@@ -5,6 +5,20 @@ import {MatIcon} from "@angular/material/icon";
 import {Router} from "@angular/router";
 import {toTitleCase} from "../../../utils/global-functions";
 
+export const NotificationType = {
+  VIS_STATUS: 'LISTING_VIS_STATUS_CHANGED',
+  NEW_INVITE: 'NEW_GROUP_INVITE',
+  NEW_MEMBER: 'NEW_GROUP_MEMBER',
+  MEMBER_LEFT: 'GROUP_MEMBER_LEFT',
+  NEW_LISTING_MATCH: 'NEW_LISTING_MATCH',
+  LISTING_ARCHIVED: 'LISTING_ARCHIVED',
+  MOD_DELETE: 'MOD_DELETE',
+  OTHER: 'OTHER'
+} as const;
+
+export type NotificationType = (typeof NotificationType)[keyof typeof NotificationType];
+
+
 @Component({
   selector: 'app-notification-chip-generic',
   standalone: true,
@@ -20,9 +34,12 @@ export class NotificationChipGenericComponent implements OnInit {
   @Input() inputNote!: NotificationViewModel;
   @Output() deleteNoteEvent = new EventEmitter<number>();
 
+  protected noteType!: String | undefined;
   protected header!: String | undefined;
   protected contextLabel!: String | undefined;
   protected context!: String | undefined;
+  protected contextElLabel!: String | undefined;
+  protected contextElStatus!: String | undefined;
   protected targetTitle!: String | undefined;
   protected archiveDate!: Date | undefined;
   protected isExpired: boolean = false;
@@ -35,8 +52,10 @@ export class NotificationChipGenericComponent implements OnInit {
   }
 
   buildNoteDisplay() {
+
     switch (this.inputNote.type) {
-      case ('LISTING_VIS_STATUS_CHANGED'):
+
+      case (NotificationType.VIS_STATUS):
         this.header = "Listing visibility status changed";
 
         if(this.inputNote.message.length > 42) {
@@ -49,22 +68,72 @@ export class NotificationChipGenericComponent implements OnInit {
         this.context = toTitleCase(this.inputNote.targetMetadata?.addContext ?? '');
         break;
 
-      case ('NEW_GROUP_INVITE'):
+
+      case (NotificationType.NEW_INVITE):
         this.header = this.inputNote.title;
         if(this.inputNote.message.length > 50) {
-          this.targetTitle = "For Group: " + "\"" + this.inputNote.targetMetadata?.targetLabel.substring(0, 47) + "...\"";
+          this.targetTitle = "For Group: " + "\"" + this.inputNote.message.substring(0, 47) + "...\"";
         } else {
-          this.targetTitle = "For Group: " + "\"" + this.inputNote.targetMetadata?.targetLabel;
+          this.targetTitle = "For Group: " + "\"" + this.inputNote.message + "\"";
         }
 
+        if(this.inputNote.entityNewStatus === 'REQUEST') {
+          this.noteType = 'Group Join Request:';
+          this.hasLink = 'user-account/groups?section=memberships';
+        } else {
+          this.noteType = 'Group Invite:';
+          this.hasLink = 'user-account/groups?section=invites';
+        }
+
+        this.contextElLabel = "Group Status: ";
+        this.contextElStatus = this.inputNote.targetMetadata?.contextElementStatus;
+
         this.contextLabel = "For roster: ";
-        this.context = toTitleCase(this.inputNote.targetMetadata?.addContext ?? '');
+        this.context = toTitleCase(this.inputNote.targetMetadata?.targetLabel ?? '');
         break;
 
-      case ('NEW_GROUP_MEMBER'):
+
+      case (NotificationType.NEW_MEMBER):
+        this.header = this.inputNote.title;
+
+        if(this.inputNote.targetMetadata?.addContext === 'REQUEST') {
+          this.noteType = 'Added to Group:'
+          this.contextLabel = "Roster: ";
+          this.context = toTitleCase(this.inputNote.entityNewStatus);
+        } else {
+          this.noteType = 'New Group Member:'
+          this.contextLabel = "Member: ";
+          this.context = this.inputNote.targetMetadata?.targetLabel;
+        }
+
+        this.targetTitle = this.inputNote.message.length > 45 ? this.inputNote.message.substring(0, 43) + '...'
+          : this.inputNote.message;
+        this.targetTitle = "In Group: " + "\"" + this.targetTitle + "\"";
+
+        this.contextElLabel = "Group Status: ";
+        this.contextElStatus = this.inputNote.targetMetadata?.contextElementStatus;
+
+        this.hasLink = 'user-account/groups?section=memberships';
         break;
 
-      case ('NEW_LISTING_MATCH'):
+
+      case (NotificationType.MEMBER_LEFT):
+        this.noteType = 'Member Left Your Group: '
+
+        this.header = this.inputNote.title;
+        this.targetTitle = "From Group: " + "\"" + this.inputNote.message + "\"";
+
+        this.contextLabel = "User: ";
+        this.context = this.inputNote.targetMetadata?.targetLabel;
+
+        this.contextElLabel = "From Roster: ";
+        this.contextElStatus = toTitleCase(this.inputNote.targetMetadata?.targetStatus ?? '');
+
+        this.hasLink = "user-account/groups?section=memberships"
+
+        break;
+
+      case (NotificationType.NEW_LISTING_MATCH):
         this.header = this.inputNote.title;
 
         if(this.inputNote.message.length > 42) {
@@ -73,12 +142,14 @@ export class NotificationChipGenericComponent implements OnInit {
           this.targetTitle = "Listing title: " + "\"" + this.inputNote.message + "\""
         }
 
+        this.noteType = 'Listing Match: '
         this.contextLabel = "Group Status: ";
         this.context = this.inputNote.targetMetadata?.addContext;
         this.hasLink = "listing-details/" + this.inputNote.targetMetadata?.targetId
         break;
 
-      case ('LISTING_ARCHIVED'):
+
+      case (NotificationType.LISTING_ARCHIVED):
         this.header = this.inputNote.title;
 
         if(this.inputNote.message.length > 42) {
@@ -89,7 +160,7 @@ export class NotificationChipGenericComponent implements OnInit {
         break;
 
 
-      case ('MOD_DELETE'):
+      case (NotificationType.MOD_DELETE):
         this.header = "Listing removed by a moderator";
 
         if(this.inputNote.message.length > 42) {
@@ -98,6 +169,7 @@ export class NotificationChipGenericComponent implements OnInit {
           this.targetTitle = "Your listing: " + "\"" + this.inputNote.message + "\""
         }
 
+        this.noteType = 'Archived: '
         this.contextLabel = "Performed by: ";
         this.context = this.inputNote.targetMetadata?.targetLabel;
         break;
@@ -114,10 +186,12 @@ export class NotificationChipGenericComponent implements OnInit {
   }
 
   routeLink(url: string) {
-    this.router.navigateByUrl(url);
+    this.router.navigateByUrl(url, { onSameUrlNavigation: 'reload' });
   }
 
   deleteThisNotification() {
     this.deleteNoteEvent.emit(this.inputNote.notificationId);
   }
+
+  protected readonly NotificationType = NotificationType;
 }

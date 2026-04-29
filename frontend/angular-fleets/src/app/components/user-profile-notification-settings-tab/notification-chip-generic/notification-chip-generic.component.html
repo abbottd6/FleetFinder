@@ -2,6 +2,9 @@
   <div class="clickable chip-self"
        (click)="routeLink(hasLink)">
     <div class="header-row">
+      <ng-container *ngIf="noteType">
+        <h5 class="header-context-left">{{ noteType }}</h5>
+      </ng-container>
       <h5 class="header-left">{{ header }}</h5>
       <span class="header-right">
         <span class="field-label">
@@ -23,6 +26,10 @@
             <span class="field-label">{{ contextLabel }}</span>
             <span class="field-val has-val">{{ context }}</span>
           </ng-template>
+          <ng-container *ngIf="contextElStatus">
+            <span class="field-label">{{ contextElLabel }}</span>
+            <span class="field-val has-val">{{ contextElStatus }}</span>
+          </ng-container>
         </div>
       </div>
       <div class="action-column">

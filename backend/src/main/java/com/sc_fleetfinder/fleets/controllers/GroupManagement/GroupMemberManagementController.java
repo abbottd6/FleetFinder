@@ -79,7 +79,7 @@ public class GroupMemberManagementController {
         String kcId = jwt.getSubject();
         Users actingUser = userService.verifyUser(kcId);
 
-        GroupManagerMemberResponseDto responseDto = memberManagementService.provisionNewGroupMember_ActiveOrWaitlist(
+        GroupManagerMemberResponseDto responseDto = memberManagementService.provisionNewGroupMemberFromJoinRequest(
                 actingUser, dto);
 
         return ResponseEntity.ok(responseDto);

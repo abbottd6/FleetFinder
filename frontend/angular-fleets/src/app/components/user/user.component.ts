@@ -6,7 +6,7 @@ import {
 } from '@angular/core';
 import {AuthService} from "../../services/auth/auth-services/auth.service";
 import {map, shareReplay, Subject, take, takeUntil} from "rxjs";
-import {ActivatedRoute, RouterModule} from "@angular/router";
+import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 import {CommonModule} from "@angular/common";
 import {MatSidenav, MatSidenavModule} from "@angular/material/sidenav";
 import {MatListItem, MatNavList} from "@angular/material/list";
@@ -84,7 +84,7 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('profileContainer') profileContainer!: ElementRef;
   protected containerHeight!: string;
 
-  routeSubsection?: string;
+  routeSubsection?: string = undefined;
 
   //modal popup vars
   selectedListing: GroupListingViewModel | null = null;
@@ -104,7 +104,8 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
               private userApiSrv: UserApiService,
               private dialog: MatDialog,
               protected userFormSrv: UpdateUserFormService,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              private router: Router) {
 
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
       if(reason != null) {
@@ -129,15 +130,22 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.route.paramMap.subscribe(params => {
       const tab = params.get('tab') ?? 'groups';
-      if(this.isValidTabParam(tab)) {
+      if (this.isValidTabParam(tab)) {
         this.selectTab(tab as ProfileSelectedTab);
 
         this.route.queryParams.subscribe(params => {
-          this.routeSubsection = params['section'];
-          
-        })
+          const section = params['section'];
+          if(!section) return;
+          this.routeSubsection = section;
+
+          setTimeout(() => {
+            const url = this.router.url.split(tab)[0];
+            this.router.navigateByUrl(url, {replaceUrl: true});
+            this.routeSubsection = undefined;
+          }, 1000);
+        });
       }
-    })
+    });
   }
 
   ngOnDestroy() {

@@ -2,10 +2,10 @@ import {
   AfterViewInit,
   Component,
   EventEmitter,
-  Input,
+  Input, OnChanges,
   OnDestroy,
   OnInit,
-  Output,
+  Output, SimpleChanges,
 } from '@angular/core';
 import {
   GroupMembershipViewModel
@@ -116,7 +116,7 @@ export type MembershipSortFields = (typeof MembershipSortFields)[keyof typeof Me
   ],
   styleUrl: './user-profile-my-groups.component.css'
 })
-export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnDestroy {
+export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   private destroy$ = new Subject<void>();
 
   protected myInvitesSubject$ = new BehaviorSubject<GroupInviteViewModel[]>([]);
@@ -132,6 +132,9 @@ export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnDe
 
   @Input() routeSubsectionSelect?: string;
   groupsSubsections = ['invites', 'memberships'];
+
+  protected invitesExpanded: boolean = false;
+  protected membershipsExpanded: boolean = true;
 
   protected invIdx: number = 0;
   protected invSize: number = 10;
@@ -175,6 +178,15 @@ export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnDe
   ngAfterViewInit() {
     if(this.routeSubsectionSelect) {
       setTimeout(() => this.scrollToSection(this.routeSubsectionSelect), 300);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes['routeSubsectionSelect']?.currentValue === 'invites') {
+      this.invitesExpanded = true;
+      this.membershipsExpanded = false;
+    } else if(changes['routeSubsectionSelect']?.currentValue === 'memberships') {
+      this.membershipsExpanded = true;
     }
   }
 

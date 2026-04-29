@@ -67,16 +67,16 @@ public class DiscordBotServiceImpl implements DiscordBotService {
 
                 field2 = "Check it out: ";
                 value2 = "https://scfleetfinder.com/listing-details/" + note.getTargetMetadata().getTargetId();
-
                 break;
+
             case NotificationType.NEW_CHAT_MESSAGE:
                 field1 = "Conversation: ";
                 value1 = note.getTargetMetadata().getAddContext();
 
                 field2 = "Check it out: ";
                 value2 = "https://scfleetfinder.com/user-account";
-
                 break;
+
             case NotificationType.NEW_GROUP_INVITE:
                 field1 = "Group Status: ";
                 value1 = glr.findById(note.getOutbox().getParentEntityId())
@@ -84,15 +84,25 @@ public class DiscordBotServiceImpl implements DiscordBotService {
                         .orElse(null);
 
                 field2 = "Check it out: ";
-                value2 = "https://scfleetfinder.com/user-account";
+                value2 = "https://scfleetfinder.com/user-account/groups?section=invites";
                 break;
+
             case NotificationType.NEW_GROUP_MEMBER:
                 field1 = "Role: ";
                 value1 = note.getTargetMetadata().getTargetLabel();
 
                 field2 = "Check it out: ";
-                value2 = "https://scfleetfinder.com/user-account";
+                value2 = "https://scfleetfinder.com/user-account/groups?section=memberships";
                 break;
+
+            case NotificationType.GROUP_MEMBER_LEFT:
+                field1 = "Roster: ";
+                value1 = note.getTargetMetadata().getTargetStatus();
+
+                field2 = "Manage your roster: ";
+                value2 = "https://scfleetfinder.com/user-account/groups?section=memberships";
+                break;
+
             case NotificationType.MOD_DELETE:
                 field1 = "Action performed by a(n): ";
                 value1 = note.getTargetMetadata().getTargetLabel();
@@ -100,6 +110,7 @@ public class DiscordBotServiceImpl implements DiscordBotService {
                 field2 = "Moderator note: ";
                 value2 = note.getTargetMetadata().getAddContext();
                 break;
+
             default:
                 field1 = "New Status: ";
                 value1 = note.getTargetMetadata().getAddContext();
