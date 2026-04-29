@@ -22,6 +22,7 @@ export const InviteActions = {
   MESSAGE: 'MESSAGE',
   WAITLIST: 'WAITLIST',
   DISMISS: 'DISMISS',
+  BLOCK: 'BLOCK',
 } as const;
 
 export const StatusChangeActions = [

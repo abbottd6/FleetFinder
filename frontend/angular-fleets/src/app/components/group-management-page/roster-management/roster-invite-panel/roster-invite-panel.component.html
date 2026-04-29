@@ -3,12 +3,29 @@
     [inviteFilterState$]="inviteFilterState$"
     (emitFilterState)="catchFilterStateChange($event)">
   </app-invite-options-panel>
+  <div class="dropdown-component">
+    <mat-form-field>
+      <mat-label>Filter Username</mat-label>
+      <input type="text" matInput
+             [formControl]="filterTermsCtrl"
+             [placeholder]="'Username'"
+             (keyup.enter)="setAndFilterByTerms()">
+      <ng-container *ngIf="filterTermsCtrl.value" matSuffix>
+        <button mat-icon-button (click)="filterTermsCtrl.reset()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </ng-container>
+    </mat-form-field>
+  </div>
   <div class="proliferation-container">
     <ng-container *ngFor="let invite of (invitesForDisplay$ | async)">
       <app-invite-chip
         [invite]="invite"
         (inviteActionEmitter)="changeInviteStatus($event)"
-        (messageRequestEmitter)="managementInteract.openConversation($event)">
+        (messageRequestEmitter)="managementInteract.openConversation($event)"
+        (contextmenu)="invitesQuickMenu.openContextMenu($event, invite)"
+        (touchstart)="invitesQuickMenu.onTouchStart($event, invite)"
+        (touchend)="invitesQuickMenu.onTouchEnd($event)">
       </app-invite-chip>
     </ng-container>
   </div>
@@ -19,3 +36,91 @@
     Send Invite
   </button>
 </div>
+
+<!-- Context Menu -->
+<div
+  #contextMenuAnchor
+  class="context-menu-anchor"
+  [matMenuTriggerFor]="inviteOptionsMenu"
+  #menuTrigger="matMenuTrigger">
+</div>
+
+<mat-menu #inviteOptionsMenu="matMenu">
+
+  <ng-container *ngIf="(managementInteract.selectedInvite$ | async) as invite">
+    <ng-container *ngIf="invite.inviteStatus === 'PENDING'; else actioned">
+      <ng-container *ngIf="invite.inviteDirection === 'OFFER'; else requestMenu">
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="managementInteract.openConversation(invite.recipientSummary)">
+          Message
+        </button>
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="changeInviteStatus({action: InviteActions.RESCIND, invite: invite})">
+          Rescind
+        </button>
+      </ng-container>
+      <ng-template #requestMenu>
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="managementInteract.openConversation(invite.recipientSummary)">
+          Message
+        </button>
+
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="changeInviteStatusFromQuckMenu(InviteActions.ACCEPT, invite)">
+          Accept
+        </button>
+
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="changeInviteStatusFromQuckMenu(InviteActions.DECLINE, invite)">
+          Decline
+        </button>
+
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="altInviteActionFromQuickMenu(InviteActions.WAITLIST, invite)">
+          Waitlist
+        </button>
+
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="altInviteActionFromQuickMenu(InviteActions.BLOCK, invite)">
+          Block User
+        </button>
+      </ng-template>
+    </ng-container>
+    <ng-template #actioned>
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="managementInteract.openConversation(invite.recipientSummary)">
+        Message
+      </button>
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="altInviteActionFromQuickMenu(InviteActions.DISMISS, invite)">
+        Dismiss
+      </button>
+      <ng-container *ngIf="invite.inviteDirection === 'REQUEST'">
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="altInviteActionFromQuickMenu(InviteActions.BLOCK, invite)">
+          Block User
+        </button>
+      </ng-container>
+    </ng-template>
+  </ng-container>
+</mat-menu>

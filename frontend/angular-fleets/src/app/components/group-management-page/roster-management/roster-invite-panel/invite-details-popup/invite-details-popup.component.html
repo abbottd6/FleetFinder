@@ -66,6 +66,13 @@
         <button
           mat-menu-item
           class="options-item"
+          (click)="onConfirmAction(InviteActions.BLOCK)">
+          Block User
+        </button>
+
+        <button
+          mat-menu-item
+          class="options-item"
           (click)="onConfirmAction(InviteActions.DECLINE)">
           Decline
         </button>
@@ -113,6 +120,14 @@
         (click)="onConfirmAction(InviteActions.DISMISS)">
         Dismiss
       </button>
+      <ng-container *ngIf="data.invite.inviteDirection === 'REQUEST'">
+        <button
+          mat-menu-item
+          class="options-item"
+          (click)="onConfirmAction(InviteActions.BLOCK)">
+          Block User
+        </button>
+      </ng-container>
     </mat-menu>
   </ng-template>
 </mat-dialog-actions>

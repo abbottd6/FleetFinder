@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.exceptions.handlers;
 
 import com.sc_fleetfinder.fleets.exceptions.*;
+import jakarta.ws.rs.InternalServerErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -72,6 +73,16 @@ public class ApiExceptionHandler {
         log.warn(e.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                e.getMessage()
+        );
+    }
+
+    @ExceptionHandler(InternalServerErrorException.class)
+    public ResponseEntity<?> handleInternalServerError(InternalServerErrorException e) {
+        log.warn(e.getMessage());
+        log.warn(String.valueOf(e.getCause()));
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 e.getMessage()
         );
     }

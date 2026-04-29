@@ -25,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
@@ -179,6 +180,34 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
         // TODO send notification?
 
         return modelMapper.map(saved, GroupManagerInviteResponseDto.class);
+    }
+
+    @Override
+    @Transactional
+    public UserMonikerSummary blockJoinRequestsFromRequestingUserForThisGroup(Users actingUser, Long inviteId) {
+        GroupInvite invite = inviteRepo.findById(inviteId).orElseThrow(() -> new ResourceNotFoundException(
+                "Group Invite", inviteId));
+
+        evaluateForInviteStatusConflict(invite);
+
+        rankService.verifyUserRankPermissions(actingUser, invite.getGroupListing(),
+                RankPrivilegeOptions.MANAGE_ROSTERS);
+
+        inviteRepo.setRequestsFromThisUserForThisGroupToDeclined(
+                invite.getSender().getUserId(), invite.getGroupListing().getGroupId());
+
+        inviteRepo.flush();
+
+        saveBlockingInviteRequests(invite);
+
+        return modelMapper.map(invite.getSender(), UserMonikerSummary.class);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    void saveBlockingInviteRequests(GroupInvite existing) {
+        GroupInvite blockingActiveRequest = new GroupInvite(existing, GroupMemberStatus.ACTIVE);
+
+        inviteRepo.save(blockingActiveRequest);
     }
 
     @Override

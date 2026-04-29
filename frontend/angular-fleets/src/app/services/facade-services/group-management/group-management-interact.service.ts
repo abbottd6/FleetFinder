@@ -1,5 +1,5 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, takeUntil} from "rxjs";
 import {
   GroupManagementMemberViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
@@ -25,6 +25,7 @@ import {environment} from "../../../../environments/environment";
 import {newEmptyPage, Page} from "../../../models/page-interface";
 import {toTitleCase} from "../../../utils/global-functions";
 import {ChatHostService} from "../chat/chat-host.service";
+import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
 
 @Injectable({
   providedIn: 'root'
@@ -46,6 +47,10 @@ export class GroupManagementInteractService {
   public groupInvites$ = this.groupInvitesSubject.asObservable();
 
   public sessionManager: GroupMembershipViewModel | undefined = undefined;
+
+  private selectedInviteSubject = new BehaviorSubject<GroupManagementInviteViewModel | null>(null);
+  public selectedInvite$ = this.selectedInviteSubject.asObservable();
+
 
   constructor(private managementApi: MemberManagementApiService,
               private chatHostSrv: ChatHostService,
@@ -88,6 +93,14 @@ export class GroupManagementInteractService {
       })
   }
 
+  setSelectedInvite(inv: GroupManagementInviteViewModel) {
+    this.selectedInviteSubject.next(inv);
+  }
+
+  clearSelectedInvite() {
+    this.selectedInviteSubject.next(null);
+  }
+
   acceptGroupInviteRequest(acceptedInvite: GroupManagementInviteViewModel) {
     this.managementApi.newMemberFromJoinRequest(acceptedInvite).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
@@ -119,6 +132,48 @@ export class GroupManagementInteractService {
 
           const msg =`Join request from ${inviteWithNewStatus.senderSummary.username} declined.`;
           this.showSnackBarMessage(msg);
+        }
+      })
+  }
+
+  openConfirmBlockUser(inviteRequest: GroupManagementInviteViewModel) {
+    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
+      data: {
+        title: "Block join requests from " + inviteRequest.senderSummary.username + "?",
+        message: "Blocking requests from this user will only apply to this group. The user will be unable to send new " +
+          "join requests. If you would also like to mute this user's chat messages, you will need to do this from the" +
+          "chat panel by right clicking (long press on mobile) on the conversation with the user and selecting mute."
+      }
+    })
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if(result) {
+          this.managementApi.blockInviteRequests(inviteRequest.inviteId).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (blocked: UserMonikerSummaryViewModel) => {
+                const message = blocked.username + " has been blocked.";
+                this.showSnackBarMessage(message);
+
+                const currentInvs = this.groupInvitesSubject.getValue();
+                const idx = currentInvs.content.findIndex(inv =>
+                  inv.inviteId === inviteRequest.inviteId);
+                this.groupInvitesSubject.next({
+                  ...currentInvs,
+                  content: [
+                    ...currentInvs.content.slice(0, idx),
+                    ...currentInvs.content.slice(idx + 1)
+                  ]
+                })
+              },
+              error: (e) => {
+                if(e.status === 409) {
+                  this.showSnackBarMessage("User could not be blocked because the status of one of their invites has changed.")
+                } else {
+                  this.showSnackBarMessage("There was an issue blocking this user.")
+                }
+              }
+            })
         }
       })
   }

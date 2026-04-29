@@ -10,6 +10,9 @@ import {
 } from "../../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
 import {SendGroupInviteOffer} from "../../../models/group-management-models/request-models/send-group-invite-offer";
 import {Page} from "../../../models/page-interface";
+import {
+  UserMonikerSummaryViewModel
+} from "../../../models/group-management-models/nested-models/user-moniker-summary-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +52,12 @@ export class MemberManagementApiService {
   declineGroupInviteRequest(invId: number): Observable<GroupManagementInviteViewModel> {
     return this.httpClient.put<GroupManagementInviteViewModel>(
       `${this.baseUrl}/decline_group_invite_request/${invId}`, {})
+  }
+
+  blockInviteRequests(invId: number): Observable<UserMonikerSummaryViewModel> {
+    return this.httpClient.put<UserMonikerSummaryViewModel>(
+      `${this.baseUrl}/block_join_requests/${invId}`, {}
+    )
   }
 
   mirrorActiveRequestToWaitlistInvite(invId: number): Observable<number> {

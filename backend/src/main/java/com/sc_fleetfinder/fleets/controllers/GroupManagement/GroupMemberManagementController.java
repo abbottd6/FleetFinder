@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerInviteResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.UserMonikerSummary;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberManagementService;
@@ -108,6 +109,17 @@ public class GroupMemberManagementController {
                 actingUser, inviteId);
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @PutMapping("/block_join_requests/{inviteId}")
+    public ResponseEntity<?> blockJoinRequests(@AuthenticationPrincipal Jwt jwt,
+                                               @PathVariable Long inviteId) {
+        String kcId = jwt.getSubject();
+        Users actingUser = userService.verifyUser(kcId);
+
+        UserMonikerSummary blocked = memberManagementService.blockJoinRequestsFromRequestingUserForThisGroup(actingUser, inviteId);
+
+        return ResponseEntity.ok(blocked);
     }
 
     @PostMapping("/send_invite")

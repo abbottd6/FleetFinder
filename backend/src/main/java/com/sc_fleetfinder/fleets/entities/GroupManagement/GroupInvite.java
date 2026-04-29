@@ -43,6 +43,19 @@ public class GroupInvite {
         this.recipientDismissed = false;
     }
 
+    //blocking invite
+    public GroupInvite(GroupInvite invite, GroupMemberStatus groupMemberStatus) {
+        this.groupListing = invite.getGroupListing();
+        this.sender = invite.getSender();
+        this.recipient = invite.getRecipient();
+        this.inviteDirection = InviteDirection.REQUEST;
+        this.memberStatus = groupMemberStatus;
+        this.inviteStatus = GroupInviteStatus.PENDING;
+        this.active = true;
+        this.recipientDismissed = true;
+        this.senderDismissed = true;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_invite")

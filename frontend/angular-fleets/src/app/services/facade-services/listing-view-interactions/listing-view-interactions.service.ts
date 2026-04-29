@@ -150,8 +150,10 @@ export class ListingViewInteractionsService {
           this.showSnackBarMessage(`Group join-request sent to "${inv.recipientSummary.username}"`)
         },
         error: (err) => {
-          const msg = err.error.message.substring(0, 60) ?? 'Failed: an error occurred.';
-          this.showSnackBarMessage(msg);
+          if(err.status === 409) {
+            const msg = "You already have a pending invite request for this group."
+            this.showSnackBarMessage(msg);
+          }
         }
         });
   }

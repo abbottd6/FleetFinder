@@ -49,6 +49,14 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
             """)
     void deleteByUserAndGroupListing(@Param("userId") Long userId, @Param("listingId") Long listingId);
 
+    @Modifying
+    @Query("""
+           UPDATE GroupInvite inv
+           SET inv.inviteStatus = 'DECLINED', inv.active = NULL, inv.recipientDismissed = true
+           WHERE inv.inviteDirection = 'REQUEST' AND inv.sender.userId = :userId AND inv.groupListing.groupId = :groupId
+           """)
+    void setRequestsFromThisUserForThisGroupToDeclined(@Param("userId") Long userId, @Param("groupId") Long groupId);
+
     @Query("""
             SELECT inv FROM GroupInvite inv
             WHERE inv.groupListing.groupId = :groupId

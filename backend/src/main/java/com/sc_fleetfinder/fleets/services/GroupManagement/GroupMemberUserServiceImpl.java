@@ -25,6 +25,7 @@ import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
 import com.sc_fleetfinder.fleets.exceptions.InviteStateConflictException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.*;
+import jakarta.ws.rs.InternalServerErrorException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
 import org.modelmapper.ModelMapper;
@@ -128,10 +129,10 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
         } catch (DataIntegrityViolationException e) {
             if(e.getCause() instanceof ConstraintViolationException cve &&
                     cve.getConstraintName() != null &&
-                    cve.getConstraintName().contains("uq_group_invite_type_sender_recipient_group")) {
+                    cve.getConstraintName().contains("uq_group_invite_on_direction_users_listing_and_active")) {
                 throw new DuplicateEntryException("An invite request has already been sent for this group.");
             } else {
-                throw e;
+                throw new InternalServerErrorException(e.getMessage());
             }
         }
     }
