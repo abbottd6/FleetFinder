@@ -1,0 +1,13 @@
+<div class="dropdown-component">
+  <mat-form-field>
+    <input type="text" matInput
+           [formControl]="textFieldFilterCtrl"
+           [placeholder]="placeholder"
+           autocomplete="off">
+    <ng-container *ngIf="textFieldFilterCtrl.value" matSuffix>
+      <button mat-icon-button (click)="textFieldFilterCtrl.reset()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </ng-container>
+  </mat-form-field>
+</div>

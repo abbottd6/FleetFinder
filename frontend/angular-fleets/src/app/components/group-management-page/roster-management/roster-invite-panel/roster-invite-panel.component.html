@@ -3,20 +3,10 @@
     [inviteFilterState$]="inviteFilterState$"
     (emitFilterState)="catchFilterStateChange($event)">
   </app-invite-options-panel>
-  <div class="dropdown-component">
-    <mat-form-field>
-      <mat-label>Filter Username</mat-label>
-      <input type="text" matInput
-             [formControl]="filterTermsCtrl"
-             [placeholder]="'Username'"
-             (keyup.enter)="setAndFilterByTerms()">
-      <ng-container *ngIf="filterTermsCtrl.value" matSuffix>
-        <button mat-icon-button (click)="filterTermsCtrl.reset()">
-          <mat-icon>close</mat-icon>
-        </button>
-      </ng-container>
-    </mat-form-field>
-  </div>
+  <app-roster-text-field-filter
+    [placeholder]="'Filter by username...'"
+    [textFieldFilterCtrl]="filterTermsCtrl">
+  </app-roster-text-field-filter>
   <div class="proliferation-container">
     <ng-container *ngFor="let invite of (invitesForDisplay$ | async)">
       <app-invite-chip

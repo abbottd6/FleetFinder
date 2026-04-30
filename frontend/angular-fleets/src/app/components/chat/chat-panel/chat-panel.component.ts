@@ -36,6 +36,12 @@ import {ConfirmGenericComponent} from "../../pop-ups/confirm-generic/confirm-gen
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {ChatOptionsMenuService} from "../../../services/facade-services/chat/chat-options-menu.service";
 import {MatTooltip} from "@angular/material/tooltip";
+import {
+  GroupManagementInteractService
+} from "../../../services/facade-services/group-management/group-management-interact.service";
+import {
+  UserMonikerSummaryViewModel
+} from "../../../models/group-management-models/nested-models/user-moniker-summary-view-model";
 
 @Component({
   selector: 'app-chat-panel',
@@ -120,7 +126,8 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
               private userSrv: UserService,
               protected chatStoreSrv: ChatStoreService,
               private dialog: MatDialog,
-              private optionsMenu: ChatOptionsMenuService) {
+              private optionsMenu: ChatOptionsMenuService,
+              protected groupMgmtInteract: GroupManagementInteractService) {
 
     this.resetConvPage();
     this.resetMsgPage();
@@ -321,6 +328,15 @@ export class ChatPanelComponent implements OnInit, OnDestroy, AfterViewInit {
           })
       }
     });
+  }
+
+  sendGroupInvite() {
+    const recipient: UserMonikerSummaryViewModel = {
+      userId: this.selectedConv.selected[0].otherUserId,
+      username: this.selectedConv.selected[0].otherUserName,
+      inGameUsername: ''
+    }
+    this.groupMgmtInteract.openSendInvitePopup(null, recipient);
   }
 
   getNextConvPage() {

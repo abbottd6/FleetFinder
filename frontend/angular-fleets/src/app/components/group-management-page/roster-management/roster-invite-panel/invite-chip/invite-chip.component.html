@@ -36,7 +36,7 @@ recipientSummary
         <button class="invite-chip-button decline"
                 matTooltip="Decline Request"
                 (click)="emitInviteStatusChange(inviteActions.DECLINE)">
-          <mat-icon>close_small</mat-icon>
+          <mat-icon>block</mat-icon>
         </button>
         <button class="invite-chip-button accept"
                 matTooltip="Accept Request"
@@ -79,18 +79,18 @@ recipientSummary
          (click)="openInviteDetailsPopup()"
          (mouseenter)="isHovered = true"
          (mouseleave)="isHovered = false">
-      <ng-container *ngIf="invite.inviteStatus === 'ACCEPTED'; else otherAction">
-        <mat-icon class="request-icon has-tooltip"
-                  matTooltip="Accepted">
-          check_mark
-        </mat-icon>
-      </ng-container>
-      <ng-template #otherAction>
-        <mat-icon class="offer-icon has-tooltip"
-                  matTooltip="Accepted">
-          block
-        </mat-icon>
-      </ng-template>
+<!--      <ng-container *ngIf="invite.inviteStatus === 'ACCEPTED'; else otherAction">-->
+<!--        <mat-icon class="request-icon has-tooltip"-->
+<!--                  matTooltip="Accepted">-->
+<!--          check_mark-->
+<!--        </mat-icon>-->
+<!--      </ng-container>-->
+<!--      <ng-template #otherAction>-->
+<!--        <mat-icon class="offer-icon has-tooltip"-->
+<!--                  matTooltip="Accepted">-->
+<!--          block-->
+<!--        </mat-icon>-->
+<!--      </ng-template>-->
       <div class="user-column">
           <span class="chip-field-val username">
               {{ inviteMember.username }}
@@ -102,14 +102,22 @@ recipientSummary
             accepted: invite.inviteStatus === InviteActions.ACCEPT,
             terminal: invite.inviteStatus !== InviteActions.ACCEPT,
             }">
-        '{{ invite.inviteStatus|titlecase }}'
+        <ng-container *ngIf="invite.inviteDirection === 'OFFER'; else inviteRequest">
+          <mat-icon class="chip-field-icon">call_made</mat-icon>
+        </ng-container>
+        <ng-template #inviteRequest>
+          <mat-icon class="chip-field-icon">
+            call_received
+          </mat-icon>
+        </ng-template>
+         {{ invite.inviteStatus|titlecase }}
       </span>
     </div>
     <div class="actions-container">
       <button class="invite-chip-button decline"
               matTooltip="Dismiss"
               (click)="emitInviteAltAction(inviteActions.DISMISS)">
-        <mat-icon>delete_forever</mat-icon>
+        <mat-icon>close_small</mat-icon>
       </button>
     </div>
   </ng-template>

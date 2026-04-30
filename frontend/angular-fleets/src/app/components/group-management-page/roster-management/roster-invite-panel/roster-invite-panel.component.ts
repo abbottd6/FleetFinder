@@ -48,6 +48,7 @@ import {FormControl, FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatAutocompleteTrigger} from "@angular/material/autocomplete";
 import {MatFormField, MatInput, MatLabel, MatSuffix} from "@angular/material/input";
 import {MatIconButton} from "@angular/material/button";
+import {RosterTextFieldFilterComponent} from "../roster-text-field-filter/roster-text-field-filter.component";
 
 export interface InvitePanelFilterState {
   direction: 'OFFER' | 'REQUEST' | 'BOTH',
@@ -79,13 +80,8 @@ const INVITE_FILTER_PREDICATES: Record<string, InvitePredicate> = {
     NgIf,
     MatMenuTrigger,
     FormsModule,
-    MatFormField,
-    MatInput,
-    MatLabel,
     ReactiveFormsModule,
-    MatIconButton,
-    MatIcon,
-    MatSuffix,
+    RosterTextFieldFilterComponent,
   ],
   styleUrl: './roster-invite-panel.component.css'
 })

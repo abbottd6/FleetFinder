@@ -1,6 +1,3 @@
-@import '../../../input-fields/input-field/input-field-styles.css';
-@import '../../../dropdowns/dropdown-module/dropdown-styles.css';
-
 :host {
   display: flex;
   flex-direction: column;
@@ -36,53 +33,4 @@
   bottom: 0;
   width: 100%;
 }
-
-.dropdown-component {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.mat-mdc-form-field {
-  width: 95%;
-  margin-bottom: 8px;
-}
-
-:host ::ng-deep .panel-wrapper .dropdown-component .mat-mdc-form-field-subscript-wrapper {
-  display: none;
-}
-
-::ng-deep .dropdown-component .mdc-text-field--outlined .mat-mdc-form-field-infix {
-  padding-top: 8px;
-  padding-bottom: 5px;
-  min-height: 25px;
-  font-size: 0.9rem;
-}
-
-::ng-deep .dropdown-component .mat-mdc-text-field-wrapper {
-  margin-top: auto;
-  margin-bottom: auto;
-}
-
-:host ::ng-deep .dropdown-component .mdc-text-field--outlined .mdc-floating-label {
-  padding-left: 0;
-  font-size: 0.9rem;
-}
-
-:host ::ng-deep .dropdown-component .mat-mdc-form-field:hover .mdc-text-field--outlined {
-  font-size: 0.91rem;
-}
-
-::ng-deep .dropdown-component .mat-mdc-input-element::placeholder {
-  color: rgba(150, 168, 183, 0.5) !important;
-}
-
-:host ::ng-deep .dropdown-component .mdc-text-field--outlined:not(.mdc-text-field--focused) .mdc-floating-label {
-  top: 50%;
-}
-
-:host ::ng-deep .dropdown-component .mdc-text-field--outlined:not(.mdc-text-field--focused) .mdc-floating-label--float-above {
-  top: 80%;
-}
-
 

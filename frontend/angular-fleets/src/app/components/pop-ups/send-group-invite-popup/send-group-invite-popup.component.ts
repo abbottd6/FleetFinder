@@ -81,6 +81,10 @@ export class SendGroupInvitePopupComponent implements OnInit, OnDestroy {
     } else {
       this.showGroupSelect = true;
     }
+
+    if(this.data?.recipientSummary) {
+      this.inviteForm.controls.recipientCtrl.setValue(this.data.recipientSummary);
+    }
   }
 
   onCancel() {

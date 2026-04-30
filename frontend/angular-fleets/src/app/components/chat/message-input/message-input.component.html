@@ -13,7 +13,8 @@
         (input)="updateCharacterCount()"
         placeholder="Enter message..."
         [attr.aria-labelledby]="'message-input'"
-        (keydown.enter)="inputEnter($event)">
+        (keydown.enter)="inputEnter($event)"
+        autocomplete="off">
       </textarea>
     </div>
     <button mat-button id="send-button"

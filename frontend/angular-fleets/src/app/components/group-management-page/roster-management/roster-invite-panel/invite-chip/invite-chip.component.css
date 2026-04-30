@@ -26,7 +26,16 @@
 }
 
 .chip-field-val {
-  margin-inline: 8px;
+  display: flex;
+  margin-inline: 4px;
+  vertical-align: center;
+}
+
+.chip-field-icon {
+  scale: 0.75;
+  margin: 0;
+  padding: 0;
+  align-self: baseline;
 }
 
 .username {

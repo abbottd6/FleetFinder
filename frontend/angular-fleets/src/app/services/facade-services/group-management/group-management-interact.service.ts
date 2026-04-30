@@ -214,7 +214,7 @@ export class GroupManagementInteractService {
       })
   }
 
-  openSendInvitePopup(sender: GroupMembershipViewModel, recipient: UserMonikerSummaryViewModel | null) {
+  openSendInvitePopup(sender: GroupMembershipViewModel | null, recipient: UserMonikerSummaryViewModel | null) {
     if(!this.userService.userLoggedIn) {
       const msg = 'You must be logged in to perform this action.';
       this.showSnackBarMessage(msg);
@@ -222,9 +222,10 @@ export class GroupManagementInteractService {
     }
 
     const dialogRef = this.dialog.open(SendGroupInvitePopupComponent, {
+      autoFocus: false,
       disableClose: true,
       data: {
-        listing: sender.listing,
+        listing: sender?.listing,
         recipientSummary: recipient,
       }
     });
