@@ -1,0 +1,18 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 65vh;
+  width: 100%;
+}
+
+.panel-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  max-height: 60vh;
+  overflow-y: scroll;
+  scrollbar-color: rgba(188, 191, 200, .1) transparent;
+  scrollbar-arrow-color: transparent !important;
+  scrollbar-width: thin;
+}

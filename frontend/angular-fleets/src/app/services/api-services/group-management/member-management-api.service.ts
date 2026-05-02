@@ -24,8 +24,8 @@ export class MemberManagementApiService {
 
   constructor(private httpClient: HttpClient) {}
 
-  verifyGroupManagementAuthorization(listingId: number): Observable<Map<string, boolean>> {
-    return this.httpClient.get<Map<string, boolean>>(
+  verifyGroupManagementAuthorization(listingId: number): Observable<boolean> {
+    return this.httpClient.get<boolean>(
       `${this.baseUrl}/verify_group_management_authz/${listingId}`);
   }
 

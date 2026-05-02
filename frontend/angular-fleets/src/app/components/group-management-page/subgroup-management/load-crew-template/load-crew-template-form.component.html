@@ -1,0 +1,27 @@
+<div class="form-container">
+  <app-abstract-string-dropdown
+    [options]="templateCategories"
+    [abstractControl]="templateCategoryCtrl"
+    [placeholderLabel]="'category'"
+    [fieldLabel]="'Category:'"
+    [errorMessage]="'You must select a template category first, and then select a template.'">
+  </app-abstract-string-dropdown>
+
+  <app-template-select-dropdown
+    [templateSelectCtrl]="templateSelectCtrl"
+    [filteredOptions]="templatesForDisplay$ | async">
+
+  </app-template-select-dropdown>
+
+  <div class="button-container">
+    <button class="secondary-action-buttons"
+      (click)="cancelForm.emit()">
+      Cancel
+    </button>
+
+    <button class="secondary-action-buttons"
+      (click)="onSubmit()">
+      Create From
+    </button>
+  </div>
+</div>

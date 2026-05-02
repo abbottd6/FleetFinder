@@ -28,7 +28,8 @@
 .bottom-button-container {
   display: flex;
   margin-top: auto;
-  margin-bottom: 35px;
+  padding-top: 10px;
+  margin-bottom: 2vh;
   justify-content: center;
   bottom: 0;
   width: 100%;

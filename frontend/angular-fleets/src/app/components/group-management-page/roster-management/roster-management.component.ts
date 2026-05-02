@@ -1,6 +1,5 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {MatIcon} from "@angular/material/icon";
-import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatTab, MatTabChangeEvent, MatTabContent, MatTabGroup} from "@angular/material/tabs";
 import {AsyncPipe, NgIf} from "@angular/common";
 import {ActiveRosterPanelComponent} from "./active-roster-panel/active-roster-panel.component";
@@ -40,8 +39,11 @@ export enum RosterTabOptions {
   ],
     styleUrl: './roster-management.component.css'
 })
-export class RosterManagementComponent implements OnInit, OnDestroy{
+export class RosterManagementComponent implements OnInit, AfterViewInit, OnDestroy{
   private destroy$ = new Subject<void>();
+
+  // @ViewChild('managementContainer') managementContainer!: ElementRef;
+  // protected containerHeight!: string;
 
   groupId!: number;
 
@@ -60,6 +62,11 @@ export class RosterManagementComponent implements OnInit, OnDestroy{
 
     this.selectedTab$.next(RosterTabOptions.Active);
     this.handleTabLoad(0);
+  }
+
+  ngAfterViewInit() {
+    // const top = this.managementContainer.nativeElement.getBoundingClientRect().top;
+    // this.containerHeight = `calc(99vh - ${top}px)`;
   }
 
   onTabSwitch(event: MatTabChangeEvent) {

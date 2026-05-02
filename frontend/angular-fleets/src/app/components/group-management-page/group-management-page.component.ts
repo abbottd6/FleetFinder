@@ -16,6 +16,16 @@ import {
 import {
   GroupMembershipViewModel
 } from "../../models/group-management-models/view-models/group-membership/group-membership-view-model";
+import {MatIcon} from "@angular/material/icon";
+import {
+  LoadCrewTemplateFormComponent
+} from "./subgroup-management/load-crew-template/load-crew-template-form.component";
+import {
+  SubgroupManagementInteractService
+} from "../../services/facade-services/group-management/subgroup-management-interact.service";
+import {
+  CrewTemplateViewModel
+} from "../../models/group-management-models/view-models/group-composition/crew-template-view-model";
 
 @Component({
   selector: 'app-group-management-page',
@@ -25,7 +35,9 @@ import {
     NgIf,
     MatProgressSpinner,
     RosterManagementComponent,
-    SlicePipe
+    SlicePipe,
+    MatIcon,
+    LoadCrewTemplateFormComponent,
   ],
   styleUrl: './group-management-page.component.css'
 })
@@ -42,12 +54,18 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
   protected pageIsLoading: boolean = true;
 
-  protected groupId!: number | null;
+  protected createFromIsExpanding: boolean = false;
+  protected doNotShowCreateFromTemplateForm: boolean = true;
+
+  protected doNotShowSaveTemplateForm: boolean = true;
+
+  protected groupId!: number;
 
   constructor(private userService: UserService,
               private router: Router,
               protected memberManagementApi: MemberManagementApiService,
               protected managementInteract: GroupManagementInteractService,
+              protected subgroupMgmtInteract: SubgroupManagementInteractService,
               private route: ActivatedRoute) {}
 
   ngOnInit() {
@@ -60,7 +78,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
     this.managementInteract.sessionManager = history.state?.membership as GroupMembershipViewModel | undefined;
 
-    this.groupId = Number(stringId) ? Number(stringId) : null;
+    this.groupId = Number(stringId);
 
     if(!this.groupId || (this.groupId !== this.managementInteract.sessionManager?.listing.groupId)) {
       this.router.navigateByUrl('/nothing-here-page')
@@ -73,7 +91,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
     this.memberManagementApi.verifyGroupManagementAuthorization(this.groupId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next: response => {
-          if(response.get('isAuthorized') === true) {
+          if(response) {
             return;
           }
         },
@@ -94,6 +112,22 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
     this.pageIsLoading = false;
   }
 
+  createFromTemplate(template: CrewTemplateViewModel) {
+    this.subgroupMgmtInteract.createSubgroupFromTemplate(this.groupId, template);
+
+    setTimeout(() => this.toggleDoNotShowCreateFrom(), 300);
+  }
+
+  toggleDoNotShowCreateFrom() {
+    this.createFromIsExpanding = true;
+    this.doNotShowCreateFromTemplateForm = !this.doNotShowCreateFromTemplateForm;
+    setTimeout(() => this.createFromIsExpanding = false, 500);
+  }
+
+  toggleDoNotShowSaveAsForm() {
+    this.doNotShowSaveTemplateForm = !this.doNotShowSaveTemplateForm;
+  }
+
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
@@ -101,6 +135,6 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
   ngAfterViewInit() {
     const top = this.managementContainer.nativeElement.getBoundingClientRect().top;
-    this.containerHeight = `calc(99vh - ${top}px)`;
+    this.containerHeight = `calc(98vh - ${top}px)`;
   }
 }

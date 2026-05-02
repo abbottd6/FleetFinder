@@ -1,0 +1,71 @@
+:host {
+  display: flex;
+  overflow: visible;
+  margin-bottom: 20px;
+  background-color: rgba(33, 37, 41, 0.25);
+  box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
+  max-height: 150px;
+}
+
+:host.do-not-show-form .form-wrapper {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(37, 37, 37, 0.25);
+  box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
+  padding-left: 0;
+  margin-left: 0;
+}
+
+h5 {
+  margin: 20px 0 20px 20px;
+}
+
+.form-container {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: row;
+}
+
+
+@media(max-width: 1200px) and (min-width: 1000px) {
+  :host.show-form {
+    display: flex;
+    flex: 1 1 auto;
+
+  }
+  :host {
+    width: 100%;
+  }
+}
+
+@media(max-width: 999px) {
+  :host.show-form {
+    max-width: 95%;
+    margin-inline: auto;
+  }
+
+  :host ::ng-deep .form-wrapper .form-row .dropdown-component {
+    flex-direction: column;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  :host .form-wrapper .form-row ::ng-deep .dropdown-component .ng-select-container {
+    font-size: 0.9rem;
+    min-height: 45px;
+  }
+}
+
+:host ::ng-deep .form-container .dropdown-component .ng-select {
+  max-width: 275px;
+  min-width: 225px !important;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 20px;
+  margin-top: auto;
+  margin-bottom: auto;
+}

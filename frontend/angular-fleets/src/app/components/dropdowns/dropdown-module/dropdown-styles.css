@@ -16,6 +16,21 @@
   scrollbar-color: rgba(88, 92, 96, .9) transparent !important;
 }
 
+:host ::ng-deep .dropdown-component ng-select .ng-select-container {
+  align-items: flex-end;
+}
+
+:host ::ng-deep .dropdown-component ng-select .ng-select-container.ng-has-value .ng-value-container {
+  padding-bottom: 5px;
+  line-height: 1.5;
+}
+
+:host ::ng-deep .dropdown-component ng-select .ng-select-container .ng-arrow-wrapper,
+:host ::ng-deep .dropdown-component ng-select .ng-select-container .ng-clear-wrapper {
+  padding-bottom: 4px;
+  line-height: 1;
+}
+
 .dropdown-component label {
   white-space: nowrap;
   margin-left: clamp(0.75rem, 2vw, 2.5rem);
@@ -69,12 +84,20 @@
   }
 }
 
-:host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
+:host ::ng-deep ng-select:not(.ng-select-focused) .ng-select-container .ng-value-container .ng-placeholder {
   overflow: hidden;
+  position: relative;
   text-overflow: ellipsis;
+  padding-bottom: 0;
+  font-size: 1rem;
+  align-self: flex-start;
   min-width: 90%;
   color: rgba(255, 131, 7, 0.5) !important;
-  transition: font-size 0.3s ease;
+  transition: font-size 0.2s ease;
+}
+
+:host ::ng-deep ng-select.ng-select-focused .ng-select-container .ng-value-container .ng-placeholder {
+  align-self: flex-end !important;
 }
 
 :host ::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items {
@@ -86,9 +109,9 @@
 }
 
 /* Dropdown placeholder:hover */
-:host ::ng-deep .ng-select:not(.ng-select-disabled):hover .ng-select-container .ng-value-container .ng-placeholder {
-  font-size: 112%;
-}
+/*:host ::ng-deep .ng-select:not(.ng-select-disabled):hover .ng-select-container .ng-value-container .ng-placeholder {*/
+/*  font-size: 1.05rem !important;*/
+/*}*/
 
 /* Dropdown placeholder DISABLED */
 :host ::ng-deep .ng-select.ng-select-disabled .ng-select-container .ng-value-container .ng-placeholder {
@@ -211,5 +234,5 @@ mat-error {
 /* Validation Styles  */
 /* Dropdown placeholder:hover */
 :host ::ng-deep .ng-select.ng-touched.ng-invalid:not(.ng-select-disabled):hover .ng-select-container .ng-value-container .ng-placeholder {
-  font-size: 112%;
+  font-size: 1.05rem;
 }

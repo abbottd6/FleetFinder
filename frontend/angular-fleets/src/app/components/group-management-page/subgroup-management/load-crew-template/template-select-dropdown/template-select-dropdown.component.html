@@ -1,0 +1,14 @@
+<div class="dropdown-component">
+  <label id="abstract-dropdown">Template:</label>
+  <ng-select
+    [disabled]="!filteredOptions"
+    [items]="filteredOptions"
+    bindLabel="templateLabel"
+    [formControl]="templateSelectCtrl"
+    placeholder="Select a template..."
+    [attr.aria-labelledby]="'abstract-form-dropdown'">
+  </ng-select>
+</div>
+<!--<mat-error *ngIf="templateSelectCtrl?.hasError?.('required') && (templateSelectCtrl.dirty || !templateSelectCtrl.untouched)">-->
+<!--  <span>Howdy</span>-->
+<!--</mat-error>-->

@@ -10,6 +10,41 @@
         <div class="group-header-container">
           <span class="listing-title">{{ listingTitle.length > 60 ? (listingTitle|slice: 0: 60) + '...' : listingTitle }}</span>
         </div>
+
+        <div class="subgroups-button-header-row">
+
+          <div class="button-group-left">
+            <button class="secondary-action-buttons"
+              (click)="toggleDoNotShowCreateFrom()">
+              Load Ship Template
+            </button>
+
+            <button class="secondary-action-buttons"
+              (click)="toggleDoNotShowSaveAsForm()">
+              Save As Template
+            </button>
+          </div>
+        </div>
+          <div class="expansion-form-container">
+            <app-load-crew-template-form
+              [class.do-not-show-form]="doNotShowCreateFromTemplateForm"
+              [class.show-form]="!doNotShowCreateFromTemplateForm"
+              [class.expanding]="createFromIsExpanding"
+              class="from-template"
+              (cancelForm)="toggleDoNotShowCreateFrom()"
+              (emitSelection)="createFromTemplate($event)">
+            </app-load-crew-template-form>
+
+          <div class="expansion-form-container">
+            <!-- save structure as template -->
+          </div>
+        </div>
+
+        <button class="add-new-button">
+          <mat-icon class="material-symbols-outlined add-2" style="font-variation-settings: 'wght' 300;">add_circle_outline</mat-icon>
+        </button>
+
+
       </div>
     </div>
   </ng-container>

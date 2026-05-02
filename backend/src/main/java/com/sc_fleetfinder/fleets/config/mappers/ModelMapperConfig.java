@@ -1063,6 +1063,28 @@ public class ModelMapperConfig {
                     mapper.map(GroupManagementSubgroup::getCreatedAt, SubgroupSummaryDto::setCreatedAt);
                 });
 
+//GROUP MANAGEMENT CREW TEMPLATES
+        modelMapper.createTypeMap(CrewTemplate.class, CrewTemplateSummaryDto.class)
+                .addMappings( mapper -> {
+                    mapper.map(CrewTemplate::getTemplateId, CrewTemplateSummaryDto::setTemplateId);
+
+                    mapper.map(CrewTemplate::getTemplateLabel, CrewTemplateSummaryDto::setTemplateLabel);
+
+                    mapper.map(CrewTemplate::getTemplateCategory, CrewTemplateSummaryDto::setTemplateCategory);
+
+                    mapper.using(ctx -> {
+                        Users user = (Users) ctx.getSource();
+                        return user != null ? user.getUserId() : null;
+                    }).map(CrewTemplate::getOwner, CrewTemplateSummaryDto::setOwnerId);
+
+                    mapper.using(ctx -> {
+                        Users user = (Users) ctx.getSource();
+                        return user != null ? user.getUsername() : null;
+                    }).map(CrewTemplate::getOwner, CrewTemplateSummaryDto::setOwnerUsername);
+
+                    mapper.map(CrewTemplate::getLastUsedAt, CrewTemplateSummaryDto::setLastUsedAt);
+                });
+
 //GROUP INVITES
         // Group Invite ---->>>> Group Management Response Dto
         modelMapper.createTypeMap(GroupInvite.class, GroupManagerInviteResponseDto.class)

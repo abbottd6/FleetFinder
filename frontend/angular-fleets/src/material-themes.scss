@@ -1,6 +1,8 @@
 @use '@angular/material' as mat;
 
 :root {
+  //--bs-body-line-height: 2.5;
+
   @include mat.paginator-overrides((
     touch-target-display: center,
   ));

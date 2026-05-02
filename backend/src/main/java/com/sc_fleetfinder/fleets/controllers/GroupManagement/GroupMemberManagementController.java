@@ -35,10 +35,7 @@ public class GroupMemberManagementController {
 
         Boolean isAuthorized = memberManagementService.verifyUserIsAuthorizedMember(user, groupId);
 
-        Map<String, Boolean> response = new HashMap<>();
-        response.put("isAuthorized", isAuthorized);
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(isAuthorized);
     }
 
     @GetMapping("/get_active_roster/{groupId}")

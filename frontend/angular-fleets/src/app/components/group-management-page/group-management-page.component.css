@@ -34,8 +34,6 @@ app-roster-management {
   height: 100%;
 }
 
-
-
 /* ------------------------------------------------------------------------------------------------------*/
 
 .subgroups-container {
@@ -46,10 +44,92 @@ app-roster-management {
   scrollbar-color: #2c2c2c transparent;
   scrollbar-arrow-color: transparent !important;
   padding-bottom: 5rem;
+
+}
+
+::ng-deep .add-2 {
+  font-size: 55px;
+  font-weight: 300;
+  width: 55px;
+  height: 55px;
+  line-height: 45px;
+  color: rgba(255, 131, 7, .35);
+  transition: color 0.2s ease;
+}
+
+.add-2:hover {
+  color: rgba(255, 131, 7, .65);
+}
+
+.add-new-button {
+  display: flex;
+  width: 60px;
+  height: 60px;
+  margin-inline: auto;
+  background-color: transparent;
+  border: none;
+  align-items: center;
+  justify-content: center;
 }
 
 .account-window-body {
   padding: 0.5rem 0.5rem 2rem 0.5rem;
   max-width: 95%;
   overflow: hidden;
+}
+
+.subgroups-button-header-row {
+  display: flex;
+  flex-direction: row;
+  gap: 10%;
+  margin-inline: auto;
+}
+
+.button-group-left {
+  margin-left: 1rem;
+}
+
+.expansion-form-container {
+  max-width: 95%;
+  overflow: visible;
+}
+
+app-load-crew-template-form {
+  margin-top: 20px;
+  overflow: visible;
+  max-height: 150px;
+  transform-origin: top left;
+  transition: transform 0.5s ease, max-width 0.32s ease, max-height 0.5s ease;
+}
+
+@media(max-width: 1200px) {
+  app-load-crew-template-form.show-form {
+    min-width: 100%;
+    flex: 0 0 auto;
+    overflow-y: visible !important;
+  }
+}
+
+.do-not-show-form {
+  /*transform: scaleY(0) scaleX(0);*/
+  max-height: 0;
+  max-width: 0;
+  border: 1px solid transparent;
+  pointer-events: none;
+  overflow: hidden;
+  margin-left: 80px;
+}
+
+.show-form {
+  /*transform: scaleY(1) scaleX(1);*/
+  max-height: 150px;
+  max-width: 90%;
+  overflow-y: visible !important;
+  margin-left: 80px;
+  border: 1px solid rgba(28, 24, 24, 0.1);
+  border-radius: 10px;
+}
+
+.show-form.from-template {
+  max-width: 1100px;
 }
