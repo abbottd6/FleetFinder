@@ -1048,6 +1048,8 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupManagementSubgroup::getSubgroupNotes, SubgroupSummaryDto::setSubgroupNotes);
 
+                    mapper.map(GroupManagementSubgroup::getRootSubgroupId, SubgroupSummaryDto::setRootSubgroupId);
+
                     mapper.using(ctx -> {
                         GroupManagementSubgroup parent = (GroupManagementSubgroup) ctx.getSource();
                         return parent != null ? parent.getSubgroupId() : null;

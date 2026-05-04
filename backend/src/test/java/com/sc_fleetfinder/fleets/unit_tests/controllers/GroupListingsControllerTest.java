@@ -151,7 +151,7 @@ class GroupListingsControllerTest {
 
     @Test
     void testGetGroupListingById_Found() throws Exception{
-        when(groupListingService.getGroupListingById(1L)).thenReturn(mockGroupListings.getFirst());
+        when(groupListingService.getGroupListingDtoById(1L)).thenReturn(mockGroupListings.getFirst());
 
         //results are matched to mockListing1 in @BeforeEach
         mockMvc.perform(MockMvcRequestBuilders.get("/api/group-listings/1")
@@ -214,7 +214,7 @@ class GroupListingsControllerTest {
 
     @Test
     void testGetGroupListingById_NotFound() throws Exception {
-        when(groupListingService.getGroupListingById(33L)).thenThrow(new ResourceNotFoundException(33L));
+        when(groupListingService.getGroupListingDtoById(33L)).thenThrow(new ResourceNotFoundException(33L));
 
         mockMvc.perform(MockMvcRequestBuilders.get("/api/group-listings/33"))
                 .andExpect(status().isNotFound());

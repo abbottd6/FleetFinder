@@ -10,7 +10,6 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
-import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingServiceImpl;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberService;
@@ -39,7 +38,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
-import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -50,7 +48,6 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -489,7 +486,7 @@ class GroupListingServiceImplTest {
     }
 
     @Test
-    void testGetGroupListingById_Success() {
+    void testGetGroupListingDtoById_Success() {
         LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
         //given: dto with a valid and existing Id
         GroupListingResponseDto mockDto = new GroupListingResponseDto();
@@ -504,7 +501,7 @@ class GroupListingServiceImplTest {
         when(groupListingConversionService.convertListingToResponseDto(mockEntity2)).thenReturn(mockDto);
 
         //when
-        GroupListingResponseDto response = groupListingService.getGroupListingById(mockDto.getGroupId());
+        GroupListingResponseDto response = groupListingService.getGroupListingDtoById(mockDto.getGroupId());
 
         //then
         assertAll("GetGroupListingById_Success assertion set: ",
@@ -520,7 +517,7 @@ class GroupListingServiceImplTest {
     }
 
     @Test
-    void testGetGroupListingById_Fail() {
+    void testGetGroupListingDtoById_Fail() {
         LogCaptor logCaptor = LogCaptor.forClass(GroupListingServiceImpl.class);
         //given: a dto with an id that does not exist in repo
         GroupListingResponseDto mockDto = new GroupListingResponseDto();
@@ -530,7 +527,7 @@ class GroupListingServiceImplTest {
         //then
         assertAll("GetGroupListingById_Fail assertion set: ",
                 () -> assertThrows(ResourceNotFoundException.class, () ->
-                        groupListingService.getGroupListingById(mockDto.getGroupId()), "getGroupListingById " +
+                        groupListingService.getGroupListingDtoById(mockDto.getGroupId()), "getGroupListingById " +
                         "should throw an exception when the Id is not found."),
                 () -> assertTrue(logCaptor.getErrorLogs().stream()
                         .anyMatch(log -> log.contains("GetGroupListingById failed to find an entity with the " +

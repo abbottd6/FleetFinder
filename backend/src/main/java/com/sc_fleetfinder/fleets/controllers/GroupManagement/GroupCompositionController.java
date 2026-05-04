@@ -1,9 +1,13 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.CrewTemplateSummaryDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionDto;
+import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementSubgroup;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.CrewTemplateService;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupCompositionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +25,7 @@ public class GroupCompositionController {
 
     private final UserService userService;
     private final CrewTemplateService crewTemplateService;
+    private final GroupCompositionService groupCompService;
 
     @GetMapping("/my-crew-templates")
     public ResponseEntity<?> getMyCrewTemplateOptions(@AuthenticationPrincipal Jwt jwt) {
@@ -39,14 +44,10 @@ public class GroupCompositionController {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 
-        //TODO
-        // verify user group authorization
-        // find template by id
-        // find template subgroups by id
-        // find template positions by subgroup ids
-        // map structure onto a subgroup entity for this group
-        // figure out how to map this to a json and return it
 
-        return ResponseEntity.ok().build();
+        GroupCompositionDto response = groupCompService.createStructureFromTemplate(user, groupId, fromDto.getTemplateId());
+
+
+        return ResponseEntity.ok(response);
     }
 }

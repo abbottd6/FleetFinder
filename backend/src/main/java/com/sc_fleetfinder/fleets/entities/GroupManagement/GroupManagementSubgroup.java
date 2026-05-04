@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.entities.Users;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,19 @@ import java.time.Instant;
 @AllArgsConstructor
 public class GroupManagementSubgroup {
 
+    public GroupManagementSubgroup(GroupListing listing,
+                                   Long rootSubgroupId,
+                                   GroupManagementSubgroup parentSubgroup,
+                                   CrewSubgroupTemplate template) {
+        this.groupListing = listing;
+        this.rootSubgroupId = rootSubgroupId;
+        this.parentSubgroup = parentSubgroup;
+        this.subgroupLabel = template.getSubgroupLabel();
+        this.subgroupNotes = template.getSubgroupNotes();
+        this.intendedSubgroupSize = template.getIntendedSubgroupSize();
+        this.sortOrder = template.getSortOrder();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_subgroup")
@@ -29,6 +43,9 @@ public class GroupManagementSubgroup {
     @JoinColumn(name="listing_id", referencedColumnName="id_group", nullable = false)
     @NotNull(message="GroupManagementSubgroup entity field groupListing cannot be null.")
     private GroupListing groupListing;
+
+    @Column(name="root_subgroup_id", nullable = true)
+    private Long rootSubgroupId;
 
     @ManyToOne
     @JoinColumn(name="parent_subgroup_id", referencedColumnName="id_subgroup", nullable = true)

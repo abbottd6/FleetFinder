@@ -1,17 +1,12 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.LinkedHashSet;
 
 @Entity
 @Table(name = "crew_subgroup_template")
@@ -26,13 +21,11 @@ public class CrewSubgroupTemplate {
     @Column(name = "id_template_subgroup")
     private Long templateSubgroupId;
 
-    @ManyToOne
-    @JoinColumn(name = "template_id", nullable = false)
-    private CrewTemplate template;
+    @Column(name = "template_id", nullable = false)
+    private Long templateId;
 
-    @ManyToOne
-    @JoinColumn(name="parent_subgroup_id", referencedColumnName="id_template_subgroup")
-    private CrewSubgroupTemplate parentSubgroup;
+    @Column(name="parent_subgroup_id")
+    private Long parentSubgroupId;
 
     @Column(name = "subgroup_label", columnDefinition = "VARCHAR(64) NOT NULL")
     private String subgroupLabel;

@@ -26,9 +26,11 @@ public class CrewPositionTemplate {
     @Column(name = "id_template_position")
     private Long templatePositionId;
 
-    @ManyToOne
-    @JoinColumn(name = "subgroup_template_id", nullable = false)
-    private CrewSubgroupTemplate subgroupTemplate;
+    @Column(name = "template_id", nullable = false)
+    private Long templateRootId;
+
+    @Column(name = "subgroup_template_id", nullable = false)
+    private Long subgroupTemplateId;
 
     @ManyToOne
     @JoinColumn(name = "position_role_id")

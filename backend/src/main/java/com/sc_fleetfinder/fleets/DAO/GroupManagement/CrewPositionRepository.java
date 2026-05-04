@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CrewPositionRepository extends JpaRepository<CrewPosition, Long> {
@@ -19,6 +20,14 @@ public interface CrewPositionRepository extends JpaRepository<CrewPosition, Long
             """)
     Optional<CrewPosition> findMemberPositionByAssignedMemberIdAndListingId(
             @Param("user") GroupMember member,
-            @Param("listingId") Long listingId
-    );
+            @Param("listingId") Long listingId);
+
+    @Query("""
+           SELECT cp FROM CrewPosition cp
+           WHERE cp.rootSubgroupId IN :rootIds
+                AND cp.groupListing.groupId = :groupId
+           ORDER BY cp.sortOrder
+           """)
+    List<CrewPosition> findAllPositionsForSubgroupTrees(@Param("rootIds") List<Long> rootIds,
+                                                        @Param("groupId") Long groupId);
 }

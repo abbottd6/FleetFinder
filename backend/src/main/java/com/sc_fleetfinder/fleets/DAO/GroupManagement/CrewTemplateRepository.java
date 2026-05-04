@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CrewTemplateRepository extends JpaRepository<CrewTemplate, Long> {
 
@@ -15,4 +16,7 @@ public interface CrewTemplateRepository extends JpaRepository<CrewTemplate, Long
                 OR template.owner_id = :userId
             """, nativeQuery = true)
     List<CrewTemplate> fetchTemplateSummariesForUser(@Param("userId") Long userId);
+
+    @Query("SELECT t FROM CrewTemplate t WHERE t.templateId = :templateId")
+    Optional<CrewTemplate> findTemplateAndChildrenById(@Param("templateId") Long templateId);
 }

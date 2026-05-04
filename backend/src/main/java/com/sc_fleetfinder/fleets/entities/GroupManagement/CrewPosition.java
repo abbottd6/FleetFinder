@@ -20,6 +20,18 @@ import java.time.Instant;
 @NoArgsConstructor
 public class CrewPosition {
 
+    public CrewPosition(GroupListing listing,
+                        Long rootSubgroupId,
+                        GroupManagementSubgroup subgroup,
+                        CrewPositionTemplate template) {
+        this.groupListing = listing;
+        this.rootSubgroupId = rootSubgroupId;
+        this.subgroup = subgroup;
+        this.sortOrder = template.getSortOrder();
+        this.positionRole = template.getPositionRole();
+        this.positionNote = template.getPositionNotes();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_position")
@@ -33,6 +45,9 @@ public class CrewPosition {
     @ManyToOne
     @JoinColumn(name="subgroup_id", referencedColumnName="id_subgroup", nullable = false)
     private GroupManagementSubgroup subgroup;
+
+    @Column(name="root_subgroup_id", nullable = true)
+    private Long rootSubgroupId;
 
     @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 1")
     private Integer sortOrder = 1;

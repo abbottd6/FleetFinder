@@ -238,16 +238,20 @@ public class GroupListingServiceImpl implements GroupListingService {
     }
 
     @Override
-    public GroupListingResponseDto getGroupListingById(Long id) {
-        GroupListing groupListing = groupListingRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("GetGroupListingById failed to find an entity with the given group Id: {}.", id);
-                    return new ResourceNotFoundException("GroupListing", id);
-                });
+    public GroupListingResponseDto getGroupListingDtoById(Long id) {
+        GroupListing groupListing = findGroupListingEntityById(id);
 
         return groupListingConversionService.convertListingToResponseDto(groupListing);
     }
 
+    @Override
+    public GroupListing findGroupListingEntityById(Long groupId) {
+        return groupListingRepository.findById(groupId)
+                .orElseThrow(() -> {
+                    log.error("GetGroupListingById failed to find an entity with the given group Id: {}.", groupId);
+                    return new ResourceNotFoundException("GroupListing", groupId);
+                });
+    }
 
     private Specification<GroupListing> notHiddenBy(Users user) {
         return (root, query, cb) -> {
