@@ -1039,54 +1039,6 @@ public class ModelMapperConfig {
                     }).map(PushSubscription::getUser, GetPushSubDto::setUserId);
                 });
 
-//GROUP MANAGEMENT SUBGROUPS
-        modelMapper.createTypeMap(GroupManagementSubgroup.class, SubgroupSummaryDto.class)
-                .addMappings(mapper -> {
-                    mapper.map(GroupManagementSubgroup::getSubgroupId, SubgroupSummaryDto::setSubgroupId);
-
-                    mapper.map(GroupManagementSubgroup::getSubgroupLabel, SubgroupSummaryDto::setSubgroupLabel);
-
-                    mapper.map(GroupManagementSubgroup::getSubgroupNotes, SubgroupSummaryDto::setSubgroupNotes);
-
-                    mapper.map(GroupManagementSubgroup::getRootSubgroupId, SubgroupSummaryDto::setRootSubgroupId);
-
-                    mapper.using(ctx -> {
-                        GroupManagementSubgroup parent = (GroupManagementSubgroup) ctx.getSource();
-                        return parent != null ? parent.getSubgroupId() : null;
-                    }).map(GroupManagementSubgroup::getParentSubgroup, SubgroupSummaryDto::setParentSubgroupId);
-
-                    mapper.using(ctx -> {
-                        GroupManagementSubgroup parent = (GroupManagementSubgroup) ctx.getSource();
-                        return parent != null ? parent.getSubgroupLabel() : null;
-                    }).map(GroupManagementSubgroup::getParentSubgroup, SubgroupSummaryDto::setParentSubgroupLabel);
-
-                    mapper.map(GroupManagementSubgroup::getIntendedSubgroupSize, SubgroupSummaryDto::setIntendedSubgroupSize);
-
-                    mapper.map(GroupManagementSubgroup::getCreatedAt, SubgroupSummaryDto::setCreatedAt);
-                });
-
-//GROUP MANAGEMENT CREW TEMPLATES
-        modelMapper.createTypeMap(CrewTemplate.class, CrewTemplateSummaryDto.class)
-                .addMappings( mapper -> {
-                    mapper.map(CrewTemplate::getTemplateId, CrewTemplateSummaryDto::setTemplateId);
-
-                    mapper.map(CrewTemplate::getTemplateLabel, CrewTemplateSummaryDto::setTemplateLabel);
-
-                    mapper.map(CrewTemplate::getTemplateCategory, CrewTemplateSummaryDto::setTemplateCategory);
-
-                    mapper.using(ctx -> {
-                        Users user = (Users) ctx.getSource();
-                        return user != null ? user.getUserId() : null;
-                    }).map(CrewTemplate::getOwner, CrewTemplateSummaryDto::setOwnerId);
-
-                    mapper.using(ctx -> {
-                        Users user = (Users) ctx.getSource();
-                        return user != null ? user.getUsername() : null;
-                    }).map(CrewTemplate::getOwner, CrewTemplateSummaryDto::setOwnerUsername);
-
-                    mapper.map(CrewTemplate::getLastUsedAt, CrewTemplateSummaryDto::setLastUsedAt);
-                });
-
 //GROUP INVITES
         // Group Invite ---->>>> Group Management Response Dto
         modelMapper.createTypeMap(GroupInvite.class, GroupManagerInviteResponseDto.class)
@@ -1235,7 +1187,130 @@ public class ModelMapperConfig {
                     mapper.map(InGroupRank::getCreatedAt, GroupRankDto::setCreatedAt);
                 });
 
+//GROUP ROLES
+
+
+//GROUP MANAGEMENT SUBGROUPS
+        modelMapper.createTypeMap(GroupManagementSubgroup.class, SubgroupSummaryDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(GroupManagementSubgroup::getSubgroupId, SubgroupSummaryDto::setSubgroupId);
+
+                    mapper.map(GroupManagementSubgroup::getSubgroupLabel, SubgroupSummaryDto::setSubgroupLabel);
+
+                    mapper.map(GroupManagementSubgroup::getSubgroupNotes, SubgroupSummaryDto::setSubgroupNotes);
+
+                    mapper.map(GroupManagementSubgroup::getRootSubgroupId, SubgroupSummaryDto::setRootSubgroupId);
+
+                    mapper.using(ctx -> {
+                        GroupManagementSubgroup parent = (GroupManagementSubgroup) ctx.getSource();
+                        return parent != null ? parent.getSubgroupId() : null;
+                    }).map(GroupManagementSubgroup::getParentSubgroup, SubgroupSummaryDto::setParentSubgroupId);
+
+                    mapper.using(ctx -> {
+                        GroupManagementSubgroup parent = (GroupManagementSubgroup) ctx.getSource();
+                        return parent != null ? parent.getSubgroupLabel() : null;
+                    }).map(GroupManagementSubgroup::getParentSubgroup, SubgroupSummaryDto::setParentSubgroupLabel);
+
+                    mapper.map(GroupManagementSubgroup::getIntendedSubgroupSize, SubgroupSummaryDto::setIntendedSubgroupSize);
+
+                    mapper.map(GroupManagementSubgroup::getCreatedAt, SubgroupSummaryDto::setCreatedAt);
+                });
+
+        modelMapper.createTypeMap(GroupManagementSubgroup.class, GroupCompositionSubgroupDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(GroupManagementSubgroup::getSubgroupId, GroupCompositionSubgroupDto::setSubgroupId);
+
+                    mapper.map(GroupManagementSubgroup::getSubgroupLabel, GroupCompositionSubgroupDto::setSubgroupLabel);
+
+                    mapper.map(GroupManagementSubgroup::getSubgroupNotes, GroupCompositionSubgroupDto::setSubgroupNotes);
+
+                    mapper.map(GroupManagementSubgroup::getSortOrder, GroupCompositionSubgroupDto::setSortOrder);
+
+                    mapper.using(ctx -> {
+                        GroupListing listing = (GroupListing) ctx.getSource();
+                        return listing != null ? listing.getGroupId() : null;
+                    }).map(GroupManagementSubgroup::getGroupListing, GroupCompositionSubgroupDto::setListingId);
+
+                    mapper.map(GroupManagementSubgroup::getRootSubgroupId, GroupCompositionSubgroupDto::setRootSubgroupId);
+
+                    mapper.using(ctx -> {
+                        GroupManagementSubgroup parent = (GroupManagementSubgroup) ctx.getSource();
+                        return parent != null ? parent.getSubgroupId() : null;
+                    }).map(GroupManagementSubgroup::getParentSubgroup, GroupCompositionSubgroupDto::setParentSubgroupId);
+
+                    mapper.map(GroupManagementSubgroup::getCreatedAt, GroupCompositionSubgroupDto::setCreatedAt);
+
+                    // must manually pass and set subgroups and crew position lists
+                });
+
+//GROUP MANAGEMENT CREW TEMPLATES
+        modelMapper.createTypeMap(CrewTemplate.class, CrewTemplateSummaryDto.class)
+                .addMappings( mapper -> {
+                    mapper.map(CrewTemplate::getTemplateId, CrewTemplateSummaryDto::setTemplateId);
+
+                    mapper.map(CrewTemplate::getTemplateLabel, CrewTemplateSummaryDto::setTemplateLabel);
+
+                    mapper.map(CrewTemplate::getTemplateCategory, CrewTemplateSummaryDto::setTemplateCategory);
+
+                    mapper.using(ctx -> {
+                        Users user = (Users) ctx.getSource();
+                        return user != null ? user.getUserId() : null;
+                    }).map(CrewTemplate::getOwner, CrewTemplateSummaryDto::setOwnerId);
+
+                    mapper.using(ctx -> {
+                        Users user = (Users) ctx.getSource();
+                        return user != null ? user.getUsername() : null;
+                    }).map(CrewTemplate::getOwner, CrewTemplateSummaryDto::setOwnerUsername);
+
+                    mapper.map(CrewTemplate::getLastUsedAt, CrewTemplateSummaryDto::setLastUsedAt);
+                });
+
 //CREW POSITIONS
+        modelMapper.createTypeMap(CrewPosition.class, GroupCompositionCrewPositionDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(CrewPosition::getPositionId, GroupCompositionCrewPositionDto::setPositionId);
+
+                    mapper.using(ctx -> {
+                        GroupListing listing = (GroupListing) ctx.getSource();
+                        return listing != null ? listing.getGroupId() : null;
+                    }).map(CrewPosition::getGroupListing, GroupCompositionCrewPositionDto::setGroupId);
+
+                    mapper.using(ctx -> {
+                        GroupListing listing = (GroupListing) ctx.getSource();
+                        return listing != null ? listing.getListingTitle() : null;
+                    }).map(CrewPosition::getGroupListing, GroupCompositionCrewPositionDto::setGroupTitle);
+
+                    mapper.map(CrewPosition::getRootSubgroupId, GroupCompositionCrewPositionDto::setRootSubgroupId);
+
+                    mapper.using(ctx -> {
+                        GroupManagementSubgroup subgroup =  (GroupManagementSubgroup) ctx.getSource();
+                        return subgroup != null ? subgroup.getSubgroupId() : null;
+                    }).map(CrewPosition::getSubgroup,  GroupCompositionCrewPositionDto::setSubgroupId);
+
+                    mapper.using(ctx -> {
+                        GroupManagementSubgroup subgroup =  (GroupManagementSubgroup) ctx.getSource();
+                        return subgroup != null ? subgroup.getSubgroupLabel() : null;
+                    }).map(CrewPosition::getSubgroup, GroupCompositionCrewPositionDto::setSubgroupLabel);
+
+                    mapper.map(CrewPosition::getSortOrder, GroupCompositionCrewPositionDto::setSortOrder);
+
+                    mapper.map(CrewPosition::getPositionRole, GroupCompositionCrewPositionDto::setGroupRole);
+
+                    mapper.map(CrewPosition::getPositionNote, GroupCompositionCrewPositionDto::setPositionNote);
+
+                    mapper.using(ctx -> {
+                        GroupMember member = (GroupMember) ctx.getSource();
+                        return member != null ? member.getUser() : null;
+                    }).map(CrewPosition::getAssignedMember, GroupCompositionCrewPositionDto::setAssignedMember);
+
+                    mapper.map(CrewPosition::getFilledAt, GroupCompositionCrewPositionDto::setFilledAt);
+
+                    mapper.map(CrewPosition::getVacatedAt, GroupCompositionCrewPositionDto::setVacatedAt);
+
+                    mapper.map(CrewPosition::getCreatedAt, GroupCompositionCrewPositionDto::setCreatedAt);
+                });
+
+    // CrewPosition to MemberPositionSummaryDto
         modelMapper.createTypeMap(CrewPosition.class, MemberPositionSummaryDto.class)
                 .addMappings(mapper -> {
                     mapper.map(CrewPosition::getPositionId, MemberPositionSummaryDto::setPositionId);

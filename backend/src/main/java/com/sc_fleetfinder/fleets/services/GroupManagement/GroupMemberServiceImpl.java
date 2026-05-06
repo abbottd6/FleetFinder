@@ -97,13 +97,24 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
     }
 
     @Override
-    public Boolean verifyUserIsAuthorizedMember(Users user, Long listingId) {
+    @Transactional(readOnly = true)
+    public Boolean verifyUserIsAuthorizedManager(Users user, Long listingId) {
         GroupListing listing = glr.findById(listingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Group Listing", listingId));
 
         RankPrivilegeOptions action = RankPrivilegeOptions.MANAGE_ROSTERS;
 
         return this.rankService.verifyUserRankPermissions(user, listing, action);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GroupMember verifyAndReturnUserAsGroupMember(Users user, Long listingId) {
+        GroupListing listing = glr.findById(listingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Group Listing", listingId));
+
+        return memberRepo.findByUserAndGroupListing(user, listing)
+                .orElseThrow(() -> new ResourceNotFoundException("Group Member", user.getUserId(), listingId));
     }
 
     @Override

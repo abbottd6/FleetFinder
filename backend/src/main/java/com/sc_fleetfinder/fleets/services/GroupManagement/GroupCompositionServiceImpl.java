@@ -19,6 +19,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,6 +33,7 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
 
     private final InGroupRankService rankService;
     private final GroupListingService gls;
+    private final GroupMemberManagementService memberService;
     private final GroupManagementSubgroupRepository gmsr;
     private final CrewPositionRepository cpr;
     private final CrewTemplateService templateService;
@@ -85,7 +87,42 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
                         HashMap::new,
                         Collectors.toList()));
 
+        //TODO SORT ORDER
+
         return generateGroupCompositionResponseStructure(newSubgroups, newPositions);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public GroupCompositionDto getExistingGroupComposition(Users user, Long groupId) {
+        //method can be used by management and members to display group composition
+        // verify only that the requesting user is a member
+        memberService.verifyAndReturnUserAsGroupMember(user, groupId);
+
+        //generate a list of the root subgroup ids to build trees from
+        List<Long> rootIds = gmsr.findGroupCompositionRootIds(groupId);
+
+        if(rootIds.isEmpty()) {
+            return new GroupCompositionDto();
+        }
+
+        HashMap<Long, List<GroupManagementSubgroup>> existingSubgroups = gmsr.findTreeByRoot(rootIds, groupId)
+                .stream()
+                .collect(Collectors.groupingBy(sub ->
+                        sub.getParentSubgroup() == null ? ROOT_SUBGROUP_ID : sub.getParentSubgroup().getSubgroupId(),
+                        HashMap::new,
+                        Collectors.toList()));
+
+        HashMap<Long, List<CrewPosition>> existingPositions = cpr.findAllPositionsForSubgroupTrees(rootIds, groupId)
+                .stream()
+                .collect(Collectors.groupingBy(pos ->
+                        pos.getSubgroup().getSubgroupId(),
+                        HashMap::new,
+                        Collectors.toList()));
+
+        //TODO SORT ORDER IS NOT SET ANYWHERE, IT IS ALWAYS JUST 1
+
+        return generateGroupCompositionResponseStructure(existingSubgroups, existingPositions);
     }
 
     private Long recurseCreateSubgroupAndPositionsFromTemplate(CrewSubgroupTemplate template,

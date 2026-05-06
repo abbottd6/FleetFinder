@@ -36,7 +36,7 @@ app-roster-management {
 
 /* ------------------------------------------------------------------------------------------------------*/
 
-.subgroups-container {
+.subgroup-management-container {
   height: 100%;
   max-width: 95vw;
   overflow-y: auto;
@@ -48,12 +48,12 @@ app-roster-management {
 }
 
 ::ng-deep .add-2 {
-  font-size: 55px;
+  font-size: 75px;
   font-weight: 300;
-  width: 55px;
-  height: 55px;
-  line-height: 45px;
-  color: rgba(255, 131, 7, .35);
+  width: 75px;
+  height: 75px;
+  line-height: 65px;
+  color: rgba(255, 131, 7, .45);
   transition: color 0.2s ease;
 }
 
@@ -63,9 +63,9 @@ app-roster-management {
 
 .add-new-button {
   display: flex;
-  width: 60px;
-  height: 60px;
-  margin-inline: auto;
+  width: 85px;
+  height: 100%;
+  margin-left: 30%;
   background-color: transparent;
   border: none;
   align-items: center;
@@ -132,4 +132,10 @@ app-load-crew-template-form {
 
 .show-form.from-template {
   max-width: 1100px;
+}
+
+.group-composition-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(375px, 450px));
+  margin-left: 25px;
 }

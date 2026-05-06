@@ -1,4 +1,7 @@
-import { Component } from '@angular/core';
+import {Component, Input} from '@angular/core';
+import {
+  GroupCompCrewPositionViewModel
+} from "../../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
 
 @Component({
   selector: 'app-crew-position-chip',
@@ -7,5 +10,5 @@ import { Component } from '@angular/core';
   styleUrl: './crew-position-chip.component.css'
 })
 export class CrewPositionChipComponent {
-
+  @Input() position!: GroupCompCrewPositionViewModel;
 }

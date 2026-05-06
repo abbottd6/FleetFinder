@@ -1,1 +1,14 @@
-<p>crew-subgroup works!</p>
+<div class="chip-self">
+  <div class="subgroup-header">{{ subgroup.subgroupLabel }}</div>
+
+  <app-crew-position-chip
+    *ngFor="let position of subgroup.crewPositions"
+    [position]="position">
+  </app-crew-position-chip>
+
+  <app-crew-subgroup
+    *ngFor="let childSubgroup of subgroup.subgroups"
+    [subgroup]="childSubgroup"
+    [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
+  </app-crew-subgroup>
+</div>

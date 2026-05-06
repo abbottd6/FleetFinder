@@ -37,6 +37,17 @@ public class GroupCompositionController {
         return ResponseEntity.ok(myTemplates);
     }
 
+    @GetMapping("/get-existing-group-structure/{groupId}")
+    public ResponseEntity<?> getGroupStructure(@AuthenticationPrincipal Jwt jwt,
+                                               @PathVariable Long groupId) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        GroupCompositionDto responseDto = groupCompService.getExistingGroupComposition(user, groupId);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
     @PostMapping("/create-subgroup-from-template/{groupId}")
     public ResponseEntity<?> createSubgroupFromTemplate(@AuthenticationPrincipal Jwt jwt,
                                                         @PathVariable Long groupId,

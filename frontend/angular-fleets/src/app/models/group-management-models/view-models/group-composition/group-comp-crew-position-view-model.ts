@@ -1,0 +1,20 @@
+import {RoleClassSummaryViewModel} from "../../nested-models/role-class-summary-view-model";
+import {UserMonikerSummaryViewModel} from "../../nested-models/user-moniker-summary-view-model";
+
+export class GroupCompCrewPositionViewModel {
+  constructor(
+    public positionId: number,
+    public groupId: number,
+    public groupTitle: string,
+    public rootSubgroupId: number,
+    public subgroupId: number,
+    public subgroupLabel: string,
+    public sortOrder: number,
+    public groupRole: RoleClassSummaryViewModel,
+    public positionNote: string,
+    public assignedMember: UserMonikerSummaryViewModel,
+    public filledAt: Date,
+    public vacatedAt: Date,
+    public createdAt: Date
+  ){}
+}

@@ -15,9 +15,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
-
 @RestController
 @RequestMapping("api/group-member-management")
 @PreAuthorize("isAuthenticated() and hasRole('user')")
@@ -33,7 +30,7 @@ public class GroupMemberManagementController {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 
-        Boolean isAuthorized = memberManagementService.verifyUserIsAuthorizedMember(user, groupId);
+        Boolean isAuthorized = memberManagementService.verifyUserIsAuthorizedManager(user, groupId);
 
         return ResponseEntity.ok(isAuthorized);
     }

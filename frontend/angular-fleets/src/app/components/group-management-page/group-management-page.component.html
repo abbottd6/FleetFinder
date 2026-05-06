@@ -6,7 +6,7 @@
         <app-roster-management>
         </app-roster-management>
       </div>
-      <div class="subgroups-container">
+      <div class="subgroup-management-container">
         <div class="group-header-container">
           <span class="listing-title">{{ listingTitle.length > 60 ? (listingTitle|slice: 0: 60) + '...' : listingTitle }}</span>
         </div>
@@ -40,10 +40,18 @@
           </div>
         </div>
 
-        <button class="add-new-button">
-          <mat-icon class="material-symbols-outlined add-2" style="font-variation-settings: 'wght' 300;">add_circle_outline</mat-icon>
-        </button>
+        <div class="group-composition-container">
+          <ng-container *ngIf="(subgroupMgmtInteract.subgroupTrees$ | async) as subgroups">
+            <app-crew-subgroup
+              *ngFor="let treeRoot of subgroups"
+              [subgroup]="treeRoot">
+            </app-crew-subgroup>
+          </ng-container>
 
+          <button class="add-new-button">
+            <mat-icon class="material-symbols-outlined add-2" style="font-variation-settings: 'wght' 300;">add_circle_outline</mat-icon>
+          </button>
+        </div>
 
       </div>
     </div>

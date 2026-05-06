@@ -7,7 +7,7 @@ import {UserService} from "../../services/user-services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MemberManagementApiService} from "../../services/api-services/group-management/member-management-api.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {NgForOf, NgIf, SlicePipe} from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf, SlicePipe} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {RosterManagementComponent} from "./roster-management/roster-management.component";
 import {
@@ -26,6 +26,7 @@ import {
 import {
   CrewTemplateViewModel
 } from "../../models/group-management-models/view-models/group-composition/crew-template-view-model";
+import {CrewSubgroupComponent} from "./subgroup-management/crew-subgroup/crew-subgroup.component";
 
 @Component({
   selector: 'app-group-management-page',
@@ -38,6 +39,9 @@ import {
     SlicePipe,
     MatIcon,
     LoadCrewTemplateFormComponent,
+    AsyncPipe,
+    CrewSubgroupComponent,
+    NgForOf,
   ],
   styleUrl: './group-management-page.component.css'
 })
@@ -46,9 +50,6 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
   @ViewChild('managementContainer') managementContainer!: ElementRef;
   protected containerHeight!: string;
-
-  protected waitlistRoster: GroupManagementMemberViewModel[] = [];
-  protected noWaitlistMembers: boolean = false;
 
   protected listingTitle!: string;
 
@@ -108,6 +109,8 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
     });
 
     this.listingTitle = this.managementInteract.sessionManager.listing.listingTitle;
+
+    this.subgroupMgmtInteract.getExistingSubgroupTrees(this.groupId);
 
     this.pageIsLoading = false;
   }

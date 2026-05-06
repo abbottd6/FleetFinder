@@ -6,7 +6,6 @@ import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.InGroupRank;
 import com.sc_fleetfinder.fleets.entities.Users;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupInviteStatus;
 
 import java.util.Optional;
 
@@ -16,7 +15,9 @@ public interface GroupMemberService {
 
     void userDismissInvite(Users user, Long inviteId);
 
-    Boolean verifyUserIsAuthorizedMember(Users user, Long listingId);
+    Boolean verifyUserIsAuthorizedManager(Users user, Long listingId);
+
+    GroupMember verifyAndReturnUserAsGroupMember(Users user, Long listingId);
 
     Optional<CrewPosition> findGroupMemberCrewPosition(GroupMember member);
 

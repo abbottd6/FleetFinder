@@ -5,6 +5,9 @@ import {
   CrewTemplateViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/crew-template-view-model";
 import {Observable} from "rxjs";
+import {
+  GroupCompositionDto
+} from "../../../../models/group-management-models/view-models/group-composition/group-composition-dto";
 
 @Injectable({
   providedIn: 'root'
@@ -15,12 +18,17 @@ export class GroupCompositionApiService {
 
   constructor(private httpClient: HttpClient) { }
 
+  getExistingGroupStructure(groupId: number): Observable<GroupCompositionDto> {
+    return this.httpClient.get<GroupCompositionDto>(
+      `${this.baseUrl}/get-existing-group-structure/${groupId}`);
+  }
+
   fetchCrewTemplateSummaries(): Observable<CrewTemplateViewModel[]> {
     return this.httpClient.get<CrewTemplateViewModel[]>(`${this.baseUrl}/my-crew-templates`);
   }
 
-  //TODO RETURN TYPE
-  createSubgroupFromTemplate(groupId: number, template: CrewTemplateViewModel): Observable<any> {
-    return this.httpClient.post<any>(`${this.baseUrl}/create-subgroup-from-template/${groupId}`, template);
+  createSubgroupFromTemplate(groupId: number, template: CrewTemplateViewModel): Observable<GroupCompositionDto> {
+    return this.httpClient.post<GroupCompositionDto>(
+      `${this.baseUrl}/create-subgroup-from-template/${groupId}`, template);
   }
 }

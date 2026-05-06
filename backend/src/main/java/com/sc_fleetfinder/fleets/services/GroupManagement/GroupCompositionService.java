@@ -5,5 +5,7 @@ import com.sc_fleetfinder.fleets.entities.Users;
 
 public interface GroupCompositionService {
 
+    GroupCompositionDto getExistingGroupComposition(Users user, Long groupId);
+
     GroupCompositionDto createStructureFromTemplate(Users user, Long groupId, Long templateId);
 }

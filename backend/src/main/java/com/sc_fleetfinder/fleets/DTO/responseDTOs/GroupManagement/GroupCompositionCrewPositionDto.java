@@ -8,7 +8,7 @@ import java.time.Instant;
 public class GroupCompositionCrewPositionDto {
 
     private Long positionId;
-    private String groupId;
+    private Long groupId;
     private String groupTitle;
     private Long rootSubgroupId;
     private Long subgroupId;
@@ -16,7 +16,7 @@ public class GroupCompositionCrewPositionDto {
     private Integer sortOrder;
     private GroupRoleSummaryDto groupRole;
     private String positionNote;
-    private GroupManagerMemberResponseDto assignedMember;
+    private UserMonikerSummary assignedMember;
     private Instant filledAt;
     private Instant vacatedAt;
     private Instant createdAt;

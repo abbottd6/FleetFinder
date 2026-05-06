@@ -1,0 +1,11 @@
+.position-chip {
+  min-height: 60px;
+  max-width: 98%;
+  margin-inline: auto;
+  margin-top: 10px;
+  border: 1px solid rgba(150, 168, 183, .15);
+  border-radius: 10px;
+  padding: 8px;
+  overflow: hidden;
+  font-family: "Exo 2", sans-serif;
+}
