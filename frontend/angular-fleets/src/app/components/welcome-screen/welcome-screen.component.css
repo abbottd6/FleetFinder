@@ -1,10 +1,11 @@
 .image-container {
-  max-width: clamp(300px, 95%, 700px);
-  height: auto;
+  display: flex;
+  width: 100%;
+  height: fit-content;
   padding: 0.1rem;
   margin-top: 2rem;
   margin-bottom: 2rem;
-  margin-inline: auto;
+  justify-content: center;
 }
 
 @media(max-width: 699px) {
@@ -25,9 +26,10 @@
 #welcome-image {
   box-sizing: border-box;
   display: block;
-  max-width: 100%;
+  width: 100%;
   height: auto;
   line-height: 0;
+  object-fit: cover;
   clip-path: polygon(0% 0%, 88% 0%, 100% 12%, 100% 100%, 100% 100%, 12% 100%, 0% 88%, 0% 0%);
 }
 

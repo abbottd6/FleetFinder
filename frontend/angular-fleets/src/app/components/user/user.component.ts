@@ -1,5 +1,5 @@
 import {
-  AfterViewInit,
+  AfterViewInit, ChangeDetectorRef,
   Component, ElementRef,
   inject, OnDestroy,
   OnInit, ViewChild,
@@ -105,7 +105,8 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
               private dialog: MatDialog,
               protected userFormSrv: UpdateUserFormService,
               private route: ActivatedRoute,
-              private router: Router) {
+              private router: Router,
+              private cdr: ChangeDetectorRef) {
 
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
       if(reason != null) {
@@ -236,6 +237,7 @@ export class UserComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     const top = this.profileContainer.nativeElement.getBoundingClientRect().top;
     this.containerHeight = `calc(99vh - ${top}px)`;
+    this.cdr.detectChanges();
   }
 
   isMobile$ = this.breakpointObserver

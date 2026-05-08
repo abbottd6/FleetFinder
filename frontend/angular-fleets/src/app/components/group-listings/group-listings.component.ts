@@ -1,6 +1,6 @@
 import {
   afterNextRender,
-  AfterViewInit,
+  AfterViewInit, ChangeDetectorRef,
   Component, ElementRef,
   EventEmitter,
   inject,
@@ -86,7 +86,8 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
               private auth: AuthService,
               private userService: UserService,
               protected ownerService: ListingOwnerActionsService,
-              protected chatHostSrv: ChatHostService) {
+              protected chatHostSrv: ChatHostService,
+              private cdr: ChangeDetectorRef) {
 
     this.listingInteract.refresh$.pipe(takeUntil(this.destroy$)).subscribe( reason => {
       if(reason === 'hide' || reason === 'report' || reason === 'delete') {
@@ -117,6 +118,7 @@ export class GroupListingsComponent implements OnInit, AfterViewInit, OnDestroy 
   ngAfterViewInit() {
     const top = this.listingsPageContainer.nativeElement.getBoundingClientRect().top;
     this.containerHeight = `calc(99vh - ${top}px)`;
+    this.cdr.detectChanges();
 
     this.paginator.page.pipe(takeUntil(this.destroy$))
       .subscribe((event: PageEvent) => {

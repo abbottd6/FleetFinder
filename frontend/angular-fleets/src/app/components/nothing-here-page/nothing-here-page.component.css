@@ -1,3 +1,7 @@
+:host .body-container {
+  min-height: 86vh;
+}
+
 .image-container {
   max-width: clamp(300px, 95%, 700px);
   height: auto;

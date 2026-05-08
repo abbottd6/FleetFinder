@@ -9,9 +9,6 @@ import {
 import {TemplateSelectDropdownComponent} from "./template-select-dropdown/template-select-dropdown.component";
 import {BehaviorSubject, Subject, takeUntil} from "rxjs";
 import {
-  SubgroupManagementInteractService
-} from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
-import {
   GroupCompositionApiService
 } from "../../../../services/api-services/group-management/group-composition-api/group-composition-api.service";
 import {AsyncPipe} from "@angular/common";

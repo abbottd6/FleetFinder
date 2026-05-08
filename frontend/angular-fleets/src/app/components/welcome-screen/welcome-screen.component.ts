@@ -10,7 +10,9 @@ import {UserService} from "../../services/user-services/user.service";
     standalone: false
 })
 export class WelcomeScreenComponent implements OnInit, AfterViewInit {
-  constructor(public auth: AuthService, protected snackBar: MatSnackBar, private userService: UserService) {}
+  constructor(public auth: AuthService,
+              protected snackBar: MatSnackBar,
+              private userService: UserService) {}
 
   ngOnInit() {
     if(sessionStorage.getItem('pendingDiscordLink')) {

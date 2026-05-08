@@ -1,5 +1,5 @@
-<div class="container-clip-path-wrapper">
-  <div class="body-container">
+<div class="nothing-here-container">
+  <div class="body-container"#nothingHereContainer [style.min-height]="containerHeight">
     <h3>Forget to refuel before heading out to Pyro?</h3>
     <div class="success-body">
       <ng-container *ngIf="nothingHereLayoutMode$ | async as mode">
@@ -20,7 +20,12 @@
           <ng-container *ngIf="mode !== 'full'">
             <div class="image-container">
               <div class="image-border">
-                <img src="/images/DoctorTalos_in_MSR.jpg" class="nothing-here-image" alt="Pico is the best">
+                <img ngSrc="/images/DoctorTalos_in_MSR.jpg"
+                     class="nothing-here-image"
+                     alt="Pico is the best"
+                     height="648"
+                     width="1152"
+                     [priority]="true">
               </div>
             </div>
           </ng-container>
@@ -28,7 +33,12 @@
         <ng-container *ngIf="mode === 'full'">
           <div class="image-container">
             <div class="image-border">
-              <img src="/images/DoctorTalos_in_MSR.jpg" class="nothing-here-image" alt="Pico is the best">
+              <img ngSrc="/images/DoctorTalos_in_MSR.jpg"
+                   class="nothing-here-image"
+                   alt="Pico is the best"
+                   height="648"
+                   width="1152"
+                   [priority]="true">
             </div>
           </div>
         </ng-container>

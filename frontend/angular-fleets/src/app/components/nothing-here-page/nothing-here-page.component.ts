@@ -1,9 +1,9 @@
-import {Component, OnDestroy} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {map, Observable, shareReplay, Subject} from "rxjs";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
 import {RouterLink} from "@angular/router";
-import {AsyncPipe, NgIf} from "@angular/common";
+import {AsyncPipe, NgIf, NgOptimizedImage} from "@angular/common";
 
 @Component({
   selector: 'app-nothing-here-page',
@@ -12,13 +12,19 @@ import {AsyncPipe, NgIf} from "@angular/common";
   imports: [
     RouterLink,
     NgIf,
-    AsyncPipe
+    AsyncPipe,
+    NgOptimizedImage
   ],
   styleUrl: './nothing-here-page.component.css'
 })
-export class NothingHerePageComponent implements OnDestroy {
+export class NothingHerePageComponent implements AfterViewInit, OnDestroy {
   private breakpointObserver = new BreakpointObserver();
   private destroy$ = new Subject<void>();
+
+  @ViewChild('nothingHereContainer') nothingHereContainer!: ElementRef;
+  protected containerHeight!: string;
+
+  constructor(private cdr: ChangeDetectorRef){}
 
   nothingHereLayoutMode$: Observable<LayoutMode> = this.breakpointObserver
     .observe([
@@ -35,6 +41,12 @@ export class NothingHerePageComponent implements OnDestroy {
       }),
       shareReplay(1)
     );
+
+  ngAfterViewInit() {
+    const top = this.nothingHereContainer.nativeElement.getBoundingClientRect().top;
+    this.containerHeight = `calc(99vh - ${top}px)`;
+    this.cdr.detectChanges();
+  }
 
   ngOnDestroy() {
     this.destroy$.next();

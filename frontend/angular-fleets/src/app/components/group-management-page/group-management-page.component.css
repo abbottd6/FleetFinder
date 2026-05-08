@@ -98,6 +98,7 @@ app-load-crew-template-form {
   margin-top: 20px;
   overflow: visible;
   max-height: 150px;
+  max-width: 90%;
   transform-origin: top left;
   transition: transform 0.5s ease, max-width 0.32s ease, max-height 0.5s ease;
 }
@@ -128,6 +129,10 @@ app-load-crew-template-form {
   margin-left: 80px;
   border: 1px solid rgba(28, 24, 24, 0.1);
   border-radius: 10px;
+}
+
+app-load-crew-template-form.show-form.expanding {
+  overflow-x: hidden !important;
 }
 
 .show-form.from-template {

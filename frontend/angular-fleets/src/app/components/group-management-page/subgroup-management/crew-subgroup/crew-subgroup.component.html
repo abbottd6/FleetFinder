@@ -1,14 +1,54 @@
 <div class="chip-self">
-  <div class="subgroup-header">{{ subgroup.subgroupLabel }}</div>
+  <div class="subgroup-header">
+    <div class="header-left">
+      <span>{{ subgroup.subgroupLabel }}</span>
+      <button class="header-button scaled-minus">
+        <mat-icon class="scaled-minus" matTooltip="Edit title">edit</mat-icon>
+      </button>
+    </div>
+    <div class="header-right">
+      <button class="header-button"
+              (click)="toggleCollapseSelf()">
+        <mat-icon [class.rotate]="!selfExpanded"
+                  [matTooltip]="selfExpanded ? 'Collapse self' : 'Expand self'">arrow_drop_up</mat-icon>
+      </button>
 
-  <app-crew-position-chip
-    *ngFor="let position of subgroup.crewPositions"
-    [position]="position">
-  </app-crew-position-chip>
+      <button *ngIf="hasChildSubgroups"
+              class="header-button"
+              (click)="collapseChildren()">
+        <span class="material-symbols-outlined"
+              [matTooltip]="childrenExpanded ? 'Collapse children' : 'Expand Children'">
+          <ng-container *ngIf="childrenExpanded; else childrenCollapsed">
+            collapse_content
+          </ng-container>
+          <ng-template #childrenCollapsed>
+            expand_content
+          </ng-template>
+        </span>
+      </button>
 
-  <app-crew-subgroup
-    *ngFor="let childSubgroup of subgroup.subgroups"
-    [subgroup]="childSubgroup"
-    [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
-  </app-crew-subgroup>
+      <button class="header-button">
+        <mat-icon matTooltip="Options">more_vert</mat-icon>
+      </button>
+    </div>
+  </div>
+    <ng-container *ngIf="selfExpanded; else parentCollapsed">
+      <app-crew-position-chip
+        *ngFor="let position of subgroup.crewPositions"
+        [position]="position">
+      </app-crew-position-chip>
+
+      <app-crew-subgroup
+        *ngFor="let childSubgroup of subgroup.subgroups"
+        [subgroup]="childSubgroup"
+        [collapseFromParent$]="collapseFromSelf$"
+        [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
+      </app-crew-subgroup>
+    </ng-container>
+    <ng-template #parentCollapsed>
+      <div class="subgroup-summary-data">
+        <span class="summary-data-left">Positions: {{ assignedPositionsCount }}/{{ totalPositionsCount }}</span>
+        <span class="summary-data-right">Subgroups: {{ totalSubgroupsCount }}</span>
+      </div>
+    </ng-template>
 </div>

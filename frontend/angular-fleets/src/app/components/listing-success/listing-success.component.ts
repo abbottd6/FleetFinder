@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild} from '@angular/core';
 import {BreakpointObserver} from "@angular/cdk/layout";
 import {map, Observable, shareReplay, Subject, takeUntil} from "rxjs";
 import {LayoutMode} from "../input-fields/search-bar/search-bar.component";
@@ -15,6 +15,8 @@ export class ListingSuccessComponent implements OnDestroy, AfterViewInit {
 
   @ViewChild('successPageContainer') successPageContainer!: ElementRef;
   protected containerHeight!: string;
+
+  constructor(private cdr: ChangeDetectorRef){}
 
   successLayoutMode$: Observable<LayoutMode> = this.breakpointObserver
     .observe([
@@ -35,6 +37,7 @@ export class ListingSuccessComponent implements OnDestroy, AfterViewInit {
   ngAfterViewInit() {
     const top = this.successPageContainer.nativeElement.getBoundingClientRect().top;
     this.containerHeight = `calc(99vh - ${top}px)`;
+    this.cdr.detectChanges();
   }
 
   ngOnDestroy() {
