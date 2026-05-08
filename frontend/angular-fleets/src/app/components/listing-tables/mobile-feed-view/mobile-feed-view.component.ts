@@ -35,6 +35,7 @@ import {
   ListingOwnerActionsService
 } from "../../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
 import {ChatHostService} from "../../../services/facade-services/chat/chat-host.service";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-mobile-feed-view',
@@ -58,7 +59,8 @@ import {ChatHostService} from "../../../services/facade-services/chat/chat-host.
     AsyncPipe,
     MatMenu,
     MatMenuItem,
-    MatMenuTrigger
+    MatMenuTrigger,
+    MatIcon
   ],
   styleUrl: './mobile-feed-view.component.css'
 })

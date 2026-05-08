@@ -37,6 +37,7 @@ import {
   ListingOwnerActionsService
 } from "../../../../services/facade-services/listing-view-interactions/listing-owner-actions.service";
 import {ChatHostService} from "../../../../services/facade-services/chat/chat-host.service";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-desktop-table-view',
@@ -60,7 +61,8 @@ import {ChatHostService} from "../../../../services/facade-services/chat/chat-ho
     MatMenuItem,
     NgIf,
     MatMenuTrigger,
-    SlicePipe
+    SlicePipe,
+    MatIcon
   ],
   styleUrl: './desktop-table-view.component.css'
 })

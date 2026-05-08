@@ -35,6 +35,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {ConfirmGenericComponent} from "../pop-ups/confirm-generic/confirm-generic.component";
 import {TemplatesModalService} from "../../services/component-services/templates-modal-service/templates-modal.service";
 import {Page} from "../../models/page-interface";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-user-profile-templates',
@@ -61,6 +62,7 @@ import {Page} from "../../models/page-interface";
     MatHeaderCellDef,
     MatSort,
     SlicePipe,
+    MatIcon,
   ],
   styleUrl: './user-profile-templates.component.css'
 })

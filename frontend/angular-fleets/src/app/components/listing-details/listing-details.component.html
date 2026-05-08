@@ -192,6 +192,7 @@
                 mat-menu-item
                 class="options-item"
                 (click)="listingInteract.hideSelected()">
+                <mat-icon class="material-symbols-outlined dropdown-icon">hide_source</mat-icon>
                 Hide
               </button>
               <ng-container *ngIf="(listingInteract.selectedIsBookmarked$ | async) === false; else notBookmarked">
@@ -199,6 +200,7 @@
                   mat-menu-item
                   class="options-item"
                   (click)="listingInteract.addBookmark(listing.groupId)">
+                  <mat-icon class="material-symbols-outlined dropdown-icon">bookmark_add</mat-icon>
                   Bookmark
                 </button>
               </ng-container>
@@ -207,18 +209,21 @@
                   mat-menu-item
                   class="options-item"
                   (click)="listingInteract.deleteBookmark(listing.groupId)">
+                  <mat-icon class="material-symbols-outlined dropdown-icon">bookmark_remove</mat-icon>
                   Unmark
                 </button>
               </ng-template>
               <button mat-menu-item
                       class="options-item"
                       (click)="listingInteract.copyListingLink(listing.groupId)">
+                <mat-icon class="material-symbols-outlined dropdown-icon">content_copy</mat-icon>
                 Copy Link
               </button>
               <button
                 mat-menu-item
                 class="options-item"
                 (click)="listingInteract.reportSelected()">
+                <mat-icon class="material-symbols-outlined dropdown-icon">flag_2</mat-icon>
                 Report
               </button>
             </mat-menu>
@@ -231,7 +236,7 @@
               <button type="button"
                       class="action-buttons-with-icons"
                       [matMenuTriggerFor]="ownerConnectMenu">
-                <mat-icon class="msg-icon">rss_feed</mat-icon>
+                <mat-icon class="msg-icon">arrow_drop_down</mat-icon>
                 Connect
               </button>
               <mat-menu #ownerConnectMenu="matMenu" yPosition="above">
@@ -239,6 +244,7 @@
                   mat-menu-item
                   class="options-item"
                   (click)="chatHostSrv.provisionConversation(listing!.listingTitle, listing!.userId)">
+                  <mat-icon class="material-symbols-outlined dropdown-icon">chat_bubble</mat-icon>
                   Send Message
                 </button>
 
@@ -246,6 +252,7 @@
                   mat-menu-item
                   class="options-item"
                   (click)="listingInteract.openRequestInvitePopup()">
+                  <mat-icon class="material-symbols-outlined dropdown-icon">call_made</mat-icon>
                   Join Request
                 </button>
               </mat-menu>

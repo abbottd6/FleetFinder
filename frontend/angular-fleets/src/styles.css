@@ -282,17 +282,17 @@ app-user {
   border-radius: 0.25rem;
 }
 
-.options-list {
-  padding-left: 0.25rem;
-  padding-right: 0.5rem;
-  margin-bottom: 0.75rem;
-}
+/*.options-list {*/
+/*  padding-left: 0.25rem;*/
+/*  padding-right: 0.5rem;*/
+/*  margin-bottom: 0.25rem;*/
+/*}*/
 
 .options-item-disabled {
   display: block;
   min-width: 85%;
-  margin: 0.0rem .5rem .25rem .5rem;
-  padding: 0.5rem 0.5rem 0.25rem 0.5rem;
+  /*margin: 0.0rem .5rem .25rem .5rem;*/
+  /*padding: 0.5rem 0.5rem 0.25rem 0.5rem;*/
   clear: both;
   color: rgba(255, 131, 7, .2);
   text-align: left;
@@ -303,26 +303,33 @@ app-user {
 
 .options-item {
   display: block;
-  max-width: 90%;
-  margin: 0.0rem .5rem 0 .5rem !important;
-  /*padding: 0.25rem 0.25rem 0 0.5rem !important;*/
+  /*margin: 0.0rem .5rem 0 .5rem;*/
   clear: both;
   color: rgba(255, 131, 7, .6);
   text-align: left;
-  /*border-bottom: 1px solid rgba(255, 131, 7, .6);*/
   font-size: 95% !important;
 }
 
 .mat-mdc-menu-content {
-  padding: 0 0.5rem 0.5rem 0.5rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mat-mdc-menu-content .options-item .dropdown-icon {
+  font-variation-settings: 'wght' 300;
+  transition: color 0.2s ease;
 }
 
 .mat-mdc-menu-content .mat-mdc-menu-item {
   transition: background-color 0.15s ease, color 0.15s ease;
-  padding: 0.1rem 0.25rem 0 0.5rem !important;
+  /*padding: 0.1rem 0.25rem 0 0.5rem;*/
   border: 1px solid transparent;
   border-radius: 0.25rem;
   color: rgba(188, 191, 200, .75);
+}
+
+.mat-mdc-menu-content .mat-mdc-menu-item .mat-mdc-menu-item-text {
+  padding-right: 10px !important;
 }
 
 .mat-mdc-menu-item:hover {

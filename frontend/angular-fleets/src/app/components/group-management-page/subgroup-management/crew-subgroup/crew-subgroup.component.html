@@ -8,6 +8,7 @@
     </div>
     <div class="header-right">
       <button class="header-button"
+              type="button"
               (click)="toggleCollapseSelf()">
         <mat-icon [class.rotate]="!selfExpanded"
                   [matTooltip]="selfExpanded ? 'Collapse self' : 'Expand self'">arrow_drop_up</mat-icon>
@@ -15,6 +16,7 @@
 
       <button *ngIf="hasChildSubgroups"
               class="header-button"
+              type="button"
               (click)="collapseChildren()">
         <span class="material-symbols-outlined"
               [matTooltip]="childrenExpanded ? 'Collapse children' : 'Expand Children'">
@@ -27,12 +29,45 @@
         </span>
       </button>
 
-      <button class="header-button">
+      <button class="header-button"
+              type="button"
+              [matMenuTriggerFor]="subgroupOptionsMenu">
         <mat-icon matTooltip="Options">more_vert</mat-icon>
       </button>
+      <mat-menu #subgroupOptionsMenu="matMenu" yPosition="below" panelClass="subgroup-options-menu">
+        <button
+          mat-menu-item
+          class="options-item">
+          <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
+          <span>New position</span>
+        </button>
+
+        <button
+          mat-menu-item
+          class="options-item">
+          <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
+          <span>New subgroup</span>
+        </button>
+
+        <button
+          mat-menu-item
+          class="options-item">
+          <mat-icon class="material-symbols-outlined dropdown-icon">remove_circle_outline</mat-icon>
+          <span>Delete</span>
+        </button>
+
+        <button
+          mat-menu-item
+          class="options-item">
+          <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
+          <span>Save template</span>
+        </button>
+      </mat-menu>
     </div>
   </div>
-    <ng-container *ngIf="selfExpanded; else parentCollapsed">
+    <div class="chip-contents"
+         [class.chip-subgroup-expanded]="selfExpanded"
+         [class.chip-subgroup-collapsed]="!selfExpanded">
       <app-crew-position-chip
         *ngFor="let position of subgroup.crewPositions"
         [position]="position">
@@ -44,11 +79,14 @@
         [collapseFromParent$]="collapseFromSelf$"
         [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
       </app-crew-subgroup>
-    </ng-container>
-    <ng-template #parentCollapsed>
+    </div>
+    <div class="chip-summary"
+         [class.collapsed-show-summary]="!selfExpanded || (subgroup.subgroups.length === 0
+                                          && subgroup.crewPositions.length === 0)"
+         [class.expanded-hide-summary]="selfExpanded">
       <div class="subgroup-summary-data">
         <span class="summary-data-left">Positions: {{ assignedPositionsCount }}/{{ totalPositionsCount }}</span>
         <span class="summary-data-right">Subgroups: {{ totalSubgroupsCount }}</span>
       </div>
-    </ng-template>
+    </div>
 </div>

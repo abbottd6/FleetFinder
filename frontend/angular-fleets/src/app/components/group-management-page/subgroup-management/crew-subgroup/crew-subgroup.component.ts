@@ -7,6 +7,7 @@ import {NgForOf, NgIf} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {BehaviorSubject} from "rxjs";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
   selector: 'app-crew-subgroup',
@@ -16,6 +17,9 @@ import {BehaviorSubject} from "rxjs";
     NgIf,
     MatIcon,
     MatTooltip,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
   ],
   templateUrl: './crew-subgroup.component.html',
   styleUrl: './crew-subgroup.component.css'

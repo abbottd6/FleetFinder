@@ -54,6 +54,7 @@ app-roster-management {
   height: 75px;
   line-height: 65px;
   color: rgba(255, 131, 7, .45);
+  font-variation-settings: 'wght' 300;
   transition: color 0.2s ease;
 }
 

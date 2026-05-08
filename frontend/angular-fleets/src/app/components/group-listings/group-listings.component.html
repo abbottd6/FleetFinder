@@ -301,18 +301,21 @@
         class="options-item"
         (click)="chatHostSrv.provisionConversation(listingInteract.selectedListing!.listingTitle,
                                                     listingInteract.selectedListing!.userId)">
+        <mat-icon class="material-symbols-outlined dropdown-icon">chat_bubble</mat-icon>
         Message
       </button>
       <button
         mat-menu-item
         class="options-item"
         (click)="listingInteract.openRequestInvitePopup()">
+        <mat-icon class="material-symbols-outlined dropdown-icon">call_made</mat-icon>
         Join Request
       </button>
       <button
         mat-menu-item
         class="options-item"
         (click)="listingInteract.hideSelected()">
+        <mat-icon class="material-symbols-outlined dropdown-icon">hide_source</mat-icon>
         Hide
       </button>
       <ng-container *ngIf="(listingInteract.selectedIsBookmarked$ | async) === true; else notBookmarked">
@@ -320,6 +323,7 @@
           mat-menu-item
           class="options-item"
           (click)="listingInteract.deleteSelectedBookmark()">
+          <mat-icon class="material-symbols-outlined dropdown-icon">bookmark_remove</mat-icon>
           Unmark
         </button>
       </ng-container>
@@ -327,6 +331,7 @@
         <button mat-menu-item
                 class="options-item"
                 (click)="listingInteract.bookmarkSelected()">
+          <mat-icon class="material-symbols-outlined dropdown-icon">bookmark_add</mat-icon>
           Bookmark
         </button>
       </ng-template>
@@ -334,26 +339,32 @@
         mat-menu-item
         class="options-item"
         (click)="listingInteract.reportSelected()">
+        <mat-icon class="material-symbols-outlined dropdown-icon">flag_2</mat-icon>
         Report
       </button>
       <button mat-menu-item class="options-item">
+        <mat-icon class="material-symbols-outlined dropdown-icon">close</mat-icon>
         Cancel
       </button>
     </ng-container>
     <ng-template #ownerMenu>
       <button mat-menu-item class="options-item"
               (click)="ownerService.userUpdateSelected(listingInteract.selectedListing!)">
+        <mat-icon class="material-symbols-outlined dropdown-icon">edit</mat-icon>
         Update
       </button>
       <button mat-menu-item class="options-item"
               (click)="ownerService.createTemplateFromListing(listingInteract.selectedListing!)">
+        <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
         Template
       </button>
       <button mat-menu-item class="options-item"
               (click)="ownerService.openConfirmDelete(listingInteract.selectedListing!)">
+        <mat-icon class="material-symbols-outlined dropdown-icon">remove_circle_outline</mat-icon>
         Delete
       </button>
       <button mat-menu-item class="options-item">
+        <mat-icon class="material-symbols-outlined dropdown-icon">close</mat-icon>
         Cancel
       </button>
     </ng-template>

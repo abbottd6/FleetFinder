@@ -41,7 +41,7 @@
           <mat-checkbox (click)="$event.stopPropagation()"
                         (change)="$event ? selection.toggle(row) : null"
                         [checked]="selection.isSelected(row)"
-                        [aria-label]="checkboxLabel(row)">
+                        [aria-labelledby]="checkboxLabel(row)">
           </mat-checkbox>
         </td>
       </ng-container>
@@ -122,7 +122,7 @@
           <mat-checkbox (click)="$event.stopPropagation()"
                         (change)="$event ? selection.toggle(row) : null"
                         [checked]="selection.isSelected(row)"
-                        [aria-label]="checkboxLabel(row)">
+                        [aria-labelledby]="checkboxLabel(row)">
           </mat-checkbox>
         </td>
       </ng-container>
@@ -200,15 +200,18 @@
       mat-menu-item
       class="options-item"
       (click)="createFromTemplate()">
+      <mat-icon class="material-symbols-outlined dropdown-icon">open_in_new</mat-icon>
       Create From
     </button>
     <button
       mat-menu-item
       class="options-item"
       (click)="openConfirmDelete()">
+      <mat-icon class="material-symbols-outlined dropdown-icon">remove_circle_outline</mat-icon>
       Delete
     </button>
     <button mat-menu-item class="options-item">
+      <mat-icon class="material-symbols-outlined dropdown-icon">close</mat-icon>
       Cancel
     </button>
 </mat-menu>

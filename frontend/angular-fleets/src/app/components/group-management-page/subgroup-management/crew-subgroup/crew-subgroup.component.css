@@ -1,5 +1,4 @@
 .chip-self {
-  min-height: 100px;
   max-width: 400px;
   margin-inline: auto;
   margin-top: 10px;
@@ -11,6 +10,41 @@
   overflow: hidden;
   font-family: "Exo 2", sans-serif;
 }
+
+/*--------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/
+
+.chip-contents {
+  transform-origin: top left;
+  transition: transform 0.3s ease, max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.chip-subgroup-collapsed {
+  transform: scale3d(0, 0, 0);
+  opacity: 0;
+  max-height: 0;
+}
+
+.chip-subgroup-expanded {
+  transform: scale3d(1, 1, 1);
+  max-height: 10000px;
+  opacity: 1;
+  overflow-y: scroll;
+}
+
+.chip-summary {
+  transform-origin: bottom right;
+  transition: transform 0.3s ease;
+}
+
+.collapsed-show-summary {
+  transform: scale3d(1, 1, 1);
+}
+
+.expanded-hide-summary {
+  transform: scale3d(0, 0, 0);
+}
+
+/* --------------------------------------------------------------------------------------------- */
 
 .subgroup-header {
   display: flex;
@@ -69,6 +103,19 @@
 
 .subgroup-header .header-button:hover {
   color: var(--button-hover-color) !important;
+}
+
+.subgroup-options-menu .mat-mdc-menu-item.options-item {
+  display: flex;
+  flex: 1 1 auto;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+:host ::ng-deep .mat-mdc-menu-content button.mat-mdc-menu-item-text {
+
+  align-content: center;
+  vertical-align: center;
 }
 
 .subgroup-summary-data {

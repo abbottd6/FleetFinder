@@ -94,9 +94,10 @@
 
 /* Custom dropdown for full-display navbar dropdown */
 .navbar-nav .dropdown-menu {
-  background-color: var(--bs-gray-dark);
+  background-color: rgb(58 59 64);
   clip-path: var(--clip-t-right-b-left);
   border-radius: 0;
+  border-color: transparent;
   font-size: 85%;
   /*border-left: 1px solid var(--stark-blue);*/
   /*border-bottom: 1px solid var(--stark-blue);*/
@@ -112,10 +113,11 @@
 }
 
 .navbar-icons .dropdown-menu {
-  background-color: var(--bs-gray-dark);
+  background-color: rgb(58 59 64);
   clip-path: var(--clip-t-right-b-left);
   font-size: 85%;
   border-radius: 0;
+  border-color: transparent;
   /*border-bottom: 1px solid var(--stark-blue);*/
   /*border-left: 1px solid var(--stark-blue);*/
   /*border-bottom: 1px solid rgba(255, 131, 7, .5);*/
@@ -172,6 +174,7 @@
   clip-path: polygon(0% 0%, 87.5% 0%, 100% 12.5%, 100% 100%, 12.5% 100%, 0% 87.5%);
   /*border-bottom: 1px solid rgba(255, 131, 7, .5);*/
   /*border-left: 1px solid rgba(255, 131, 7, .5);*/
+  border-color: transparent;
   font-size: 110%;
   overflow: visible;
   text-align: left;
