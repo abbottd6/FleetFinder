@@ -1,3 +1,6 @@
+import {ListingFormShape} from "../../services/listing-form-service/listing-form.service";
+import {FormGroup} from "@angular/forms";
+
 export class UpdateListingRequest {
   constructor(formData: any, gId: number) {
     if (formData.groupStatus != 2) {
@@ -30,6 +33,8 @@ export class UpdateListingRequest {
       commsOption: formData.groupSpecInfoGroup.commsOption,
       commsService: formData.groupSpecInfoGroup.commsService,
       languageCode: formData.groupSpecInfoGroup.language,
+      joinRequestPrompt: formData.discoveryInfoGroup.joinRequestPrompt,
+      discovery: formData.discoveryInfoGroup.discovery
     })
   }
 

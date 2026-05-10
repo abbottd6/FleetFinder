@@ -41,19 +41,24 @@ import {
   styleUrl: './invite-form-popup.component.css'
 })
 
+//TODO add template form fields for mic and headset
 export class InviteFormPopupComponent {
   inGameUsernameCtrl: FormControl<string> = new FormControl<string>('', {nonNullable: true});
   rosterClassCtrl: FormControl<string> = new FormControl<string>('', {nonNullable: true});
   msgInputCtrl: FormControl<string | null> = new FormControl<string | null>(null);
   roleCtrl: FormControl<RoleClassSummaryViewModel | null> = new FormControl<RoleClassSummaryViewModel | null>(null);
+  micCtrl: FormControl<boolean> = new FormControl<boolean>(false, {nonNullable: true});
+  headsetCtrl: FormControl<boolean> = new FormControl<boolean>(false, {nonNullable: true});
 
   showRosterFullMessage: boolean = false;
 
   rosterVals: string[] = rosterClasses;
 
-  groupRoles!: string[];
+  groupPositions!: string[];
 
   title!: string;
+
+  //TODO set up hasMic and hasComms fields
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -61,16 +66,12 @@ export class InviteFormPopupComponent {
       listing: GroupListingViewModel,
       inGameUsername: string,
       inviteDirection: string,
-      groupRoles: RoleClassSummaryViewModel[],
+      groupPositions: RoleClassSummaryViewModel[],
     },
     private dialogRef: MatDialogRef<InviteFormPopupComponent>,
   ) {
 
-    if(data.inviteDirection === 'REQUEST') {
-      this.title = "Request to Join This Group"
-    } else {
-      this.title = "Send Group Invite"
-    }
+    this.title = "Request to Join This Group";
 
     if(data.inGameUsername != null) {
       this.inGameUsernameCtrl.setValue(data.inGameUsername);
@@ -83,23 +84,16 @@ export class InviteFormPopupComponent {
       this.rosterClassCtrl.setValue('Active')
     }
 
-    if(data.groupRoles) {
-      data.groupRoles.forEach(r => this.groupRoles.push(r.roleTitle))
+    if(data.groupPositions) {
+      data.groupPositions.forEach(r => this.groupPositions.push(r.roleTitle))
     }
   }
 
-  /*TODO add rules for invite offer */
   onConfirm(): void {
-    if(this.data.inviteDirection === 'REQUEST') {
-      const invRequest = new SendGroupInviteRequest(this.data.listing.groupId, this.inGameUsernameCtrl.value,
-        this.rosterClassCtrl.value.toUpperCase(), this.msgInputCtrl.value)
-      this.dialogRef.close(invRequest);
-    } else if(this.data.inviteDirection === 'OFFER') {
-      console.log("need to set up 'sendGroupInviteOffer' model and configure it to be used in the popup.")
-      this.dialogRef.close(null);
-    } else {
-      this.dialogRef.close(null);
-    }
+    const invRequest = new SendGroupInviteRequest(this.data.listing.groupId, this.inGameUsernameCtrl.value,
+        this.rosterClassCtrl.value.toUpperCase(), this.msgInputCtrl.value, this.micCtrl.value, this.headsetCtrl.value);
+
+    this.dialogRef.close(invRequest);
   }
 
   onCancel(): void {

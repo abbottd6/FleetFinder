@@ -1,5 +1,13 @@
 import { LanguageCode } from "../language-options";
 
+export const listingDiscoveryOptions = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE_LINK: 'PRIVATE_LINK',
+  //CHANNELS: 'CHANNELS'
+} as const;
+
+export type ListingDiscoveryOptions = typeof listingDiscoveryOptions[keyof typeof listingDiscoveryOptions];
+
 export class GroupListingViewModel {
 
   constructor(
@@ -37,6 +45,8 @@ export class GroupListingViewModel {
               public commsOption: string,
               public commsService: string,
               public languageCode: LanguageCode,
+              public joinRequestPrompt: string,
+              public discovery: ListingDiscoveryOptions,
               public creationTimestamp: Date,
               public lastUpdated: Date,
               public visStatus: string

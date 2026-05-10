@@ -128,6 +128,23 @@
             </div>
           </div>
         </div>
+
+        <!-- discoveryInfoGroup -->
+        <div formGroupName="discoveryInfoGroup">
+          <h4 class="form-group-heading2">Listing Discovery</h4>
+          <div class="form-row">
+            <app-listing-discovery-type
+              [discoveryControl]="formService.discovery">
+            </app-listing-discovery-type>
+          </div>
+
+          <div class="form-row-text-input">
+            <app-listing-join-request-prompt-input
+              [joinRequestPromptControl]="formService.joinRequestPrompt">
+            </app-listing-join-request-prompt-input>
+          </div>
+        </div>
+
         <div *ngIf="formSubmitted && listingForm.invalid" class="submit-error">Check required fields</div>
         <div class="submit-button-container">
           <button type="button"

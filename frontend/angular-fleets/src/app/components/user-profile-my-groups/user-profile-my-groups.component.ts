@@ -38,14 +38,13 @@ import {
 import {
   InvitePanelFilterState
 } from "../group-management-page/roster-management/roster-invite-panel/roster-invite-panel.component";
-import {
-  InviteOptionsPanelComponent
-} from "../group-management-page/roster-management/roster-invite-panel/invite-options-panel/invite-options-panel.component";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
 import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
+import {MatDialog} from "@angular/material/dialog";
 import {
-  GroupManagementInviteViewModel
-} from "../../models/group-management-models/view-models/group-membership/group-management-invite-view-model";
+  AcceptInviteOfferPopupFormComponent, UserAcceptInviteOfferFormData
+} from "./my-invite-chip/accept-invite-offer-popup-form/accept-invite-offer-popup-form.component";
+import {UserService} from "../../services/user-services/user.service";
 
 type InvitePredicate = (invite: GroupInviteViewModel) => boolean;
 
@@ -147,7 +146,9 @@ export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnCh
               private uiPrefs: UiPrefsService,
               private memberApi: GroupMembershipApiService,
               private snackBar: MatSnackBar,
-              private chatHostSrv: ChatHostService) {}
+              private chatHostSrv: ChatHostService,
+              private dialog: MatDialog,
+              private userService: UserService) {}
 
   ngOnInit() {
     this.memberInteract.getMyGroupMemberships();
@@ -260,27 +261,46 @@ export class UserProfileMyGroupsComponent implements OnInit, AfterViewInit, OnCh
   handleInviteChipAction(actionInvite: MemberInviteActionInterface) {
     const invId = actionInvite.invite.inviteId;
 
+
     switch (actionInvite.action) {
 
       case InviteActions.ACCEPT:
 
-        actionInvite.invite.inviteStatus = InviteActions.ACCEPT;
-        this.memberApi.acceptGroupInviteOffer(actionInvite.invite).pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: (newMembership: GroupMembershipViewModel) => {
-              this.reinsertUpdatedInvite(actionInvite.invite);
-              this.memberInteract.addAcceptedInviteNewMembership(newMembership);
-              const msg = `Accepted ${actionInvite.invite.senderSummary.username }'s group invite.`;
-              this.showSnackBarMessage(msg);
-            },
-            error: (e) => {
-              if(e.status === 409) {
-                const msg = 'You are already a member of this group or someone has already modified this invite';
-                this.showSnackBarMessage(msg);
-              } else {
-                const msg = 'There was an error accepting this invite';
-                this.showSnackBarMessage(msg);
-              }
+        const dialogRef = this.dialog.open(AcceptInviteOfferPopupFormComponent, {
+          data: {
+            listing: actionInvite.invite.listingDetails,
+            inGameUsername: this.userService.inGameUsername
+          }
+        });
+
+        dialogRef.afterClosed().pipe(takeUntil(this.destroy$))
+          .subscribe((formData: UserAcceptInviteOfferFormData) => {
+            if(formData) {
+
+              actionInvite.invite.inviteStatus = InviteActions.ACCEPT;
+
+              actionInvite.invite.hasMic = formData.hasMic;
+              actionInvite.invite.hasHeadset = formData.hasHeadset;
+              actionInvite.invite.recipientSummary.inGameUsername = formData.inGameUsername;
+
+              this.memberApi.acceptGroupInviteOffer(actionInvite.invite).pipe(takeUntil(this.destroy$))
+                .subscribe({
+                  next: (newMembership: GroupMembershipViewModel) => {
+                    this.reinsertUpdatedInvite(actionInvite.invite);
+                    this.memberInteract.addAcceptedInviteNewMembership(newMembership);
+                    const msg = `Accepted ${actionInvite.invite.senderSummary.username }'s group invite.`;
+                    this.showSnackBarMessage(msg);
+                  },
+                  error: (e) => {
+                    if(e.status === 409) {
+                      const msg = 'You are already a member of this group or someone has already modified this invite';
+                      this.showSnackBarMessage(msg);
+                    } else {
+                      const msg = 'There was an error accepting this invite';
+                      this.showSnackBarMessage(msg);
+                    }
+                  }
+                });
             }
           });
         break;

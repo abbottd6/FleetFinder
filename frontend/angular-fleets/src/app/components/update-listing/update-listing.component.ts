@@ -15,6 +15,10 @@ import {LANGUAGE_OPTIONS} from "../../models/language-options";
 import {
   AbstractStringDropdownComponent
 } from "../dropdowns/abstract-string-string-map-dropdown/abstract-string-dropdown.component";
+import {ListingDiscoveryTypeComponent} from "../dropdowns/listing-discovery-type/listing-discovery-type.component";
+import {
+  ListingJoinRequestPromptInputComponent
+} from "../input-fields/listing-join-request-prompt-input/listing-join-request-prompt-input.component";
 
 @Component({
   selector: 'app-update-listing',
@@ -29,7 +33,9 @@ import {
     NgIf,
     RouterLink,
     AsyncPipe,
-    AbstractStringDropdownComponent
+    AbstractStringDropdownComponent,
+    ListingDiscoveryTypeComponent,
+    ListingJoinRequestPromptInputComponent
   ]
 })
 export class UpdateListingComponent implements OnInit, OnDestroy {

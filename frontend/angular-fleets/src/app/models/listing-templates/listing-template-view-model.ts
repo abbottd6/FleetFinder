@@ -1,4 +1,5 @@
 import { LanguageCode } from "../language-options";
+import {ListingDiscoveryOptions} from "../group-listing/group-listing-view-model";
 
 export class ListingTemplateViewModel {
 
@@ -36,6 +37,8 @@ export class ListingTemplateViewModel {
     public commsOption: string,
     public commsService: string,
     public languageCode: LanguageCode,
+    public joinRequestPrompt: string,
+    public discovery: ListingDiscoveryOptions,
     public creationTimestamp: Date,
   ){}
 }

@@ -23,6 +23,8 @@ export class CreateListingRequest {
       commsOption: formData.groupSpecInfoGroup.commsOption,
       commsService: formData.groupSpecInfoGroup.commsService,
       languageCode: formData.groupSpecInfoGroup.language,
+      joinRequestPrompt: formData.discoveryInfoGroup.joinRequestPrompt,
+      discovery: formData.discoveryInfoGroup.discovery
     })
   }
 

@@ -1,11 +1,12 @@
-import {Injectable, Input, OnDestroy, OnInit} from '@angular/core';
+import {DestroyRef, inject, Injectable} from '@angular/core';
 import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from "@angular/forms";
 import {requiredIfGroupStatusFuture} from "../../common/validators/custom-validators";
-import {BehaviorSubject, catchError, forkJoin, of, Subscription} from "rxjs";
+import {forkJoin, Subscription} from "rxjs";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {LookupService} from "../api-services/reference-data-api/lookup.service";
 import {environment} from "../../../environments/environment";
 import {LanguageCode} from "../../models/language-options";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 type TitleGroup = {
   listingTitle: FormControl<string>;
@@ -37,39 +38,36 @@ type GroupSpecInfoGroup = {
   commsService: FormControl<string | null>;
   language: FormControl<LanguageCode | null>;
 };
+type DiscoveryInfoGroup = {
+  joinRequestPrompt: FormControl<string | null>;
+  discovery: FormControl<string | null>;
+}
 
 export type ListingFormShape = {
   titleGroup: FormGroup<TitleGroup>;
   sessionEnvInfoGroup: FormGroup<SessionEnvInfoGroup>;
   gameplayInfoGroup: FormGroup<GameplayInfoGroup>;
   groupSpecInfoGroup: FormGroup<GroupSpecInfoGroup>;
+  discoveryInfoGroup: FormGroup<DiscoveryInfoGroup>;
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class ListingFormService implements OnDestroy{
-  private subs = new Subscription();
+export class ListingFormService {
+  private destroyRef = inject(DestroyRef);
 
   listingFormGroup!: FormGroup<ListingFormShape>;
 
   constructor(private formBuilder: NonNullableFormBuilder, private lookup: LookupService) {
     this.listingFormGroup = this.buildForm();
-    this.initSubscriptions();
-  }
 
-  ngOnDestroy() {
-    this.subs.unsubscribe();
-  }
-
-  private initSubscriptions(): void {
-    //Updating eventScheduleDate, eventScheduleTime, eventScheduleZone error status in relation to groupStatus
-    const group_status = this.groupStatus?.valueChanges.subscribe(() => {
-      this.eventScheduleDate?.updateValueAndValidity();
-      this.eventScheduleTime?.updateValueAndValidity();
-      this.eventScheduleZone?.updateValueAndValidity();
-    })
-    this.subs.add(group_status);
+    this.groupStatus?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.eventScheduleDate?.updateValueAndValidity();
+        this.eventScheduleTime?.updateValueAndValidity();
+        this.eventScheduleZone?.updateValueAndValidity();
+      })
   }
 
   //method for checking whether event schedule fields are valid
@@ -119,6 +117,10 @@ export class ListingFormService implements OnDestroy{
         commsOption: new FormControl('Optional', [Validators.required]),
         commsService: new FormControl({value: null, disabled: false}),
         language: new FormControl(null, [Validators.required]),
+      }),
+      discoveryInfoGroup: this.formBuilder.group<DiscoveryInfoGroup>({
+        joinRequestPrompt: new FormControl(null, [Validators.maxLength(512)]),
+        discovery: new FormControl(null, [Validators.required]),
       })
     });
   }
@@ -161,6 +163,10 @@ export class ListingFormService implements OnDestroy{
           commsOption: draft.commsOption,
           commsService: draft.commsService,
           language: draft.languageCode
+        },
+        discoveryInfoGroup: {
+          joinRequestPrompt: draft.joinRequestPrompt,
+          discovery: draft.discovery
         }
       });
       this.category?.setValue(draft.categoryId);
@@ -233,4 +239,8 @@ export class ListingFormService implements OnDestroy{
   get commsOption(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.commsOption') as FormControl }
   get commsService(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.commsService') as FormControl }
   get language(): FormControl { return this.listingFormGroup.get('groupSpecInfoGroup.language') as FormControl }
+
+  //discoveryInfoGroup
+  get joinRequestPrompt(): FormControl { return this.listingFormGroup.get('discoveryInfoGroup.joinRequestPrompt') as FormControl }
+  get discovery(): FormControl { return this.listingFormGroup.get('discoveryInfoGroup.discovery') as FormControl }
 }

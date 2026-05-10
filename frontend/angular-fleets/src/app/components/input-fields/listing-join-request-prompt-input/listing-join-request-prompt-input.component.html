@@ -1,0 +1,16 @@
+<div class="listing-available-roles-input">
+  <mat-form-field>
+    <mat-label>Join-Request Prompt: Optional</mat-label>
+    <textarea
+      matInput
+      [formControl]="joinRequestPromptControl"
+      rows="2"
+      maxlength="512"
+      placeholder="ex: 'Please list your available combat ships in the message field'"
+      (input)="updateCharacterCount()"
+      [attr.aria-labelledby]="'listing-join-request-prompt-input'"
+      autocomplete="off">
+    </textarea>
+    <mat-hint align="start">{{ characterCount }} / 512</mat-hint>
+  </mat-form-field>
+</div>

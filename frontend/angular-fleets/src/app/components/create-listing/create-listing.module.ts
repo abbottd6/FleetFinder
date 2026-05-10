@@ -9,21 +9,31 @@ import {RouterLink} from "@angular/router";
 import {
     AbstractStringDropdownComponent
 } from "../dropdowns/abstract-string-string-map-dropdown/abstract-string-dropdown.component";
+import {
+  GenericMediumInputFieldComponent
+} from "../input-fields/generic-medium-input-field/generic-medium-input-field.component";
+import {
+  ListingJoinRequestPromptInputComponent
+} from "../input-fields/listing-join-request-prompt-input/listing-join-request-prompt-input.component";
+import {ListingDiscoveryTypeComponent} from "../dropdowns/listing-discovery-type/listing-discovery-type.component";
 
 @NgModule({
   declarations: [
     CreateListingComponent,
   ],
-    imports: [
-        CommonModule,
-        DropdownModule,
-        InputFieldModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatError,
-        RouterLink,
-        AbstractStringDropdownComponent,
-    ],
+  imports: [
+    CommonModule,
+    DropdownModule,
+    InputFieldModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatError,
+    RouterLink,
+    AbstractStringDropdownComponent,
+    GenericMediumInputFieldComponent,
+    ListingJoinRequestPromptInputComponent,
+    ListingDiscoveryTypeComponent,
+  ],
   exports:
    [CreateListingComponent]
 })

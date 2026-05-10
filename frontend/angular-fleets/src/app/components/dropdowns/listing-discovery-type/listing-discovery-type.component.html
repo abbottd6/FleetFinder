@@ -1,0 +1,14 @@
+<div class="dropdown-component">
+  <label id="commsOption-dropdown">Discovery Type:</label>
+  <ng-select
+    [items]="discoveryOptions"
+    bindLabel="displayVal"
+    bindValue="systemVal"
+    [formControl]="discoveryControl"
+    placeholder="Select discovery type..."
+    [attr.aria-labelledby]="'commsOption-dropdown'">
+  </ng-select>
+</div>
+<mat-error *ngIf="discoveryControl?.hasError?.('required') && (discoveryControl.dirty || !discoveryControl.untouched)">
+  <span>Max 512 characters</span>
+</mat-error>

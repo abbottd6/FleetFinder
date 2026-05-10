@@ -25,6 +25,8 @@ export class CreateTemplateRequest {
       commsOption: listing.commsOption,
       commsService: listing.commsService,
       languageCode: listing.languageCode,
+      joinRequestPrompt: listing.joinRequestPrompt,
+      discovery: listing.discovery
     })
   }
 }

@@ -5,10 +5,11 @@ import {UserListingManagementService} from "../../services/user-services/user-li
 import {Router} from "@angular/router";
 import {environment} from "../../../environments/environment";
 import {ListingFormService, ListingFormShape} from "../../services/listing-form-service/listing-form.service";
-import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
+import {GroupListingViewModel, listingDiscoveryOptions} from "../../models/group-listing/group-listing-view-model";
 import {ListingTemplateViewModel} from "../../models/listing-templates/listing-template-view-model";
 import {BehaviorSubject, Subject} from "rxjs";
 import {LANGUAGE_OPTIONS} from "../../models/language-options";
+import {toTitleCase} from "../../utils/global-functions";
 
 @Component({
   selector: 'app-create-listing',
@@ -24,6 +25,8 @@ export class CreateListingComponent  implements OnInit, OnDestroy {
   public submitting$ = this.submitSubject.asObservable();
 
   listingForm!: FormGroup<ListingFormShape>;
+
+  protected readonly discoveryOptions = Object.values(listingDiscoveryOptions);
 
   draft!: GroupListingViewModel | ListingTemplateViewModel | undefined;
 
@@ -90,4 +93,6 @@ export class CreateListingComponent  implements OnInit, OnDestroy {
   }
 
   protected readonly LANGUAGE_OPTIONS = LANGUAGE_OPTIONS;
+  protected readonly listingDiscoveryOptions = listingDiscoveryOptions;
+  protected readonly toTitleCase = toTitleCase;
 }

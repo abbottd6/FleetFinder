@@ -7,9 +7,10 @@
       rows="2"
       maxlength="255"
       placeholder="Optional: enter available roles"
+      autocomplete="off"
       (input)="updateCharacterCount()"
       [attr.aria-labelledby]="'listing-available-roles-input'">
     </textarea>
-    <mat-hint align="start">{{ characterCount }} /255</mat-hint>
+    <mat-hint align="start">{{ characterCount }} / 255</mat-hint>
   </mat-form-field>
 </div>

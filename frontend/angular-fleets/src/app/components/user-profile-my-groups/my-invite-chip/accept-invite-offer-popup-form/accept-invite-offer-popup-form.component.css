@@ -1,0 +1,123 @@
+@import '../../../input-fields/input-field/input-field-styles.css';
+@import '../../../dropdowns/dropdown-module/dropdown-styles.css';
+
+h2 {
+  border-bottom: 1px solid;
+  max-width: 92%;
+  min-width: 325px;
+  margin-inline: auto;
+  padding-left: 0;
+}
+
+:host ::ng-deep #in-game-username app-generic-small-input-field {
+  margin-left: 0;
+  margin-right: auto;
+  padding-left: 0;
+}
+
+#in-game-username {
+  padding: 0;
+  margin: 0;
+}
+
+:host ::ng-deep #in-game-username .generic-input {
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto 0 0;
+  max-width: 400px;
+  gap: 10px;
+}
+
+:host ::ng-deep #in-game-username .generic-input mat-label {
+  margin-top: 0;
+}
+
+:host ::ng-deep #in-game-username .generic-input .mat-mdc-input-element {
+  color: rgb(53, 114, 163) !important;
+}
+
+:host ::ng-deep #in-game-username .mat-mdc-form-field-infix {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  min-height: 40px;
+  align-content: center;
+}
+
+:host ::ng-deep #in-game-username .mat-mdc-text-field-wrapper {
+  height: 40px;
+}
+
+.mat-mdc-dialog-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 200px;
+  min-width: 375px;
+  justify-content: flex-start;
+  overflow: visible;
+}
+
+.content-section-wrapper {
+  margin: 10px 0 10px 0;
+  background-color: rgba(108, 108, 108, 0.1);
+  box-shadow: 0 0 5px rgba(188, 191, 200, .1);
+}
+
+.highlight-text {
+  color: rgb(53, 114, 163) !important;
+  --bs-body-font-weight: 700;
+  font-weight: 700;
+}
+
+.comms-checkboxes {
+  display: flex;
+  flex-direction: column;
+}
+
+.action-buttons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+@media(min-width: 725px) and (max-width: 2000px) {
+
+  .action-buttons {
+    font-size: 0.9rem;
+  }
+}
+
+@media(max-width: 1350px)  and (min-width: 725px) {
+  .action-buttons {
+    font-size: clamp(0.6rem, 0.8rem, 1.2rem);
+  }
+}
+
+@media(max-width: 724px) {
+  .action-buttons {
+    font-size: .9rem;
+  }
+  :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
+    font-size: 0.8rem;
+  }
+
+  :host ::ng-deep .ng-select .ng-select-container .ng-value-container {
+    padding: 0;
+    margin: 0 0 0 0;
+  }
+
+  :host ::ng-deep .ng-select.ng-select-focused .ng-select-container .ng-value-container {
+    margin: 0.35rem 0.2rem 0.2rem 0.2rem;
+  }
+
+  .mat-mdc-dialog-content {
+    min-height: 3rem;
+    min-width: 350px;
+  }
+
+  .ng-select {
+    padding-bottom: 0;
+  }
+}

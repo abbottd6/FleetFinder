@@ -77,6 +77,12 @@ app-comms-service-input {
   width: 100%;
 }
 
+.generic-input-wrapper {
+  width: 90%;
+  min-height: 150px;
+  margin-inline: auto;
+}
+
 /* Listing title heading */
 @media(min-width: 725px) {
   .form-group-heading1 {

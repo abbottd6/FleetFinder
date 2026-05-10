@@ -11,6 +11,8 @@ export class GroupInviteViewModel {
     public inviteDirection: string,
     public inviteStatus: string,
     public inviteMessage: string,
+    public hasMic: boolean,
+    public hasHeadset: boolean,
     public expiresAt: Date,
     public sentAt: Date
   ){}

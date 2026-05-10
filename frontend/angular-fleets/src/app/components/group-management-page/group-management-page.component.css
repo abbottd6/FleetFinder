@@ -47,12 +47,12 @@ app-roster-management {
 
 }
 
-::ng-deep .add-2 {
+::ng-deep .add-new-button-container .add-new-button .add-2 {
   font-size: 75px;
   font-weight: 300;
   width: 75px;
   height: 75px;
-  line-height: 65px;
+  line-height: 75px;
   color: rgba(255, 131, 7, .45);
   font-variation-settings: 'wght' 300;
   transition: color 0.2s ease;
@@ -60,6 +60,11 @@ app-roster-management {
 
 .add-2:hover {
   color: rgba(255, 131, 7, .65);
+}
+
+.add-new-button-container {
+  display: flex;
+  min-height: 300px;
 }
 
 .add-new-button {

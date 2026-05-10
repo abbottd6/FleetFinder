@@ -1,0 +1,29 @@
+<h2 mat-dialog-title>Confirm your information</h2>
+<mat-dialog-content>
+
+  <div id="in-game-username">
+    <app-generic-small-input-field
+      [label]="'Your in-game username:'"
+      [errorLabel]="'In-Game Username is required'"
+      [min]=3
+      [max]=32
+      [placeholder]="'Your in-game username'"
+      [inputCtrl]="inGameUsernameCtrl">
+    </app-generic-small-input-field>
+  </div>
+  <span *ngIf="groupCommsStatus != 'No Comms'; else noCommsGroup">
+    Comms for this group are: <span class="highlight-text">{{ toTitleCase(groupCommsStatus) }} </span>
+  </span>
+  <ng-template #noCommsGroup>
+    <span>This group specifies 'No Comms'</span>
+  </ng-template>
+  <div class="comms-checkboxes">
+    <mat-checkbox [formControl]="micCtrl" [labelPosition]="'before'">Have Mic:</mat-checkbox>
+    <mat-checkbox [formControl]="headsetCtrl" [labelPosition]="'before'">Have Audio:</mat-checkbox>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button class="action-buttons" (click)="onCancel()">Cancel</button>
+  <button class="action-buttons" (click)="onConfirm()">Accept</button>
+</mat-dialog-actions>
