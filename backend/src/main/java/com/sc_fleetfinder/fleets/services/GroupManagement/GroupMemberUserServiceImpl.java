@@ -184,16 +184,21 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
 
         rankService.verifyUserRankPermissions(sender, listing, RankPrivilegeOptions.INVITE);
 
-        //TODO do something with this or remove it?
-        Boolean hasComms = null;
+        Boolean hasMic = dto.getHasMic();
+        Boolean hasHeadset = dto.getHasHeadset();
 
         Boolean hasExtNotes = getNewMemberHasExternalNotes(newMember);
+
+        if(!Objects.equals(dto.getRecipientSummary().getInGameUsername(), newMember.getInGameUsername())) {
+            newMember.setInGameUsername(dto.getRecipientSummary().getInGameUsername());
+            userRepo.saveAndFlush(newMember);
+        }
 
         InGroupRank newMemberRank = rankService.getGenericRankByTitle(GroupRankGenericTypes.Member);
 
         try {
-            GroupMember savedMember = memberRepo.saveAndFlush(new GroupMember(listing, newMember, dto.getMemberStatus(), newMemberRank,
-                    hasComms, hasExtNotes));
+            GroupMember savedMember = memberRepo.saveAndFlush(new GroupMember(listing, newMember, hasMic,
+                    dto.getMemberStatus(), hasHeadset, newMemberRank, hasExtNotes));
 
             invite.setInviteStatus(GroupInviteStatus.ACCEPTED);
             invite.setActive(null);

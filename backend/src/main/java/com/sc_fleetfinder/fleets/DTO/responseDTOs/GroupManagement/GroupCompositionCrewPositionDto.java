@@ -16,7 +16,7 @@ public class GroupCompositionCrewPositionDto {
     private Integer sortOrder;
     private GroupRoleSummaryDto groupRole;
     private String positionNote;
-    private UserMonikerSummary assignedMember;
+    private NestedMemberResponseDto assignedMember;
     private Instant filledAt;
     private Instant vacatedAt;
     private Instant createdAt;

@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs;
 
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
+import com.sc_fleetfinder.fleets.utils.ListingDiscoveryOptions;
 import com.sc_fleetfinder.fleets.utils.VisStatus;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -110,6 +111,10 @@ public class GroupListingResponseDto {
 
     @NotNull(message = "GroupListingResponseDto field 'languageCode' cannot be null")
     private LanguageOptions languageCode;
+
+    private String joinRequestPrompt;
+
+    private ListingDiscoveryOptions discovery;
 
     @NotNull(message = "GroupListingResponseDto field 'creationTimestamp' cannot be null")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

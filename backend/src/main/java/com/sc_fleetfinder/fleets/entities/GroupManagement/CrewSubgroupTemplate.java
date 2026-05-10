@@ -33,8 +33,8 @@ public class CrewSubgroupTemplate {
     @Column(name = "subgroup_notes")
     private String subgroupNotes;
 
-    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 1")
-    private Integer sortOrder = 1;
+    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 0")
+    private Integer sortOrder = 0;
 
     @Column(name = "intended_subgroup_size", columnDefinition = "TINYINT")
     private Integer intendedSubgroupSize;

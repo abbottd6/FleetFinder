@@ -26,7 +26,7 @@ public class CrewPositionTemplate {
     @Column(name = "id_template_position")
     private Long templatePositionId;
 
-    @Column(name = "template_id", nullable = false)
+    @Column(name = "root_template_id", nullable = false)
     private Long templateRootId;
 
     @Column(name = "subgroup_template_id", nullable = false)
@@ -39,6 +39,6 @@ public class CrewPositionTemplate {
     @Column(name = "position_notes")
     private String positionNotes;
 
-    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 1")
-    private Integer sortOrder = 1;
+    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 0")
+    private Integer sortOrder = 0;
 }

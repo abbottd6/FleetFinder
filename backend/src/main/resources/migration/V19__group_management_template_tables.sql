@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS crew_template
 (
     id_template       BIGINT      NOT NULL PRIMARY KEY AUTO_INCREMENT,
     template_label    VARCHAR(64) NOT NULL,
-    template_category ENUM ('Capital', 'Large', 'Medium', 'Small', 'User'),
+    template_category ENUM ('Capital', 'Large', 'Medium', 'Small', 'Custom'),
     owner_id          BIGINT      NULL,
     last_used_at      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS crew_subgroup_template
     parent_subgroup_id     BIGINT       NULL,     #ref
     subgroup_label         VARCHAR(64)  NOT NULL,
     subgroup_notes         VARCHAR(255) NULL,
-    sort_order             TINYINT NOT NULL DEFAULT 1,
+    sort_order             TINYINT      NOT NULL DEFAULT 0,
     intended_subgroup_size TINYINT      NULL,
 
     CONSTRAINT fk_template_subgroup_references_template
@@ -34,10 +34,14 @@ CREATE TABLE IF NOT EXISTS crew_subgroup_template
 CREATE TABLE IF NOT EXISTS crew_position_template
 (
     id_template_position BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    root_template_id     BIGINT       NOT NULL, #ref
     subgroup_template_id BIGINT       NOT NULL, #ref
-    position_role_id     BIGINT       NULL, #ref
+    position_role_id     BIGINT       NULL,     #ref
     position_notes       VARCHAR(255) NULL,
-    sort_order           TINYINT NOT NULL DEFAULT 1,
+    sort_order           TINYINT      NOT NULL DEFAULT 0,
+
+    CONSTRAINT fk_position_template_references_template_root
+        FOREIGN KEY (root_template_id) REFERENCES crew_template (id_template),
 
     CONSTRAINT fk_position_template_references_subgroup_template
         FOREIGN KEY (subgroup_template_id) REFERENCES crew_subgroup_template (id_template_subgroup)

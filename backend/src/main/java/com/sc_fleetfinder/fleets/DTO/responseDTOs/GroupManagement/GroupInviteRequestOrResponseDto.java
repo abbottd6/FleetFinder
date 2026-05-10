@@ -20,6 +20,8 @@ public class GroupInviteRequestOrResponseDto {
     private InviteDirection inviteDirection;
     private GroupInviteStatus inviteStatus;
     private String inviteMessage;
+    private Boolean hasMic;
+    private Boolean hasHeadset;
     private Instant expiresAt;
     private Instant sentAt;
 }

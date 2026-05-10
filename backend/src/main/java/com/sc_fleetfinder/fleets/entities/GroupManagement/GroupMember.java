@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberId;
@@ -33,14 +34,15 @@ public class GroupMember {
     }
 
     //JOINING MEMBER CONSTRUCTOR
-    public GroupMember(GroupListing listing, Users newMember, GroupMemberStatus memberStatus,
-                       InGroupRank rank, Boolean hasComms, Boolean hasExtNotes) {
+    public GroupMember(GroupListing listing, Users newMember, Boolean hasMic, GroupMemberStatus memberStatus,
+                       Boolean hasHeadset, InGroupRank rank, Boolean hasExtNotes) {
         this.groupMemberId = new GroupMemberId(listing.getGroupId(), newMember.getUserId());
         this.groupListing = listing;
         this.user = newMember;
         this.memberStatus = memberStatus;
         this.memberRank = rank;
-        this.hasComms = hasComms;
+        this.hasMic = hasMic;
+        this.hasHeadset = hasHeadset;
         this.hasExtNotes = hasExtNotes;
     }
 
@@ -60,14 +62,17 @@ public class GroupMember {
     @Enumerated(EnumType.STRING)
     @Column(name="member_status")
     @NotNull(message="GroupMember entity field 'memberStatus' cannot be null.")
-    private GroupMemberStatus memberStatus;
+    private GroupMemberStatus memberStatus = GroupMemberStatus.ACTIVE;
 
     @ManyToOne
     @JoinColumn(name="in_group_rank_id", referencedColumnName="id_rank")
     private InGroupRank memberRank;
 
-    @Column(name="has_comms")
-    private Boolean hasComms;
+    @Column(name="has_mic", nullable = false)
+    private Boolean hasMic = false;
+
+    @Column(name="has_headset", nullable = false)
+    private Boolean hasHeadset = false;
 
     @Column(name="member_note")
     private String memberNote;

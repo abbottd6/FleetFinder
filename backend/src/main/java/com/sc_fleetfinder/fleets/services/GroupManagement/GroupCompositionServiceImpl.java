@@ -19,7 +19,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -119,8 +118,6 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
                         pos.getSubgroup().getSubgroupId(),
                         HashMap::new,
                         Collectors.toList()));
-
-        //TODO SORT ORDER IS NOT SET ANYWHERE, IT IS ALWAYS JUST 1
 
         return generateGroupCompositionResponseStructure(existingSubgroups, existingPositions);
     }

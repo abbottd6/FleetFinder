@@ -16,7 +16,8 @@ public class GroupMembershipResponseDto {
     private MemberPositionSummaryDto memberRole;
     private GroupRankDto memberRank;
     private String memberNote;
-    private Boolean hasComms;
+    private Boolean hasMic;
+    private Boolean hasHeadset;
     private Boolean hasExtNotes;
     private RsvpStatus rsvpStatus;
     private Instant joinedAt;

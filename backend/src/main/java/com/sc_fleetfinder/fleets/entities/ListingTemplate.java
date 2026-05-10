@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.entities;
 
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
+import com.sc_fleetfinder.fleets.utils.ListingDiscoveryOptions;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -130,11 +131,17 @@ public class ListingTemplate {
     @Column(name="comms_service")
     private String commsService;
 
-    //TODO CREATE THE ENUM FOR THIS AND DECIDE WHICH LANGUAGES TO INCLUDE
     @Enumerated(EnumType.STRING)
     @Column(name="language_code")
     @NotNull(message="ListingTemplate field 'languageCode' cannot be null.")
     private LanguageOptions languageCode;
+
+    @Column(name="join_request_prompt", columnDefinition = "VARCHAR(512) NULL", nullable = true)
+    private String joinRequestPrompt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="discovery", nullable = true)
+    private ListingDiscoveryOptions discovery;
 
     @CreationTimestamp
     @Column(name="creation_timestamp")

@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
+import com.sc_fleetfinder.fleets.utils.ListingDiscoveryOptions;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -80,4 +81,8 @@ public class CreateGroupListingDto {
 
     @NotNull(message = "CreateGroupListingDto field 'languageCode' cannot be null")
     private LanguageOptions languageCode;
+
+    private String joinRequestPrompt;
+
+    private ListingDiscoveryOptions discovery;
 }

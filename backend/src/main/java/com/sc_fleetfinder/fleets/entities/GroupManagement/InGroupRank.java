@@ -26,6 +26,9 @@ public class InGroupRank {
     @JoinColumn(name="listing_id", referencedColumnName="id_group", nullable=true)
     private GroupListing groupListing;
 
+    @Column(name="is_scoped", nullable=false)
+    private boolean isScoped = false;
+
     @ManyToOne
     @JoinColumn(name="rank_scope_id", referencedColumnName="id_subgroup", nullable = true)
     private GroupManagementSubgroup rankSubgroupScope;
@@ -35,6 +38,9 @@ public class InGroupRank {
 
     @Column(name="rank_notes", nullable = true, columnDefinition = "VARCHAR(64) NULL")
     private String rankNotes;
+
+    @Column(name="is_default_rank", nullable = false)
+    private boolean isDefaultRank = false;
 
     @ManyToOne
     @JoinColumn(name="created_by_id", referencedColumnName="id_user", nullable = true)

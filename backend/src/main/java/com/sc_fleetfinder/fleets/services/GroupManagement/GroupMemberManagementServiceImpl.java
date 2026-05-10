@@ -68,7 +68,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
                     .map(cp -> modelMapper.map(cp, MemberPositionSummaryDto.class))
                     .orElse(null);
 
-            dto.setMemberRole(positionSummaryDto);
+            dto.setMemberPosition(positionSummaryDto);
             return dto;
         });
     }
@@ -92,7 +92,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
                     .map(cp -> modelMapper.map(cp, MemberPositionSummaryDto.class))
                     .orElse(null);
 
-            dto.setMemberRole(positionSummaryDto);
+            dto.setMemberPosition(positionSummaryDto);
             return dto;
         });
     }
@@ -129,14 +129,14 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
         rankService.verifyUserRankPermissions(actingUser, listing, RankPrivilegeOptions.MANAGE_ROSTERS);
 
-        //TODO do something with this or remove it?
-        Boolean hasComms = null;
+        Boolean hasMic = dto.getHasMic();
+        Boolean hasHeadset = dto.getHasHeadset();
         Boolean hasExtNotes = getNewMemberHasExternalNotes(userMember);
         InGroupRank newMemberRank = rankService.getGenericRankByTitle(GroupRankGenericTypes.Member);
 
         try {
-            GroupMember savedMember = memberRepo.save(new GroupMember(listing, userMember, dto.getMemberStatus(), newMemberRank,
-                    hasComms, hasExtNotes));
+            GroupMember savedMember = memberRepo.save(new GroupMember(listing, userMember, hasMic,
+                    dto.getMemberStatus(), hasHeadset, newMemberRank, hasExtNotes));
 
             invite.setInviteStatus(GroupInviteStatus.ACCEPTED);
             invite.setActive(null);

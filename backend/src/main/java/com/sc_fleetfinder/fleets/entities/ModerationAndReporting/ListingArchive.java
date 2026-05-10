@@ -14,7 +14,9 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.CommsShareScheduleOptions;
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
+import com.sc_fleetfinder.fleets.utils.ListingDiscoveryOptions;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -64,9 +66,14 @@ public class ListingArchive {
         this.desiredPartySize = listing.getDesiredPartySize();
         this.commsOption = listing.getCommsOption();
         this.languageCode = listing.getLanguageCode();
-
+        this.rsvpScheduled =  listing.getRsvpScheduled();
+        this.sendCommsShareOn = listing.getSendCommsShareOn();
+        this.joinRequestPrompt = listing.getJoinRequestPrompt();
+        this.memberBannerMessage = listing.getMemberBannerMessage();
+        this.discovery = listing.getDiscovery();
         this.listingCreationTs = listing.getCreationTimestamp();
         this.listingLastUpdated = listing.getLastUpdated();
+
         this.reportTotalCount = issue.getReportTotalCount();
         this.spamCount = issue.getSpamCount();
         this.hateSpeechCount = issue.getHateSpeechCount();
@@ -108,8 +115,14 @@ public class ListingArchive {
         this.desiredPartySize = listing.getDesiredPartySize();
         this.commsOption = listing.getCommsOption();
         this.languageCode = listing.getLanguageCode();
+        this.rsvpScheduled =  listing.getRsvpScheduled();
+        this.sendCommsShareOn = listing.getSendCommsShareOn();
+        this.joinRequestPrompt = listing.getJoinRequestPrompt();
+        this.memberBannerMessage = listing.getMemberBannerMessage();
+        this.discovery = listing.getDiscovery();
         this.listingCreationTs = listing.getCreationTimestamp();
         this.listingLastUpdated = listing.getLastUpdated();
+
         this.reportTotalCount = issue.getReportTotalCount();
         this.spamCount = issue.getSpamCount();
         this.hateSpeechCount = issue.getHateSpeechCount();
@@ -230,6 +243,23 @@ public class ListingArchive {
     @Column(name="language_code")
     @NotNull(message="ListingArchive field 'languageCode' cannot be null.")
     private LanguageOptions languageCode;
+
+    @Column(name="rsvp_scheduled", nullable = true)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant rsvpScheduled;
+
+    @Column(name="send_comms_share_on", nullable = true)
+    private CommsShareScheduleOptions sendCommsShareOn;
+
+    @Column(name="join_request_prompt", columnDefinition="VARCHAR(512) NULL", nullable = true)
+    private String joinRequestPrompt;
+
+    @Column(name="member_banner_msg", columnDefinition="VARCHAR(512) NULL", nullable = true)
+    private String memberBannerMessage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="discovery")
+    private ListingDiscoveryOptions discovery;
 
     @Column(name="listing_creation_ts")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

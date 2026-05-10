@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.DTO.requestDTOs;
 
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
+import com.sc_fleetfinder.fleets.utils.ListingDiscoveryOptions;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -34,7 +35,6 @@ public class UpdateGroupListingDto {
             "between 2 and 128 characters.")
     private String listingTitle;
 
-    @Nullable
     private Integer playStyleId;
 
     @NotNull(message = "Update group listing request DTO field 'legalityId' cannot be null")
@@ -43,19 +43,15 @@ public class UpdateGroupListingDto {
     @NotNull(message = "Update group listing request DTO field 'groupStatusId' cannot be null")
     private Integer groupStatusId;
 
-    @Nullable
     private String eventDate;
 
-    @Nullable
     private String eventTime;
 
-    @Nullable
     private String eventTimeZone;
 
     @NotNull(message = "Update group listing request DTO field 'categoryId' cannot be null")
     private Integer categoryId;
 
-    @Nullable
     private Integer subcategoryId;
 
     @NotNull(message = "Update group listing request DTO field 'pvpStatusId' cannot be null")
@@ -64,7 +60,6 @@ public class UpdateGroupListingDto {
     @NotNull(message = "Update group listing request DTO field 'systemId' cannot be null")
     private Integer systemId;
 
-    @Nullable
     private Integer planetId;
 
     @NotBlank(message = "Update group listing request DTO field 'listingDescription' cxannot be blank")
@@ -83,16 +78,18 @@ public class UpdateGroupListingDto {
     private Integer currentPartySize;
 
     @Size(max = 255, message = "Update group listing request DTO field 'availableRoles' cannot exceed 255 characters.")
-    @Nullable
     private String availableRoles;
 
     @NotNull(message = "Update group listing request DTO field 'commsOption' cannot be null.")
     private String commsOption;
 
     @Size(max = 50, message = "Update group listing request DTO field 'listingCommsService' cannot exceed 50 chars.")
-    @Nullable
     private String commsService;
 
     @NotNull(message = "UpdateGroupListingDto field 'languageCode' cannot be null.")
     private LanguageOptions languageCode;
+
+    private String joinRequestPrompt;
+
+    private ListingDiscoveryOptions discovery;
 }

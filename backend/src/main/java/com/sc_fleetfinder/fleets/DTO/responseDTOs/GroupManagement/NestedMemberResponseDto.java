@@ -7,13 +7,12 @@ import lombok.Data;
 import java.time.Instant;
 
 @Data
-public class GroupManagerMemberResponseDto {
+public class NestedMemberResponseDto {
 
     private Long listingId;
     private UserSummaryResponseDto userSummary;
     private GroupMemberStatus memberStatus;
     private String memberNote;
-    private MemberPositionSummaryDto memberPosition;
     private GroupRankDto memberRank;
     private Boolean hasMic;
     private Boolean hasHeadset;

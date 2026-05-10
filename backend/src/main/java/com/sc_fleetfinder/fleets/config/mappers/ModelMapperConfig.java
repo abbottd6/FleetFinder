@@ -658,6 +658,10 @@ public class ModelMapperConfig {
                     }).map(ListingTemplate::getCommsService, ListingTemplateResponseDto::setCommsService);
 
                     mapper.map(ListingTemplate::getLanguageCode, ListingTemplateResponseDto::setLanguageCode);
+
+                    mapper.map(ListingTemplate::getJoinRequestPrompt, ListingTemplateResponseDto::setJoinRequestPrompt);
+
+                    mapper.map(ListingTemplate::getDiscovery, ListingTemplateResponseDto::setDiscovery);
                 });
 
         // Create/Edit Listing Template ---->>> entity
@@ -1064,6 +1068,10 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupInvite::getInviteMessage, GroupManagerInviteResponseDto::setInviteMessage);
 
+                    mapper.map(GroupInvite::getHasMic, GroupManagerInviteResponseDto::setHasMic);
+
+                    mapper.map(GroupInvite::getHasHeadset, GroupManagerInviteResponseDto::setHasHeadset);
+
                     mapper.map(GroupInvite::getExpiresAt, GroupManagerInviteResponseDto::setExpiresAt);
 
                     mapper.map(GroupInvite::getCreatedAt, GroupManagerInviteResponseDto::setSentAt);
@@ -1091,6 +1099,10 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupInvite::getInviteMessage, GroupInviteRequestOrResponseDto::setInviteMessage);
 
+                    mapper.map(GroupInvite::getHasMic, GroupInviteRequestOrResponseDto::setHasMic);
+
+                    mapper.map(GroupInvite::getHasHeadset, GroupInviteRequestOrResponseDto::setHasHeadset);
+
                     mapper.map(GroupInvite::getExpiresAt, GroupInviteRequestOrResponseDto::setExpiresAt);
 
                     mapper.map(GroupInvite::getCreatedAt, GroupInviteRequestOrResponseDto::setSentAt);
@@ -1114,7 +1126,9 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupMember::getMemberNote, GroupMembershipResponseDto::setMemberNote);
 
-                    mapper.map(GroupMember::getHasComms, GroupMembershipResponseDto::setHasComms);
+                    mapper.map(GroupMember::getHasMic, GroupMembershipResponseDto::setHasMic);
+
+                    mapper.map(GroupMember::getHasHeadset, GroupMembershipResponseDto::setHasHeadset);
 
                     mapper.map(GroupMember::getHasExtNotes, GroupMembershipResponseDto::setHasExtNotes);
 
@@ -1148,11 +1162,13 @@ public class ModelMapperConfig {
                     mapper.map(GroupMember::getMemberNote, GroupManagerMemberResponseDto::setMemberNote);
 
                     //this needs to be handled in the method that calls the transformation
-                    mapper.skip(GroupManagerMemberResponseDto::setMemberRole);
+                    mapper.skip(GroupManagerMemberResponseDto::setMemberPosition);
 
                     mapper.map(GroupMember::getMemberRank, GroupManagerMemberResponseDto::setMemberRank);
 
-                    mapper.map(GroupMember::getHasComms, GroupManagerMemberResponseDto::setHasComms);
+                    mapper.map(GroupMember::getHasMic, GroupManagerMemberResponseDto::setHasMic);
+
+                    mapper.map(GroupMember::getHasHeadset, GroupManagerMemberResponseDto::setHasHeadset);
 
                     mapper.map(GroupMember::getHasExtNotes, GroupManagerMemberResponseDto::setHasExtNotes);
 
@@ -1160,6 +1176,34 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupMember::getCreatedAt, GroupManagerMemberResponseDto::setJoinedAt);
                 });
+
+        TypeMap<GroupMember, NestedMemberResponseDto> nestedMemberModelMapper =
+                modelMapper.emptyTypeMap(GroupMember.class, NestedMemberResponseDto.class);
+
+        nestedMemberModelMapper.addMappings(mapper -> {
+            mapper.using(ctx -> {
+                GroupListing listing = (GroupListing) ctx.getSource();
+                return listing != null ? listing.getGroupId() : null;
+            }).map(GroupMember::getGroupListing, NestedMemberResponseDto::setListingId);
+
+            mapper.map(GroupMember::getUser, NestedMemberResponseDto::setUserSummary);
+
+            mapper.map(GroupMember::getMemberStatus, NestedMemberResponseDto::setMemberStatus);
+
+            mapper.map(GroupMember::getMemberNote, NestedMemberResponseDto::setMemberNote);
+
+            mapper.map(GroupMember::getMemberRank, NestedMemberResponseDto::setMemberRank);
+
+            mapper.map(GroupMember::getHasMic, NestedMemberResponseDto::setHasMic);
+
+            mapper.map(GroupMember::getHasHeadset, NestedMemberResponseDto::setHasHeadset);
+
+            mapper.map(GroupMember::getHasExtNotes, NestedMemberResponseDto::setHasExtNotes);
+
+            mapper.map(GroupMember::getRsvpStatus, NestedMemberResponseDto::setRsvpStatus);
+
+            mapper.map(GroupMember::getCreatedAt, NestedMemberResponseDto::setJoinedAt);
+        });
 
 //GROUP RANKS
         TypeMap<InGroupRank, GroupRankDto> inGroupRankToDtoTypeMap =
@@ -1266,8 +1310,11 @@ public class ModelMapperConfig {
                 });
 
 //CREW POSITIONS
-        modelMapper.createTypeMap(CrewPosition.class, GroupCompositionCrewPositionDto.class)
-                .addMappings(mapper -> {
+        TypeMap<CrewPosition, GroupCompositionCrewPositionDto> groupCompPositionDtoMapper =
+                modelMapper.emptyTypeMap(CrewPosition.class, GroupCompositionCrewPositionDto.class);
+
+        groupCompPositionDtoMapper.addMappings(mapper -> {
+
                     mapper.map(CrewPosition::getPositionId, GroupCompositionCrewPositionDto::setPositionId);
 
                     mapper.using(ctx -> {
@@ -1298,10 +1345,7 @@ public class ModelMapperConfig {
 
                     mapper.map(CrewPosition::getPositionNote, GroupCompositionCrewPositionDto::setPositionNote);
 
-                    mapper.using(ctx -> {
-                        GroupMember member = (GroupMember) ctx.getSource();
-                        return member != null ? member.getUser() : null;
-                    }).map(CrewPosition::getAssignedMember, GroupCompositionCrewPositionDto::setAssignedMember);
+                    mapper.map(CrewPosition::getAssignedMember, GroupCompositionCrewPositionDto::setAssignedMember);
 
                     mapper.map(CrewPosition::getFilledAt, GroupCompositionCrewPositionDto::setFilledAt);
 
@@ -1313,6 +1357,7 @@ public class ModelMapperConfig {
     // CrewPosition to MemberPositionSummaryDto
         modelMapper.createTypeMap(CrewPosition.class, MemberPositionSummaryDto.class)
                 .addMappings(mapper -> {
+
                     mapper.map(CrewPosition::getPositionId, MemberPositionSummaryDto::setPositionId);
 
                     mapper.using(ctx -> {

@@ -6,11 +6,11 @@ VALUES  ('MANAGE_RANKS'),
         ('MANAGE_ROLES'),
         ('INVITE');
 
-INSERT INTO in_group_rank (rank_title, rank_notes)
-VALUES('Owner', 'Manage ranks, subgroups, rosters, positions, roles, and invites.'),
-      ('Captain', 'Manage subgroups, rosters, positions, roles, and invites.'),
-      ('Trusted', 'Send invites.'),
-      ('Member', 'No privileges.');
+INSERT INTO in_group_rank (rank_title, rank_notes, is_default_rank)
+VALUES('Owner', 'Manage ranks, subgroups, rosters, positions, roles, and invites.', 1),
+      ('Captain', 'Manage subgroups, rosters, positions, roles, and invites.', 1),
+      ('Trusted', 'Send invites.', 1),
+      ('Member', 'No privileges.', 1);
 
 SET @owner = (SELECT id_rank FROM in_group_rank WHERE rank_title = 'Owner');
 SET @capt = (SELECT id_rank FROM in_group_rank WHERE rank_title = 'Captain');
@@ -37,23 +37,23 @@ SET @ground = 'Ground Crew';
 SET @support = 'Support';
 SET @command = 'Command';
 
-INSERT INTO crew_role_classification (role_category, role_title)
-VALUES(@ship, 'Pilot'),
-      (@ship, 'Co-Pilot'),
-      (@ship, 'Turret Operator'),
-      (@ship, 'Navigator'),
-      (@ship, 'Sensor Operator'),
-      (@ship, 'Utility Operator'),
-      (@ground, 'Marine'),
-      (@ground, 'Sniper'),
-      (@ground, 'Vehicle Driver'),
-      (@support, 'Medic'),
-      (@support, 'Repair Tech'),
-      (@support, 'Engineer'),
-      (@support, 'Cargo Tech'),
-      (@support, 'Weapons Tech'),
-      (@command, 'Fleet Commander'),
-      (@command, 'Ship Captain'),
-      (@command, 'Squad Leader'),
-      (@command, 'Cargo Master'),
-      (@command, 'Logistics Coordinator');
+INSERT INTO crew_role_classification (role_category, role_title, is_generic_role)
+VALUES(@ship, 'Pilot', 1),
+      (@ship, 'Co-Pilot', 1),
+      (@ship, 'Turret Operator', 1),
+      (@ship, 'Navigator', 1),
+      (@ship, 'Sensor Operator', 1),
+      (@ship, 'Utility Operator', 1),
+      (@ground, 'Marine', 1),
+      (@ground, 'Sniper', 1),
+      (@ground, 'Vehicle Driver', 1),
+      (@support, 'Medic', 1),
+      (@support, 'Repair Tech', 1),
+      (@support, 'Engineer', 1),
+      (@support, 'Cargo Tech', 1),
+      (@support, 'Weapons Tech', 1),
+      (@command, 'Fleet Commander', 1),
+      (@command, 'Ship Captain', 1),
+      (@command, 'Squad Leader', 1),
+      (@command, 'Cargo Master', 1),
+      (@command, 'Logistics Coordinator', 1);

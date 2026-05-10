@@ -32,7 +32,9 @@ public class SendGroupInviteOfferDto {
 
     @NotNull(message="SendGroupInviteOfferDto field 'listingId' cannot be null.")
     private Long listingId;
+    @NotNull(message="SendGroupInviteOfferDto field 'recipientSummary' cannot be null.")
     private UserMonikerSummary recipientSummary;
+    @NotNull(message="SendGroupInviteOfferDto field 'memberStatus' cannot be null. Indicates roster class ('Active'/'Waitlist'.")
     private GroupMemberStatus memberStatus;
     private GroupRoleSummaryDto roleSummary;
     private String inviteMessage;

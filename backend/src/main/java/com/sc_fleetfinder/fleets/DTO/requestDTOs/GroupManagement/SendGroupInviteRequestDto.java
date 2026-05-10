@@ -12,6 +12,11 @@ public class SendGroupInviteRequestDto {
     private Long listingId;
     @NotBlank(message="SendGroupInviteRequestDto field 'inGameUsername' cannot be null.")
     private String inGameUsername;
+    @NotNull(message="SendGroupInviteRequestDto field 'memberStatus' for roster class ('Active'/'Waitlist') cannot be null.")
     private GroupMemberStatus memberStatus;
     private String requestMessage;
+    @NotNull(message="SendGroupInviteRequestDto field 'hasMic' cannot be null, should default to false.")
+    private Boolean hasMic;
+    @NotNull(message="SendGroupInviteRequestDto field 'hasHeadset' cannot be null, should default to false.")
+    private Boolean hasHeadset;
 }

@@ -92,14 +92,11 @@ public class GroupInvite {
     @Column(name="invite_message", nullable = true)
     private String inviteMessage;
 
-    @Column(name="expires_at", nullable = true)
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Instant expiresAt;
+    @Column(name="has_mic", nullable = false)
+    private Boolean hasMic = false;
 
-    @CreationTimestamp
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    @Column(name="created_at")
-    private Instant createdAt;
+    @Column(name="has_headset", nullable = false)
+    private Boolean hasHeadset = false;
 
     //deduplication column. set to 1 for pending invites, set to null on all other actions
     //enables unique constraint on un-actioned invites, while allowing duplicates when active is null
@@ -111,4 +108,13 @@ public class GroupInvite {
 
     @Column(name="recipient_dismissed", nullable = false)
     private Boolean recipientDismissed;
+
+    @Column(name="expires_at", nullable = true)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private Instant expiresAt;
+
+    @CreationTimestamp
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @Column(name="created_at")
+    private Instant createdAt;
 }

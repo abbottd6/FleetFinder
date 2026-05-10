@@ -1,6 +1,8 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -49,8 +51,8 @@ public class CrewPosition {
     @Column(name="root_subgroup_id", nullable = true)
     private Long rootSubgroupId;
 
-    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 1")
-    private Integer sortOrder = 1;
+    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 0")
+    private Integer sortOrder = 0;
 
     @ManyToOne
     @JoinColumn(name="position_role_id", referencedColumnName="id_role", nullable = true)

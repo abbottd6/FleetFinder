@@ -20,7 +20,6 @@ services:
       MYSQL_DATABASE: sc_fleetfinder
       MYSQL_USER: devuser
       MYSQL_PASSWORD: devpassword
-
     ports:
       - "3306:3306"
     volumes:
@@ -29,6 +28,7 @@ services:
     command:
        --default-time-zone='+00:00'
        --event-scheduler=ON
+       --log_bin_trust_function_creators=1
     restart: always
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword" ]

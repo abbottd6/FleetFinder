@@ -12,7 +12,9 @@ import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.Planetary
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PlayStyle;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.PvpStatus;
 import com.sc_fleetfinder.fleets.entities.ListingReferenceDataEntities.ServerRegion;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.CommsShareScheduleOptions;
 import com.sc_fleetfinder.fleets.utils.LanguageOptions;
+import com.sc_fleetfinder.fleets.utils.ListingDiscoveryOptions;
 import com.sc_fleetfinder.fleets.utils.VisStatus;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -165,10 +167,28 @@ public class GroupListing {
     @Column(name="vis_status", nullable = false)
     private VisStatus visStatus = VisStatus.FRESH;
 
-    @Column(name="rsvp_required", nullable = false, columnDefinition = "TINYINT NOT NULL DEFAULT 0")
-    private Boolean rsvpRequired = false;
-
     @Column(name="rsvp_scheduled", nullable = true)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant rsvpScheduled;
+
+    @Column(name="comms_share", columnDefinition = "VARCHAR(512) NULL", nullable = true)
+    private String commsShare;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="send_comms_share_on", nullable = true)
+    private CommsShareScheduleOptions sendCommsShareOn;
+
+    @Column(name="join_request_prompt", columnDefinition = "VARCHAR(512) NULL", nullable = true)
+    private String joinRequestPrompt;
+
+    // only send on membership retrieval
+    @Column(name="member_banner_message", columnDefinition = "VARCHAR(512) NULL", nullable = true)
+    private String memberBannerMessage;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="discovery", nullable = false)
+    private ListingDiscoveryOptions discovery;
+
+    @Column(name="private_link_uuid", columnDefinition = "CHAR(36) NULL", nullable = true)
+    private String privateLinkUuid;
 }
