@@ -51,6 +51,15 @@
         </app-abstract-string-dropdown>
       </div>
     </ng-container>
+
+    <div class="comms-info-container">
+      <span class="comms-label">Your Comms:</span>
+      <div class="comms-checkboxes">
+        <mat-checkbox [formControl]="micCtrl" [labelPosition]="'before'">Mic:</mat-checkbox>
+        <mat-checkbox [formControl]="headsetCtrl" [labelPosition]="'before'">Audio:</mat-checkbox>
+      </div>
+    </div>
+
     <div class="dropdown-component">
       <app-generic-medium-input-field
         [min]=0

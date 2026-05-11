@@ -121,7 +121,8 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
         }
         try {
             GroupInvite savedInv = inviteRepo.save(new GroupInvite(sender, recipient, listing, direction,
-                    dto.getMemberStatus(), role, pending, dto.getRequestMessage(), expiresAt));
+                    dto.getHasMic(), dto.getMemberStatus(), dto.getHasHeadset(), role,
+                    pending, dto.getRequestMessage(), expiresAt));
 
             eventPublisher.publishEvent(new NewGroupInviteOrRequestNotifyEvent(savedInv));
 
@@ -198,7 +199,7 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
 
         try {
             GroupMember savedMember = memberRepo.saveAndFlush(new GroupMember(listing, newMember, hasMic,
-                    dto.getMemberStatus(), hasHeadset, newMemberRank, hasExtNotes));
+                    dto.getMemberStatus(), hasHeadset, newMemberRank.getRankId(), hasExtNotes));
 
             invite.setInviteStatus(GroupInviteStatus.ACCEPTED);
             invite.setActive(null);

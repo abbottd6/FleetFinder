@@ -40,12 +40,21 @@
           </div>
         </div>
 
-        <div class="group-composition-container">
+        <div class="group-composition-container" cdkDropListGroup>
           <ng-container *ngIf="(subgroupMgmtInteract.subgroupTrees$ | async) as subgroups">
-            <app-crew-subgroup
-              *ngFor="let treeRoot of subgroups"
-              [subgroup]="treeRoot">
-            </app-crew-subgroup>
+            <div
+              cdkDropList
+              #rootSubgroupList="cdkDropList"
+              cdkDropListOrientation="horizontal"
+              [cdkDropListData]="subgroups"
+              (cdkDropListDropped)="subgroupMgmtInteract.onRootSubgroupDrop($event)"
+              class="root-subgroup-drop-list">
+                <app-crew-subgroup
+                  *ngFor="let treeRoot of subgroups"
+                  cdkDrag
+                  [subgroup]="treeRoot">
+                </app-crew-subgroup>
+            </div>
           </ng-container>
 
           <div class="add-new-button-container">

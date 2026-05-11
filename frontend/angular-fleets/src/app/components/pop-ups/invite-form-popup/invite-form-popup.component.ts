@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {FormControl} from "@angular/forms";
+import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -23,6 +23,7 @@ import {NgIf, SlicePipe} from "@angular/common";
 import {
   GenericSmallInputFieldComponent
 } from "../../input-fields/generic-small-input-field/generic-small-input-field.component";
+import {MatCheckbox} from "@angular/material/checkbox";
 
 @Component({
   selector: 'app-invite-request-popup',
@@ -37,6 +38,8 @@ import {
     NgIf,
     SlicePipe,
     GenericSmallInputFieldComponent,
+    MatCheckbox,
+    ReactiveFormsModule,
   ],
   styleUrl: './invite-form-popup.component.css'
 })

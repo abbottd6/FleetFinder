@@ -1,23 +1,28 @@
 <div class="chip-self">
-  <div class="subgroup-header">
-    <div class="header-left">
-      <span>{{ subgroup.subgroupLabel }}</span>
-      <button class="header-button scaled-minus">
-        <mat-icon class="scaled-minus" matTooltip="Edit title">edit</mat-icon>
-      </button>
-    </div>
-    <div class="header-right">
-      <button class="header-button"
-              type="button"
-              (click)="toggleCollapseSelf()">
-        <mat-icon [class.rotate]="!selfExpanded"
-                  [matTooltip]="selfExpanded ? 'Collapse self' : 'Expand self'">arrow_drop_up</mat-icon>
-      </button>
+<!--  <div cdkDragHandle>-->
+<!--    <span class="drag-handle"></span>-->
+<!--  </div>-->
+  <div class="chip-content-wrapper">
+    <div class="subgroup-header drag-handle" cdkDragHandle>
+      <div class="header-left">
+        <span>{{ subgroup.subgroupLabel }}</span>
+        <button class="header-button scaled-minus">
+          <mat-icon class="scaled-minus" matTooltip="Edit title">edit</mat-icon>
+        </button>
+      </div>
+      <div class="header-right">
+        <button class="header-button"
+                type="button"
+                (click)="toggleCollapseSelf()">
+          <mat-icon [class.rotate]="!selfExpanded"
+                    [matTooltip]="selfExpanded ? 'Collapse self' : 'Expand self'">arrow_drop_up
+          </mat-icon>
+        </button>
 
-      <button *ngIf="hasChildSubgroups"
-              class="header-button"
-              type="button"
-              (click)="collapseChildren()">
+        <button *ngIf="hasChildSubgroups"
+                class="header-button"
+                type="button"
+                (click)="collapseChildren()">
         <span class="material-symbols-outlined"
               [matTooltip]="childrenExpanded ? 'Collapse children' : 'Expand Children'">
           <ng-container *ngIf="childrenExpanded; else childrenCollapsed">
@@ -27,66 +32,87 @@
             expand_content
           </ng-template>
         </span>
-      </button>
-
-      <button class="header-button"
-              type="button"
-              [matMenuTriggerFor]="subgroupOptionsMenu">
-        <mat-icon matTooltip="Options">more_vert</mat-icon>
-      </button>
-      <mat-menu #subgroupOptionsMenu="matMenu" yPosition="below" panelClass="subgroup-options-menu">
-        <button
-          mat-menu-item
-          class="options-item">
-          <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
-          <span>New position</span>
         </button>
 
-        <button
-          mat-menu-item
-          class="options-item">
-          <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
-          <span>New subgroup</span>
+        <button class="header-button"
+                type="button"
+                [matMenuTriggerFor]="subgroupOptionsMenu">
+          <mat-icon matTooltip="Options">more_vert</mat-icon>
         </button>
+        <mat-menu #subgroupOptionsMenu="matMenu" yPosition="below" panelClass="subgroup-options-menu">
+          <button
+            mat-menu-item
+            class="options-item">
+            <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
+            <span>New position</span>
+          </button>
 
-        <button
-          mat-menu-item
-          class="options-item">
-          <mat-icon class="material-symbols-outlined dropdown-icon">remove_circle_outline</mat-icon>
-          <span>Delete</span>
-        </button>
+          <button
+            mat-menu-item
+            class="options-item">
+            <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
+            <span>New subgroup</span>
+          </button>
 
-        <button
-          mat-menu-item
-          class="options-item">
-          <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
-          <span>Save template</span>
-        </button>
-      </mat-menu>
+          <button
+            mat-menu-item
+            class="options-item">
+            <mat-icon class="material-symbols-outlined dropdown-icon">remove_circle_outline</mat-icon>
+            <span>Delete</span>
+          </button>
+
+          <button
+            mat-menu-item
+            class="options-item">
+            <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
+            <span>Save template</span>
+          </button>
+        </mat-menu>
+      </div>
     </div>
-  </div>
-    <div class="chip-contents"
-         [class.chip-subgroup-expanded]="selfExpanded"
-         [class.chip-subgroup-collapsed]="!selfExpanded">
-      <app-crew-position-chip
-        *ngFor="let position of subgroup.crewPositions"
-        [position]="position">
-      </app-crew-position-chip>
+    <div>
+      <div class="chip-contents"
+           cdkDropList
+           #nativeSubgroupList="cdkDropList"
+           cdkDropListOrientation="vertical"
+           [cdkDropListData]="subgroup.subgroups"
+           [class.empty-subgroup]="subgroup.subgroups.length === 0  && subgroup.crewPositions.length === 0"
+           [class.chip-subgroup-expanded]="selfExpanded"
+           [class.chip-subgroup-collapsed]="!selfExpanded"
+           (cdkDropListDropped)="subgroupInteract.onNestedSubgroupDrop($event)">
+        <div *ngFor="let childSubgroup of subgroup.subgroups" cdkDrag class="chip-list">
+          <app-crew-subgroup
+            [subgroup]="childSubgroup"
+            [collapseFromParent$]="collapseFromSelf$"
+            [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
+          </app-crew-subgroup>
+        </div>
+      </div>
 
-      <app-crew-subgroup
-        *ngFor="let childSubgroup of subgroup.subgroups"
-        [subgroup]="childSubgroup"
-        [collapseFromParent$]="collapseFromSelf$"
-        [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
-      </app-crew-subgroup>
+      <div class="chip-contents"
+           cdkDropList
+           #nativePositionList="cdkDropList"
+           cdkDropListOrientation="vertical"
+           [cdkDropListData]="subgroup.crewPositions"
+           (cdkDropListDropped)="subgroupInteract.onPositionDrop($event, subgroup)"
+           [class.chip-subgroup-expanded]="selfExpanded"
+           [class.chip-subgroup-collapsed]="!selfExpanded">
+        <div *ngFor="let position of subgroup.crewPositions" cdkDrag>
+          <app-crew-position-chip
+            [position]="position">
+          </app-crew-position-chip>
+        </div>
+      </div>
     </div>
+
     <div class="chip-summary"
          [class.collapsed-show-summary]="!selfExpanded || (subgroup.subgroups.length === 0
                                           && subgroup.crewPositions.length === 0)"
-         [class.expanded-hide-summary]="selfExpanded">
+         [class.expanded-hide-summary]="selfExpanded && (subgroup.subgroups.length > 0 || subgroup.crewPositions.length > 0)">
       <div class="subgroup-summary-data">
         <span class="summary-data-left">Positions: {{ assignedPositionsCount }}/{{ totalPositionsCount }}</span>
         <span class="summary-data-right">Subgroups: {{ totalSubgroupsCount }}</span>
       </div>
     </div>
+  </div>
 </div>

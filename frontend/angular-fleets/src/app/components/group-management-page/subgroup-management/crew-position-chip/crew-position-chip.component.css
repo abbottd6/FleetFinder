@@ -9,3 +9,38 @@
   overflow: hidden;
   font-family: "Exo 2", sans-serif;
 }
+
+.position-header {
+  display: flex;
+  align-content: center;
+}
+
+#position-drag-handle {
+}
+
+#position-drag-handle:hover {
+  cursor: all-scroll;
+}
+
+/* ------------------------ CDK DRAG PREVIEW (PICKED UP) --------------------------------------------*/
+
+::ng-deep .cdk-drag-preview {
+  height: fit-content;
+  overflow: visible;
+}
+
+::ng-deep .cdk-drag-preview .position-chip {
+  color: rgba(150, 168, 183, 1);
+  background-color: rgba(37, 37, 41, .85);
+}
+
+/* ------------------------ CDK DRAG PLACEHOLDER (DEMO SLOT DURING DRAG ------------------------------*/
+
+::ng-deep .cdk-drag-placeholder .position-chip {
+  background-color: rgba(74, 80, 89, 0.25);
+  color: rgba(150, 168, 183, 0.5);
+  /*background-color: rgba(37, 37, 41, .15);*/
+}
+
+/* --------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/
+

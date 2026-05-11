@@ -1,6 +1,5 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberId;
@@ -10,6 +9,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
@@ -24,23 +25,23 @@ public class GroupMember {
 
     //OWNER CONSTRUCTOR
     public GroupMember(GroupListing listing, Users user, GroupMemberStatus memberStatus,
-                       InGroupRank rank, Boolean extNotes) {
+                       Long rankId, Boolean extNotes) {
         this.groupMemberId = new GroupMemberId(listing.getGroupId(), user.getUserId());
         this.groupListing = listing;
         this.user = user;
         this.memberStatus = memberStatus;
-        this.memberRank = rank;
+        this.inGroupRankId = rankId;
         this.hasExtNotes = extNotes;
     }
 
     //JOINING MEMBER CONSTRUCTOR
     public GroupMember(GroupListing listing, Users newMember, Boolean hasMic, GroupMemberStatus memberStatus,
-                       Boolean hasHeadset, InGroupRank rank, Boolean hasExtNotes) {
+                       Boolean hasHeadset, Long rankId, Boolean hasExtNotes) {
         this.groupMemberId = new GroupMemberId(listing.getGroupId(), newMember.getUserId());
         this.groupListing = listing;
         this.user = newMember;
         this.memberStatus = memberStatus;
-        this.memberRank = rank;
+        this.inGroupRankId = rankId;
         this.hasMic = hasMic;
         this.hasHeadset = hasHeadset;
         this.hasExtNotes = hasExtNotes;
@@ -64,15 +65,18 @@ public class GroupMember {
     @NotNull(message="GroupMember entity field 'memberStatus' cannot be null.")
     private GroupMemberStatus memberStatus = GroupMemberStatus.ACTIVE;
 
+    @Column(name = "in_group_rank_id", insertable = true, updatable = true)
+    private Long inGroupRankId;
+
     @ManyToOne
-    @JoinColumn(name="in_group_rank_id", referencedColumnName="id_rank")
+    @JoinColumn(name="in_group_rank_id", referencedColumnName="id_rank", insertable = false, updatable = false)
     private InGroupRank memberRank;
 
-    @Column(name="has_mic", nullable = false)
-    private Boolean hasMic = false;
+    @Column(name="has_mic", nullable = true)
+    private Boolean hasMic;
 
-    @Column(name="has_headset", nullable = false)
-    private Boolean hasHeadset = false;
+    @Column(name="has_headset", nullable = true)
+    private Boolean hasHeadset;
 
     @Column(name="member_note")
     private String memberNote;

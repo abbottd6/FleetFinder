@@ -147,7 +147,7 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
         Boolean hasExtNotes = getNewMemberHasExternalNotes(user);
 
         memberRepo.save(new GroupMember(listing, user, GroupMemberStatus.ACTIVE,
-                ownerRank, hasExtNotes));
+                ownerRank.getRankId(), hasExtNotes));
     }
 
     @Override

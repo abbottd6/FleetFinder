@@ -24,8 +24,6 @@ import java.time.Instant;
 public class GroupInvite {
 
     //Invite Offer
-
-    //Invite request
     public GroupInvite(Users sender, Users recipient, GroupListing listing, InviteDirection dir,
                        GroupMemberStatus memberStatus, CrewRoleClassification role,
                        GroupInviteStatus status, String message, Instant expiresAt) {
@@ -38,6 +36,27 @@ public class GroupInvite {
         this.inviteStatus = status;
         this.inviteMessage = message;
         this.expiresAt = expiresAt;
+        this.active = true;
+        this.senderDismissed = false;
+        this.recipientDismissed = false;
+    }
+
+    //Invite request
+    public GroupInvite(Users sender, Users recipient, GroupListing listing, InviteDirection dir,
+                       Boolean hasMic, GroupMemberStatus memberStatus, Boolean hasHeadset,
+                       CrewRoleClassification role, GroupInviteStatus status, String message,
+                       Instant expiresAt) {
+        this.groupListing = listing;
+        this.sender = sender;
+        this.recipient = recipient;
+        this.inviteDirection = dir;
+        this.memberStatus = memberStatus;
+        this.inviteRole = role;
+        this.inviteStatus = status;
+        this.inviteMessage = message;
+        this.expiresAt = expiresAt;
+        this.hasMic = hasMic;
+        this.hasHeadset = hasHeadset;
         this.active = true;
         this.senderDismissed = false;
         this.recipientDismissed = false;

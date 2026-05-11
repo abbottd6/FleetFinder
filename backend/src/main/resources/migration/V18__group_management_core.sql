@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS group_management_subgroup
     parent_subgroup_id     BIGINT       NULL,
     subgroup_label         VARCHAR(64)  NULL,
     subgroup_notes         VARCHAR(255) NULL,
-    sort_order             TINYINT      NOT NULL DEFAULT 0,
+    sort_order             TINYINT      NULL,
     created_at             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_subgroup_references_group_listing
@@ -121,8 +121,8 @@ CREATE TABLE IF NOT EXISTS group_member
     user_id          BIGINT       NOT NULL,
     member_status    ENUM ('ACTIVE', 'WAITLIST') NOT NULL DEFAULT 'ACTIVE',
     in_group_rank_id BIGINT       NULL,
-    has_mic          TINYINT      NOT NULL DEFAULT 0,
-    has_headset      TINYINT      NOT NULL DEFAULT 0,
+    has_mic          TINYINT      NULL,
+    has_headset      TINYINT      NULL,
     member_note      VARCHAR(255) NULL,
     has_ext_notes    TINYINT      NOT NULL DEFAULT 0,
     rsvp_status      ENUM ('PENDING', 'CONFIRMED', 'DECLINED'),
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS mgmt_crew_position
     listing_id         BIGINT       NOT NULL, #ref #uq1
     root_subgroup_id   BIGINT       NULL,
     subgroup_id        BIGINT       NOT NULL, #ref
-    sort_order         TINYINT      NOT NULL DEFAULT 0,
+    sort_order         TINYINT      NULL,
     position_role_id   BIGINT       NULL, #ref
     position_note      VARCHAR(128) NULL,
     assigned_member_id BIGINT       NULL,     #ref #uq1
@@ -212,8 +212,8 @@ CREATE TABLE IF NOT EXISTS group_invite
     role_id             BIGINT                                                NULL,
     invite_status       ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'RESCINDED') NOT NULL DEFAULT 'PENDING',
     invite_message      VARCHAR(255)                                          NULL,
-    has_mic             TINYINT                                               NOT NULL DEFAULT 0,
-    has_headset         TINYINT                                               NOT NULL DEFAULT 0,
+    has_mic             TINYINT                                               NULL,
+    has_headset         TINYINT                                               NULL,
     active              TINYINT                                               NULL     DEFAULT 1,
     sender_dismissed    TINYINT                                               NOT NULL DEFAULT 0,
     recipient_dismissed TINYINT                                               NOT NULL DEFAULT 0,

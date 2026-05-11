@@ -10,6 +10,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
@@ -51,8 +53,9 @@ public class CrewPosition {
     @Column(name="root_subgroup_id", nullable = true)
     private Long rootSubgroupId;
 
-    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 0")
-    private Integer sortOrder = 0;
+    @Generated(event = EventType.INSERT)
+    @Column(name="sort_order", nullable = true, columnDefinition="TINYINT NULL")
+    private Integer sortOrder;
 
     @ManyToOne
     @JoinColumn(name="position_role_id", referencedColumnName="id_role", nullable = true)

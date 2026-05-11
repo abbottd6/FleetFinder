@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {
   GroupCompSubgroupViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
@@ -6,8 +6,15 @@ import {CrewPositionChipComponent} from "../crew-position-chip/crew-position-chi
 import {NgForOf, NgIf} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Subject, takeUntil} from "rxjs";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {CdkDragHandle, CdkDropList, DragDropModule} from "@angular/cdk/drag-drop";
+import {
+  SubgroupManagementInteractService
+} from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
+import {
+  DropListRegistryService
+} from "../../../../services/facade-services/group-management/drop-list-registry.service";
 
 @Component({
   selector: 'app-crew-subgroup',
@@ -20,13 +27,32 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,
+    DragDropModule,
+    CdkDragHandle,
   ],
   templateUrl: './crew-subgroup.component.html',
   styleUrl: './crew-subgroup.component.css'
 })
-export class CrewSubgroupComponent implements OnInit {
+export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+  private selfHovered = false;
+
+  get hovered() {
+    return this.selfHovered;
+  }
+
+  hoveredToggle(state: boolean) {
+    this.selfHovered = state;
+    console.log(this.selfHovered);
+  }
+
   @Input() subgroup!: GroupCompSubgroupViewModel;
   @Input() collapseFromParent$!: BehaviorSubject<boolean>;
+
+  protected subgroupDataSource!: GroupCompSubgroupViewModel[];
+
+  @ViewChild('nativeSubgroupList') nativeSubgroupList!: CdkDropList;
+  @ViewChild('nativePositionList') nativePositionList!: CdkDropList;
 
   protected collapseFromSelf$ = new BehaviorSubject<boolean>(true);
 
@@ -63,7 +89,12 @@ export class CrewSubgroupComponent implements OnInit {
     return this.subgroup.subgroups.length > 0;
   }
 
+  constructor(protected subgroupInteract: SubgroupManagementInteractService,
+              protected dropListRegistry: DropListRegistryService){}
+
   ngOnInit() {
+    this.subgroupDataSource = this.subgroup.subgroups;
+
     if(this.collapseFromParent$ != null) {
       this.collapseFromParent$.subscribe(collapse => {
         this.selfExpanded = collapse;
@@ -71,6 +102,11 @@ export class CrewSubgroupComponent implements OnInit {
         this.collapseFromSelf$.next(collapse);
       })
     }
+  }
+
+  ngAfterViewInit() {
+    this.dropListRegistry.registerList(this.nativeSubgroupList);
+    this.dropListRegistry.registerList(this.nativePositionList);
   }
 
   toggleCollapseSelf() {
@@ -88,5 +124,13 @@ export class CrewSubgroupComponent implements OnInit {
 
     this.childrenExpanded = !this.childrenExpanded;
     this.collapseFromSelf$.next(this.childrenExpanded);
+  }
+
+  ngOnDestroy() {
+    this.dropListRegistry.unregisterList(this.nativeSubgroupList);
+    this.dropListRegistry.unregisterList(this.nativeSubgroupList);
+
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

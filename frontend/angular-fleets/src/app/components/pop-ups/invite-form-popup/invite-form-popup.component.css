@@ -41,6 +41,17 @@ h2 {
   margin: 0;
 }
 
+:host ::ng-deep #in-game-username .mat-mdc-form-field-infix {
+  padding-top: 4px;
+  padding-bottom: 4px;
+  min-height: 40px;
+  align-content: center;
+}
+
+:host ::ng-deep #in-game-username .mat-mdc-text-field-wrapper {
+  height: 40px;
+}
+
 :host ::ng-deep #in-game-username .generic-input {
   display: flex;
   flex-direction: column;
@@ -88,6 +99,22 @@ h2 {
 
 :host ::ng-deep .dropdown-component .ng-dropdown-panel {
   width: 200px !important;
+}
+
+.comms-info-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.comms-label {
+  margin-left: 10px;
+}
+
+.comms-checkboxes {
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  justify-content: center;
 }
 
 .action-buttons:hover {

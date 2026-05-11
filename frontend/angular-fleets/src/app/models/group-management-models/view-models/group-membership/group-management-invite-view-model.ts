@@ -10,6 +10,8 @@ export class GroupManagementInviteViewModel {
     public inviteDirection: string,
     public inviteStatus: string,
     public inviteMessage: string,
+    public hasMic: string,
+    public hasHeadset: string,
     public expiresAt: Date,
     public sentAt: Date
   ){}

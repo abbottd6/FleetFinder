@@ -136,7 +136,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
         try {
             GroupMember savedMember = memberRepo.save(new GroupMember(listing, userMember, hasMic,
-                    dto.getMemberStatus(), hasHeadset, newMemberRank, hasExtNotes));
+                    dto.getMemberStatus(), hasHeadset, newMemberRank.getRankId(), hasExtNotes));
 
             invite.setInviteStatus(GroupInviteStatus.ACCEPTED);
             invite.setActive(null);

@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
 
 import java.util.LinkedHashSet;
 
@@ -35,7 +37,4 @@ public class CrewSubgroupTemplate {
 
     @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 0")
     private Integer sortOrder = 0;
-
-    @Column(name = "intended_subgroup_size", columnDefinition = "TINYINT")
-    private Integer intendedSubgroupSize;
 }

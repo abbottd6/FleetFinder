@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class GroupCompositionServiceImpl implements GroupCompositionService {
 
-    private final Long ROOT_SUBGROUP_ID = -1L;
+    private final Long ROOT_SUBGROUP_ID = 0L;
 
     private final InGroupRankService rankService;
     private final GroupListingService gls;

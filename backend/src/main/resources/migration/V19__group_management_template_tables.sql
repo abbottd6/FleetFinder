@@ -21,7 +21,6 @@ CREATE TABLE IF NOT EXISTS crew_subgroup_template
     subgroup_label         VARCHAR(64)  NOT NULL,
     subgroup_notes         VARCHAR(255) NULL,
     sort_order             TINYINT      NOT NULL DEFAULT 0,
-    intended_subgroup_size TINYINT      NULL,
 
     CONSTRAINT fk_template_subgroup_references_template
         FOREIGN KEY (template_id) REFERENCES crew_template (id_template)

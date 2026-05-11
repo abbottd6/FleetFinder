@@ -33,7 +33,7 @@ export class LoadCrewTemplateFormComponent implements OnInit, OnDestroy {
   public templatesForDisplay$ = new BehaviorSubject<CrewTemplateViewModel[]>([]);
 
   protected templateCategoryCtrl = new FormControl<string | null>(null);
-  protected templateCategories = ['Capital', 'Large', 'Medium', 'Small', 'User'];
+  protected templateCategories = ['Capital', 'Large', 'Medium', 'Small', 'Custom'];
   public templateSelectCtrl = new FormControl<CrewTemplateViewModel | null>(null, Validators.required);
 
   constructor(private groupCompApi: GroupCompositionApiService){}
@@ -58,8 +58,8 @@ export class LoadCrewTemplateFormComponent implements OnInit, OnDestroy {
 
   onSubmit() {
     if(!this.templateSelectCtrl.value) {
-      this.templateSelectCtrl.invalid;
-      this.templateSelectCtrl.dirty;
+      this.templateSelectCtrl.markAsDirty();
+      this.templateSelectCtrl.markAsTouched();
       return;
     }
 

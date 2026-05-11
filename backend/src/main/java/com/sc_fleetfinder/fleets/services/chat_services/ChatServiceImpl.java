@@ -199,6 +199,10 @@ public class ChatServiceImpl implements ChatService {
     public Conversation generateNewConversation(Users user,
                                                 FindOrStartNewConversationDto dto,
                                                 String dmKey) {
+        if(Objects.equals(user.getUserId(), dto.getRecipientId())) {
+            throw new IllegalArgumentException("Sender and Recipient cannot be the same User.");
+        }
+
         Conversation newConv = new Conversation(user, dto, dmKey);
 
         convRepo.save(newConv);

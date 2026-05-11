@@ -5,7 +5,8 @@ CREATE TRIGGER trg_calc_group_subgroup_sort_order
         NEW.sort_order IS NULL OR NEW.sort_order = 0,
         (SELECT COALESCE(MAX(sort_order), 0) + 1
          FROM group_management_subgroup
-         WHERE parent_subgroup_id <=> NEW.parent_subgroup_id),
+         WHERE parent_subgroup_id <=> NEW.parent_subgroup_id
+            AND listing_id = NEW.listing_id),
         NEW.sort_order
     );
 
@@ -16,7 +17,8 @@ CREATE TRIGGER trg_calc_crew_position_sort_order
         NEW.sort_order IS NULL OR NEW.sort_order = 0,
         (SELECT COALESCE(MAX(sort_order), 0) + 1
          FROM mgmt_crew_position
-         WHERE subgroup_id = NEW.subgroup_id),
+         WHERE subgroup_id = NEW.subgroup_id
+            AND listing_id = NEW.listing_id),
         NEW.sort_order
     );
 

@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Generated;
+import org.hibernate.generator.EventType;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
@@ -30,8 +32,7 @@ public class GroupManagementSubgroup {
         this.parentSubgroup = parentSubgroup;
         this.subgroupLabel = template.getSubgroupLabel();
         this.subgroupNotes = template.getSubgroupNotes();
-        this.intendedSubgroupSize = template.getIntendedSubgroupSize();
-        this.sortOrder = template.getSortOrder();
+//        this.sortOrder = template.getSortOrder();
     }
 
     @Id
@@ -61,8 +62,9 @@ public class GroupManagementSubgroup {
     @Column(name="intended_subgroup_size", nullable = true)
     private Integer intendedSubgroupSize;
 
-    @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 0")
-    private Integer sortOrder = 0;
+    @Generated(event = EventType.INSERT)
+    @Column(name="sort_order", nullable = true, columnDefinition="TINYINT NULL")
+    private Integer sortOrder;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
