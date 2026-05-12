@@ -13,10 +13,14 @@ import {
 import {
   GroupCompositionDto
 } from "../../../models/group-management-models/view-models/group-composition/group-composition-dto";
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
+import {CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
 import {
   GroupCompCrewPositionViewModel
 } from "../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
+import {
+  GroupManagementMemberViewModel
+} from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
+import {DropListRegistryService} from "./drop-list-registry.service";
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +32,8 @@ export class SubgroupManagementInteractService {
   protected subgroupTreesSubject = new BehaviorSubject<GroupCompSubgroupViewModel[]>([]);
   public subgroupTrees$ = this.subgroupTreesSubject.asObservable();
 
-  constructor(private compositionApi: GroupCompositionApiService) {}
+  constructor(private compositionApi: GroupCompositionApiService,
+              private dropListRegistry: DropListRegistryService) {}
 
   getExistingSubgroupTrees(groupId: number) {
     this.compositionApi.getExistingGroupStructure(groupId).pipe(takeUntilDestroyed(this.destroyRef))
@@ -53,26 +58,22 @@ export class SubgroupManagementInteractService {
       });
   }
 
-  onRootSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
-    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+  onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
+    if(event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
-    event.container.data.forEach((subgroup, index) => {
-      subgroup.sortOrder = index;
-    })
+      event.container.data.forEach((subgroup, index) => {
+        subgroup.sortOrder = index;
+      })
+    } else {
+      transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
 
-    this.subgroupTreesSubject.next([...event.container.data])
+      event.container.data.forEach((subgroup, index) => {
+        subgroup.sortOrder = index;
+      })
+    }
+    this.dropListRegistry.resetAfterDragEnd();
   }
-
-  onNestedSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
-    moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-
-    event.container.data.forEach((subgroup, index) => {
-      subgroup.sortOrder = index;
-    })
-
-    this.subgroupTreesSubject.next([...event.container.data])
-  }
-
 
   //todo THIS IS WRONG and breaking
   onPositionDrop(event: CdkDragDrop<GroupCompCrewPositionViewModel[]>, grabbedFrom: GroupCompSubgroupViewModel) {
@@ -89,7 +90,21 @@ export class SubgroupManagementInteractService {
 
       const current = this.subgroupTreesSubject.getValue();
       const parentIdx = current.findIndex(sub => sub.subgroupId === grabbedFrom.subgroupId);
-      
+
     }
+
+    this.dropListRegistry.resetAfterDragEnd();
+  }
+
+  canDropMember = (drag: CdkDrag) => {
+    return drag.data?.memberStatus != undefined;
+  }
+
+  canDropSubgroup = (drag: CdkDrag) => {
+    return drag.data?.parentSubgroupId !== undefined;
+  }
+
+  canDropPosition = (drag: CdkDrag) => {
+    return drag.data?.positionId !== undefined;
   }
 }

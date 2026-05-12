@@ -1,4 +1,7 @@
 @import '../input-fields/input-field/input-field-styles.css';
+:host {
+  isolation: isolate;
+}
 
 .page-title {
   display: inline-block;
@@ -13,6 +16,7 @@
   min-height: 72vh;
   width: 95%;
   align-self: center;
+  isolation: isolate;
   /*padding-bottom: 1rem;*/
   /*overflow-y: visible;*/
   /*scrollbar-width: none;*/

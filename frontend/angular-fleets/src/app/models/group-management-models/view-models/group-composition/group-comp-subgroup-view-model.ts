@@ -1,7 +1,9 @@
 import {GroupCompCrewPositionViewModel} from "./group-comp-crew-position-view-model";
 
 export class GroupCompSubgroupViewModel {
+
   constructor(
+    public entityType: string = 'subgroup',
     public subgroupId: number,
     public subgroupLabel: string,
     public subgroupNotes: string,

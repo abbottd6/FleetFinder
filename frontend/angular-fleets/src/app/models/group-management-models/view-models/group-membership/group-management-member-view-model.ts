@@ -3,6 +3,8 @@ import {MemberPositionSummaryViewModel} from "../../nested-models/member-positio
 import {InGroupRankViewModel} from "./in-group-rank-view-model";
 
 export class GroupManagementMemberViewModel {
+  readonly entityType = 'member' as const;
+
   constructor(
     public listingId: number,
     public userSummary: UserMonikerSummaryViewModel,

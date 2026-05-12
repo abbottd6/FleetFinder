@@ -1,8 +1,8 @@
-<div class="chip-self">
-<!--  <div cdkDragHandle>-->
-<!--    <span class="drag-handle"></span>-->
-<!--  </div>-->
-  <div class="chip-content-wrapper">
+<div class="chip-self"[class.is-hovered-container]="(((this.dropListRegistry.hoveredContainer$ | async) !== null)
+                                       && (this.dropListRegistry.hoveredContainer$ | async)?.id === containerRegistrationRef.id)">
+  <div class="chip-content-wrapper" #chipContainerRef
+       [class.is-hovered-container]="(((this.dropListRegistry.hoveredContainer$ | async) !== null)
+                                       && (this.dropListRegistry.hoveredContainer$ | async)?.id === containerRegistrationRef.id)">
     <div class="subgroup-header drag-handle" cdkDragHandle>
       <div class="header-left">
         <span>{{ subgroup.subgroupLabel }}</span>
@@ -71,33 +71,65 @@
       </div>
     </div>
     <div>
+
+
+<!--      [class.is-hovered-container]="((dropListRegistry.hoveredContainer$ | async)?.id === (thisContainerId$ | async))-->
+<!--      && (dropListRegistry.validDropTargetType$ | async) === 'subgroup'"-->
+<!--      [class.empty-subgroup]="emptySubgroupTree && emptyPositionTree"-->
       <div class="chip-contents"
            cdkDropList
+           #nativeSubgroupListElement
            #nativeSubgroupList="cdkDropList"
            cdkDropListOrientation="vertical"
            [cdkDropListData]="subgroup.subgroups"
-           [class.empty-subgroup]="subgroup.subgroups.length === 0  && subgroup.crewPositions.length === 0"
+           (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
+           [cdkDropListSortingDisabled]="disableNativeSubgroupsList"
+           [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
+           [cdkDropListConnectedTo]="connectedToSubgroups"
            [class.chip-subgroup-expanded]="selfExpanded"
            [class.chip-subgroup-collapsed]="!selfExpanded"
-           (cdkDropListDropped)="subgroupInteract.onNestedSubgroupDrop($event)">
-        <div *ngFor="let childSubgroup of subgroup.subgroups" cdkDrag class="chip-list">
+           [class.is-hovered-list]="((this.dropListRegistry.hoveredList$ | async)?.id === (thisContainerId$ | async))
+                                      && ((this.dropListRegistry.hoveredList$ | async) !== null)"
+>
+        <div *ngFor="let childSubgroup of subgroup.subgroups"
+             cdkDrag
+             [cdkDragData]="childSubgroup"
+             (cdkDragMoved)="onDragMoved($event)"
+             (cdkDragReleased)="resetAfterDragReleased()"
+             class="chip-list">
           <app-crew-subgroup
             [subgroup]="childSubgroup"
+            [parentContainer]="containerRegistrationRef"
+            [parentTreeDepth]="selfDepth"
+            [dropListParentEl]="subgroupListRef"
             [collapseFromParent$]="collapseFromSelf$"
             [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
           </app-crew-subgroup>
         </div>
       </div>
 
+
+<!--      [class.empty-subgroup]="emptyPositionTree && emptySubgroupTree"-->
       <div class="chip-contents"
            cdkDropList
+           #nativePositionListElement
            #nativePositionList="cdkDropList"
            cdkDropListOrientation="vertical"
            [cdkDropListData]="subgroup.crewPositions"
+           [cdkDropListConnectedTo]="this.connectedToPositions"
+           [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
            (cdkDropListDropped)="subgroupInteract.onPositionDrop($event, subgroup)"
            [class.chip-subgroup-expanded]="selfExpanded"
-           [class.chip-subgroup-collapsed]="!selfExpanded">
-        <div *ngFor="let position of subgroup.crewPositions" cdkDrag>
+           [class.chip-subgroup-collapsed]="!selfExpanded"
+           [class.is-hovered-container]="((dropListRegistry.hoveredContainer$ | async)?.id === (thisContainerId$ | async))
+                                           && (dropListRegistry.validDropTargetType$ | async) === 'position'"
+           [class.is-hovered-list]="((this.dropListRegistry.hoveredList$ | async)?.id === (thisContainerId$ | async))
+                                      && ((this.dropListRegistry.hoveredList$ | async) !== null)">
+        <div *ngFor="let position of subgroup.crewPositions"
+             cdkDrag
+             [cdkDragData]="position"
+             (cdkDragMoved)="onDragMoved($event)"
+             (cdkDragReleased)="resetAfterDragReleased()">
           <app-crew-position-chip
             [position]="position">
           </app-crew-position-chip>

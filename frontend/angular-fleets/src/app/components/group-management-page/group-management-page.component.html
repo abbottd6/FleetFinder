@@ -47,12 +47,15 @@
               #rootSubgroupList="cdkDropList"
               cdkDropListOrientation="horizontal"
               [cdkDropListData]="subgroups"
-              (cdkDropListDropped)="subgroupMgmtInteract.onRootSubgroupDrop($event)"
+              (cdkDropListDropped)="subgroupMgmtInteract.onSubgroupDrop($event)"
               class="root-subgroup-drop-list">
                 <app-crew-subgroup
                   *ngFor="let treeRoot of subgroups"
+                  [subgroup]="treeRoot"
+                  [parentTreeDepth]="0"
                   cdkDrag
-                  [subgroup]="treeRoot">
+                  [cdkDragData]="treeRoot"
+                  (cdkDragMoved)="dropListRegistry.onDragMoved($event)">
                 </app-crew-subgroup>
             </div>
           </ng-container>

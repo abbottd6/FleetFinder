@@ -2,6 +2,8 @@ import {RoleClassSummaryViewModel} from "../../nested-models/role-class-summary-
 import {UserMonikerSummaryViewModel} from "../../nested-models/user-moniker-summary-view-model";
 
 export class GroupCompCrewPositionViewModel {
+  readonly entityType = 'position' as const;
+
   constructor(
     public positionId: number,
     public groupId: number,

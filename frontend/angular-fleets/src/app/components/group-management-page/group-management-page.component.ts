@@ -74,7 +74,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
               protected managementInteract: GroupManagementInteractService,
               protected subgroupMgmtInteract: SubgroupManagementInteractService,
               private route: ActivatedRoute,
-              private dropListRegistry: DropListRegistryService) {}
+              protected dropListRegistry: DropListRegistryService) {}
 
   ngOnInit() {
     this.pageIsLoading = true;
@@ -125,9 +125,6 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   ngAfterViewInit() {
     const top = this.managementContainer.nativeElement.getBoundingClientRect().top;
     this.containerHeight = `calc(98vh - ${top}px)`;
-
-    // this.dropListRegistry.registerList(this.rootSubgroupList);
-    // console.log('registered list:', this.rootSubgroupList.element.nativeElement, 'id:', this.rootSubgroupList.id);
   }
 
   createFromTemplate(template: CrewTemplateViewModel) {
@@ -147,7 +144,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   }
 
   ngOnDestroy(): void {
-    this.dropListRegistry.unregisterList(this.rootSubgroupList);
+    // this.dropListRegistry.unregisterList();
 
     this.destroy$.next();
     this.destroy$.complete();

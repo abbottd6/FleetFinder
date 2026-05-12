@@ -118,8 +118,25 @@
 
 /* --------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/
 
-.chip-contents.empty-subgroup {
-  min-height: 50px;
+/*.chip-contents.is-hovered-list {*/
+/*  border: 1px solid deeppink;*/
+/*}*/
+
+
+.chip-content-wrapper.is-hovered-container {
+  border: 1px solid rgba(53, 114, 163, 1);
+}
+
+.chip-contents:empty {
+  min-height: 20px;
+}
+
+.chip-contents:empty.is-hovered-container {
+  min-height: 65px;
+}
+
+.chip-contents.is-hovered-container {
+
 }
 
 .chip-contents {

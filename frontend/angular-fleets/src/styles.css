@@ -90,6 +90,7 @@ body {
   opacity: 0.2;
   filter: blur(4px);
   mix-blend-mode: screen;
+  isolation: isolate;
   z-index: 0;
 
   background-image:
@@ -118,6 +119,7 @@ body {
   z-index: -1;
   box-shadow: -3px 0 3px -3px rgba(255, 131, 7, .4);
   max-width: 98vw;
+  isolation: isolate;
 
   background-image:
     repeating-linear-gradient(
