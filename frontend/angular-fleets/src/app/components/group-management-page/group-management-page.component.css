@@ -150,4 +150,10 @@ app-load-crew-template-form.show-form.expanding {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(375px, 450px));
   margin-left: 25px;
+  border: 1px solid;
+}
+
+.root-subgroup-drop-list.is-hovered-list {
+  border: 1px solid deeppink;
+  padding-right: 25px;
 }

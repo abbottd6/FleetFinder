@@ -8,4 +8,6 @@ public interface GroupCompositionService {
     GroupCompositionDto getExistingGroupComposition(Users user, Long groupId);
 
     GroupCompositionDto createStructureFromTemplate(Users user, Long groupId, Long templateId);
+
+    void deleteSubgroup(Users user, Long groupId, Long subgroupId);
 }

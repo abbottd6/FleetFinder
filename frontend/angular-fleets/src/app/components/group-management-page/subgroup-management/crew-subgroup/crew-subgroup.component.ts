@@ -1,10 +1,10 @@
 import {
-  AfterViewInit,
+  AfterViewInit, ChangeDetectorRef,
   Component,
-  ElementRef,
+  ElementRef, EventEmitter,
   Input,
   OnDestroy,
-  OnInit,
+  OnInit, Output,
   ViewChild,
 } from '@angular/core';
 import {
@@ -14,7 +14,7 @@ import {CrewPositionChipComponent} from "../crew-position-chip/crew-position-chi
 import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
-import {BehaviorSubject, debounceTime, distinctUntilChanged, Subject, takeUntil} from "rxjs";
+import {BehaviorSubject, debounceTime, distinctUntilChanged, filter, Subject, takeUntil} from "rxjs";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {CdkDragHandle, CdkDragMove, CdkDropList, DragDropModule} from "@angular/cdk/drag-drop";
 import {
@@ -47,14 +47,14 @@ import {
 export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  protected thisContainerId$!: BehaviorSubject<string>;
-
   @Input() subgroup!: GroupCompSubgroupViewModel;
   @Input() collapseFromParent$!: BehaviorSubject<boolean>;
+  @Output() disableParentSorting = new EventEmitter<boolean>;
 
   @Input() dropListParentEl!: DropListRegistration;
   @Input() parentTreeDepth!: number;
   @Input() parentContainer!: ElementContainerRegistration;
+  @Input() downPropagateSortState!: boolean;
   protected selfDepth!: number;
 
   @ViewChild('nativeSubgroupList') nativeSubgroupList!: CdkDropList;
@@ -63,7 +63,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('nativePositionList') nativePositionList!: CdkDropList;
   @ViewChild('nativePositionListElement', {read: ElementRef }) nativePositionListElement!: ElementRef<HTMLElement>;
 
-  @ViewChild('chipContainerRef', {read: ElementRef }) chipContainerRef!: ElementRef<HTMLElement>;
+  @ViewChild('chipWrapperContainer', {read: ElementRef }) chipWrapperContainer!: ElementRef<HTMLElement>;
+  protected thisDropListId$!: BehaviorSubject<string>;
 
   protected containerRegistrationRef!: ElementContainerRegistration;
   protected subgroupListRef!: DropListRegistration;
@@ -73,7 +74,6 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected disableNativeSubgroupsList: boolean = true;
 
   protected collapseFromSelf$ = new BehaviorSubject<boolean>(true);
-
   protected selfExpanded: boolean = true;
   protected childrenExpanded: boolean = true;
 
@@ -108,7 +108,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   constructor(protected subgroupInteract: SubgroupManagementInteractService,
-              protected dropListRegistry: DropListRegistryService){}
+              protected dropListRegistry: DropListRegistryService,
+              private cdr: ChangeDetectorRef){}
 
   ngOnInit() {
     this.selfDepth = this.parentTreeDepth++;
@@ -120,40 +121,49 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     }
 
-    this.dropListRegistry.hoveredContainer$.pipe(
-      takeUntil(this.destroy$),
-      distinctUntilChanged((a, b) => a?.id === b?.id),
-      debounceTime(100))
-      .subscribe(hovered => {
-        this.disableNativeSubgroupsList = hovered?.id !== this.containerRegistrationRef.id;
-      }
-    )
-
     this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
       .subscribe(list => {
-        this.connectedToSubgroups = list.filter(l => l.id !== this.subgroupListRef?.dropList.id);
-      })
+        queueMicrotask(() => {
+          this.connectedToSubgroups = list.filter(l => l.id !== this.nativeSubgroupList?.id);
+        });
+      });
 
     this.dropListRegistry.allPositionLists$.pipe(takeUntil(this.destroy$))
       .subscribe(list => {
-        this.connectedToPositions = list.filter(l => l.id !== this.positionListRef?.dropList.id);
-      })
+        queueMicrotask(() => {
+          this.connectedToPositions = list.filter(l => l.id !== this.nativePositionList?.id);
+        });
+      });
+
+    this.dropListRegistry.hoveredContainer$.pipe(
+      takeUntil(this.destroy$),
+      filter((hovered): hovered is ElementContainerRegistration => !!hovered),
+      distinctUntilChanged((a, b) => a?.id === b?.id),
+      debounceTime(100))
+      .subscribe(hovered => {
+        // this.disableNativeSubgroupsList = false;
+        this.disableParentSorting.emit(hovered?.id === this.containerRegistrationRef.id);
+      }
+    )
+
+    this.cdr.detectChanges()
   }
 
   ngAfterViewInit() {
-    this.subgroupListRef = this.dropListRegistry.registerList(`subgroup-${this.subgroup.subgroupId}`, 'subgroup',
-                                          this.nativeSubgroupList, this.nativeSubgroupListElement,
-                                          this.selfDepth, this.dropListParentEl?.id);
-    this.positionListRef = this.dropListRegistry.registerList(`position-${this.subgroup.subgroupId}`, 'position',
-                                          this.nativePositionList, this.nativePositionListElement,
-                                          this.selfDepth, this.subgroupListRef.id);
+    this.subgroupListRef = this.dropListRegistry.registerList(`subgroup-${this.subgroup.subgroupId}`,
+      'subgroup', this.nativeSubgroupList, this.nativeSubgroupListElement,
+      this.selfDepth, this.dropListParentEl?.id);
 
-    this.thisContainerId$ = new BehaviorSubject<string>(this.subgroupListRef.id);
+    this.positionListRef = this.dropListRegistry.registerList(`position-${this.subgroup.subgroupId}`,
+      'position', this.nativePositionList, this.nativePositionListElement,
+      this.selfDepth, this.subgroupListRef.id);
+
+    this.thisDropListId$ = new BehaviorSubject<string>(this.subgroupListRef.id);
 
     const containerDropLists = [this.subgroupListRef.dropList, this.positionListRef.dropList];
+
     this.containerRegistrationRef = this.dropListRegistry.registerContainer(this.subgroupListRef.id, 'subgroup',
-                                                    containerDropLists, this.chipContainerRef, this.selfDepth,
-                                                    this.parentContainer?.id)
+      containerDropLists, this.chipWrapperContainer, this.selfDepth, this.parentContainer?.id)
   }
 
   onDragMoved(event: CdkDragMove<any>) {
@@ -179,6 +189,11 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.childrenExpanded = !this.childrenExpanded;
     this.collapseFromSelf$.next(this.childrenExpanded);
+  }
+
+  emitDisableStateUpTree(disable: boolean) {
+    this.disableNativeSubgroupsList = true;
+    this.disableParentSorting.emit(disable);
   }
 
   ngOnDestroy() {

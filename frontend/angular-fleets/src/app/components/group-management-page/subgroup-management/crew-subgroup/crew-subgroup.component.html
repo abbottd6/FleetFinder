@@ -1,8 +1,8 @@
-<div class="chip-self"[class.is-hovered-container]="(((this.dropListRegistry.hoveredContainer$ | async) !== null)
-                                       && (this.dropListRegistry.hoveredContainer$ | async)?.id === containerRegistrationRef.id)">
-  <div class="chip-content-wrapper" #chipContainerRef
+<div class="chip-self" [class.is-hovered-container]="(((this.dropListRegistry.hoveredContainer$ | async) !== null)
+                                       && (this.dropListRegistry.hoveredContainer$ | async)?.id === containerRegistrationRef?.id)">
+  <div class="chip-content-wrapper" #chipWrapperContainer
        [class.is-hovered-container]="(((this.dropListRegistry.hoveredContainer$ | async) !== null)
-                                       && (this.dropListRegistry.hoveredContainer$ | async)?.id === containerRegistrationRef.id)">
+                                       && (this.dropListRegistry.hoveredContainer$ | async)?.id === containerRegistrationRef?.id)">
     <div class="subgroup-header drag-handle" cdkDragHandle>
       <div class="header-left">
         <span>{{ subgroup.subgroupLabel }}</span>
@@ -56,7 +56,8 @@
 
           <button
             mat-menu-item
-            class="options-item">
+            class="options-item"
+            (click)="subgroupInteract.deleteSubgroup(subgroup)">
             <mat-icon class="material-symbols-outlined dropdown-icon">remove_circle_outline</mat-icon>
             <span>Delete</span>
           </button>
@@ -88,7 +89,7 @@
            [cdkDropListConnectedTo]="connectedToSubgroups"
            [class.chip-subgroup-expanded]="selfExpanded"
            [class.chip-subgroup-collapsed]="!selfExpanded"
-           [class.is-hovered-list]="((this.dropListRegistry.hoveredList$ | async)?.id === (thisContainerId$ | async))
+           [class.is-hovered-list]="((this.dropListRegistry.hoveredList$ | async)?.id === (thisDropListId$ | async))
                                       && ((this.dropListRegistry.hoveredList$ | async) !== null)"
 >
         <div *ngFor="let childSubgroup of subgroup.subgroups"
@@ -103,6 +104,7 @@
             [parentTreeDepth]="selfDepth"
             [dropListParentEl]="subgroupListRef"
             [collapseFromParent$]="collapseFromSelf$"
+            (disableParentSorting)="emitDisableStateUpTree($event)"
             [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
           </app-crew-subgroup>
         </div>
@@ -121,9 +123,9 @@
            (cdkDropListDropped)="subgroupInteract.onPositionDrop($event, subgroup)"
            [class.chip-subgroup-expanded]="selfExpanded"
            [class.chip-subgroup-collapsed]="!selfExpanded"
-           [class.is-hovered-container]="((dropListRegistry.hoveredContainer$ | async)?.id === (thisContainerId$ | async))
+           [class.is-hovered-container]="((dropListRegistry.hoveredContainer$ | async)?.id === (thisDropListId$ | async))
                                            && (dropListRegistry.validDropTargetType$ | async) === 'position'"
-           [class.is-hovered-list]="((this.dropListRegistry.hoveredList$ | async)?.id === (thisContainerId$ | async))
+           [class.is-hovered-list]="((this.dropListRegistry.hoveredList$ | async)?.id === (thisDropListId$ | async))
                                       && ((this.dropListRegistry.hoveredList$ | async) !== null)">
         <div *ngFor="let position of subgroup.crewPositions"
              cdkDrag

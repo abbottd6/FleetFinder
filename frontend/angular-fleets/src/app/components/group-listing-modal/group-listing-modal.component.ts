@@ -43,7 +43,7 @@ export class GroupListingModalComponent implements OnInit {
   @Input() isVisible!: boolean;
   @Input() selectedListing: GroupListingViewModel | null = null;
   @Input() isBookmarked$!: Observable<boolean>;
-  @Output() close = new EventEmitter<CloseValue>
+  @Output() close = new EventEmitter<CloseValue>;
   userListings: GroupListingViewModel[] = [];
 
   protected isHiding: boolean = false;

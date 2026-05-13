@@ -118,9 +118,9 @@
 
 /* --------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/
 
-/*.chip-contents.is-hovered-list {*/
-/*  border: 1px solid deeppink;*/
-/*}*/
+.chip-contents.is-hovered-list {
+  border: 1px solid deeppink;
+}
 
 
 .chip-content-wrapper.is-hovered-container {
@@ -140,6 +140,7 @@
 }
 
 .chip-contents {
+  border: 1px solid transparent;
   transform-origin: top left;
   transition: transform 0.3s ease, max-height 0.3s ease, opacity 0.2s ease;
 }

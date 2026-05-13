@@ -11,6 +11,7 @@ import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewPositionTemplate;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewSubgroupTemplate;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementSubgroup;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingService;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.RankPrivilegeOptions;
 import lombok.RequiredArgsConstructor;
@@ -182,5 +183,15 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
 
         dto.setSubgroups(treeSubgroups);
         return dto;
+    }
+
+    @Override
+    public void deleteSubgroup(Users user, Long groupId, Long subgroupId) {
+        GroupListing listing = gls.findGroupListingEntityById(groupId);
+
+        GroupManagementSubgroup subgroup = gmsr.findById(subgroupId)
+                .orElseThrow(() -> new ResourceNotFoundException("GroupManagementSubgroup", subgroupId));
+
+        gmsr.delete(subgroup);
     }
 }

@@ -31,4 +31,8 @@ export class GroupCompositionApiService {
     return this.httpClient.post<GroupCompositionDto>(
       `${this.baseUrl}/create-subgroup-from-template/${groupId}`, template);
   }
+
+  deleteSubgroup(groupId: number, subgroupId: number) {
+    return this.httpClient.delete<void>(`${this.baseUrl}/delete-subgroup/${groupId}/${subgroupId}`);
+  }
 }

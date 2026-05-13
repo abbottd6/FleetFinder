@@ -17,10 +17,9 @@ import {CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular
 import {
   GroupCompCrewPositionViewModel
 } from "../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
-import {
-  GroupManagementMemberViewModel
-} from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
 import {DropListRegistryService} from "./drop-list-registry.service";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +32,8 @@ export class SubgroupManagementInteractService {
   public subgroupTrees$ = this.subgroupTreesSubject.asObservable();
 
   constructor(private compositionApi: GroupCompositionApiService,
-              private dropListRegistry: DropListRegistryService) {}
+              private dropListRegistry: DropListRegistryService,
+              private dialog: MatDialog) {}
 
   getExistingSubgroupTrees(groupId: number) {
     this.compositionApi.getExistingGroupStructure(groupId).pipe(takeUntilDestroyed(this.destroyRef))
@@ -58,6 +58,33 @@ export class SubgroupManagementInteractService {
       });
   }
 
+  deleteSubgroup(subgroup: GroupCompSubgroupViewModel) {
+    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
+      data: {
+        message: 'Delete this subgroup and all of its structurally nested contents? Any group members assigned ' +
+          'to this group will have their position assignment reset.',
+        title: 'Subgroup: \"' + subgroup.subgroupLabel + '\", and its contents.',
+      }
+    });
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(result => {
+        if(result) {
+          this.compositionApi.deleteSubgroup(subgroup.listingId, subgroup.subgroupId).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+              const current = this.subgroupTreesSubject.getValue();
+              const idx = current.findIndex(sub => sub.subgroupId === subgroup.subgroupId);
+              if(idx > -1) {
+                this.subgroupTreesSubject.next([
+                  ...current.slice(0, idx),
+                  ...current.slice(idx + 1)
+                ])
+              }
+            })
+        }
+      })
+  }
+
   onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
     if(event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -72,7 +99,8 @@ export class SubgroupManagementInteractService {
         subgroup.sortOrder = index;
       })
     }
-    this.dropListRegistry.resetAfterDragEnd();
+
+    // this.dropListRegistry.resetAfterDragEnd();
   }
 
   //todo THIS IS WRONG and breaking
@@ -96,15 +124,4 @@ export class SubgroupManagementInteractService {
     this.dropListRegistry.resetAfterDragEnd();
   }
 
-  canDropMember = (drag: CdkDrag) => {
-    return drag.data?.memberStatus != undefined;
-  }
-
-  canDropSubgroup = (drag: CdkDrag) => {
-    return drag.data?.parentSubgroupId !== undefined;
-  }
-
-  canDropPosition = (drag: CdkDrag) => {
-    return drag.data?.positionId !== undefined;
-  }
 }

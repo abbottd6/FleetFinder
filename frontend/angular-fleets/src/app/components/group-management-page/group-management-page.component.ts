@@ -1,8 +1,5 @@
-import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewChildren} from '@angular/core';
-import {Subject, takeUntil} from "rxjs";
-import {
-  GroupManagementMemberViewModel
-} from "../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
+import {AfterViewInit, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {debounceTime, distinctUntilChanged, shareReplay, Subject, take, takeUntil} from "rxjs";
 import {UserService} from "../../services/user-services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MemberManagementApiService} from "../../services/api-services/group-management/member-management-api.service";
@@ -27,8 +24,15 @@ import {
   CrewTemplateViewModel
 } from "../../models/group-management-models/view-models/group-composition/crew-template-view-model";
 import {CrewSubgroupComponent} from "./subgroup-management/crew-subgroup/crew-subgroup.component";
-import {CdkDropList, DragDropModule} from "@angular/cdk/drag-drop";
-import {DropListRegistryService} from "../../services/facade-services/group-management/drop-list-registry.service";
+import {CdkDrag, CdkDropList, DragDropModule} from "@angular/cdk/drag-drop";
+import {
+  DropListRegistration,
+  DropListRegistryService,
+  ElementContainerRegistration
+} from "../../services/facade-services/group-management/drop-list-registry.service";
+import {
+  GroupCompSubgroupViewModel
+} from "../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
 
 @Component({
   selector: 'app-group-management-page',
@@ -52,21 +56,27 @@ import {DropListRegistryService} from "../../services/facade-services/group-mana
 export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
+  //for page size calculation
   @ViewChild('managementContainer') managementContainer!: ElementRef;
+
+  @ViewChild('rootSubgroupList') rootSubgroupList!: CdkDropList;
+  @ViewChild('rootSubgroupListElement', {read: ElementRef }) rootSubgroupListElement!: ElementRef<HTMLElement>;
+  @ViewChild('groupCompRootContainer', {read: ElementRef }) groupCompRootContainer!: ElementRef<HTMLElement>;
+
   protected containerHeight!: string;
+  protected pageIsLoading: boolean = true;
 
   protected listingTitle!: string;
-
-  protected pageIsLoading: boolean = true;
+  protected groupId!: number;
 
   protected createFromIsExpanding: boolean = false;
   protected doNotShowCreateFromTemplateForm: boolean = true;
-
   protected doNotShowSaveTemplateForm: boolean = true;
 
-  protected groupId!: number;
-
-  @ViewChild('rootSubgroupList') rootSubgroupList!: CdkDropList;
+  protected rootContainerRef!: ElementContainerRegistration;
+  protected rootListRef!: DropListRegistration;
+  protected connectedToSubgroups: CdkDropList[] = [];
+  protected disableRootSubgroupList: boolean = true;
 
   constructor(private userService: UserService,
               private router: Router,
@@ -74,7 +84,8 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
               protected managementInteract: GroupManagementInteractService,
               protected subgroupMgmtInteract: SubgroupManagementInteractService,
               private route: ActivatedRoute,
-              protected dropListRegistry: DropListRegistryService) {}
+              protected dropListRegistry: DropListRegistryService,
+              private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.pageIsLoading = true;
@@ -115,16 +126,38 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
         }
     });
 
+    this.dropListRegistry.hoveredList$.pipe(
+      takeUntil(this.destroy$),
+      distinctUntilChanged((a, b) => a?.id === b?.id),
+      debounceTime(100))
+      .subscribe(hovered => {
+          this.disableRootSubgroupList = hovered?.id !== this.rootListRef.id;
+        }
+      )
+
     this.listingTitle = this.managementInteract.sessionManager.listing.listingTitle;
 
     this.subgroupMgmtInteract.getExistingSubgroupTrees(this.groupId);
 
     this.pageIsLoading = false;
+    this.cdr.detectChanges();
   }
 
   ngAfterViewInit() {
     const top = this.managementContainer.nativeElement.getBoundingClientRect().top;
     this.containerHeight = `calc(98vh - ${top}px)`;
+
+    this.rootListRef = this.dropListRegistry.registerList('content-root', 'root',
+      this.rootSubgroupList, this.rootSubgroupListElement, 0, undefined);
+
+    this.rootContainerRef = this.dropListRegistry.registerContainer(this.rootListRef?.id, 'subgroup',
+      [this.rootListRef.dropList], this.groupCompRootContainer, 0, undefined);
+
+    this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
+      .subscribe(lists => {
+        this.connectedToSubgroups = lists.filter(l => l.id !== this.rootSubgroupList?.id);
+      })
+
   }
 
   createFromTemplate(template: CrewTemplateViewModel) {
@@ -141,6 +174,18 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
   toggleDoNotShowSaveAsForm() {
     this.doNotShowSaveTemplateForm = !this.doNotShowSaveTemplateForm;
+  }
+
+  canEnterRoot = (drag: CdkDrag, drop: CdkDropList) => {
+    let rootHovered: boolean = false;
+
+    this.dropListRegistry.hoveredList$.pipe(take(1))
+      .subscribe(hovered => {
+        if(hovered) {
+          rootHovered = hovered.entityType === 'root'
+        }
+      })
+    return 'parentSubgroupId' in drag.data && rootHovered;
   }
 
   ngOnDestroy(): void {

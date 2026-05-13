@@ -61,4 +61,16 @@ public class GroupCompositionController {
 
         return ResponseEntity.ok(response);
     }
+
+    @DeleteMapping("/delete-subgroup/{groupId}/{subgroupId}")
+    public ResponseEntity<?> deleteSubgroup(@AuthenticationPrincipal Jwt jwt,
+                                            @PathVariable Long groupId,
+                                            @PathVariable Long subgroupId) {
+        String kcId = jwt.getSubject();
+        Users user = userService.verifyUser(kcId);
+
+        groupCompService.deleteSubgroup(user, groupId, subgroupId);
+
+        return ResponseEntity.ok().build();
+    }
 }

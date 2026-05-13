@@ -1,6 +1,6 @@
-import {ElementRef, Injectable} from '@angular/core';
+import {DestroyRef, ElementRef, inject, Injectable} from '@angular/core';
 import {CdkDrag, CdkDragDrop, CdkDragEnd, CdkDragMove, CdkDropList} from "@angular/cdk/drag-drop";
-import {BehaviorSubject, debounceTime, Subject, take} from "rxjs";
+import {BehaviorSubject, debounceTime, EMPTY, Subject, switchMap, take} from "rxjs";
 import {environment} from "../../../../environments/environment";
 import {
   GroupCompSubgroupViewModel
@@ -11,8 +11,10 @@ import {
 import {
   GroupManagementMemberViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
+import {MouseEventService} from "../mouse-event.service";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
-export type DropListEntityType = 'subgroup' | 'position' | 'member';
+export type DropListEntityType = 'subgroup' | 'position' | 'member' | 'root';
 
 export interface DropListRegistration {
   id: string;
@@ -54,6 +56,8 @@ const DROP_COMPATIBILITY_PREDICATES: Record< string, DropPredicate> = {
   providedIn: 'root'
 })
 export class DropListRegistryService {
+  private destroyRef = inject(DestroyRef)
+
   private droppableSubgroupLists: DropListRegistration[] = [];
   public allSubgroupLists$: BehaviorSubject<CdkDropList[]> = new BehaviorSubject<CdkDropList[]>([]);
 
@@ -62,18 +66,21 @@ export class DropListRegistryService {
 
   private registeredContainers: ElementContainerRegistration[] = [];
 
-  private dragMoved$ = new Subject<CdkDragMove<any>>();
+  public dragMoved$ = new Subject<CdkDragMove<any> | null>();
   public validDropTargetType$: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
-
+  public isDragging$ = new BehaviorSubject<boolean>(false);
 
   public hoveredList$ = new BehaviorSubject<DropListRegistration | null>(null);
   public hoveredContainer$ = new BehaviorSubject<ElementContainerRegistration | null>(null);
 
-  constructor() {
+  constructor(private mouseService: MouseEventService) {
     this.dragMoved$.pipe(
+      takeUntilDestroyed(this.destroyRef),
       debounceTime(120),
     ).subscribe(event => {
-      const point = event.pointerPosition;
+      const point = event?.pointerPosition;
+
+      if(!point) return;
 
       this.validDropTargetType$.next('assignedMember' in event.source.data ? 'position' : 'subgroup');
 
@@ -82,6 +89,14 @@ export class DropListRegistryService {
 
       this.hoveredList$.next(hoveredList ?? null);
       this.hoveredContainer$.next(hoveredContainer ?? null);
+      // console.log(hoveredContainer);
+    })
+
+    this.isDragging$.pipe(
+      switchMap(isDragging => isDragging ? this.mouseService.mouseUp$ : EMPTY),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(event => {
+      this.resetAfterDragEnd();
     })
   }
 
@@ -94,19 +109,7 @@ export class DropListRegistryService {
     parentId?: string): DropListRegistration {
 
     switch (entityType) {
-      case 'subgroup': {
-        const idx = this.droppableSubgroupLists.push({
-          id,
-          dropList,
-          entityType,
-          element,
-          treeDepth,
-          parentId
-        }) - 1;
-        this.allSubgroupLists$.next(this.droppableSubgroupLists.map(reg => reg.dropList));
-        return this.droppableSubgroupLists[idx];
-      }
-      default: {
+      case 'position': {
         const idx = this.droppablePositionLists.push({
           id,
           dropList,
@@ -117,6 +120,20 @@ export class DropListRegistryService {
         }) - 1;
         this.allPositionLists$.next(this.droppablePositionLists.map(reg => reg.dropList));
         return this.droppablePositionLists[idx];
+      }
+      default: {
+        const idx = this.droppableSubgroupLists.push({
+          id,
+          dropList,
+          entityType,
+          element,
+          treeDepth,
+          parentId
+        }) - 1;
+        this.allSubgroupLists$.next(this.droppableSubgroupLists
+          // .filter(reg => reg.entityType !== 'root')
+          .map(reg => reg.dropList));
+        return this.droppableSubgroupLists[idx];
       }
     }
   }
@@ -170,10 +187,6 @@ export class DropListRegistryService {
     }
   }
 
-  public onDragMoved(event: CdkDragMove<any>): void {
-    this.dragMoved$.next(event);
-  }
-
   private hoverListCandidates: DropListRegistration[] = []
   private hoverListCandidateIdx = 0;
   private holdTimer: ReturnType<typeof setTimeout> | null = null;
@@ -194,7 +207,7 @@ export class DropListRegistryService {
         const areaA = a.element.nativeElement.offsetWidth * a.element.nativeElement.offsetHeight;
         const areaB = b.element.nativeElement.offsetWidth * b.element.nativeElement.offsetHeight;
 
-        return areaA - areaB;
+        return areaB - areaA;
       });
 
     return candidates[this.hoverListCandidateIdx] ?? candidates[0];
@@ -230,6 +243,7 @@ export class DropListRegistryService {
     if(this.hoverListCandidateIdx > candidates.length) {
       this.hoverListCandidateIdx = 0;
     }
+
     return this.hoverListCandidates[this.hoverListCandidateIdx] ?? candidates[0];
   }
 
@@ -242,21 +256,31 @@ export class DropListRegistryService {
     }, 1500);
   }
 
+  public onDragMoved(event: CdkDragMove<any>): void {
+    this.isDragging$.next(true)
+    this.dragMoved$.next(event);
+  }
+
+
   public resetAfterDragEnd() {
+    this.isDragging$.next(false);
     this.hoveredContainer$.next(null);
     this.hoveredList$.next(null);
+    this.dragMoved$.next(null);
     this.hoverListCandidateIdx = 0;
     this.hoverListCandidates = [];
     clearTimeout(this.holdTimer!);
   }
 
   public isCompatibleDrop = (dragData: CdkDrag, dropList: CdkDropList): boolean => {
-    console.log('dragData: ', dragData.data);
-    console.log('dropList: ', dropList.data);
+    // console.log('dragData: ', dragData.data);
+    // console.log('dropList: ', dropList.data);
 
     let registration = this.droppableSubgroupLists.find(list => list.dropList === dropList);
 
     const elementData = dragData.data as DropData;
+
+    console.log(elementData);
 
     if(!registration) {
       registration = this.droppablePositionLists.find(list => list.dropList === dropList);
@@ -266,7 +290,10 @@ export class DropListRegistryService {
       console.log('not registration');
       return false;
     }
-
     return Object.values(DROP_COMPATIBILITY_PREDICATES).some(predicate => predicate(elementData, registration));
+  }
+
+  canEnterParent = (drag: CdkDrag, drop: CdkDropList) => {
+    return
   }
 }
