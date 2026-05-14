@@ -150,7 +150,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
     this.rootListRef = this.dropListRegistry.registerList('content-root', 'root',
       this.rootSubgroupList, this.rootSubgroupListElement, 0, undefined);
 
-    this.rootContainerRef = this.dropListRegistry.registerContainer(this.rootListRef?.id, 'subgroup',
+    this.rootContainerRef = this.dropListRegistry.registerContainer(this.rootListRef?.id, 'root',
       [this.rootListRef.dropList], this.groupCompRootContainer, 0, undefined);
 
     this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
@@ -176,17 +176,26 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
     this.doNotShowSaveTemplateForm = !this.doNotShowSaveTemplateForm;
   }
 
-  canEnterRoot = (drag: CdkDrag, drop: CdkDropList) => {
-    let rootHovered: boolean = false;
+  // canEnterRoot = (drag: CdkDrag, drop: CdkDropList) => {
+  //   let rootHovered: boolean = false;
+  //
+  //   const hoveredList = this.dropListRegistry.hoveredList$.getValue()?.dropList;
+  //   // const hoveredContainer = this.dropListRegistry.hoveredContainer$.getValue()?.
+  //
+  //   console.log('hoveredListId: ' + hoveredList?.id +', dropId: ' + drop.id)
+  //
+  //   if((hoveredList?.id === drop.id)) {
+  //     this.disableRootSubgroupList = false;
+  //     rootHovered = true;
+  //   }
+  //
+  //   const can = 'crewPositions' in drag.data && rootHovered;
+  //
+  //   console.log('canEnterRoot: ', can);
+  //
+  //   return can;
+  // }
 
-    this.dropListRegistry.hoveredList$.pipe(take(1))
-      .subscribe(hovered => {
-        if(hovered) {
-          rootHovered = hovered.entityType === 'root'
-        }
-      })
-    return 'parentSubgroupId' in drag.data && rootHovered;
-  }
 
   ngOnDestroy(): void {
     // this.dropListRegistry.unregisterList();

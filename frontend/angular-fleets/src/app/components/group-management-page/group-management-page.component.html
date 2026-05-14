@@ -40,18 +40,18 @@
           </div>
         </div>
 
-
+<!--        [cdkDropListSortingDisabled]="(this.dropListRegistry.hoveredTargetId$ | async) !== rootSubgroupList.id"-->
         <div class="group-composition-container" cdkDropListGroup #groupCompRootContainer>
           <ng-container *ngIf="(subgroupMgmtInteract.subgroupTrees$ | async) as subgroups">
             <div
               cdkDropList
               #rootSubgroupListElement
               #rootSubgroupList="cdkDropList"
-              cdkDropListOrientation="horizontal"
+              cdkDropListOrientation="mixed"
               [cdkDropListData]="subgroups"
-              (cdkDropListDropped)="subgroupMgmtInteract.onSubgroupDrop($event)"
-              [cdkDropListEnterPredicate]="canEnterRoot"
-              [cdkDropListSortingDisabled]="disableRootSubgroupList"
+              (cdkDropListDropped)="subgroupMgmtInteract.onSubgroupDrop($event, rootSubgroupList)"
+              [cdkDropListEnterPredicate]="this.dropListRegistry.isCompatibleDrop"
+
               [cdkDropListConnectedTo]="connectedToSubgroups"
               [class.is-hovered-list]="((this.dropListRegistry.hoveredList$ | async)?.id === (this.rootListRef?.id))"
               class="root-subgroup-drop-list">
@@ -62,7 +62,6 @@
                   cdkDrag
                   [cdkDragData]="treeRoot"
                   (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
-                  (disableParentSorting)="disableRootSubgroupList = $event"
                   (cdkDragReleased)="dropListRegistry.resetAfterDragEnd()">
                 </app-crew-subgroup>
             </div>

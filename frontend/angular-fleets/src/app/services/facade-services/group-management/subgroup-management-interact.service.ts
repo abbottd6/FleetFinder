@@ -13,7 +13,7 @@ import {
 import {
   GroupCompositionDto
 } from "../../../models/group-management-models/view-models/group-composition/group-composition-dto";
-import {CdkDrag, CdkDragDrop, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
+import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
 import {
   GroupCompCrewPositionViewModel
 } from "../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
@@ -85,22 +85,33 @@ export class SubgroupManagementInteractService {
       })
   }
 
-  onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
-    if(event.previousContainer === event.container) {
+  onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>, subgroupList: CdkDropList) {
+
+    const targetContainer = this.dropListRegistry.droppableSubgroupLists
+      .find(list => list.dropList.id === this.dropListRegistry.hoveredTargetId$.getValue())
+
+
+
+    console.log('previous container: ', event.previousContainer.id);
+    console.log('targetContainer: ', targetContainer?.dropList.id);
+    console.log('previdx: ', event.previousIndex, ', currentIdx: ', event.currentIndex);
+
+    if(event.previousContainer === targetContainer?.dropList) {
+      console.log('catching?');
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
       event.container.data.forEach((subgroup, index) => {
         subgroup.sortOrder = index;
       })
     } else {
-      transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+      transferArrayItem(event.previousContainer.data, targetContainer?.dropList.data, event.previousIndex, event.currentIndex);
 
       event.container.data.forEach((subgroup, index) => {
         subgroup.sortOrder = index;
       })
     }
 
-    // this.dropListRegistry.resetAfterDragEnd();
+    this.dropListRegistry.resetAfterDragEnd();
   }
 
   //todo THIS IS WRONG and breaking

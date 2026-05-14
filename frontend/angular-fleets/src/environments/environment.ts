@@ -15,7 +15,7 @@ export const environment = {
     scope: 'openid profile email',
     useRefreshToken: true,
     silentRenew: true,
-    logLevel: LogLevel.Debug,
+    logLevel: LogLevel.None,
     loadUserInfo: false,
     autoUserInfo: false,
   }

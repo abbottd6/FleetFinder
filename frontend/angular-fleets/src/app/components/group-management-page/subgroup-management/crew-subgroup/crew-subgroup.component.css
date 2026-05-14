@@ -26,6 +26,8 @@
   grid-template-columns: 2fr auto auto auto;
   overflow: hidden;
   align-content: center;
+  isolation: isolate;
+  z-index: 100000 !important;
 
   clip-path: polygon(
     12px 0,
@@ -116,6 +118,25 @@
   /*background-color: rgba(37, 37, 41, .15);*/
 }
 
+/* ----------------------- DROP LIST BLOCKER / WRAPPER -----------------------------------------------*/
+/*.drop-list-facade-wrapper {*/
+
+/*}*/
+
+.drop-list-facade {
+  display: grid;
+}
+
+.drop-list-facade > * {
+  grid-area: 1 / 1;
+}
+
+.drop-list-entry-blocker {
+  pointer-events: all;
+  z-index: 100;
+}
+
+
 /* --------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/
 
 .chip-contents.is-hovered-list {
@@ -131,12 +152,8 @@
   min-height: 20px;
 }
 
-.chip-contents:empty.is-hovered-container {
+.chip-contents:empty.is-hovered-list {
   min-height: 65px;
-}
-
-.chip-contents.is-hovered-container {
-
 }
 
 .chip-contents {
