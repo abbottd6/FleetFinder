@@ -1,3 +1,5 @@
+@import "subgroup-management/crew-subgroup/crew-subgroup.component.css";
+
 .page-title {
   display: inline-block;
   font-size: clamp(1.1rem, 3vw, 2rem);
@@ -156,4 +158,9 @@ app-load-crew-template-form.show-form.expanding {
 .root-subgroup-drop-list.is-hovered-list {
   border: 1px solid deeppink;
   padding-right: 25px;
+}
+
+.mat-spinner-container {
+  width: 100%;
+  margin-inline: auto;
 }

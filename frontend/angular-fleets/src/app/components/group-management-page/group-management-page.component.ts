@@ -28,11 +28,13 @@ import {CdkDrag, CdkDropList, DragDropModule} from "@angular/cdk/drag-drop";
 import {
   DropListRegistration,
   DropListRegistryService,
-  ElementContainerRegistration
+  ElementContainerRegistration, SubgroupHoverTargetRegistration
 } from "../../services/facade-services/group-management/drop-list-registry.service";
 import {
   GroupCompSubgroupViewModel
 } from "../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {MatTooltip} from "@angular/material/tooltip";
 
 @Component({
   selector: 'app-group-management-page',
@@ -49,7 +51,11 @@ import {
     CrewSubgroupComponent,
     NgForOf,
     CdkDropList,
-    DragDropModule
+    DragDropModule,
+    MatMenu,
+    MatMenuItem,
+    MatTooltip,
+    MatMenuTrigger
   ],
   styleUrl: './group-management-page.component.css'
 })
@@ -61,10 +67,10 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
   @ViewChild('rootSubgroupList') rootSubgroupList!: CdkDropList;
   @ViewChild('rootSubgroupListElement', {read: ElementRef }) rootSubgroupListElement!: ElementRef<HTMLElement>;
+  @ViewChild('rootListHoverTarget', {read: ElementRef}) rootListHoverTarget!: ElementRef<HTMLElement>;
   @ViewChild('groupCompRootContainer', {read: ElementRef }) groupCompRootContainer!: ElementRef<HTMLElement>;
 
   protected containerHeight!: string;
-  protected pageIsLoading: boolean = true;
 
   protected listingTitle!: string;
   protected groupId!: number;
@@ -73,8 +79,9 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   protected doNotShowCreateFromTemplateForm: boolean = true;
   protected doNotShowSaveTemplateForm: boolean = true;
 
-  protected rootContainerRef!: ElementContainerRegistration;
-  protected rootListRef!: DropListRegistration;
+  protected rootContainerRegistrationRef!: ElementContainerRegistration;
+  protected rootListRegistrationRef!: DropListRegistration;
+  protected rootHoverTargetRegistrationRef!: SubgroupHoverTargetRegistration;
   protected connectedToSubgroups: CdkDropList[] = [];
   protected disableRootSubgroupList: boolean = true;
 
@@ -88,7 +95,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
               private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
-    this.pageIsLoading = true;
+    // this.dropListRegistry.pageDataLoading = true;
     if(!this.userService.userLoggedIn) {
       this.router.navigateByUrl('');
     }
@@ -131,7 +138,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
       distinctUntilChanged((a, b) => a?.id === b?.id),
       debounceTime(100))
       .subscribe(hovered => {
-          this.disableRootSubgroupList = hovered?.id !== this.rootListRef.id;
+          this.disableRootSubgroupList = hovered?.id !== this.rootListRegistrationRef.id;
         }
       )
 
@@ -139,25 +146,27 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
     this.subgroupMgmtInteract.getExistingSubgroupTrees(this.groupId);
 
-    this.pageIsLoading = false;
     this.cdr.detectChanges();
+    // this.dropListRegistry.pageDataLoading = false;
   }
 
   ngAfterViewInit() {
     const top = this.managementContainer.nativeElement.getBoundingClientRect().top;
     this.containerHeight = `calc(98vh - ${top}px)`;
 
-    this.rootListRef = this.dropListRegistry.registerList('content-root', 'root',
+    this.rootListRegistrationRef = this.dropListRegistry.registerList('content-root', 'root',
       this.rootSubgroupList, this.rootSubgroupListElement, 0, undefined);
 
-    this.rootContainerRef = this.dropListRegistry.registerContainer(this.rootListRef?.id, 'root',
-      [this.rootListRef.dropList], this.groupCompRootContainer, 0, undefined);
+    this.rootContainerRegistrationRef = this.dropListRegistry.registerContainer(this.rootListRegistrationRef?.id, 'root',
+      [this.rootListRegistrationRef.dropList], this.groupCompRootContainer, 0, undefined);
+
+    this.rootHoverTargetRegistrationRef = this.dropListRegistry.registerHoverTarget(this.rootListRegistrationRef.dropList.id,
+      this.rootListRegistrationRef.dropList, this.rootListHoverTarget, this.rootContainerRegistrationRef, 0);
 
     this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
       .subscribe(lists => {
         this.connectedToSubgroups = lists.filter(l => l.id !== this.rootSubgroupList?.id);
       })
-
   }
 
   createFromTemplate(template: CrewTemplateViewModel) {
@@ -175,26 +184,6 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   toggleDoNotShowSaveAsForm() {
     this.doNotShowSaveTemplateForm = !this.doNotShowSaveTemplateForm;
   }
-
-  // canEnterRoot = (drag: CdkDrag, drop: CdkDropList) => {
-  //   let rootHovered: boolean = false;
-  //
-  //   const hoveredList = this.dropListRegistry.hoveredList$.getValue()?.dropList;
-  //   // const hoveredContainer = this.dropListRegistry.hoveredContainer$.getValue()?.
-  //
-  //   console.log('hoveredListId: ' + hoveredList?.id +', dropId: ' + drop.id)
-  //
-  //   if((hoveredList?.id === drop.id)) {
-  //     this.disableRootSubgroupList = false;
-  //     rootHovered = true;
-  //   }
-  //
-  //   const can = 'crewPositions' in drag.data && rootHovered;
-  //
-  //   console.log('canEnterRoot: ', can);
-  //
-  //   return can;
-  // }
 
 
   ngOnDestroy(): void {

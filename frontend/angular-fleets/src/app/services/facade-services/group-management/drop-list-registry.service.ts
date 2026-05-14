@@ -66,6 +66,8 @@ export const DROP_COMPATIBILITY_PREDICATES: Record< string, DropPredicate> = {
 export class DropListRegistryService {
   private destroyRef = inject(DestroyRef)
 
+  public pageDataLoading: boolean = false;
+
   public droppableSubgroupLists: DropListRegistration[] = [];
   public allSubgroupLists$: BehaviorSubject<CdkDropList[]> = new BehaviorSubject<CdkDropList[]>([]);
 
@@ -84,7 +86,6 @@ export class DropListRegistryService {
   public isDragging$ = new BehaviorSubject<boolean>(false);
 
   public hoveredList$ = new BehaviorSubject<DropListRegistration | null>(null);
-  public hoveredContainer$ = new BehaviorSubject<ElementContainerRegistration | null>(null);
 
   constructor(private mouseService: MouseEventService) {
 
@@ -268,6 +269,13 @@ export class DropListRegistryService {
     return target;
   }
 
+  unregisterHoverTarget(unregister: SubgroupHoverTargetRegistration) {
+    const idx = this.hoverTargetList.indexOf(unregister);
+    if(idx > -1) {
+      this.hoverTargetList.splice(idx, 1);
+    }
+  }
+
   registerContainer(
     id: string,
     entityType: DropListEntityType,
@@ -301,68 +309,6 @@ export class DropListRegistryService {
     }
   }
 
-  // private lastMoveEventElements: Element[] = []
-  // private lastMoveIdx = 0;
-  // private holdTimer: ReturnType<typeof setTimeout> | null = null;
-  //
-  // private findDeepestContainerByProximity(x: number, y: number) {
-  //   const elements = document.elementsFromPoint(x, y);
-  //
-  //   return elements.map(el => this.registeredContainers.find(c => c.element.nativeElement === el))
-  //     .find(c => c !== undefined);
-  //
-  //   // const candidates = this.registeredContainers
-  //   //   .filter(container => {
-  //   //     const rect = container.element.nativeElement.getBoundingClientRect();
-  //   //
-  //   //     return (
-  //   //       x >= rect.left &&
-  //   //       x <= rect.right &&
-  //   //       y >= rect.top &&
-  //   //       y <= rect.bottom
-  //   //     );
-  //   //   })
-  //   //   .sort((a, b) => {
-  //   //     const areaA = a.element.nativeElement.offsetWidth * a.element.nativeElement.offsetHeight;
-  //   //     const areaB = b.element.nativeElement.offsetWidth * b.element.nativeElement.offsetHeight;
-  //   //
-  //   //     return areaB - areaA;
-  //   //   });
-  //   //
-  //   // return candidates[this.hoverListCandidateIdx] ?? candidates[0];
-  // }
-  //
-  // private findDeepestListByProximity(x: number, y: number, dragEvent: CdkDrag) {
-  //   const elements = document.elementsFromPoint(x, y);
-  //
-  //   console.log('ele length: ' + elements.length);
-  //
-  //   if (JSON.stringify(elements.map(el => el.id)) !== JSON.stringify(this.lastMoveEventElements.map(hist => hist.id))) {
-  //     this.lastMoveEventElements = elements
-  //     this.lastMoveIdx = 0;
-  //     clearTimeout(this.holdTimer!);
-  //     this.scheduleIndexIncrement(dragEvent);
-  //   }
-  //
-  //   const result = elements.slice(this.lastMoveIdx).map(el => this.droppableSubgroupLists.find(list => list.element.nativeElement === el))
-  //     .find(list => list  !== undefined);
-  //
-  //   console.log('slice and map: ' + result?.id);
-  //
-  //   return result;
-  // }
-  //
-  //
-  // private scheduleIndexIncrement(dragEvent: CdkDrag) {
-  //   const endOfElements = this.lastMoveIdx >= this.lastMoveEventElements.length - 1;
-  //   this.holdTimer = setTimeout (() => {
-  //     if(!endOfElements) {
-  //       this.lastMoveIdx++;
-  //       this.scheduleIndexIncrement(dragEvent);
-  //     }
-  //   }, 1200);
-  // }
-
   public isCompatibleDrop = (dragData: CdkDrag, dropList: CdkDropList): boolean => {
 
     let registration = this.droppableSubgroupLists.find(
@@ -379,13 +325,7 @@ export class DropListRegistryService {
       return false;
     }
 
-    // const currentHoveredTargetId = this.hoveredTargetId$.getValue();
     const elementData = dragData.data as DropData;
-
-    // if(!currentHoveredTargetId) {
-    //   console.log('no hovered target id');
-    //   return false;
-    // }
 
     const droppable = Object.values(DROP_COMPATIBILITY_PREDICATES)
       .some(predicate => predicate(elementData, registration));
@@ -397,8 +337,6 @@ export class DropListRegistryService {
 
   public resetAfterDragEnd() {
     this.isDragging$.next(false);
-    this.hoveredContainer$.next(null);
-    this.hoveredList$.next(null);
     this.dragMoved$.next(null);
     this.hoveredTargetId$.next(null);
     this.targetBoundingContainer$.next(null);

@@ -5,11 +5,18 @@
   margin-top: 10px;
   border: 1px solid rgba(28, 24, 24, 0.1);
   border-radius: 10px;
-  /*padding: 0 8px 0 8px;*/
+  padding: 0 4px 0 4px;
   background-color: rgba(37, 37, 41, .5);
   box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
   overflow: hidden;
   font-family: "Exo 2", sans-serif;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chip-self.is-hovered-container {
+  box-shadow: 0 0 7px rgba(53, 114, 163, 0.2);
+  border: 1px solid rgba(53, 114, 163, 0.35) !important;
+  overflow-x: visible;
 }
 
 /*-------------------- CHIP DRAG HANDLE ---------------------------------------------------------*/
@@ -119,9 +126,6 @@
 }
 
 /* ----------------------- DROP LIST BLOCKER / WRAPPER -----------------------------------------------*/
-/*.drop-list-facade-wrapper {*/
-
-/*}*/
 
 .drop-list-facade {
   display: grid;
@@ -139,14 +143,9 @@
 
 /* --------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/
 
-.chip-contents.is-hovered-list {
-  border: 1px solid deeppink;
-}
-
-
-.chip-content-wrapper.is-hovered-container {
-  border: 1px solid rgba(53, 114, 163, 1);
-}
+/*.chip-contents.is-hovered-list {*/
+/*  border: 1px solid deeppink;*/
+/*}*/
 
 .chip-contents:empty {
   min-height: 20px;

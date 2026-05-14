@@ -1,12 +1,10 @@
-<div #chipWrapperContainer class="chip-self" [class.is-hovered-container]="(((this.dropListRegistry.hoveredContainer$ | async) !== null)
-                                       && (this.dropListRegistry.hoveredContainer$ | async)?.id === containerRegistrationRef?.id)">
-  <div class="chip-content-wrapper"
-       [class.is-hovered-container]="(((this.dropListRegistry.hoveredContainer$ | async) !== null)
-                                       && (this.dropListRegistry.hoveredContainer$ | async)?.id === containerRegistrationRef?.id)">
+<div #chipWrapperContainer
+     class="chip-self"
+     [class.is-hovered-container]="(this.isHoveredTarget$ | async)">
+  <div class="chip-content-wrapper">
     <div class="subgroup-header drag-handle"
          cdkDragHandle
-         #subgroupHoverTarget
-         [attr.aria-label]="'subgroupid-' + subgroup.subgroupId">
+         #subgroupHoverTarget>
       <div class="header-left">
         <span>{{ subgroup.subgroupLabel }}</span>
         <button class="header-button scaled-minus">
@@ -92,7 +90,7 @@
                #nativeSubgroupList="cdkDropList"
                cdkDropListOrientation="vertical"
                [cdkDropListData]="subgroup.subgroups"
-               (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event, subgroupListRef.dropList)"
+               (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
                (cdkDropListEntered)="onEntered($event)"
                (cdkDropListExited)="onExited($event)"
                [cdkDropListSortingDisabled]="!(isHoveredTarget$ | async)"
@@ -111,7 +109,7 @@
                 [subgroup]="childSubgroup"
                 [parentContainer]="containerRegistrationRef"
                 [parentTreeDepth]="selfDepth"
-                [dropListParentEl]="subgroupListRef"
+                [dropListParentEl]="subgroupListRegistrationRef"
                 [collapseFromParent$]="collapseFromSelf$"
                 [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
               </app-crew-subgroup>

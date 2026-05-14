@@ -85,12 +85,10 @@ export class SubgroupManagementInteractService {
       })
   }
 
-  onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>, subgroupList: CdkDropList) {
+  onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
 
     const targetContainer = this.dropListRegistry.droppableSubgroupLists
       .find(list => list.dropList.id === this.dropListRegistry.hoveredTargetId$.getValue())
-
-
 
     console.log('previous container: ', event.previousContainer.id);
     console.log('targetContainer: ', targetContainer?.dropList.id);
@@ -106,7 +104,7 @@ export class SubgroupManagementInteractService {
     } else {
       transferArrayItem(event.previousContainer.data, targetContainer?.dropList.data, event.previousIndex, event.currentIndex);
 
-      event.container.data.forEach((subgroup, index) => {
+      targetContainer?.dropList.data.forEach((subgroup: GroupCompSubgroupViewModel, index: number) => {
         subgroup.sortOrder = index;
       })
     }
