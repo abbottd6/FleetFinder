@@ -118,8 +118,9 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
           this.rootSubgroupList, this.rootListHoverTarget, this.rootContainerRegistrationRef, 0);
 
         this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
-          .subscribe(lists => {
-            this.connectedToSubgroups = lists.filter(l => l.id !== this.rootSubgroupList?.id);
+          .subscribe(registeredLists => {
+            this.connectedToSubgroups = registeredLists.filter(l => l.id !== this.rootSubgroupList?.id)
+              .map(regList => regList.dropList);
           })
 
         console.log(this.rootContainerRegistrationRef.element.nativeElement.getBoundingClientRect());
@@ -140,7 +141,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    console.log(this.dropListRegistry.droppableSubgroupLists);
+    // console.log(this.dropListRegistry.droppableSubgroupLists);
   }
 
   rootEnterPredicate = (dragData: CdkDrag, dropList: CdkDropList): boolean => {
@@ -164,9 +165,10 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.subgroupInteract.clearTrees();
-    this.dropListRegistry.unregisterList(this.rootListRegistrationRef);
-    this.dropListRegistry.unregisterContainer(this.rootContainerRegistrationRef);
-    this.dropListRegistry.unregisterHoverTarget(this.rootHoverTargetRegistrationRef);
+    // this.dropListRegistry.unregisterList(this.rootListRegistrationRef);
+    // this.dropListRegistry.unregisterContainer(this.rootContainerRegistrationRef);
+    // this.dropListRegistry.unregisterHoverTarget(this.rootHoverTargetRegistrationRef);
+    this.dropListRegistry.clearAllRegisteredLists();
 
     this.destroy$.next();
     this.destroy$.complete();

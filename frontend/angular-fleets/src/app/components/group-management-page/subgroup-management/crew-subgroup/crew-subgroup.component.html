@@ -138,6 +138,7 @@
              cdkDrag
              [cdkDragData]="position"
              (cdkDragMoved)="onDragMoved($event)"
+             (cdkDragStarted)="dragStarted($event)"
              (cdkDragReleased)="resetAfterDragReleased($event)">
           <app-crew-position-chip
             [position]="position">

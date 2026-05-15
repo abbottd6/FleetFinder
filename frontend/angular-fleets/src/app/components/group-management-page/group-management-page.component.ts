@@ -67,6 +67,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   protected groupId!: number;
 
   protected createFromIsExpanding: boolean = false;
+  protected showCreateFromTemplate: boolean = false;
   protected doNotShowCreateFromTemplateForm: boolean = true;
   protected doNotShowSaveTemplateForm: boolean = true;
 
@@ -155,9 +156,17 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   }
 
   toggleDoNotShowCreateFrom() {
-    this.createFromIsExpanding = true;
-    this.doNotShowCreateFromTemplateForm = !this.doNotShowCreateFromTemplateForm;
-    setTimeout(() => this.createFromIsExpanding = false, 500);
+    if(!this.showCreateFromTemplate) {
+      this.showCreateFromTemplate = true;
+      this.createFromIsExpanding = true;
+      setTimeout(() => this.doNotShowCreateFromTemplateForm = false, 120);
+      setTimeout(() => this.createFromIsExpanding = false, 500);
+    } else {
+     this.createFromIsExpanding = true;
+     this.doNotShowCreateFromTemplateForm = true;
+     setTimeout(() => this.showCreateFromTemplate = false, 500);
+     setTimeout(() => this.createFromIsExpanding = false, 500);
+    }
   }
 
   toggleDoNotShowSaveAsForm() {
@@ -166,7 +175,6 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
 
   ngOnDestroy(): void {
-    // this.dropListRegistry.unregisterList();
 
     this.destroy$.next();
     this.destroy$.complete();

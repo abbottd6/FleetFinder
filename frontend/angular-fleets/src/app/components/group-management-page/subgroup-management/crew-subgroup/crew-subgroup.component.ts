@@ -42,7 +42,7 @@ import {
   DROP_COMPATIBILITY_PREDICATES,
   DropData,
   DropListRegistration,
-  DropListRegistryService, ElementContainerRegistration, SubgroupHoverTargetRegistration
+  DropListRegistryService, ElementContainerRegistration, getDropEntityType, SubgroupHoverTargetRegistration
 } from "../../../../services/facade-services/group-management/drop-list-registry.service";
 import {environment} from "../../../../../environments/environment";
 import {map, tap} from "rxjs/operators";
@@ -157,16 +157,18 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
-      .subscribe(list => {
+      .subscribe(registeredLists => {
         queueMicrotask(() => {
-          this.connectedToSubgroups = list.filter(l => l.id !== this.nativeSubgroupList?.id);
+          this.connectedToSubgroups = registeredLists.filter(l => l.dropList.id !== this.nativeSubgroupList?.id)
+            .map(listReg => listReg.dropList)
         });
       });
 
     this.dropListRegistry.allPositionLists$.pipe(takeUntil(this.destroy$))
-      .subscribe(list => {
+      .subscribe(registeredLists => {
         queueMicrotask(() => {
-          this.connectedToPositions = list.filter(l => l.id !== this.nativePositionList?.id);
+          this.connectedToPositions = registeredLists.filter(l => l.id !== this.nativePositionList?.id)
+            .map(listReg => listReg.dropList)
         });
       });
 
@@ -204,8 +206,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   onExited(e: CdkDragExit) { console.log('EXITED', e.container.id);}
 
   dragStarted(event: CdkDragStart) {
-    console.log('list sortingDisabled: ', event.source.dropContainer.sortingDisabled);
-
+    // console.log('list sortingDisabled: ', event.source.dropContainer.sortingDisabled);
+    console.log('entityType: ', getDropEntityType(event.source.data));
   }
 
   move_disableSorting() {

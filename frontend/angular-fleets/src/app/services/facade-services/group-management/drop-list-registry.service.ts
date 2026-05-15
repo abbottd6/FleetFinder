@@ -2,7 +2,6 @@ import {DestroyRef, ElementRef, inject, Injectable} from '@angular/core';
 import {CdkDrag, CdkDragMove, CdkDropList} from "@angular/cdk/drag-drop";
 import {
   BehaviorSubject,
-  combineLatest,
   debounceTime,
   distinctUntilChanged,
   EMPTY,
@@ -22,7 +21,7 @@ import {
 } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
 import {MouseEventService} from "../mouse-event.service";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {map, tap} from "rxjs/operators";
+import {tap} from "rxjs/operators";
 
 export type DropListEntityType = 'subgroup' | 'position' | 'member' | 'root' | 'invalid';
 
@@ -56,26 +55,31 @@ export type DropData = GroupCompSubgroupViewModel | GroupCompCrewPositionViewMod
 
 type DropPredicate = (
   dropData: DropData,
-  dropTarget: DropListRegistration
+  dropTarget: DropListRegistration,
+  boundingContainer: ElementContainerRegistration | null
 ) => boolean;
 
 export const DROP_COMPATIBILITY_PREDICATES: Record< string, DropPredicate> = {
-  SUBGROUP_TO_SUBGROUP: (dragData, target) =>
-    ('parentSubgroupId' in dragData) && (target.entityType === 'subgroup'),
+  SUBGROUP_TO_SUBGROUP: (dropData, target, boundingContainer) => {
+    const idx = boundingContainer?.dropLists.findIndex(dl => dl.id === target.dropList.id);
+    return ('parentSubgroupId' in dropData) && (target.entityType === 'subgroup') && (!!idx && idx > -1);
+},
 
-  SUBGROUP_TO_ROOT: (dragData, target) =>
-    ('parentSubgroupId' in dragData) && (target.entityType === 'root'),
+  SUBGROUP_TO_ROOT: (dropData, target, boundingContainer) => {
+    const idx = boundingContainer?.dropLists.findIndex(dl => dl.id === target.dropList.id);
+    return ('parentSubgroupId' in dropData) && (target.entityType === 'root') && (!!idx && idx > -1);
+  },
 
-  POSITION_TO_SUBGROUP_POSITIONS: (dragData, target) =>
-    'assignedMember' in dragData && (target.entityType === 'position'),
+  POSITION_TO_SUBGROUP_POSITIONS: (dropData, target) =>
+    'positionId' in dropData && (target.entityType === 'position'),
 
-  MEMBER_TO_POSITION: (dragData, target) =>
-    ('memberStatus' in dragData) && (target.entityType === 'position'),
+  MEMBER_TO_POSITION: (dropData, target) =>
+    ('memberStatus' in dropData) && (target.entityType === 'position'),
 }
 
 export function getDropEntityType(dropData: DropData): DropListEntityType {
   if('parentSubgroupId' in dropData) return 'subgroup';
-  if('assignedMemberId' in dropData) return 'position';
+  if('positionId' in dropData) return 'position';
   if('memberStatus' in dropData) return 'member';
   return 'invalid';
 }
@@ -88,11 +92,11 @@ export class DropListRegistryService {
 
   public pageDataLoading: boolean = false;
 
-  public droppableSubgroupLists: DropListRegistration[] = [];
-  public allSubgroupLists$: BehaviorSubject<CdkDropList[]> = new BehaviorSubject<CdkDropList[]>([]);
+  private droppableSubgroupLists: DropListRegistration[] = [];
+  public allSubgroupLists$: BehaviorSubject<DropListRegistration[]> = new BehaviorSubject<DropListRegistration[]>([]);
 
-  public droppablePositionLists: DropListRegistration[] = [];
-  public allPositionLists$: BehaviorSubject<CdkDropList[]> = new BehaviorSubject<CdkDropList[]>([]);
+  private droppablePositionLists: DropListRegistration[] = [];
+  public allPositionLists$: BehaviorSubject<DropListRegistration[]> = new BehaviorSubject<DropListRegistration[]>([]);
 
   private hoverTargetList: SubgroupHoverTargetRegistration[] = [];
   public hoveredTargetId$ = new BehaviorSubject<string | null>(null);
@@ -124,7 +128,7 @@ export class DropListRegistryService {
       // console.log('move target handle: ', handle?.id);
       // console.log('handleContainerEl: ', handle?.containerEl.id)
       // console.log('hoveredTargetId: ', this.hoveredTargetId$.getValue());
-      console.log('targetBoundingContainer: ', this.targetBoundingContainer$.getValue()?.id);
+      // console.log('targetBoundingContainer: ', this.targetBoundingContainer$.getValue()?.id);
       // console.log('state: ', handle?.dropList.disabled)
 
       if(handle?.dropList.id === this.hoveredTargetId$.getValue()) return;
@@ -134,7 +138,7 @@ export class DropListRegistryService {
       const inContainer: boolean = this.pointWithinBoundingContainer(point.x, point.y);
 
       if(!handle) {
-        console.log('no handle, inContainer:', inContainer, 'bounds:', this.targetBoundingContainer$.getValue()?.element.nativeElement.getBoundingClientRect());
+        // console.log('no handle, inContainer:', inContainer, 'bounds:', this.targetBoundingContainer$.getValue()?.element.nativeElement.getBoundingClientRect());
         if(!inContainer) {
           this.hoveredTargetId$.next(null);
           this.targetBoundingContainer$.next(null);
@@ -142,8 +146,8 @@ export class DropListRegistryService {
         }
         return;
       }
-
-      console.log('container parent: ', this.targetBoundingContainer$.getValue()?.parentId);
+      //
+      // console.log('container parent: ', this.targetBoundingContainer$.getValue()?.parentId);
 
       this.hoverTargetTimer = setTimeout(() => {
         this.hoveredTargetId$.next(handle.dropList.id);
@@ -227,7 +231,7 @@ export class DropListRegistryService {
           treeDepth,
           parentId
         }) - 1;
-        this.allPositionLists$.next(this.droppablePositionLists.map(reg => reg.dropList));
+        this.allPositionLists$.next(this.droppablePositionLists);
 
         const list = this.droppablePositionLists.find(p => p.id === id);
 
@@ -246,8 +250,7 @@ export class DropListRegistryService {
           parentId
         });
 
-        this.allSubgroupLists$.next(this.droppableSubgroupLists
-          .map(reg => reg.dropList));
+        this.allSubgroupLists$.next(this.droppableSubgroupLists);
 
         const list = this.droppableSubgroupLists.find(sub => sub.id === id);
 
@@ -350,26 +353,20 @@ export class DropListRegistryService {
     );
 
     if(!registration) {
-      console.log('no subgroup registration.')
       registration = this.droppablePositionLists.find(list => list.dropList === dropList);
+    } else if('positionId' in dragData.data) {
+      return false;
     }
 
     if(!registration) {
-      console.log('no position registration.')
       return false;
     }
 
     const elementData = dragData.data as DropData;
+    const container = this.targetBoundingContainer$.getValue()
 
     const droppable = Object.values(DROP_COMPATIBILITY_PREDICATES)
-      .some(predicate => predicate(elementData, registration));
-
-
-    const idx = this.targetBoundingContainer$.getValue()?.dropLists
-      .findIndex(dl => dl.id === dragData.dropContainer.id);
-    if(!idx || idx < 0) {
-      return false;
-    }
+      .some(predicate => predicate(elementData, registration, container));
 
     console.log('droppable: ', droppable);
 
@@ -383,5 +380,17 @@ export class DropListRegistryService {
     this.dropDataType$.next(null);
     this.targetBoundingContainer$.next(null);
     clearTimeout(this.hoverTargetTimer!);
+  }
+
+  public clearAllRegisteredLists() {
+    this.droppableSubgroupLists = [];
+    this.droppablePositionLists = [];
+    this.hoverTargetList = [];
+    this.registeredContainers = [];
+
+    this.allSubgroupLists$.next([]);
+    this.allPositionLists$.next([]);
+    this.targetBoundingContainer$.next(null);
+    this.hoveredList$.next(null);
   }
 }

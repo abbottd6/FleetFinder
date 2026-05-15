@@ -101,15 +101,14 @@ export class SubgroupManagementInteractService {
 
   onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
 
-    const targetContainer = this.dropListRegistry.droppableSubgroupLists
+    const targetContainer = this.dropListRegistry.allSubgroupLists$.getValue()
       .find(list => list.dropList.id === this.dropListRegistry.hoveredTargetId$.getValue())
 
-    console.log('previous container: ', event.previousContainer.id);
-    console.log('targetContainer: ', targetContainer?.dropList.id);
-    console.log('previdx: ', event.previousIndex, ', currentIdx: ', event.currentIndex);
+    // console.log('previous container: ', event.previousContainer.id);
+    // console.log('targetContainer: ', targetContainer?.dropList.id);
+    // console.log('previdx: ', event.previousIndex, ', currentIdx: ', event.currentIndex);
 
     if(!targetContainer) {
-      console.log('catching?');
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
       event.container.data.forEach((subgroup, index) => {
@@ -141,7 +140,6 @@ export class SubgroupManagementInteractService {
 
       const current = this.subgroupTreesSubject.getValue();
       const parentIdx = current.findIndex(sub => sub.subgroupId === grabbedFrom.subgroupId);
-
     }
 
     this.dropListRegistry.resetAfterDragEnd();

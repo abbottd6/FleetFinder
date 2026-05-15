@@ -15,7 +15,7 @@
         <span class="banner-item">Active Members: {{ ((activeMemberCount$ | async) ?? 0) }} </span>
         <span class="banner-item">Waitlist Members: {{ ((waitlistMemberCount$ | async) ?? 0) }}</span>
         <span class="banner-item"
-              [class.notice-me-senpai]="((pendingInviteCount$ | async) ?? 0) > 0">
+              [class.notice-me]="((pendingInviteCount$ | async) ?? 0) > 0">
           Pending Invites/Requests: {{ pendingInviteCount$ | async }}
         </span>
         <span class="banner-item">
@@ -41,14 +41,16 @@
         </div>
       </div>
       <div class="expansion-form-container">
-        <app-load-crew-template-form
-          [class.do-not-show-form]="doNotShowCreateFromTemplateForm"
-          [class.show-form]="!doNotShowCreateFromTemplateForm"
-          [class.expanding]="createFromIsExpanding"
-          class="from-template"
-          (cancelForm)="toggleDoNotShowCreateFrom()"
-          (emitSelection)="createFromTemplate($event)">
-        </app-load-crew-template-form>
+        <ng-container *ngIf="(showCreateFromTemplate)">
+          <app-load-crew-template-form
+            [class.do-not-show-form]="doNotShowCreateFromTemplateForm"
+            [class.show-form]="!doNotShowCreateFromTemplateForm"
+            [class.expanding]="createFromIsExpanding"
+            class="from-template"
+            (cancelForm)="toggleDoNotShowCreateFrom()"
+            (emitSelection)="createFromTemplate($event)">
+          </app-load-crew-template-form>
+        </ng-container>
 
         <div class="expansion-form-container">
           <!-- save structure as template -->
