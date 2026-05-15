@@ -1,7 +1,7 @@
 import {
   AfterViewInit, ChangeDetectorRef,
   Component,
-  ElementRef, EventEmitter,
+  ElementRef, EventEmitter, inject,
   Input,
   OnDestroy,
   OnInit, Output,
@@ -11,7 +11,7 @@ import {
   GroupCompSubgroupViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
 import {CrewPositionChipComponent} from "../crew-position-chip/crew-position-chip.component";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, JsonPipe, NgForOf, NgIf} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {
@@ -22,7 +22,7 @@ import {
   filter,
   Observable,
   Subject,
-  takeUntil
+  takeUntil, withLatestFrom
 } from "rxjs";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {
@@ -30,11 +30,12 @@ import {
   CdkDragEnter,
   CdkDragExit,
   CdkDragHandle,
-  CdkDragMove,
+  CdkDragMove, CdkDragRelease, CdkDragStart,
   CdkDropList,
   DragDropModule
 } from "@angular/cdk/drag-drop";
 import {
+  GroupCompPositionsBrief,
   SubgroupManagementInteractService
 } from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
 import {
@@ -45,6 +46,7 @@ import {
 } from "../../../../services/facade-services/group-management/drop-list-registry.service";
 import {environment} from "../../../../../environments/environment";
 import {map, tap} from "rxjs/operators";
+import {MatIconButton} from "@angular/material/button";
 
 
 @Component({
@@ -66,6 +68,8 @@ import {map, tap} from "rxjs/operators";
   styleUrl: './crew-subgroup.component.css'
 })
 export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
+  protected dropListRegistry = inject(DropListRegistryService);
+
   private destroy$ = new Subject<void>();
 
   @Input() subgroup!: GroupCompSubgroupViewModel;
@@ -130,8 +134,16 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.subgroup.subgroups.length > 0;
   }
 
+  protected displayListEntryBlocker$: Observable<boolean> =  combineLatest([
+    this.dropListRegistry.isDragging$,
+    this.dropListRegistry.dropDataType$,
+    this.isHoveredTarget$
+  ]).pipe(
+    map(([dragging, dataType, isHovered]) =>
+      dragging && (dataType === 'subgroup') && !isHovered)
+  )
+
   constructor(protected subgroupInteract: SubgroupManagementInteractService,
-              protected dropListRegistry: DropListRegistryService,
               private cdr: ChangeDetectorRef){}
 
   ngOnInit() {
@@ -158,57 +170,55 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
         });
       });
 
-    // this.dropListRegistry.hoveredContainer$.pipe(
-    //   takeUntil(this.destroy$),
-    //   filter((hovered): hovered is ElementContainerRegistration => !!hovered),
-    //   // distinctUntilChanged((a, b) => a?.id === b?.id),
-    //   debounceTime(100))
-    //   .subscribe(hovered => {
-    //     this.disableNativeSubgroupsList = hovered?.id !== this.containerRegistrationRef.id;
-    //     this.disableParentSorting.emit(hovered?.id === this.containerRegistrationRef.id);
-    //   }
-    // )
-
     this.cdr.detectChanges()
   }
 
   ngAfterViewInit() {
+    this.nativeSubgroupList.sortingDisabled = false;
+
     this.subgroupListRegistrationRef = this.dropListRegistry.registerList(`subgroup-${this.subgroup.subgroupId}`,
       'subgroup', this.nativeSubgroupList, this.nativeSubgroupListElement,
-      this.selfDepth, this.dropListParentEl?.id);
+      this.selfDepth, this.dropListParentEl?.id ?? 'content-root');
 
     this.positionListRegistrationRef = this.dropListRegistry.registerList(`position-${this.subgroup.subgroupId}`,
       'position', this.nativePositionList, this.nativePositionListElement,
       this.selfDepth, this.subgroupListRegistrationRef.id);
 
-    this.thisDropListId$.next(this.subgroupListRegistrationRef.dropList.id);
+    this.thisDropListId$.next(this.nativeSubgroupList.id);
 
     const containerDropLists = [this.subgroupListRegistrationRef.dropList, this.positionListRegistrationRef.dropList];
     this.containerRegistrationRef = this.dropListRegistry.registerContainer(this.subgroupListRegistrationRef.id, 'subgroup',
-      containerDropLists, this.chipWrapperContainer, this.selfDepth, this.parentContainer?.id);
+      containerDropLists, this.chipWrapperContainer, this.selfDepth, this.parentContainer?.id ?? 'content-root');
 
-    this.subgroupHoverTargetRegistrationRef = this.dropListRegistry.registerHoverTarget(this.subgroupListRegistrationRef.dropList.id,
-      this.subgroupListRegistrationRef.dropList, this.subgroupHoverTarget, this.containerRegistrationRef, this.selfDepth);
+    this.subgroupHoverTargetRegistrationRef = this.dropListRegistry.registerHoverTarget(this.nativeSubgroupList.id,
+      this.nativeSubgroupList, this.subgroupHoverTarget, this.containerRegistrationRef, this.selfDepth);
 
     this.dropListRegistry.pageDataLoading = false;
 
-    this.isHoveredTarget$ = combineLatest([
-      this.dropListRegistry.hoveredTargetId$,
-      this.thisDropListId$
-    ]).pipe(
-      map(([hoveredId, thisId]) => hoveredId === thisId),
-      // tap(disabled => console.log(`[${this.thisDropListId$.getValue()}] isHoveredTarget:`, disabled))
+    this.isHoveredTarget$ = this.dropListRegistry.hoveredTargetId$.pipe(
+      map(hoveredId => hoveredId === this.thisDropListId$.getValue()),
     );
   }
 
   onEntered(e: CdkDragEnter) { console.log('ENTERED:', e.container.id)};
   onExited(e: CdkDragExit) { console.log('EXITED', e.container.id);}
 
+  dragStarted(event: CdkDragStart) {
+    console.log('list sortingDisabled: ', event.source.dropContainer.sortingDisabled);
+
+  }
+
+  move_disableSorting() {
+    this.parentContainer.dropLists[0].sortingDisabled = true;
+  }
+
   onDragMoved(event: CdkDragMove<any>) {
     this.dropListRegistry.onDragMoved(event);
   }
 
-  resetAfterDragReleased() {
+  resetAfterDragReleased(event: CdkDragRelease) {
+    event.source.dropContainer.sortingDisabled = false;
+
     setTimeout(() => this.dropListRegistry.resetAfterDragEnd(), 300);
   }
 

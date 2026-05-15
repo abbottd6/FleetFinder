@@ -1,5 +1,3 @@
-@import "subgroup-management/crew-subgroup/crew-subgroup.component.css";
-
 .page-title {
   display: inline-block;
   font-size: clamp(1.1rem, 3vw, 2rem);
@@ -8,11 +6,28 @@
 }
 
 .group-header-container {
+  display: flex;
+  flex-direction: row;
+  flex: 0 0 auto;
+  gap: 25px;
   font-family: 'Exo 2', sans-serif;
-  font-size: 1.25rem;
+  font-size: 1rem;
   margin: 15px auto 20px 20px;
   border-bottom: 1px solid rgba(150, 168, 183, .3);
   max-width: 95%;
+}
+
+.banner-item {
+  padding: 6px 10px 6px 10px;
+  border: 1px solid;
+  color: rgba(150, 168, 183, .75);
+  box-shadow: 0 0 4px rgba(150, 168, 183, .25);
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.banner-item.notice-me-senpai {
+  color: rgba(53, 114, 163, 0.85);
 }
 
 .management-container {
@@ -50,37 +65,6 @@ app-roster-management {
 
 }
 
-::ng-deep .add-new-button-container .add-new-button .add-2 {
-  font-size: 75px;
-  font-weight: 300;
-  width: 75px;
-  height: 75px;
-  line-height: 75px;
-  color: rgba(255, 131, 7, .45);
-  font-variation-settings: 'wght' 300;
-  transition: color 0.2s ease;
-}
-
-.add-2:hover {
-  color: rgba(255, 131, 7, .65);
-}
-
-.add-new-button-container {
-  display: flex;
-  width: 100%;
-}
-
-.add-new-button {
-  display: flex;
-  width: 85px;
-  height: 100%;
-  margin-left: 30%;
-  background-color: transparent;
-  border: none;
-  align-items: center;
-  justify-content: center;
-}
-
 .account-window-body {
   padding: 0.5rem 0.5rem 2rem 0.5rem;
   max-width: 95%;
@@ -104,12 +88,13 @@ app-roster-management {
 }
 
 app-load-crew-template-form {
-  margin-top: 20px;
+  margin-top: 0;
+  margin-bottom: 0;
   overflow: visible;
   max-height: 150px;
   max-width: 90%;
   transform-origin: top left;
-  transition: transform 0.5s ease, max-width 0.32s ease, max-height 0.5s ease;
+  transition: transform 0.5s ease, max-width 0.32s ease, max-height 0.5s ease, margin-top 0.3s ease;
 }
 
 @media(max-width: 1200px) {
@@ -136,6 +121,7 @@ app-load-crew-template-form {
   max-width: 90%;
   overflow-y: visible !important;
   margin-left: 80px;
+  margin-top: 20px;
   border: 1px solid rgba(28, 24, 24, 0.1);
   border-radius: 10px;
 }
@@ -146,18 +132,6 @@ app-load-crew-template-form.show-form.expanding {
 
 .show-form.from-template {
   max-width: 1100px;
-}
-
-.root-subgroup-drop-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(375px, 450px));
-  margin-left: 25px;
-  border: 1px solid;
-}
-
-.root-subgroup-drop-list.is-hovered-list {
-  border: 1px solid deeppink;
-  padding-right: 25px;
 }
 
 .mat-spinner-container {

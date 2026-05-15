@@ -1,7 +1,6 @@
 :host {
   display: flex;
   overflow: visible;
-  margin-bottom: 20px;
   background-color: rgba(33, 37, 41, 0.25);
   box-shadow: 0 0 7px rgba(37, 37, 37, 0.5);
   max-height: 150px;

@@ -1,0 +1,100 @@
+<div class="group-composition-container"
+     [class.is-hovered-container]="dropListRegistry.targetBoundingContainer$.getValue() === rootContainerRegistrationRef"
+     #groupCompRootContainer>
+  <ng-container *ngIf="(subgroupInteract.subgroupTrees$ | async) as subgroups">
+    <div class="root-subgroup-header root-hover-target-handle"
+         cdkDragHandle
+         #rootListHoverTarget
+         [class.is-hovered-list]="isHoveredTarget$ | async">
+      <div class="header-left">
+        <span>{{ listingTitle }}</span>
+      </div>
+      <div class="header-right">
+        <button class="header-button"
+                type="button">
+          <!--                        (click)="toggleCollapseSelf()"-->
+          <mat-icon [class.rotate]="false"
+                    [matTooltip]="true ? 'Collapse to roots' : 'Expand all'">arrow_drop_up
+          </mat-icon>
+        </button>
+
+        <button class="header-button"
+                type="button">
+          <!--                        (click)="collapseChildren()">-->
+          <span class="material-symbols-outlined"
+                [matTooltip]="true ? 'Collapse children' : 'Expand Children'">
+                    <ng-container *ngIf="true; else childrenCollapsed">
+                      collapse_content
+                    </ng-container>
+                    <ng-template #childrenCollapsed>
+                      expand_content
+                    </ng-template>
+                  </span>
+        </button>
+
+        <button class="header-button"
+                type="button"
+                [matMenuTriggerFor]="subgroupOptionsMenu">
+          <mat-icon matTooltip="Options">more_vert</mat-icon>
+        </button>
+        <mat-menu #subgroupOptionsMenu="matMenu" yPosition="below" panelClass="subgroup-options-menu">
+          <button
+            mat-menu-item
+            class="options-item"
+            (click)="getClientRect()">
+            <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
+            <span>New subgroup</span>
+          </button>
+
+          <button
+            mat-menu-item
+            class="options-item">
+            <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
+            <span>Save template</span>
+          </button>
+        </mat-menu>
+      </div>
+    </div>
+    <div class="drop-list-facade">
+<!--      <div class="drop-list-entry-blocker"-->
+<!--           *ngIf="(displayListEntryBlocker$ | async)">-->
+<!--      </div>-->
+      <div
+        cdkDropList
+        cdkDropListGroup
+        #rootSubgroupListElement
+        #rootSubgroupList="cdkDropList"
+        cdkDropListOrientation="horizontal"
+        [cdkDropListData]="subgroups"
+        (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
+        [cdkDropListEnterPredicate]="rootEnterPredicate"
+        [cdkDropListConnectedTo]="connectedToSubgroups"
+        [class.is-hovered-list]="(isHoveredTarget$ | async)"
+        class="root-subgroup-drop-list">
+        <div *ngFor="let treeRoot of subgroups"
+             cdkDrag
+             [cdkDragData]="treeRoot"
+             (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
+             (cdkDragReleased)="resetAfterDragReleased($event)">
+          <app-crew-subgroup
+            [subgroup]="treeRoot"
+            [parentContainer]="rootContainerRegistrationRef"
+            [dropListParentEl]="rootListRegistrationRef"
+            [parentTreeDepth]="0">
+          </app-crew-subgroup>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+    <div class="add-new-button-container">
+      <button class="add-new-button">
+        <mat-icon class="material-symbols-outlined add-2">add_circle_outline</mat-icon>
+      </button>
+    </div>
+  </div>
+
+
+
+
+

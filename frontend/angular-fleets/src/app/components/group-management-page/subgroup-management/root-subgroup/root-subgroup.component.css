@@ -1,0 +1,343 @@
+.root-hover-target-handle {
+  position: relative;
+  /*height: 20px;*/
+  inset: 2px;
+  width: 98%;
+  margin-inline: auto;
+  margin-bottom: 5px;
+  margin-top: 20px;
+  display: grid;
+  background-color: rgba(37, 37, 41, .25);
+  grid-template-columns: 2fr auto auto auto;
+  overflow: hidden;
+  align-content: center;
+  isolation: isolate;
+  z-index: 100000 !important;
+  border: 1px solid rgba(150, 168, 183, .35);
+  border-radius: 10px;
+
+  /*clip-path: polygon(*/
+  /*  13px 0,*/
+  /*  100% 0,*/
+  /*  100% 100%,*/
+  /*  0 100%,*/
+  /*  0 13px*/
+  /*);*/
+}
+
+/*.root-hover-target-handle:hover {*/
+/*  border-color: deeppink !important;*/
+/*}*/
+
+.root-hover-target-handle:active {
+  /*cursor: move;*/
+}
+
+/*.root-hover-target-handle::before {*/
+/*  content: "";*/
+/*  position: absolute;*/
+/*  inset: 0 0 4px 0;*/
+/*  pointer-events: none;*/
+/*  opacity: .2;*/
+/*  filter: blur(4px);*/
+/*  margin: 7px 7px 1px 7px;*/
+/*  mix-blend-mode: screen;*/
+/*  clip-path: inherit;*/
+/*  border-radius: 6px;*/
+
+/*  background-image:*/
+/*    repeating-linear-gradient(*/
+/*      to bottom,*/
+/*      rgba(66, 70, 76, 0.95),*/
+/*      rgba(66, 70, 76, 0.95), 1px,*/
+/*      transparent 1px,*/
+/*      transparent 4px*/
+/*    ),*/
+/*    repeating-linear-gradient(*/
+/*      to right,*/
+/*      rgba(66, 70, 76, 0.95),*/
+/*      rgba(66, 70, 76, 0.95), 1px,*/
+/*      transparent 1px,*/
+/*      transparent 4px*/
+/*    );*/
+/*}*/
+
+/*.root-hover-target-handle::after {*/
+/*  content: "";*/
+/*  position: absolute;*/
+/*  inset: 0 0 4px 0;*/
+/*  pointer-events: none;*/
+/*  opacity: 0.1;*/
+/*  z-index: -1;*/
+/*  margin: 7px 7px 1px 7px;*/
+/*  box-shadow: -3px 0 3px -3px rgba(255, 131, 7, .4);*/
+/*  max-width: 98vw;*/
+/*  clip-path: inherit;*/
+/*  border-radius: 6px;*/
+
+/*  background-image:*/
+/*    repeating-linear-gradient(*/
+/*      to bottom,*/
+/*      rgba(223, 241, 255, .15),*/
+/*      rgba(223, 241, 255, .15), 1px,*/
+/*      transparent 1px,*/
+/*      transparent 4px*/
+/*    ),*/
+/*    repeating-linear-gradient(*/
+/*      to right,*/
+/*      rgba(223, 241, 255, .15),*/
+/*      rgba(223, 241, 255, .15), 1px,*/
+/*      transparent 1px,*/
+/*      transparent 4px*/
+/*    );*/
+/*}*/
+
+.drop-list-facade {
+  display: grid;
+}
+
+.drop-list-facade > * {
+  grid-area: 1 / 1;
+}
+
+.drop-list-entry-blocker {
+  pointer-events: all;
+  z-index: 100;
+}
+
+.root-subgroup-header {
+  display: flex;
+  flex-direction: row;
+  width: 95%;
+  color: rgba(150, 168, 183, .85);
+  padding: 8px 8px 5px 8px;
+  margin-left: 1rem;
+  font-size: 1.15rem;
+  font-family: "Orbitron", sans-serif;
+}
+
+.header-left {
+  margin-left: 10px;
+  margin-right: auto;
+}
+
+.header-right {
+  margin-left: auto;
+  margin-right: 20px;
+  align-content: baseline;
+}
+
+.header-button {
+  border: none;
+  background: none;
+  color: rgba(150, 168, 183, .85);
+  line-height: 0;
+  padding-top: 3px;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  transition: color 0.4s ease, transform 0.3s ease;
+}
+
+.header-button:hover {
+  color: var(--button-hover-color)
+}
+
+.rotate {
+  transform: rotate(180deg);
+}
+
+.header-button.scaled-minus {
+  display: inline-flex;
+  line-height: 0;
+  padding: 0 0 0 8px;
+  align-items: baseline;
+}
+
+.scaled-minus mat-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  line-height: 25px;
+  padding-bottom: 0;
+}
+
+.chip-self .chip-content-wrapper:not(:has(.chip-self:hover)):hover > .subgroup-header .header-button {
+  color: rgba(150, 168, 183, 1);
+}
+
+.subgroup-header .header-button:hover {
+  color: var(--button-hover-color) !important;
+}
+
+.subgroup-options-menu .mat-mdc-menu-item.options-item {
+  display: flex;
+  flex: 1 1 auto;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
+
+:host ::ng-deep .mat-mdc-menu-content button.mat-mdc-menu-item-text {
+
+  align-content: center;
+  vertical-align: center;
+}
+
+
+.root-subgroup-drop-list {
+  margin-inline: 10px;
+}
+
+/* --------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/
+
+.chip-contents.is-hovered-list {
+  border: 1px solid deeppink;
+}
+
+.group-composition-container {
+  min-height: 95%;
+  min-width: 95%;
+}
+
+.group-composition-container.is-hovered-container {
+  border: 1px solid deepskyblue;
+}
+
+.chip-contents:empty {
+  min-height: 20px;
+}
+
+.chip-contents:empty.is-hovered-list {
+  min-height: 65px;
+}
+
+.chip-contents {
+  border: 1px solid transparent;
+  transform-origin: top left;
+  transition: transform 0.3s ease, max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.chip-subgroup-collapsed {
+  transform: scale3d(0, 0, 0);
+  opacity: 0;
+  max-height: 0;
+}
+
+.chip-subgroup-expanded {
+  transform: scale3d(1, 1, 1);
+  max-height: 10000px;
+  opacity: 1;
+  overflow-y: scroll;
+}
+
+.chip-summary {
+  transform-origin: bottom right;
+  transition: transform 0.3s ease;
+}
+
+.collapsed-show-summary {
+  transform: scale3d(1, 1, 1);
+  padding-bottom: 8px;
+}
+
+.expanded-hide-summary {
+  transform: scale3d(0, 0, 0);
+}
+
+/* --------------------------------------------------------------------------------------------- */
+
+
+.chip-content-wrapper {
+  padding-inline: 8px;
+}
+
+.subgroup-summary-data {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  padding-inline: 10px;
+}
+
+.summary-data-left {
+  display: flex;
+  text-align: start;
+}
+
+.summary-data-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+/* ------------------------ CDK DRAG PREVIEW (PICKED UP) --------------------------------------------*/
+
+::ng-deep .cdk-drag-preview .chip-self {
+  color: rgba(150, 168, 183, 1);
+  background-color: rgba(37, 37, 41, .5);
+}
+
+/* ------------------------ CDK DRAG PLACEHOLDER (DEMO SLOT DURING DRAG ------------------------------*/
+
+::ng-deep .cdk-drag-placeholder .chip-self {
+  background-color: rgba(74, 80, 89, 0.25);
+  color: rgba(150, 168, 183, 0.5);
+  /*background-color: rgba(37, 37, 41, .15);*/
+}
+
+/* ----------------------- DROP LIST BLOCKER / WRAPPER -----------------------------------------------*/
+
+.drop-list-facade {
+  display: grid;
+}
+
+.drop-list-facade > * {
+  grid-area: 1 / 1;
+}
+
+.drop-list-entry-blocker {
+  pointer-events: all;
+  z-index: 100;
+}
+
+
+::ng-deep .add-new-button-container .add-new-button .add-2 {
+  font-size: 75px;
+  font-weight: 300;
+  width: 75px;
+  height: 75px;
+  line-height: 75px;
+  color: rgba(255, 131, 7, .45);
+  font-variation-settings: 'wght' 300;
+  transition: color 0.2s ease;
+}
+
+.add-2:hover {
+  color: rgba(255, 131, 7, .65);
+}
+
+.add-new-button-container {
+  display: flex;
+  width: 100%;
+}
+
+.add-new-button {
+  display: flex;
+  width: 85px;
+  height: 100%;
+  margin-left: 30%;
+  background-color: transparent;
+  border: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.root-subgroup-drop-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(375px, 450px));
+  margin-left: 10px;
+}
+
+.root-subgroup-drop-list.is-hovered-list {
+  border: 1px solid deeppink;
+  padding-right: 25px;
+}
+

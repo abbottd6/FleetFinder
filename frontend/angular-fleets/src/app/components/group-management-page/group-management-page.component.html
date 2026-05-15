@@ -1,146 +1,63 @@
 <div class="body-container">
   <span class="page-title">Group Management</span>
   <div class="management-container" #managementContainer [style.min-height]="containerHeight">
-    <ng-container *ngIf="!dropListRegistry.pageDataLoading; else loading">
-      <div class="roster-container">
-        <app-roster-management>
-        </app-roster-management>
-      </div>
-      <div class="subgroup-management-container">
-        <div class="group-header-container">
-          <span class="listing-title">{{ listingTitle.length > 60 ? (listingTitle|slice: 0: 60) + '...' : listingTitle }}</span>
-        </div>
-
-        <div class="subgroups-button-header-row">
-
-          <div class="button-group-left">
-            <button class="secondary-action-buttons"
-              (click)="toggleDoNotShowCreateFrom()">
-              Load Ship Template
-            </button>
-
-            <button class="secondary-action-buttons"
-              (click)="toggleDoNotShowSaveAsForm()">
-              Save As Template
-            </button>
-          </div>
-        </div>
-          <div class="expansion-form-container">
-            <app-load-crew-template-form
-              [class.do-not-show-form]="doNotShowCreateFromTemplateForm"
-              [class.show-form]="!doNotShowCreateFromTemplateForm"
-              [class.expanding]="createFromIsExpanding"
-              class="from-template"
-              (cancelForm)="toggleDoNotShowCreateFrom()"
-              (emitSelection)="createFromTemplate($event)">
-            </app-load-crew-template-form>
-
-          <div class="expansion-form-container">
-            <!-- save structure as template -->
-          </div>
-        </div>
-
-
-        <!-- todo move root to its own component -->
-
-<!--        [class.is-hovered-list]="((this.dropListRegistry.hoveredList$ | async)?.id === (this.rootListRef!.id))"-->
-
-        <div class="group-composition-container" cdkDropListGroup #groupCompRootContainer>
-          <ng-container *ngIf="(subgroupMgmtInteract.subgroupTrees$ | async) as subgroups">
-            <div class="subgroup-header drag-handle"
-                 cdkDragHandle
-                 #rootListHoverTarget>
-              <div class="header-left">
-                <span>{{ listingTitle }}</span>
-              </div>
-              <div class="header-right">
-                <button class="header-button"
-                        type="button">
-<!--                        (click)="toggleCollapseSelf()"-->
-                  <mat-icon [class.rotate]="false"
-                            [matTooltip]="true ? 'Collapse self' : 'Expand self'">arrow_drop_up
-                  </mat-icon>
-                </button>
-
-                <button class="header-button"
-                        type="button">
-<!--                        (click)="collapseChildren()">-->
-                  <span class="material-symbols-outlined"
-                        [matTooltip]="true ? 'Collapse children' : 'Expand Children'">
-                    <ng-container *ngIf="true; else childrenCollapsed">
-                      collapse_content
-                    </ng-container>
-                    <ng-template #childrenCollapsed>
-                      expand_content
-                    </ng-template>
-                  </span>
-                </button>
-
-                <button class="header-button"
-                        type="button"
-                        [matMenuTriggerFor]="subgroupOptionsMenu">
-                  <mat-icon matTooltip="Options">more_vert</mat-icon>
-                </button>
-                <mat-menu #subgroupOptionsMenu="matMenu" yPosition="below" panelClass="subgroup-options-menu">
-                  <button
-                    mat-menu-item
-                    class="options-item">
-                    <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
-                    <span>New position</span>
-                  </button>
-
-                  <button
-                    mat-menu-item
-                    class="options-item">
-                    <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
-                    <span>New subgroup</span>
-                  </button>
-
-                  <button
-                    mat-menu-item
-                    class="options-item">
-                    <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
-                    <span>Save template</span>
-                  </button>
-                </mat-menu>
-              </div>
-            </div>
-            <div
-              cdkDropList
-              #rootSubgroupListElement
-              #rootSubgroupList="cdkDropList"
-              cdkDropListOrientation="mixed"
-              [cdkDropListData]="subgroups"
-              (cdkDropListDropped)="subgroupMgmtInteract.onSubgroupDrop($event)"
-              [cdkDropListEnterPredicate]="this.dropListRegistry.isCompatibleDrop"
-              [cdkDropListSortingDisabled]="(this.dropListRegistry.hoveredTargetId$ | async) !== rootSubgroupList.id"
-              [cdkDropListConnectedTo]="connectedToSubgroups"
-              class="root-subgroup-drop-list">
-                <app-crew-subgroup
-                  *ngFor="let treeRoot of subgroups"
-                  [subgroup]="treeRoot"
-                  [parentTreeDepth]="0"
-                  cdkDrag
-                  [cdkDragData]="treeRoot"
-                  (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
-                  (cdkDragReleased)="dropListRegistry.resetAfterDragEnd()">
-                </app-crew-subgroup>
-            </div>
-          </ng-container>
-
-          <div class="add-new-button-container">
-            <button class="add-new-button">
-              <mat-icon class="material-symbols-outlined add-2">add_circle_outline</mat-icon>
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </ng-container>
-    <ng-template #loading>
+    <ng-container *ngIf="dropListRegistry.pageDataLoading">
       <div class="mat-spinner-container">
         <mat-spinner></mat-spinner>
       </div>
-    </ng-template>
+    </ng-container>
+    <div class="roster-container">
+      <app-roster-management>
+      </app-roster-management>
+    </div>
+    <div class="subgroup-management-container">
+      <div class="group-header-container">
+        <span class="banner-item">Active Members: {{ ((activeMemberCount$ | async) ?? 0) }} </span>
+        <span class="banner-item">Waitlist Members: {{ ((waitlistMemberCount$ | async) ?? 0) }}</span>
+        <span class="banner-item"
+              [class.notice-me-senpai]="((pendingInviteCount$ | async) ?? 0) > 0">
+          Pending Invites/Requests: {{ pendingInviteCount$ | async }}
+        </span>
+        <span class="banner-item">
+          Assigned Positions: TODO
+        </span>
+        <span class="banner-item">
+          RSVP: TODO
+        </span>
+      </div>
+
+      <div class="subgroups-button-header-row">
+
+        <div class="button-group-left">
+          <button class="secondary-action-buttons"
+                  (click)="toggleDoNotShowCreateFrom()">
+            Load Ship Template
+          </button>
+
+          <button class="secondary-action-buttons"
+                  (click)="toggleDoNotShowSaveAsForm()">
+            Notification Events
+          </button>
+        </div>
+      </div>
+      <div class="expansion-form-container">
+        <app-load-crew-template-form
+          [class.do-not-show-form]="doNotShowCreateFromTemplateForm"
+          [class.show-form]="!doNotShowCreateFromTemplateForm"
+          [class.expanding]="createFromIsExpanding"
+          class="from-template"
+          (cancelForm)="toggleDoNotShowCreateFrom()"
+          (emitSelection)="createFromTemplate($event)">
+        </app-load-crew-template-form>
+
+        <div class="expansion-form-container">
+          <!-- save structure as template -->
+        </div>
+      </div>
+      <app-root-subgroup
+        [listingTitle]="listingTitle"
+        [groupId]="groupId">
+      </app-root-subgroup>
+    </div>
   </div>
 </div>

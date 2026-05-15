@@ -5,6 +5,11 @@
     <div class="subgroup-header drag-handle"
          cdkDragHandle
          #subgroupHoverTarget>
+      <button
+        class="sort-icon"
+        (mousedown)="move_disableSorting()">
+        <mat-icon>drag_indicator</mat-icon>
+      </button>
       <div class="header-left">
         <span>{{ subgroup.subgroupLabel }}</span>
         <button class="header-button scaled-minus">
@@ -79,7 +84,7 @@
 <!--      [cdkDropListDisabled]="(this.dropListRegistry.isDragging$ | async) && (this.dropListRegistry.hoveredTargetId$ | async) !== thisDropListId"-->
       <div class="drop-list-facade">
         <div class="drop-list-entry-blocker"
-             *ngIf="(dropListRegistry.isDragging$ | async) && !(isHoveredTarget$ | async)">
+             *ngIf="(displayListEntryBlocker$ | async)">
         </div>
 
 <!--        [cdkDropListDisabled]="(this.dropListRegistry.isDragging$ | async) && (this.dropListRegistry.hoveredTargetId$ | async) !== thisDropListId"-->
@@ -91,9 +96,6 @@
                cdkDropListOrientation="vertical"
                [cdkDropListData]="subgroup.subgroups"
                (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
-               (cdkDropListEntered)="onEntered($event)"
-               (cdkDropListExited)="onExited($event)"
-               [cdkDropListSortingDisabled]="!(isHoveredTarget$ | async)"
                [cdkDropListConnectedTo]="connectedToSubgroups"
                [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
                [class.chip-subgroup-expanded]="selfExpanded"
@@ -102,8 +104,9 @@
             <div *ngFor="let childSubgroup of subgroup.subgroups"
                  cdkDrag
                  [cdkDragData]="childSubgroup"
+                 (cdkDragStarted)="dragStarted($event)"
                  (cdkDragMoved)="onDragMoved($event)"
-                 (cdkDragReleased)="resetAfterDragReleased()"
+                 (cdkDragReleased)="resetAfterDragReleased($event)"
                  class="chip-list">
               <app-crew-subgroup
                 [subgroup]="childSubgroup"
@@ -118,11 +121,13 @@
       </div>
 
         <!--      [class.empty-subgroup]="emptyPositionTree && emptySubgroupTree"-->
-        <div class="chip-contents"
+        <div class="chip-contents position-list"
            cdkDropList
            #nativePositionListElement
            #nativePositionList="cdkDropList"
            cdkDropListOrientation="vertical"
+             (cdkDropListEntered)="onEntered($event)"
+             (cdkDropListExited)="onExited($event)"
            [cdkDropListData]="subgroup.crewPositions"
            [cdkDropListConnectedTo]="this.connectedToPositions"
            [cdkDropListEnterPredicate]="this.dropListRegistry.isCompatibleDrop"
@@ -133,7 +138,7 @@
              cdkDrag
              [cdkDragData]="position"
              (cdkDragMoved)="onDragMoved($event)"
-             (cdkDragReleased)="resetAfterDragReleased()">
+             (cdkDragReleased)="resetAfterDragReleased($event)">
           <app-crew-position-chip
             [position]="position">
           </app-crew-position-chip>

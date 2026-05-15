@@ -21,6 +21,11 @@ import {DropListRegistryService} from "./drop-list-registry.service";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
 
+export interface GroupCompPositionsBrief {
+  assigned: number,
+  total: number
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -30,6 +35,11 @@ export class SubgroupManagementInteractService {
 
   protected subgroupTreesSubject = new BehaviorSubject<GroupCompSubgroupViewModel[]>([]);
   public subgroupTrees$ = this.subgroupTreesSubject.asObservable();
+
+  protected groupPositionsRatio$: BehaviorSubject<GroupCompPositionsBrief> = new BehaviorSubject<GroupCompPositionsBrief>({
+    assigned: 0,
+    total: 0
+  });
 
   constructor(private compositionApi: GroupCompositionApiService,
               private dropListRegistry: DropListRegistryService,
@@ -42,6 +52,10 @@ export class SubgroupManagementInteractService {
           this.subgroupTreesSubject.next(subgroupTrees.subgroups);
         }
       })
+  }
+
+  calculatePositionsRatio() {
+
   }
 
   createSubgroupFromTemplate(groupId: number, template: CrewTemplateViewModel) {
@@ -94,7 +108,7 @@ export class SubgroupManagementInteractService {
     console.log('targetContainer: ', targetContainer?.dropList.id);
     console.log('previdx: ', event.previousIndex, ', currentIdx: ', event.currentIndex);
 
-    if(event.previousContainer === targetContainer?.dropList) {
+    if(!targetContainer) {
       console.log('catching?');
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
@@ -131,6 +145,10 @@ export class SubgroupManagementInteractService {
     }
 
     this.dropListRegistry.resetAfterDragEnd();
+  }
+
+  clearTrees() {
+    this.subgroupTreesSubject.next([]);
   }
 
 }
