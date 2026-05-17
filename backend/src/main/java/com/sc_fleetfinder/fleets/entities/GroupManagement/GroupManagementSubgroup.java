@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.utils.GroupManagement.SubgroupDropListOrientation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -32,7 +33,7 @@ public class GroupManagementSubgroup {
         this.parentSubgroup = parentSubgroup;
         this.subgroupLabel = template.getSubgroupLabel();
         this.subgroupNotes = template.getSubgroupNotes();
-//        this.sortOrder = template.getSortOrder();
+        this.dropListOrientation = template.getDropListOrientation();
     }
 
     @Id
@@ -65,6 +66,10 @@ public class GroupManagementSubgroup {
     @Generated(event = EventType.INSERT)
     @Column(name="sort_order", nullable = true, columnDefinition="TINYINT NULL")
     private Integer sortOrder;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="drop_list_orientation", nullable = false)
+    private SubgroupDropListOrientation dropListOrientation;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement;
 
+import com.sc_fleetfinder.fleets.utils.GroupManagement.SubgroupDropListOrientation;
 import lombok.Data;
 
 import java.time.Instant;
@@ -12,6 +13,7 @@ public class GroupCompositionSubgroupDto {
     private String subgroupLabel;
     private String subgroupNotes;
     private Integer sortOrder;
+    private SubgroupDropListOrientation dropListOrientation;
     private Long listingId;
     private Long rootSubgroupId;
     private Long parentSubgroupId;

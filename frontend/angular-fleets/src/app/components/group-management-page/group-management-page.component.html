@@ -1,16 +1,16 @@
 <div class="body-container">
   <span class="page-title">Group Management</span>
   <div class="management-container" #managementContainer [style.min-height]="containerHeight">
-    <ng-container *ngIf="dropListRegistry.pageDataLoading">
-      <div class="mat-spinner-container">
-        <mat-spinner></mat-spinner>
-      </div>
-    </ng-container>
     <div class="roster-container">
       <app-roster-management>
       </app-roster-management>
     </div>
     <div class="subgroup-management-container">
+      <ng-container *ngIf="subgroupMgmtInteract.reorientingDropList">
+        <div class="mat-spinner-overlay">
+          <mat-progress-spinner></mat-progress-spinner>
+        </div>
+      </ng-container>
       <div class="group-header-container">
         <span class="banner-item">Active Members: {{ ((activeMemberCount$ | async) ?? 0) }} </span>
         <span class="banner-item">Waitlist Members: {{ ((waitlistMemberCount$ | async) ?? 0) }}</span>

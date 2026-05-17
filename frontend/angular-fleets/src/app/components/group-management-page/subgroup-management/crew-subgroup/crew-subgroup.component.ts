@@ -41,6 +41,7 @@ import {map} from "rxjs/operators";
 import {
   GroupManagementUiPrefsService
 } from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
+import {toTitleCase} from "../../../../utils/global-functions";
 
 
 
@@ -78,7 +79,6 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() parentTreeDepth!: number;
   @Input() parentContainer!: ElementContainerRegistration;
   protected selfDepth!: number;
-  protected selfDropListOrientation!: DropListOrientation;
 
   @ViewChild('nativeSubgroupList') nativeSubgroupList!: CdkDropList;
   @ViewChild('nativeSubgroupListElement', {read: ElementRef }) nativeSubgroupListElement!: ElementRef<HTMLElement>;
@@ -110,6 +110,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   // to connect the states of the different toggle button functionalities (collapse self vs. collapse children)
   protected childrenExpanded: boolean = this.collapseChildrenFromRoot$ !== null ? true : this.collapseFromParent$.getValue();
 
+  protected nativeTogglesNextOrientation!: DropListOrientation;
+
   protected get listNativeAssignedPositionsCount(): number {
     return this.subgroup.crewPositions.filter(p => p.assignedMember !== null).length;
   }
@@ -118,9 +120,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.subgroup.crewPositions.length;
   }
 
-  //todo this needs to be recursive and then the above version needs to just be native level
-  protected get assignedPositionsCount(): number {
-    return this.subgroup.crewPositions.filter(p => p.assignedMember != null).length;
+  protected get assignedPositionsCountTotalNested(): number {
+    return this.recursivelyCountAssignedNestedPositionsInTree(this.subgroup);
   }
 
   protected get totalPositionsCount(): number {
@@ -137,6 +138,12 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     return subgroup.crewPositions.length +
       subgroup.subgroups.reduce((sum, child) =>
         sum + this.recursivelyCountPositionsInTree(child), 0);
+  }
+
+  private recursivelyCountAssignedNestedPositionsInTree(subgroup: GroupCompSubgroupViewModel): number {
+    return subgroup.crewPositions.filter(pos => pos.assignedMember !== null).length +
+      subgroup.subgroups.reduce((sum, child) =>
+        sum + this.recursivelyCountAssignedNestedPositionsInTree(child), 0);
   }
 
   private recursivelyCountSubgroupChildren(subgroup: GroupCompSubgroupViewModel): number {
@@ -164,7 +171,13 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.selfDepth = this.parentTreeDepth + 1;
 
-    this.setDropListOrientationFromPrefs();
+    if(this.subgroup.dropListOrientation === 'horizontal') {
+      this.nativeTogglesNextOrientation = 'vertical';
+    } else if(this.subgroup.dropListOrientation === 'vertical') {
+      this.nativeTogglesNextOrientation = 'mixed';
+    } else {
+      this.nativeTogglesNextOrientation = 'horizontal';
+    }
 
     if(this.collapseFromParent$ != null) {
       this.collapseFromParent$.pipe(takeUntil(this.destroy$))
@@ -180,7 +193,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
       if(this.collapseAllFromRoot$.getValue()) {
         this.selfExpanded = false;
         this.childrenExpanded = false;
-        this.collapseFromParent$.next(this.selfCollapsedStatePropagatedToChildren$.getValue())
+        this.collapseFromParent$?.next(this.selfCollapsedStatePropagatedToChildren$.getValue())
         this.selfCollapsedStatePropagatedToChildren$.next(false);
       }
 
@@ -248,7 +261,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
       map(hoveredId => hoveredId === this.thisDropListId$.getValue()),
     );
 
-    console.log(`Subgroup ${this.subgroupListRegistrationRef.id} orientation: ${this.selfDropListOrientation} \n depth: ${this.selfDepth}`);
+    // console.log(`Subgroup ${this.subgroupListRegistrationRef.id} orientation: ${this.selfDropListOrientation} \n depth: ${this.selfDepth}`);
   }
 
   onEntered(e: CdkDragEnter) { console.log('ENTERED:', e.container.id)};
@@ -260,6 +273,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   move_disableSorting() {
+    console.log('parent: ', this.parentContainer.dropLists[0].id);
     this.parentContainer.dropLists[0].sortingDisabled = true;
   }
 
@@ -271,6 +285,24 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     event.source.dropContainer.sortingDisabled = false;
 
     setTimeout(() => this.dropListRegistry.resetAfterDragEnd(), 300);
+  }
+
+  toggleDropListOrientation() {
+    this.subgroupInteract.reorientingDropList = true;
+    const current = this.subgroup.dropListOrientation;
+
+    if(current === 'horizontal') {
+      this.subgroup.dropListOrientation = 'vertical';
+      this.nativeTogglesNextOrientation = 'mixed';
+    } else if(current === 'vertical') {
+      this.subgroup.dropListOrientation = 'mixed';
+      this.nativeTogglesNextOrientation = 'horizontal';
+    } else {
+      this.subgroup.dropListOrientation = 'horizontal'
+      this.nativeTogglesNextOrientation = 'vertical'
+    }
+
+    setTimeout(() => this.subgroupInteract.reorientingDropList = false, 500);
   }
 
   toggleCollapseSelf() {
@@ -290,20 +322,6 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selfCollapsedStatePropagatedToChildren$.next(this.childrenExpanded);
   }
 
-  setDropListOrientationFromPrefs() {
-    const rootOrientation = this.groupManagementUiPrefs.groupManagementUiPrefs.groupCompositionPrefs.rootDropListOrientation;
-
-    if(rootOrientation === 'horizontal') {
-      this.selfDropListOrientation = 'vertical';
-    } else {
-      if(this.selfDepth === 0) {
-        this.selfDropListOrientation = 'horizontal'
-      } else {
-        this.selfDropListOrientation = 'vertical';
-      }
-    }
-  }
-
   get chipSelfOrientationVertical(): boolean {
     const rootIsVertical = this.groupManagementUiPrefs.getRootDropListOrientation === 'vertical';
     const selfDepthIsZero = false;
@@ -320,4 +338,6 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
   }
+
+  protected readonly toTitleCase = toTitleCase;
 }

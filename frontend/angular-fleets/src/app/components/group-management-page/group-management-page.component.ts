@@ -52,7 +52,8 @@ import {map} from "rxjs/operators";
     RootSubgroupComponent,
     AsyncPipe
   ],
-  styleUrl: './group-management-page.component.css'
+  styleUrl: './group-management-page.component.css',
+  providers: [DropListRegistryService, SubgroupManagementInteractService]
 })
 export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();

@@ -1,4 +1,5 @@
 import {GroupCompCrewPositionViewModel} from "./group-comp-crew-position-view-model";
+import {DropListOrientation} from "@angular/cdk/drag-drop";
 
 export class GroupCompSubgroupViewModel {
 
@@ -8,6 +9,7 @@ export class GroupCompSubgroupViewModel {
     public subgroupLabel: string,
     public subgroupNotes: string,
     public sortOrder: number,
+    public dropListOrientation: DropListOrientation,
     public listingId: number,
     public rootSubgroupId: number,
     public parentSubgroupId: number,

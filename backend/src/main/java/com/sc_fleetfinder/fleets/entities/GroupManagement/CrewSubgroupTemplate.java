@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
+import com.sc_fleetfinder.fleets.utils.GroupManagement.SubgroupDropListOrientation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,4 +38,8 @@ public class CrewSubgroupTemplate {
 
     @Column(name="sort_order", nullable = false, columnDefinition="TINYINT NOT NULL DEFAULT 0")
     private Integer sortOrder = 0;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name="drop_list_orientation", nullable = false)
+    private SubgroupDropListOrientation dropListOrientation;
 }

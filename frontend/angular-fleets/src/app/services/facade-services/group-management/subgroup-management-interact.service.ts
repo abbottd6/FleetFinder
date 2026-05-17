@@ -26,14 +26,14 @@ export interface GroupCompPositionsBrief {
   total: number
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SubgroupManagementInteractService {
   private destroyRef = inject(DestroyRef);
 
   protected subgroupTreesSubject = new BehaviorSubject<GroupCompSubgroupViewModel[]>([]);
   public subgroupTrees$ = this.subgroupTreesSubject.asObservable();
+
+  reorientingDropList: boolean = false;
 
   protected groupPositionsRatio$: BehaviorSubject<GroupCompPositionsBrief> = new BehaviorSubject<GroupCompPositionsBrief>({
     assigned: 0,

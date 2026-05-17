@@ -1,7 +1,3 @@
-:host {
-  width: 100%;
-}
-
 :host ::ng-deep .mat-expansion-panel.group-composition-container {
   display: flex;
   flex-direction: column;
@@ -135,6 +131,20 @@ mat-panel-title {
   transform: rotate(180deg);
 }
 
+/* droplist orientation rotate button rotations */
+
+.material-symbols-outlined.orientation-state-horizontal {
+  transform: rotate(135deg);
+}
+
+.material-symbols-outlined.orientation-state-vertical {
+  transform: rotate(45deg);
+}
+
+.material-symbols-outlined.orientation-state-mixed {
+  transform: rotate(90deg);
+}
+
 .header-button.scaled-minus {
   display: inline-flex;
   line-height: 0;
@@ -170,15 +180,12 @@ mat-panel-title {
   vertical-align: center;
 }
 
-
-
 .root-subgroup-drop-list.orientation-horizontal {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: 450px;
   overflow-x: auto;
   min-height: 65vh;
-  padding-bottom: 30px;
 }
 
 .root-subgroup-drop-list.orientation-vertical {
@@ -187,6 +194,14 @@ mat-panel-title {
   grid-auto-rows: max-content;
   overflow-y: auto;
   min-height: 300px;
+}
+
+.root-subgroup-drop-list.orientation-mixed {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 20px;
+  margin-inline: 20px;
 }
 
 /* --------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/

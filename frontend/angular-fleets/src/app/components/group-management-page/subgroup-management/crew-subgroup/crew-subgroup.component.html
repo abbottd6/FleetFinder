@@ -1,8 +1,10 @@
 <div #chipWrapperContainer
      class="chip-self"
      [class.is-hovered-container]="(this.isHoveredTarget$ | async)"
-     [class.full-width-chip-collapsed]="selfDropListOrientation === 'horizontal' && !selfExpanded"
-     [class.chip-self-orientation-horizontal]="this.selfDropListOrientation === 'horizontal'">
+     [class.full-width-chip-collapsed]="(subgroup.dropListOrientation === 'horizontal' || subgroup.dropListOrientation === 'mixed') && !selfExpanded"
+     [class.chip-self-orientation-horizontal-mixed]="subgroup.dropListOrientation === 'horizontal' || subgroup.dropListOrientation === 'mixed'"
+     [class.chip-self-orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
+     [class.deeply-nested]="selfDepth > 1" >
   <div class="chip-content-wrapper">
     <div class="subgroup-header drag-handle"
          cdkDragHandle
@@ -10,7 +12,7 @@
       <button
         class="sort-icon"
         (mousedown)="move_disableSorting()">
-        <mat-icon>drag_indicator</mat-icon>
+        <mat-icon matTooltip="Move: disable sort">drag_indicator</mat-icon>
       </button>
       <div class="header-left">
         <span>{{ subgroup.subgroupLabel }}</span>
@@ -19,11 +21,25 @@
         </button>
       </div>
       <div class="header-right">
+
+        <button class="header-button rotate-button"
+                type="button"
+                (click)="toggleDropListOrientation()">
+          <mat-icon class="material-symbols-outlined"
+                    [class.orientation-state-horizontal]="subgroup.dropListOrientation === 'horizontal'"
+                    [class.orientation-state-vertical]="subgroup.dropListOrientation === 'vertical'"
+                    [class.orientation-state-mixed]="subgroup.dropListOrientation === 'mixed'"
+                    [matTooltip]="`Change content orientation from '${toTitleCase(subgroup.dropListOrientation)}' to '${toTitleCase(nativeTogglesNextOrientation)}'`">
+            screen_rotation_alt
+          </mat-icon>
+        </button>
+
         <button class="header-button"
                 type="button"
                 (click)="toggleCollapseSelf()">
           <mat-icon [class.rotate]="!selfExpanded"
-                    [matTooltip]="selfExpanded ? 'Collapse self' : 'Expand self'">arrow_drop_up
+                    [matTooltip]="selfExpanded ? 'Collapse self' : 'Expand self'">
+            arrow_drop_up
           </mat-icon>
         </button>
 
@@ -79,7 +95,7 @@
         </mat-menu>
       </div>
     </div>
-    <div>
+    <div class="both-lists-wrapper">
       <!--      [class.is-hovered-container]="((dropListRegistry.hoveredContainer$ | async)?.id === (thisContainerId$ | async))-->
       <!--      && (dropListRegistry.validDropTargetType$ | async) === 'subgroup'"-->
       <!--      [class.empty-subgroup]="emptySubgroupTree && emptyPositionTree"-->
@@ -95,15 +111,16 @@
              cdkDropList
              #nativeSubgroupListElement
              #nativeSubgroupList="cdkDropList"
-             [cdkDropListOrientation]="selfDropListOrientation"
+             [cdkDropListOrientation]="subgroup.dropListOrientation"
              [cdkDropListData]="subgroup.subgroups"
              (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
              [cdkDropListConnectedTo]="connectedToSubgroups"
              [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
              [class.chip-subgroup-expanded]="selfExpanded"
              [class.chip-subgroup-collapsed]="!selfExpanded"
-             [class.orientation-horizontal]="selfDropListOrientation === 'horizontal'"
-             [class.orientation-vertical]="selfDropListOrientation === 'vertical'"
+             [class.orientation-horizontal]="subgroup.dropListOrientation === 'horizontal'"
+             [class.orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
+             [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'"
              [class.is-hovered-list]="(isHoveredTarget$ | async)">
             <div *ngFor="let childSubgroup of subgroup.subgroups"
                  cdkDrag
@@ -139,7 +156,10 @@
            (cdkDropListDropped)="subgroupInteract.onPositionDrop($event, subgroup)"
            [class.chip-subgroup-expanded]="selfExpanded"
            [class.chip-subgroup-collapsed]="!selfExpanded"
-           [class.chip-contents-collapsed]="selfExpanded && !childrenExpanded">
+           [class.chip-contents-collapsed]="selfExpanded && !childrenExpanded"
+           [class.orientation-horizontal]="subgroup.dropListOrientation === 'horizontal'"
+           [class.orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
+           [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'">
           <div *ngFor="let position of subgroup.crewPositions"
                cdkDrag
                [cdkDragData]="position"
@@ -152,7 +172,8 @@
           </div>
         </div>
         <ng-container *ngIf="selfExpanded && !childrenExpanded && (listNativeTotalPositionsCount !== 0)">
-          <div class="chip-positions-collapsed">
+          <div class="chip-positions-collapsed"
+            [class.orientation-horizontal-mixed]="subgroup.dropListOrientation === 'horizontal' || subgroup.dropListOrientation === 'mixed'">
             <span class="summary-data-left">
               Positions: {{ listNativeAssignedPositionsCount }}/{{ listNativeTotalPositionsCount }}
             </span>
@@ -166,7 +187,7 @@
                                           && subgroup.crewPositions.length === 0)"
          [class.expanded-hide-summary]="selfExpanded && (subgroup.subgroups.length > 0 || subgroup.crewPositions.length > 0)">
       <div class="subgroup-summary-data">
-        <span class="summary-data-left">Positions: {{ assignedPositionsCount }}/{{ totalPositionsCount }}</span>
+        <span class="summary-data-left">Positions: {{ assignedPositionsCountTotalNested }}/{{ totalPositionsCount }}</span>
         <span class="summary-data-right">Subgroups: {{ totalSubgroupsCount }}</span>
       </div>
     </div>

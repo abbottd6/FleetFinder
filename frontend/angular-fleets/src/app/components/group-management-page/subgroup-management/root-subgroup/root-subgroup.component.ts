@@ -1,5 +1,4 @@
 import {
-  afterNextRender,
   AfterViewInit,
   Component,
   ElementRef,
@@ -46,7 +45,7 @@ import {
 import {
   GroupManagementUiPrefsService
 } from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
-import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {toTitleCase} from "../../../../utils/global-functions";
 
 @Component({
   selector: 'app-root-subgroup',
@@ -67,7 +66,6 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
     MatExpansionPanel,
     MatExpansionPanelHeader,
     MatExpansionPanelTitle,
-    MatProgressSpinner
   ],
   templateUrl: './root-subgroup.component.html',
   styleUrl: './root-subgroup.component.css'
@@ -78,7 +76,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly dropListRegistry = inject(DropListRegistryService);
   protected readonly groupManagementUiPrefs = inject(GroupManagementUiPrefsService);
 
-  protected reorientingDropList: boolean = false;
+
 
   @Input() listingTitle!: string;
   @Input() groupId!: number;
@@ -96,6 +94,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected rootDropListId$ = new BehaviorSubject<string>('');
 
   protected rootOrientation: DropListOrientation = this.groupManagementUiPrefs.getRootDropListOrientation;
+  protected togglesNextOrientation!: DropListOrientation;
 
   protected isHoveredTarget$ = combineLatest([
     this.dropListRegistry.hoveredTargetId$,
@@ -117,48 +116,45 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   // )
 
   constructor(protected subgroupInteract: SubgroupManagementInteractService){
-    afterNextRender(() => {
-      this.subgroupInteract.subgroupTrees$.pipe(
-        filter(trees => trees?.length > 0),
-        take(1),
-        takeUntil(this.destroy$)
-      ).subscribe(() => {
-        this.rootListRegistrationRef = this.dropListRegistry.registerList('content-root', 'root',
-          this.rootSubgroupList, this.rootSubgroupListElement, 0, 'root');
-
-        this.rootDropListId$.next(this.rootSubgroupList.id);
-
-        this.rootContainerRegistrationRef = this.dropListRegistry.registerContainer(this.rootListRegistrationRef.id, 'root',
-          [this.rootSubgroupList], this.groupCompRootContainer, 0, 'content-root');
-
-        this.rootHoverTargetRegistrationRef = this.dropListRegistry.registerHoverTarget(this.rootSubgroupList.id,
-          this.rootSubgroupList, this.rootListHoverTarget, this.rootContainerRegistrationRef, 0);
-
-        this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
-          .subscribe(registeredLists => {
-            this.connectedToSubgroups = registeredLists.filter(l => l.id !== this.rootSubgroupList?.id)
-              .map(regList => regList.dropList);
-          })
-
-        console.log(this.rootContainerRegistrationRef.element.nativeElement.getBoundingClientRect());
-      })
-    })
   }
 
   ngOnInit() {
-    // this.isHoveredTarget$.pipe(
-    //   takeUntil(this.destroy$),
-    //   distinctUntilChanged(),
-    //   tap(hovered => {
-    //     if(hovered) {
-    //       this.rootSubgroupList._dropListRef._startReceiving()
-    //     }
-    //   })
-    // )
+    if(this.rootOrientation === 'horizontal') {
+      this.togglesNextOrientation = 'vertical';
+    } else if(this.rootOrientation === 'vertical') {
+      this.togglesNextOrientation = 'mixed';
+    } else if(this.rootOrientation === 'mixed') {
+      this.togglesNextOrientation = 'horizontal';
+    }
   }
 
   ngAfterViewInit() {
     console.log('rootDropListOrientation: ', this.rootOrientation);
+
+    this.subgroupInteract.subgroupTrees$.pipe(
+      filter(trees => trees?.length > 0),
+      take(1),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.rootListRegistrationRef = this.dropListRegistry.registerList('content-root', 'root',
+        this.rootSubgroupList, this.rootSubgroupListElement, 0, 'root');
+
+      this.rootDropListId$.next(this.rootSubgroupList.id);
+
+      this.rootContainerRegistrationRef = this.dropListRegistry.registerContainer(this.rootListRegistrationRef.id, 'root',
+        [this.rootSubgroupList], this.groupCompRootContainer, 0, 'content-root');
+
+      this.rootHoverTargetRegistrationRef = this.dropListRegistry.registerHoverTarget(this.rootSubgroupList.id,
+        this.rootSubgroupList, this.rootListHoverTarget, this.rootContainerRegistrationRef, 0);
+
+      this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
+        .subscribe(registeredLists => {
+          this.connectedToSubgroups = registeredLists.filter(l => l.id !== this.rootSubgroupList?.id)
+            .map(regList => regList.dropList);
+        })
+
+      console.log(this.rootContainerRegistrationRef.element.nativeElement.getBoundingClientRect());
+    })
   }
 
   rootEnterPredicate = (dragData: CdkDrag, dropList: CdkDropList): boolean => {
@@ -181,18 +177,26 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleDropListOrientation() {
-    this.reorientingDropList = true;
+    this.subgroupInteract.reorientingDropList = true;
     const current = this.groupManagementUiPrefs.getRootDropListOrientation;
 
     if(current === 'horizontal') {
       this.groupManagementUiPrefs.setRootDropListOrientation('vertical');
+      this.rootOrientation = 'vertical';
+      this.togglesNextOrientation = 'mixed';
+    } else if(current === 'vertical') {
+      this.groupManagementUiPrefs.setRootDropListOrientation('mixed');
+      this.rootOrientation = 'mixed';
+      this.togglesNextOrientation = 'horizontal';
     } else {
-      this.groupManagementUiPrefs.setRootDropListOrientation('horizontal');
+      this.groupManagementUiPrefs.setRootDropListOrientation('horizontal')
+      this.rootOrientation = 'horizontal'
+      this.togglesNextOrientation = 'vertical'
     }
 
     this.rootOrientation = this.groupManagementUiPrefs.getRootDropListOrientation;
 
-    setTimeout(() => this.reorientingDropList = false, 1000);
+    setTimeout(() => this.subgroupInteract.reorientingDropList = false, 500);
   }
 
   toggleCollapseAll() {
@@ -208,14 +212,15 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subgroupInteract.clearTrees();
-    // this.dropListRegistry.unregisterList(this.rootListRegistrationRef);
-    // this.dropListRegistry.unregisterContainer(this.rootContainerRegistrationRef);
-    // this.dropListRegistry.unregisterHoverTarget(this.rootHoverTargetRegistrationRef);
-    this.dropListRegistry.clearAllRegisteredLists();
+    // this.subgroupInteract.clearTrees();
+    this.dropListRegistry.unregisterList(this.rootListRegistrationRef);
+    this.dropListRegistry.unregisterContainer(this.rootContainerRegistrationRef);
+    this.dropListRegistry.unregisterHoverTarget(this.rootHoverTargetRegistrationRef);
+    // this.dropListRegistry.clearAllRegisteredLists();
 
     this.destroy$.next();
     this.destroy$.complete();
   }
 
+  protected readonly toTitleCase = toTitleCase;
 }

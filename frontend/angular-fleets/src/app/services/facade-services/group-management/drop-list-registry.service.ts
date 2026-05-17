@@ -84,9 +84,7 @@ export function getDropEntityType(dropData: DropData): DropListEntityType {
   return 'invalid';
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class DropListRegistryService {
   private destroyRef = inject(DestroyRef)
 

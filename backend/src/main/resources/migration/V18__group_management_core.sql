@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS group_management_subgroup
     subgroup_label         VARCHAR(64)  NULL,
     subgroup_notes         VARCHAR(255) NULL,
     sort_order             TINYINT      NULL,
+    drop_list_orientation  ENUM ('horizontal', 'vertical', 'mixed') NOT NULL DEFAULT 'vertical',
     created_at             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_subgroup_references_group_listing

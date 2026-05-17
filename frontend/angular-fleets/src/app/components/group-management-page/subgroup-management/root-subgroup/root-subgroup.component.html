@@ -19,8 +19,11 @@
       <button class="header-button"
               type="button"
               (click)="toggleDropListOrientation()">
-        <mat-icon [matTooltip]="'set subgroup layout direction'">
-          <span class="material-symbols-outlined">
+        <mat-icon [matTooltip]="`Change root orientation from '${toTitleCase(rootOrientation)}' to '${toTitleCase(togglesNextOrientation)}'`">
+          <span class="material-symbols-outlined"
+            [class.orientation-state-horizontal]="rootOrientation === 'horizontal'"
+            [class.orientation-state-vertical]="rootOrientation === 'vertical'"
+            [class.orientation-state-mixed]="rootOrientation === 'mixed'">
             screen_rotation_alt
           </span>
         </mat-icon>
@@ -82,7 +85,6 @@
 
   <!--<div class="group-composition-container">-->
   <ng-container *ngIf="(subgroupInteract.subgroupTrees$ | async) as subgroups">
-    <ng-container *ngIf="!reorientingDropList; else reorienting">
       <div>
         <div class="drop-list-facade">
           <!--      <div class="drop-list-entry-blocker"-->
@@ -92,6 +94,7 @@
             class="root-subgroup-drop-list"
             [class.orientation-horizontal]="rootOrientation === 'horizontal'"
             [class.orientation-vertical]="rootOrientation === 'vertical'"
+            [class.orientation-mixed]="rootOrientation === 'mixed'"
             cdkDropList
             cdkDropListGroup
             #rootSubgroupListElement
@@ -124,15 +127,6 @@
         </div>
       </div>
     </ng-container>
-    <ng-template #reorienting>
-      <div>
-        <mat-progress-spinner></mat-progress-spinner>
-      </div>
-    </ng-template>
-  </ng-container>
-
-
-
 </mat-expansion-panel>
 
 

@@ -1270,6 +1270,8 @@ public class ModelMapperConfig {
 
                     mapper.map(GroupManagementSubgroup::getSortOrder, GroupCompositionSubgroupDto::setSortOrder);
 
+                    mapper.map(GroupManagementSubgroup::getDropListOrientation, GroupCompositionSubgroupDto::setDropListOrientation);
+
                     mapper.using(ctx -> {
                         GroupListing listing = (GroupListing) ctx.getSource();
                         return listing != null ? listing.getGroupId() : null;
