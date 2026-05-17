@@ -31,7 +31,6 @@ export interface GroupCompPositionsBrief {
 })
 export class SubgroupManagementInteractService {
   private destroyRef = inject(DestroyRef);
-  public isDragging = false;
 
   protected subgroupTreesSubject = new BehaviorSubject<GroupCompSubgroupViewModel[]>([]);
   public subgroupTrees$ = this.subgroupTreesSubject.asObservable();

@@ -7,6 +7,12 @@
     touch-target-display: center,
   ));
 
+  .mat-expansion-panel-header:hover {
+    background-color: rgba(65, 103, 142, 0.25) !important;
+    font-size: 107%;
+    cursor: pointer;
+  }
+
   mat-spinner {
     --mdc-circular-progress-active-indicator-color: rgba(52, 135, 168, 0.75);
   }

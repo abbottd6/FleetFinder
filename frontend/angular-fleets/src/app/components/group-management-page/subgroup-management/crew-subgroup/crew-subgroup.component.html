@@ -1,6 +1,8 @@
 <div #chipWrapperContainer
      class="chip-self"
-     [class.is-hovered-container]="(this.isHoveredTarget$ | async)">
+     [class.is-hovered-container]="(this.isHoveredTarget$ | async)"
+     [class.full-width-chip-collapsed]="selfDropListOrientation === 'horizontal' && !selfExpanded"
+     [class.chip-self-orientation-horizontal]="this.selfDropListOrientation === 'horizontal'">
   <div class="chip-content-wrapper">
     <div class="subgroup-header drag-handle"
          cdkDragHandle
@@ -89,18 +91,20 @@
 
 <!--        [cdkDropListDisabled]="(this.dropListRegistry.isDragging$ | async) && (this.dropListRegistry.hoveredTargetId$ | async) !== thisDropListId"-->
 <!--        -->
-        <div class="chip-contents"
-               cdkDropList
-               #nativeSubgroupListElement
-               #nativeSubgroupList="cdkDropList"
-               cdkDropListOrientation="vertical"
-               [cdkDropListData]="subgroup.subgroups"
-               (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
-               [cdkDropListConnectedTo]="connectedToSubgroups"
-               [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
-               [class.chip-subgroup-expanded]="selfExpanded"
-               [class.chip-subgroup-collapsed]="!selfExpanded"
-               [class.is-hovered-list]="(isHoveredTarget$ | async)">
+        <div class="chip-contents subgroups"
+             cdkDropList
+             #nativeSubgroupListElement
+             #nativeSubgroupList="cdkDropList"
+             [cdkDropListOrientation]="selfDropListOrientation"
+             [cdkDropListData]="subgroup.subgroups"
+             (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
+             [cdkDropListConnectedTo]="connectedToSubgroups"
+             [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
+             [class.chip-subgroup-expanded]="selfExpanded"
+             [class.chip-subgroup-collapsed]="!selfExpanded"
+             [class.orientation-horizontal]="selfDropListOrientation === 'horizontal'"
+             [class.orientation-vertical]="selfDropListOrientation === 'vertical'"
+             [class.is-hovered-list]="(isHoveredTarget$ | async)">
             <div *ngFor="let childSubgroup of subgroup.subgroups"
                  cdkDrag
                  [cdkDragData]="childSubgroup"
@@ -113,7 +117,7 @@
                 [parentContainer]="containerRegistrationRef"
                 [parentTreeDepth]="selfDepth"
                 [dropListParentEl]="subgroupListRegistrationRef"
-                [collapseFromParent$]="collapseFromSelf$"
+                [collapseFromParent$]="selfCollapsedStatePropagatedToChildren$"
                 [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
               </app-crew-subgroup>
             </div>
@@ -121,6 +125,7 @@
       </div>
 
         <!--      [class.empty-subgroup]="emptyPositionTree && emptySubgroupTree"-->
+      <div class="positions-list-wrapper">
         <div class="chip-contents position-list"
            cdkDropList
            #nativePositionListElement
@@ -133,17 +138,26 @@
            [cdkDropListEnterPredicate]="this.dropListRegistry.isCompatibleDrop"
            (cdkDropListDropped)="subgroupInteract.onPositionDrop($event, subgroup)"
            [class.chip-subgroup-expanded]="selfExpanded"
-           [class.chip-subgroup-collapsed]="!selfExpanded">
-        <div *ngFor="let position of subgroup.crewPositions"
-             cdkDrag
-             [cdkDragData]="position"
-             (cdkDragMoved)="onDragMoved($event)"
-             (cdkDragStarted)="dragStarted($event)"
-             (cdkDragReleased)="resetAfterDragReleased($event)">
-          <app-crew-position-chip
-            [position]="position">
-          </app-crew-position-chip>
+           [class.chip-subgroup-collapsed]="!selfExpanded"
+           [class.chip-contents-collapsed]="selfExpanded && !childrenExpanded">
+          <div *ngFor="let position of subgroup.crewPositions"
+               cdkDrag
+               [cdkDragData]="position"
+               (cdkDragMoved)="onDragMoved($event)"
+               (cdkDragStarted)="dragStarted($event)"
+               (cdkDragReleased)="resetAfterDragReleased($event)">
+            <app-crew-position-chip
+              [position]="position">
+            </app-crew-position-chip>
+          </div>
         </div>
+        <ng-container *ngIf="selfExpanded && !childrenExpanded && (listNativeTotalPositionsCount !== 0)">
+          <div class="chip-positions-collapsed">
+            <span class="summary-data-left">
+              Positions: {{ listNativeAssignedPositionsCount }}/{{ listNativeTotalPositionsCount }}
+            </span>
+          </div>
+        </ng-container>
       </div>
     </div>
 

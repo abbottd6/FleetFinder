@@ -12,9 +12,7 @@ import {
 import {
   BehaviorSubject,
   combineLatest,
-  debounceTime, delay,
-  distinctUntilChanged, filter,
-  Observable,
+  filter,
   Subject,
   take,
   takeUntil
@@ -23,15 +21,14 @@ import {
   DropListRegistration, DropListRegistryService,
   ElementContainerRegistration, SubgroupHoverTargetRegistration
 } from "../../../../services/facade-services/group-management/drop-list-registry.service";
-import {CdkDrag, CdkDragHandle, CdkDragRelease, CdkDropList, CdkDropListGroup} from "@angular/cdk/drag-drop";
-import {UserService} from "../../../../services/user-services/user.service";
-import {Router} from "@angular/router";
 import {
-  MemberManagementApiService
-} from "../../../../services/api-services/group-management/member-management-api.service";
-import {
-  GroupManagementInteractService
-} from "../../../../services/facade-services/group-management/group-management-interact.service";
+  CdkDrag,
+  CdkDragHandle,
+  CdkDragRelease,
+  CdkDropList,
+  CdkDropListGroup,
+  DropListOrientation
+} from "@angular/cdk/drag-drop";
 import {
   SubgroupManagementInteractService
 } from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
@@ -40,8 +37,16 @@ import {CrewSubgroupComponent} from "../crew-subgroup/crew-subgroup.component";
 import {MatIcon} from "@angular/material/icon";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {MatTooltip} from "@angular/material/tooltip";
-import {map, tap} from "rxjs/operators";
-import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
+import {map} from "rxjs/operators";
+import {
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle
+} from "@angular/material/expansion";
+import {
+  GroupManagementUiPrefsService
+} from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
+import {MatProgressSpinner} from "@angular/material/progress-spinner";
 
 @Component({
   selector: 'app-root-subgroup',
@@ -58,7 +63,11 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
     NgForOf,
     NgIf,
     MatMenuTrigger,
-    CdkDropListGroup
+    CdkDropListGroup,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatProgressSpinner
   ],
   templateUrl: './root-subgroup.component.html',
   styleUrl: './root-subgroup.component.css'
@@ -66,7 +75,10 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  protected readonly dropListRegistry = inject(DropListRegistryService)
+  protected readonly dropListRegistry = inject(DropListRegistryService);
+  protected readonly groupManagementUiPrefs = inject(GroupManagementUiPrefsService);
+
+  protected reorientingDropList: boolean = false;
 
   @Input() listingTitle!: string;
   @Input() groupId!: number;
@@ -83,6 +95,8 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected rootDropListId$ = new BehaviorSubject<string>('');
 
+  protected rootOrientation: DropListOrientation = this.groupManagementUiPrefs.getRootDropListOrientation;
+
   protected isHoveredTarget$ = combineLatest([
     this.dropListRegistry.hoveredTargetId$,
     this.rootDropListId$
@@ -90,14 +104,17 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     map(([hoveredId, rootId]) => hoveredId === rootId)
   )
 
-  protected displayListEntryBlocker$: Observable<boolean> =  combineLatest([
-    this.dropListRegistry.isDragging$,
-    this.dropListRegistry.dropDataType$,
-    this.isHoveredTarget$
-  ]).pipe(
-    map(([dragging, dataType, isHovered]) =>
-      dragging && (dataType === 'subgroup') && !isHovered),
-  )
+  protected collapseAll$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected collapseRootChildrenNotRoots$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+
+  // protected displayListEntryBlocker$: Observable<boolean> =  combineLatest([
+  //   this.dropListRegistry.isDragging$,
+  //   this.dropListRegistry.dropDataType$,
+  //   this.isHoveredTarget$
+  // ]).pipe(
+  //   map(([dragging, dataType, isHovered]) =>
+  //     dragging && (dataType === 'subgroup') && !isHovered),
+  // )
 
   constructor(protected subgroupInteract: SubgroupManagementInteractService){
     afterNextRender(() => {
@@ -141,7 +158,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    // console.log(this.dropListRegistry.droppableSubgroupLists);
+    console.log('rootDropListOrientation: ', this.rootOrientation);
   }
 
   rootEnterPredicate = (dragData: CdkDrag, dropList: CdkDropList): boolean => {
@@ -161,6 +178,33 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.rootSubgroupList.sortingDisabled = false;
 
     setTimeout(() => this.dropListRegistry.resetAfterDragEnd(), 300);
+  }
+
+  toggleDropListOrientation() {
+    this.reorientingDropList = true;
+    const current = this.groupManagementUiPrefs.getRootDropListOrientation;
+
+    if(current === 'horizontal') {
+      this.groupManagementUiPrefs.setRootDropListOrientation('vertical');
+    } else {
+      this.groupManagementUiPrefs.setRootDropListOrientation('horizontal');
+    }
+
+    this.rootOrientation = this.groupManagementUiPrefs.getRootDropListOrientation;
+
+    setTimeout(() => this.reorientingDropList = false, 1000);
+  }
+
+  toggleCollapseAll() {
+    this.collapseAll$.next(!this.collapseAll$.getValue());
+    this.collapseRootChildrenNotRoots$.next(true);
+  }
+
+  toggleCollapseRootsChildren() {
+    if(this.collapseAll$.getValue()) {
+      this.collapseAll$.next(false);
+    }
+    this.collapseRootChildrenNotRoots$.next(!this.collapseRootChildrenNotRoots$.getValue())
   }
 
   ngOnDestroy() {

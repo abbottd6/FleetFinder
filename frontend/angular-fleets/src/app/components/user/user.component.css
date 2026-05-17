@@ -83,6 +83,7 @@
 :host ::ng-deep .mat-expansion-panel-header {
   padding-left: 0;
   margin-left: 0;
+  transition: background-color 0.2s ease;
 }
 
 ::ng-deep .sidenav-expansion .mat-expansion-panel-header.mat-expanded {
@@ -136,12 +137,6 @@
 
 :host ::ng-deep .mat-expansion-panel-header .mat-expansion-indicator {
   fill: rgba(223, 241, 255, 0.5);
-}
-
-:host ::ng-deep .mat-expansion-panel-header:hover {
-  background-color: rgba(65, 103, 142, 0.6) !important;
-  font-size: 105%;
-  cursor: pointer;
 }
 
 :host ::ng-deep .mat-expansion-panel .mat-expanded:hover {

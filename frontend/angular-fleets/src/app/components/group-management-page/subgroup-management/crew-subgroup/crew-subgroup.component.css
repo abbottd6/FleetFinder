@@ -1,6 +1,6 @@
 .chip-self {
   isolation: isolate;
-  max-width: 400px;
+  max-width: 415px;
   margin-inline: auto;
   margin-top: 10px;
   border: 1px solid rgba(28, 24, 24, 0.1);
@@ -11,7 +11,20 @@
   overflow: hidden;
   font-family: "Exo 2", sans-serif;
   transition: border 0.2s ease, box-shadow 0.2s ease;
+  color: rgba(150, 168, 183, 0.85);
 }
+
+.chip-self.chip-self-orientation-horizontal {
+  margin-top: 20px;
+  max-width: none;
+  margin-left: 0;
+  overflow-x: auto;
+}
+
+.chip-self.full-width-chip-collapsed {
+  max-width: 425px;
+}
+
 
 .chip-self.is-hovered-container {
   box-shadow: 0 0 7px rgba(53, 114, 163, 0.2);
@@ -154,14 +167,6 @@
 
 /* --------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/
 
-/*.chip-contents.is-hovered-list {*/
-/*  border: 1px solid deeppink;*/
-/*}*/
-
-.chip-contents.position-list {
-  z-index: 10000 !important;
-}
-
 .chip-contents:empty {
   min-height: 20px;
 }
@@ -171,9 +176,48 @@
 }
 
 .chip-contents {
-  border: 1px solid transparent;
+  /*border: 1px solid deeppink;*/
   transform-origin: top left;
   transition: transform 0.3s ease, max-height 0.3s ease, opacity 0.2s ease;
+}
+
+.chip-contents.subgroups.orientation-horizontal {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 450px;
+  overflow-x: auto;
+  /*min-height: 65vh;*/
+  padding-bottom: 30px;
+}
+
+.chip-contents.subgroups.orientation-vertical {
+  display: grid;
+  grid-auto-flow: row;
+  grid-auto-rows: max-content;
+  overflow-y: auto;
+}
+
+.chip-contents.position-list {
+  z-index: 10000 !important;
+}
+
+.chip-contents.position-list.chip-contents-collapsed {
+  max-height: 0;
+}
+
+.chip-positions-collapsed {
+  min-height: 30px;
+  max-width: 400px;
+  /*margin-inline: auto;*/
+  margin-left: 1rem;
+  margin-right: auto;
+  margin-top: 14px;
+  background-color: rgba(74, 80, 89, 0.25);
+  border: 1px solid rgba(150, 168, 183, .15);
+  border-radius: 10px;
+  padding: 8px;
+  overflow: hidden;
+  font-family: "Exo 2", sans-serif;
 }
 
 .chip-subgroup-collapsed {
@@ -238,7 +282,7 @@
 .sort-icon {
   background-color: transparent;
   border: none;
-  color: rgba(150, 168, 183, 1);
+  color: rgba(150, 168, 183, 0.65);
   z-index: 1;
 }
 

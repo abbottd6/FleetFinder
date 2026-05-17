@@ -1,52 +1,47 @@
 import {
   AfterViewInit, ChangeDetectorRef,
   Component,
-  ElementRef, EventEmitter, inject,
+  ElementRef, inject,
   Input,
   OnDestroy,
-  OnInit, Output,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import {
   GroupCompSubgroupViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
 import {CrewPositionChipComponent} from "../crew-position-chip/crew-position-chip.component";
-import {AsyncPipe, JsonPipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {
   BehaviorSubject,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
+  combineLatest, distinctUntilChanged,
   Observable,
   Subject,
-  takeUntil, withLatestFrom
+  takeUntil,
 } from "rxjs";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {
-  CdkDrag,
   CdkDragEnter,
   CdkDragExit,
   CdkDragHandle,
   CdkDragMove, CdkDragRelease, CdkDragStart,
   CdkDropList,
-  DragDropModule
+  DragDropModule, DropListOrientation
 } from "@angular/cdk/drag-drop";
 import {
-  GroupCompPositionsBrief,
   SubgroupManagementInteractService
 } from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
 import {
-  DROP_COMPATIBILITY_PREDICATES,
-  DropData,
   DropListRegistration,
   DropListRegistryService, ElementContainerRegistration, getDropEntityType, SubgroupHoverTargetRegistration
 } from "../../../../services/facade-services/group-management/drop-list-registry.service";
-import {environment} from "../../../../../environments/environment";
-import {map, tap} from "rxjs/operators";
-import {MatIconButton} from "@angular/material/button";
+import {map} from "rxjs/operators";
+import {
+  GroupManagementUiPrefsService
+} from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
+
 
 
 @Component({
@@ -69,16 +64,21 @@ import {MatIconButton} from "@angular/material/button";
 })
 export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected dropListRegistry = inject(DropListRegistryService);
+  protected groupManagementUiPrefs = inject(GroupManagementUiPrefsService);
 
   private destroy$ = new Subject<void>();
 
   @Input() subgroup!: GroupCompSubgroupViewModel;
   @Input() collapseFromParent$!: BehaviorSubject<boolean>;
+  @Input() collapseAllFromRoot$!: BehaviorSubject<boolean>;
+  @Input() collapseChildrenFromRoot$!: BehaviorSubject<boolean>;
+
 
   @Input() dropListParentEl!: DropListRegistration;
   @Input() parentTreeDepth!: number;
   @Input() parentContainer!: ElementContainerRegistration;
   protected selfDepth!: number;
+  protected selfDropListOrientation!: DropListOrientation;
 
   @ViewChild('nativeSubgroupList') nativeSubgroupList!: CdkDropList;
   @ViewChild('nativeSubgroupListElement', {read: ElementRef }) nativeSubgroupListElement!: ElementRef<HTMLElement>;
@@ -100,10 +100,25 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected connectedToSubgroups: CdkDropList[] = [];
   protected connectedToPositions: CdkDropList[] = [];
 
-  protected collapseFromSelf$ = new BehaviorSubject<boolean>(true);
-  protected selfExpanded: boolean = true;
-  protected childrenExpanded: boolean = true;
+  // collapseFromSelf$ is the collapse state passed as input to children
+  protected selfCollapsedStatePropagatedToChildren$ = new BehaviorSubject<boolean>(true);
 
+  // selfExpanded is used to enable/disable expansion styles for this individual instance of this component
+  protected selfExpanded: boolean = this.collapseAllFromRoot$ !== null ? false : this.collapseFromParent$.getValue();
+
+  // childrenExpanded tracks the expansion state of the nested children for each instance of this component
+  // to connect the states of the different toggle button functionalities (collapse self vs. collapse children)
+  protected childrenExpanded: boolean = this.collapseChildrenFromRoot$ !== null ? true : this.collapseFromParent$.getValue();
+
+  protected get listNativeAssignedPositionsCount(): number {
+    return this.subgroup.crewPositions.filter(p => p.assignedMember !== null).length;
+  }
+
+  protected get listNativeTotalPositionsCount(): number {
+    return this.subgroup.crewPositions.length;
+  }
+
+  //todo this needs to be recursive and then the above version needs to just be native level
   protected get assignedPositionsCount(): number {
     return this.subgroup.crewPositions.filter(p => p.assignedMember != null).length;
   }
@@ -147,12 +162,44 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
               private cdr: ChangeDetectorRef){}
 
   ngOnInit() {
-    this.selfDepth = this.parentTreeDepth++;
+    this.selfDepth = this.parentTreeDepth + 1;
+
+    this.setDropListOrientationFromPrefs();
+
     if(this.collapseFromParent$ != null) {
-      this.collapseFromParent$.subscribe(collapse => {
+      this.collapseFromParent$.pipe(takeUntil(this.destroy$))
+        .subscribe(collapse => {
         this.selfExpanded = collapse;
         this.childrenExpanded = collapse;
-        this.collapseFromSelf$.next(collapse);
+        this.selfCollapsedStatePropagatedToChildren$.next(collapse);
+      })
+    }
+
+    if(this.collapseAllFromRoot$ != null) {
+
+      if(this.collapseAllFromRoot$.getValue()) {
+        this.selfExpanded = false;
+        this.childrenExpanded = false;
+        this.collapseFromParent$.next(this.selfCollapsedStatePropagatedToChildren$.getValue())
+        this.selfCollapsedStatePropagatedToChildren$.next(false);
+      }
+
+      this.collapseAllFromRoot$.pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged()
+      ).subscribe(collapse => {
+        this.selfExpanded = !this.selfExpanded;
+        this.selfCollapsedStatePropagatedToChildren$.next(false);
+      })
+    }
+
+    if(this.collapseChildrenFromRoot$ != null) {
+      this.collapseChildrenFromRoot$.pipe(
+        takeUntil(this.destroy$),
+        distinctUntilChanged())
+        .subscribe(collapse => {
+          this.childrenExpanded = !this.childrenExpanded;
+          this.selfCollapsedStatePropagatedToChildren$.next(this.childrenExpanded);
       })
     }
 
@@ -200,6 +247,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.isHoveredTarget$ = this.dropListRegistry.hoveredTargetId$.pipe(
       map(hoveredId => hoveredId === this.thisDropListId$.getValue()),
     );
+
+    console.log(`Subgroup ${this.subgroupListRegistrationRef.id} orientation: ${this.selfDropListOrientation} \n depth: ${this.selfDepth}`);
   }
 
   onEntered(e: CdkDragEnter) { console.log('ENTERED:', e.container.id)};
@@ -229,7 +278,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.childrenExpanded = this.selfExpanded;
 
-    this.collapseFromSelf$.next(this.selfExpanded);
+    this.selfCollapsedStatePropagatedToChildren$.next(this.selfExpanded);
   }
 
   collapseChildren() {
@@ -238,7 +287,28 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.childrenExpanded = !this.childrenExpanded;
-    this.collapseFromSelf$.next(this.childrenExpanded);
+    this.selfCollapsedStatePropagatedToChildren$.next(this.childrenExpanded);
+  }
+
+  setDropListOrientationFromPrefs() {
+    const rootOrientation = this.groupManagementUiPrefs.groupManagementUiPrefs.groupCompositionPrefs.rootDropListOrientation;
+
+    if(rootOrientation === 'horizontal') {
+      this.selfDropListOrientation = 'vertical';
+    } else {
+      if(this.selfDepth === 0) {
+        this.selfDropListOrientation = 'horizontal'
+      } else {
+        this.selfDropListOrientation = 'vertical';
+      }
+    }
+  }
+
+  get chipSelfOrientationVertical(): boolean {
+    const rootIsVertical = this.groupManagementUiPrefs.getRootDropListOrientation === 'vertical';
+    const selfDepthIsZero = false;
+
+    return false;
   }
 
   ngOnDestroy() {

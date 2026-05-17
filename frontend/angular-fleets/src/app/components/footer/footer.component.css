@@ -2,7 +2,7 @@
   display: inline-block;
   background-color: var(--bs-dark) !important;
   color: rgba(188, 191, 200, .75);
-  width: 95vw;
+  width: 98vw;
   border-top: 1px solid rgba(188, 191, 200, .25);
   min-height: 125px;
 }
