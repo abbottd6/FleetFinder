@@ -146,8 +146,17 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
         InGroupRank ownerRank = rankService.getGenericRankByTitle(GroupRankGenericTypes.Owner);
         Boolean hasExtNotes = getNewMemberHasExternalNotes(user);
 
-        memberRepo.save(new GroupMember(listing, user, GroupMemberStatus.ACTIVE,
-                ownerRank.getRankId(), hasExtNotes));
+        GroupMember owner = new GroupMember(listing, user, GroupMemberStatus.ACTIVE,
+                ownerRank.getRankId(), hasExtNotes);
+
+        String comms = listing.getCommsOption().toLowerCase();
+
+        if(comms.equals("required") || comms.equals("optional")) {
+            owner.setHasHeadset(true);
+            owner.setHasMic(true);
+        }
+
+        memberRepo.save(owner);
     }
 
     @Override

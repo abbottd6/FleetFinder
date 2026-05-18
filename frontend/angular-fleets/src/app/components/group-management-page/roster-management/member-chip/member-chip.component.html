@@ -1,18 +1,79 @@
 <div class="chip-self">
 
-  <div class="header-row">
-    <h5 id="header-left">{{ member.userSummary.username }}</h5>
-    <span id="header-right">
-      <span class="field-label">
-        Created: {{ member.joinedAt | date:'MMM, d h:mm a'}}
-      </span>
+  <div class="header-row"
+       [class.member-details-collapsed]="!detailsExpanded">
+    <span class="header-left">
+      {{ member.userSummary.username }} ({{member.userSummary.inGameUsername}})
+      <ng-container *ngIf="member.hasMic && member.hasHeadset; else parseComms">
+        <mat-icon class="material-symbols-outlined comms-icons">
+          headset_mic
+        </mat-icon>
+      </ng-container>
+      <!-- determine comms icons to display -->
+      <ng-template #parseComms>
+        <mat-icon *ngIf="!member.hasMic && !member.hasHeadset; else partialComms"
+              class="material-symbols-outlined comms-icons">
+          headset_off
+        </mat-icon>
+        <ng-template #partialComms>
+          <mat-icon *ngIf="member.hasMic; else noMic"
+                class="material-symbols-outlined comms-icons">
+            mic
+          </mat-icon>
+          <ng-template #noMic>
+            <mat-icon class="material-symbols-outlined comms-icons">
+              mic_off
+            </mat-icon>
+          </ng-template>
+          <mat-icon *ngIf="member.hasHeadset; else noHeadset"
+                class="material-symbols-outlined comms-icons">
+            headphones
+          </mat-icon>
+          <ng-template #noHeadset>
+            <mat-icon>headset_off</mat-icon>
+          </ng-template>
+        </ng-template>
+      </ng-template>
+    </span>
+
+    <span class="header-right">
+      <button class="member-details-toggle-button"
+              type="button"
+              (click)="toggleDetailsExpand()">
+                <mat-icon [class.rotate]="detailsExpanded"
+                          [matTooltip]="(detailsExpanded) ? 'Collapse details' : 'Expand details'">
+                  arrow_drop_up
+                </mat-icon>
+      </button>
     </span>
   </div>
 
-  <div class="chip-body">
-    <div class="data-wrapper">
-      <div class="template-column">
+  <div class="chip-body"
+       [class.details-collapsed]="!detailsExpanded"
+       [class.details-expanded]="detailsExpanded">
+
+      @let role = member.memberRole;
+      <div class="label-val-pair">
+        <span class="field-label">Role: </span>
+        <span class="field-val" [class.has-val]="role != null">{{ role != null ? role.roleSummary.roleTitle : 'Unassigned' }}</span>
       </div>
-    </div>
+      @if(role !== undefined) {
+        <div class="label-val-pair">
+          <span class="field-label">In: </span>
+          <span class="field-val">{{ role.subgroupSummary.subgroupLabel.length > 23 ? (
+            role.subgroupSummary.subgroupLabel | slice:0:23) + '...'
+            : role.subgroupSummary.subgroupLabel }}</span>
+        </div>
+      }
+      @let rank = member.memberRank;
+        <div class="label-val-pair">
+          <span class="field-label">Rank: </span>
+          <span class="field-val">{{ rank.rankTitle }}</span>
+        </div>
+
+        <div class="label-val-pair">
+          <span class="field-label">RSVP Status: </span>
+          <span class="field-label">{{member.rsvpStatus != null ? toTitleCase(member.rsvpStatus) : 'N/A'}}</span>
+        </div>
   </div>
 </div>

@@ -1,5 +1,6 @@
 import {RoleClassSummaryViewModel} from "../../nested-models/role-class-summary-view-model";
 import {UserMonikerSummaryViewModel} from "../../nested-models/user-moniker-summary-view-model";
+import {GroupManagementMemberViewModel} from "../group-membership/group-management-member-view-model";
 
 export class GroupCompCrewPositionViewModel {
   readonly entityType = 'position' as const;
@@ -14,7 +15,7 @@ export class GroupCompCrewPositionViewModel {
     public sortOrder: number,
     public groupRole: RoleClassSummaryViewModel,
     public positionNote: string,
-    public assignedMember: UserMonikerSummaryViewModel,
+    public assignedMember: GroupManagementMemberViewModel,
     public filledAt: Date,
     public vacatedAt: Date,
     public createdAt: Date

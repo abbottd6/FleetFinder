@@ -1,7 +1,3 @@
-/*:host {*/
-/*  max-width: fit-content;*/
-/*}*/
-
 .chip-self {
   isolation: isolate;
   border: 1px solid rgba(28, 24, 24, 0.1);
@@ -16,25 +12,25 @@
 }
 
 .chip-self.chip-self-orientation-horizontal-mixed {
-  margin-top: 20px;
-  max-width: fit-content;
+  /*margin-top: 20px;*/
+  min-width: fit-content;
   margin-left: 0;
   margin-right: auto;
-  min-width: 415px;
+  margin-bottom: 10px;
 }
 
 .chip-self.chip-self-orientation-vertical {
   display: grid;
   grid-auto-flow: row;
   grid-auto-rows: max-content;
-  max-width: 445px;
+  grid-template-columns: minmax(0, 100%);
   overflow-y: auto;
-  margin-top: 20px;
+  margin-bottom: 10px;
   margin-left: 4px;
 }
 
 .chip-self.deeply-nested {
-  max-width: 98%;
+  width: 98%;
 }
 
 /*.chip-self.deeply-nested .position-list{*/
@@ -209,6 +205,10 @@
   min-height: 20px;
 }
 
+.chip-contents {
+  min-height: 20px;
+}
+
 .chip-contents:empty.is-hovered-list {
   min-height: 65px;
 }
@@ -222,7 +222,7 @@
 .chip-contents.subgroups.orientation-horizontal {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: 450px;
+  grid-auto-columns: max-content;
   /*max-width: 100%;*/
   gap: 20px;
   margin-inline: 10px;
@@ -233,7 +233,9 @@
   display: grid;
   grid-auto-flow: row;
   grid-auto-rows: max-content;
+  grid-template-columns: minmax(0, 375px) !important;
   overflow-y: auto;
+
 }
 
 .chip-contents.subgroups.orientation-mixed {
@@ -248,15 +250,12 @@
   z-index: 10000 !important;
 }
 
-.chip-contents.position-list.chip-contents-collapsed {
-  max-height: 0;
-}
-
 .chip-positions-collapsed {
+  display: flex;
   min-height: 30px;
-  max-width: 400px;
+  /*width: 400px;*/
   /*margin-inline: auto;*/
-  margin-left: 0;
+  margin-left: auto;
   margin-right: auto;
   margin-top: 14px;
   background-color: rgba(74, 80, 89, 0.25);
@@ -267,25 +266,59 @@
   font-family: "Exo 2", sans-serif;
 }
 
-.chip-positions-collapsed.orientation-horizontal-mixed {
-  margin-left: 15px;
+.positions-collapse-button-container {
+  border-top: 1px solid rgba(150, 168, 183, .25);
+  font-family: 'Orbitron', sans-serif;
+  margin-left: 3px;
+}
+
+.positions-collapse-button-container .chip-positions-collapse-button {
+  color: rgba(150, 168, 183, 0.85);
+  line-height: 26px;
+  /*padding-top: 3px;*/
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.positions-collapse-button-container .chip-positions-collapse-button:hover {
+  color: var(--button-hover-color)
+}
+
+.chip-positions-collapse-button {
+  border: none;
+  background: none;
+  color: transparent;
+  line-height: 0;
+  /*padding-top: 3px;*/
+  padding-bottom: 0;
+  margin-bottom: 0;
+  transform: rotate(180deg);
+  transition: color 0.4s ease, transform 0.3s ease;
+}
+
+.chip-positions-collapsed:hover .chip-positions-collapse-button:not(:disabled) {
+  color: rgba(150, 168, 183, 0.85);
 }
 
 .chip-self-orientation-vertical .chip-positions-collapsed {
-  margin-left: auto;
-  margin-right: auto;
+  margin-left: 3px;
+  width: calc(100% - 3px);
 }
 
 
-.chip-contents.position-list.orientation-horizontal,
-.chip-contents.position-list.orientation-mixed {
+.chip-contents:not(.chip-contents-collapsed).position-list.orientation-horizontal,
+.chip-contents:not(.chip-contents-collapsed).position-list.orientation-mixed {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(400px, 425px));
   grid-template-rows: repeat(5, auto);
   grid-auto-flow: column;
-  margin-left: 20px;
+  margin-left: 10px;
   margin-right: auto;
+}
 
+.chip-positions-collapsed.orientation-horizontal-mixed {
+  margin-left: 15px !important;
+  margin-right: auto;
 }
 
 .chip-subgroup-collapsed {
@@ -317,7 +350,7 @@
 
 /* --------------------------------------------------------------------------------------------- */
 .chip-content-wrapper {
-  padding-inline: 8px;
+  padding-inline: 4px;
 }
 
 .subgroup-header {
@@ -326,18 +359,21 @@
   border-bottom: 1px solid rgba(150, 168, 183, .3);
   margin-inline: auto;
   padding-bottom: 0;
+  margin-bottom: 10px;
   font-size: 1.05rem;
   font-family: "Orbitron", sans-serif;
-  min-width: 375px;
+  min-width: fit-content;
 }
 
 .nested-subgroup .subgroup-header {
   font-size: 0.95rem;
 }
 
-.header-left {
+.subgroup-header .header-left {
   /*margin-left: 10px;*/
   margin-right: auto;
+  overflow: hidden;
+  text-overflow: ellipsis !important;
 }
 
 .sort-icon {
@@ -437,10 +473,14 @@
 
 .summary-data-left {
   display: flex;
+  margin-left: 0;
+  margin-right: auto;
   text-align: start;
 }
 
 .summary-data-right {
   display: flex;
   justify-content: flex-end;
+  margin-left: auto;
+  margin-right: 0;
 }

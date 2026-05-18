@@ -2,4 +2,9 @@
   <div class="position-header" cdkDragHandle>
     <span id="position-drag-handle">{{ position.groupRole.roleTitle }}</span>
   </div>
+  <ng-container *ngIf="position.assignedMember?.userSummary !== null">
+    <app-member-chip
+      [member]="position.assignedMember">
+    </app-member-chip>
+  </ng-container>
 </div>

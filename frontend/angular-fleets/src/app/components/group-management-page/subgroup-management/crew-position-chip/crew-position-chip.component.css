@@ -1,6 +1,6 @@
 .position-chip {
   min-height: 60px;
-  max-width: 98%;
+  max-width: 400px;
   margin-inline: auto;
   margin-top: 10px;
   border: 1px solid rgba(150, 168, 183, .15);
@@ -9,8 +9,6 @@
   overflow: hidden;
   font-family: "Exo 2", sans-serif;
 }
-
-
 
 .position-header {
   display: flex;

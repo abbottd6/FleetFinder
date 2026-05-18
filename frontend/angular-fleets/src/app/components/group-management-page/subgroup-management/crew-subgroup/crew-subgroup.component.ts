@@ -110,6 +110,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   // to connect the states of the different toggle button functionalities (collapse self vs. collapse children)
   protected childrenExpanded: boolean = this.collapseChildrenFromRoot$ !== null ? true : this.collapseFromParent$.getValue();
 
+  protected positionsExpanded: boolean = this.childrenExpanded;
+
   protected nativeTogglesNextOrientation!: DropListOrientation;
 
   protected get listNativeAssignedPositionsCount(): number {
@@ -309,8 +311,13 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.selfExpanded = !this.selfExpanded;
 
     this.childrenExpanded = this.selfExpanded;
+    this.positionsExpanded = this.childrenExpanded;
 
     this.selfCollapsedStatePropagatedToChildren$.next(this.selfExpanded);
+  }
+
+  toggleCollapsePositions() {
+    this.positionsExpanded = !this.positionsExpanded;
   }
 
   collapseChildren() {
@@ -319,6 +326,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     this.childrenExpanded = !this.childrenExpanded;
+    this.positionsExpanded = this.childrenExpanded;
     this.selfCollapsedStatePropagatedToChildren$.next(this.childrenExpanded);
   }
 

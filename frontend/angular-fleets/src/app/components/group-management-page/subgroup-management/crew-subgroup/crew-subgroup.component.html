@@ -121,7 +121,8 @@
              [class.orientation-horizontal]="subgroup.dropListOrientation === 'horizontal'"
              [class.orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
              [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'"
-             [class.is-hovered-list]="(isHoveredTarget$ | async)">
+             [class.is-hovered-list]="(isHoveredTarget$ | async)"
+             [class.deeply-nested]="selfDepth > 1" >
             <div *ngFor="let childSubgroup of subgroup.subgroups"
                  cdkDrag
                  [cdkDragData]="childSubgroup"
@@ -143,6 +144,17 @@
 
         <!--      [class.empty-subgroup]="emptyPositionTree && emptySubgroupTree"-->
       <div class="positions-list-wrapper">
+        <div *ngIf="listNativeTotalPositionsCount !== 0 && selfExpanded" class="positions-collapse-button-container">
+          <span>Positions</span>
+          <button class="chip-positions-collapse-button"
+                  type="button"
+                  (click)="toggleCollapsePositions()">
+            <mat-icon [class.rotate]="positionsExpanded"
+                      [matTooltip]="(positionsExpanded) ? 'Collapse positions' : 'Expand positions'">
+              arrow_drop_up
+            </mat-icon>
+          </button>
+        </div>
         <div class="chip-contents position-list"
            cdkDropList
            #nativePositionListElement
@@ -156,29 +168,43 @@
            (cdkDropListDropped)="subgroupInteract.onPositionDrop($event, subgroup)"
            [class.chip-subgroup-expanded]="selfExpanded"
            [class.chip-subgroup-collapsed]="!selfExpanded"
-           [class.chip-contents-collapsed]="selfExpanded && !childrenExpanded"
+           [class.chip-contents-collapsed]="selfExpanded"
            [class.orientation-horizontal]="subgroup.dropListOrientation === 'horizontal'"
            [class.orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
-           [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'">
-          <div *ngFor="let position of subgroup.crewPositions"
-               cdkDrag
-               [cdkDragData]="position"
-               (cdkDragMoved)="onDragMoved($event)"
-               (cdkDragStarted)="dragStarted($event)"
-               (cdkDragReleased)="resetAfterDragReleased($event)">
-            <app-crew-position-chip
-              [position]="position">
-            </app-crew-position-chip>
-          </div>
-        </div>
-        <ng-container *ngIf="selfExpanded && !childrenExpanded && (listNativeTotalPositionsCount !== 0)">
-          <div class="chip-positions-collapsed"
-            [class.orientation-horizontal-mixed]="subgroup.dropListOrientation === 'horizontal' || subgroup.dropListOrientation === 'mixed'">
+           [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'"
+           [class.is-hovered-list]="(isHoveredTarget$ | async)">
+          <ng-container *ngIf="selfExpanded && !positionsExpanded; else notCollapsed">
+            <div class="chip-positions-collapsed"
+                 [class.orientation-horizontal-mixed]="subgroup.dropListOrientation === 'horizontal' || subgroup.dropListOrientation === 'mixed'">
             <span class="summary-data-left">
               Positions: {{ listNativeAssignedPositionsCount }}/{{ listNativeTotalPositionsCount }}
             </span>
-          </div>
-        </ng-container>
+            <span *ngIf="listNativeTotalPositionsCount !== 0" class="summary-data-right">
+              <button class="chip-positions-collapse-button"
+                      type="button"
+                      (click)="toggleCollapsePositions()">
+                <mat-icon [class.rotate]="positionsExpanded"
+                          [matTooltip]="(positionsExpanded) ? 'Collapse positions' : 'Expand positions'">
+                  arrow_drop_up
+                </mat-icon>
+              </button>
+            </span>
+            </div>
+          </ng-container>
+          <ng-template #notCollapsed>
+            <div *ngFor="let position of subgroup.crewPositions"
+                 cdkDrag
+                 [cdkDragData]="position"
+                 (cdkDragMoved)="onDragMoved($event)"
+                 (cdkDragStarted)="dragStarted($event)"
+                 (cdkDragReleased)="resetAfterDragReleased($event)">
+              <app-crew-position-chip
+                [position]="position">
+              </app-crew-position-chip>
+            </div>
+          </ng-template>
+        </div>
+
       </div>
     </div>
 

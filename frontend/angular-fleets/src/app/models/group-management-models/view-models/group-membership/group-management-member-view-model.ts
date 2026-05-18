@@ -12,7 +12,8 @@ export class GroupManagementMemberViewModel {
     public memberNote: string,
     public memberRole: MemberPositionSummaryViewModel,
     public memberRank: InGroupRankViewModel,
-    public hasComms: boolean,
+    public hasMic: boolean,
+    public hasHeadset: boolean,
     public hasExtNotes: boolean,
     public rsvpStatus: string,
     public joinedAt: Date
