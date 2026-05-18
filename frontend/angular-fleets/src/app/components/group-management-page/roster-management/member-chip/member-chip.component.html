@@ -52,19 +52,25 @@
        [class.details-collapsed]="!detailsExpanded"
        [class.details-expanded]="detailsExpanded">
 
+    <section class="columns-wrapper">
       @let role = member.memberRole;
       <div class="label-val-pair">
         <span class="field-label">Role: </span>
         <span class="field-val" [class.has-val]="role != null">{{ role != null ? role.roleSummary.roleTitle : 'Unassigned' }}</span>
       </div>
-      @if(role !== undefined) {
-        <div class="label-val-pair">
-          <span class="field-label">In: </span>
+      <div class="label-val-pair">
+        <span class="field-label">Group: </span>
+        @if(role != null) {
           <span class="field-val">{{ role.subgroupSummary.subgroupLabel.length > 23 ? (
             role.subgroupSummary.subgroupLabel | slice:0:23) + '...'
-            : role.subgroupSummary.subgroupLabel }}</span>
-        </div>
-      }
+            : role.subgroupSummary.subgroupLabel }}
+          </span>
+        } @else {
+          <span class="field-val">Unassigned</span>
+        }
+
+      </div>
+
       @let rank = member.memberRank;
         <div class="label-val-pair">
           <span class="field-label">Rank: </span>
@@ -75,5 +81,17 @@
           <span class="field-label">RSVP Status: </span>
           <span class="field-label">{{member.rsvpStatus != null ? toTitleCase(member.rsvpStatus) : 'N/A'}}</span>
         </div>
+
+      <div class="label-val-pair">
+        <span class="field-label">Discord: </span>
+        <span class="field-val">{{ member.userSummary.discordUsername }}</span>
+      </div>
+    </section>
+    <div class="bottom-timestamp-row">
+      <div class="label-val-pair">
+        <span class="field-label">Last Active: </span>
+        <span class="field-val">{{ member.userSummary.lastAccess | date:'MMM, dd hh:mm a'}}</span>
+      </div>
+    </div>
   </div>
 </div>

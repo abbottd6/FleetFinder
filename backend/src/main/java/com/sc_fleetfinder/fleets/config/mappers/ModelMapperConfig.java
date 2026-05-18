@@ -128,6 +128,19 @@ public class ModelMapperConfig {
                     }).map(Users::getServer, PrivateUserResponseDto::setServer);
                 });
 
+        modelMapper.createTypeMap(Users.class, UserSummaryResponseDto.class)
+                .addMappings(mapper -> {
+                    mapper.map(Users::getUserId, UserSummaryResponseDto::setUserId);
+
+                    mapper.map(Users::getUsername, UserSummaryResponseDto::setUsername);
+
+                    mapper.map(Users::getInGameUsername, UserSummaryResponseDto::setInGameUsername);
+
+                    mapper.map(Users::getDiscordUsername, UserSummaryResponseDto::setDiscordUsername);
+
+                    mapper.map(Users::getLastAccess,  UserSummaryResponseDto::setLastAccess);
+                });
+
 //GROUP LISTINGS
         // Group Listing ---->>> Response Dto
         modelMapper.createTypeMap(GroupListing.class, GroupListingResponseDto.class)

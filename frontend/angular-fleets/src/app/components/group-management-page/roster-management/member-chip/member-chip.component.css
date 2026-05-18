@@ -1,4 +1,6 @@
 :host {
+  display: flex;
+  min-height: fit-content;
   width: 100%;
 }
 
@@ -8,7 +10,7 @@
   margin-inline: auto;
   border: 1px solid rgba(28, 24, 24, 0.1);
   border-radius: 10px;
-  padding: 4px;
+  padding: 8px 4px 0 4px;
   background-color: rgba(17, 17, 19, 0.15);
   box-shadow: rgba(0, 0, 0, 0.2) 0 3px 1px -2px,
   rgba(0, 0, 0, 0.12) 0 1px 5px 0;
@@ -20,9 +22,10 @@
 .header-row {
   display: flex;
   flex-direction: row;
+  padding: 2px;
   max-width: 98%;
   border-bottom: 1px solid rgba(150, 168, 183, .3);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   margin-inline: auto;
   transition: border 0.2s ease;
 }
@@ -36,19 +39,23 @@
 }
 
 .header-left {
+  display: flex;
   margin-left: 0;
   margin-right: auto;
   /*color: rgba(255, 131, 7, .4);*/
   font-size: 110%;
+  align-items: center;
 }
 
 .comms-icons {
   font-variation-settings: 'wght' 300;
   font-size: 22px;
   width: 22px;
-  height: 22px;
-  line-height: 26px;
+  height: 26px;
+  line-height: 28px;
+  margin-left: 4px;
   padding-bottom: 0;
+  align-self: baseline;
 }
 
 .header-right {
@@ -62,22 +69,36 @@
 }
 
 .member-details-toggle-button {
+  display: flex;
   border: none;
   background: none;
   color: rgba(150, 168, 183, 0.85);
-  line-height: 0;
-  /*padding-top: 3px;*/
   padding-bottom: 0;
   margin-bottom: 0;
   transform: rotate(180deg);
-  transition: color 0.4s ease, transform 0.3s ease;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.member-details-toggle-button mat-icon {
+  align-self: baseline;
 }
 
 .chip-body {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease;
+  padding-bottom: 6px;
+}
+
+.columns-wrapper {
   width: 100%;
   display: grid;
-  grid-template-columns: 60% 40%;
-  transition: transform 0.2s ease;
+  grid-template-columns: 1fr 1fr;
+}
+
+.chip-body.details-expanded .bottom-timestamp-row {
+  display: inline-block;
+  padding-top: 4px;
 }
 
 .chip-body.details-collapsed {
@@ -88,7 +109,7 @@
 
 .chip-body.details-expanded {
   transform: scale3d(1, 1, 1);
-  max-height: 80px;
+  max-height: fit-content;
   opacity: 1;
   overflow: hidden;
 }

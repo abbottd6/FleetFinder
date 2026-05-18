@@ -173,22 +173,22 @@
            [class.orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
            [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'"
            [class.is-hovered-list]="(isHoveredTarget$ | async)">
-          <ng-container *ngIf="selfExpanded && !positionsExpanded; else notCollapsed">
+          <ng-container *ngIf="!positionsExpanded; else notCollapsed">
             <div class="chip-positions-collapsed"
                  [class.orientation-horizontal-mixed]="subgroup.dropListOrientation === 'horizontal' || subgroup.dropListOrientation === 'mixed'">
-            <span class="summary-data-left">
-              Positions: {{ listNativeAssignedPositionsCount }}/{{ listNativeTotalPositionsCount }}
-            </span>
-            <span *ngIf="listNativeTotalPositionsCount !== 0" class="summary-data-right">
-              <button class="chip-positions-collapse-button"
-                      type="button"
-                      (click)="toggleCollapsePositions()">
-                <mat-icon [class.rotate]="positionsExpanded"
-                          [matTooltip]="(positionsExpanded) ? 'Collapse positions' : 'Expand positions'">
-                  arrow_drop_up
-                </mat-icon>
-              </button>
-            </span>
+              <span class="summary-data-left">
+                Positions: {{ listNativeAssignedPositionsCount }}/{{ listNativeTotalPositionsCount }}
+              </span>
+<!--            <span *ngIf="listNativeTotalPositionsCount !== 0" class="summary-data-right">-->
+<!--              <button class="chip-positions-collapse-button"-->
+<!--                      type="button"-->
+<!--                      (click)="toggleCollapsePositions()">-->
+<!--                <mat-icon [class.rotate]="positionsExpanded"-->
+<!--                          [matTooltip]="(positionsExpanded) ? 'Collapse positions' : 'Expand positions'">-->
+<!--                  arrow_drop_up-->
+<!--                </mat-icon>-->
+<!--              </button>-->
+<!--            </span>-->
             </div>
           </ng-container>
           <ng-template #notCollapsed>

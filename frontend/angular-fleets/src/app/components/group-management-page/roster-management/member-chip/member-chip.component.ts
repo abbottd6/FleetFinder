@@ -16,7 +16,8 @@ import {toTitleCase} from "../../../../utils/global-functions";
     NgIf,
     MatIcon,
     MatTooltip,
-    SlicePipe
+    SlicePipe,
+    DatePipe
   ],
   styleUrl: './member-chip.component.css'
 })
