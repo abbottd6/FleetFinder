@@ -7,6 +7,7 @@ import {DatePipe, NgIf, SlicePipe} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {toTitleCase} from "../../../../utils/global-functions";
+import {CdkDragHandle} from "@angular/cdk/drag-drop";
 
 @Component({
   selector: 'app-member-chip',
@@ -17,7 +18,8 @@ import {toTitleCase} from "../../../../utils/global-functions";
     MatIcon,
     MatTooltip,
     SlicePipe,
-    DatePipe
+    DatePipe,
+    CdkDragHandle
   ],
   styleUrl: './member-chip.component.css'
 })

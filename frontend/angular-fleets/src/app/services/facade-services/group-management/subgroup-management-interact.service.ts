@@ -20,6 +20,9 @@ import {
 import {DropListRegistryService} from "./drop-list-registry.service";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
+import {
+  GroupManagementMemberViewModel
+} from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
 
 export interface GroupCompPositionsBrief {
   assigned: number,
@@ -125,6 +128,7 @@ export class SubgroupManagementInteractService {
   }
 
   //todo THIS IS WRONG and breaking
+  // is it still? grabbedFrom is unused and probably does not need to be here, its in event already
   onPositionDrop(event: CdkDragDrop<GroupCompCrewPositionViewModel[]>, grabbedFrom: GroupCompSubgroupViewModel) {
     if(event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -142,6 +146,17 @@ export class SubgroupManagementInteractService {
     }
 
     this.dropListRegistry.resetAfterDragEnd();
+  }
+
+  onMemberDrop(event: CdkDragDrop<GroupManagementMemberViewModel[]>) {
+    if(event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+
+    } else {
+      transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+
+      const current = this.subgroupTreesSubject.getValue();
+    }
   }
 
   clearTrees() {

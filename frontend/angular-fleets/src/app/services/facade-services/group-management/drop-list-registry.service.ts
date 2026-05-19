@@ -74,7 +74,7 @@ export const DROP_COMPATIBILITY_PREDICATES: Record< string, DropPredicate> = {
     'positionId' in dropData && (target.entityType === 'position'),
 
   MEMBER_TO_POSITION: (dropData, target) =>
-    ('memberStatus' in dropData) && (target.entityType === 'position'),
+    ('memberStatus' in dropData) && (target.entityType === 'member'),
 }
 
 export function getDropEntityType(dropData: DropData): DropListEntityType {

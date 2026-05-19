@@ -1,8 +1,8 @@
 <div class="chip-self">
 
-  <div class="header-row"
+  <div class="chip-header"
        [class.member-details-collapsed]="!detailsExpanded">
-    <span class="header-left">
+    <span class="header-left" cdkDragHandle>
       {{ member.userSummary.username }} ({{member.userSummary.inGameUsername}})
       <ng-container *ngIf="member.hasMic && member.hasHeadset; else parseComms">
         <mat-icon class="material-symbols-outlined comms-icons">
@@ -54,11 +54,10 @@
 
     <section class="columns-wrapper">
       @let role = member.memberRole;
-      <div class="label-val-pair">
+
         <span class="field-label">Role: </span>
         <span class="field-val" [class.has-val]="role != null">{{ role != null ? role.roleSummary.roleTitle : 'Unassigned' }}</span>
-      </div>
-      <div class="label-val-pair">
+
         <span class="field-label">Group: </span>
         @if(role != null) {
           <span class="field-val">{{ role.subgroupSummary.subgroupLabel.length > 23 ? (
@@ -69,18 +68,13 @@
           <span class="field-val">Unassigned</span>
         }
 
-      </div>
-
       @let rank = member.memberRank;
-        <div class="label-val-pair">
           <span class="field-label">Rank: </span>
           <span class="field-val">{{ rank.rankTitle }}</span>
-        </div>
 
-        <div class="label-val-pair">
           <span class="field-label">RSVP Status: </span>
           <span class="field-label">{{member.rsvpStatus != null ? toTitleCase(member.rsvpStatus) : 'N/A'}}</span>
-        </div>
+
 
       <div class="label-val-pair">
         <span class="field-label">Discord: </span>

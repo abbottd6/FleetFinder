@@ -1,9 +1,17 @@
 <div class="panel-wrapper">
   <app-active-roster-options-panel>
   </app-active-roster-options-panel>
-  <ng-container *ngFor="let member of (managementInteract.activeRoster$ | async)?.content">
-    <app-member-chip
-      [member]="member">
-    </app-member-chip>
-  </ng-container>
+  <div *ngIf="(managementInteract.activeRoster$ | async)?.content as activeRoster"
+    cdkDropList
+    [cdkDropListData]="activeRoster"
+    [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
+    (cdkDropListDropped)="subgroupInteract.onMemberDrop($event)">
+    <div *ngFor="let member of activeRoster"
+      cdkDrag
+      [cdkDragData]="member">
+      <app-member-chip
+        [member]="member">
+      </app-member-chip>
+    </div>
+  </div>
 </div>
