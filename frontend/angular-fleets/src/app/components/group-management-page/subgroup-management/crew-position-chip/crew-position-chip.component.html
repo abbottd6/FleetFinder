@@ -1,6 +1,8 @@
 <div class="position-chip">
-  <div class="position-header" cdkDragHandle>
-    <span id="position-drag-handle">{{ position.groupRole.roleTitle }}</span>
+  <div class="position-header" cdkDragHandle [class.has-member]="assignedMember.length > 0">
+    <span id="position-drag-handle">
+      {{ position.groupRole.roleTitle }}
+    </span>
   </div>
   <div class="position-member-slot"
     cdkDropList
@@ -12,5 +14,12 @@
         [member]="member">
       </app-member-chip>
     </div>
+    <ng-container *ngIf="(dropListRegistry.hoveredPositionId$ | async) === position.positionId">
+      <div class="member-drop-placeholder">
+        <app-member-chip
+          [member]="dropListRegistry.draggedMember$.getValue()!">
+        </app-member-chip>
+      </div>
+    </ng-container>
   </div>
 </div>

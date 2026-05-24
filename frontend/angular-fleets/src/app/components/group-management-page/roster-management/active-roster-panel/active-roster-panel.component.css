@@ -16,3 +16,10 @@
   scrollbar-arrow-color: transparent !important;
   scrollbar-width: thin;
 }
+
+.active-members-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 6px;
+}

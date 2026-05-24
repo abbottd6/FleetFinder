@@ -1,4 +1,4 @@
-import {Component, Inject} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -17,6 +17,9 @@ import {
 import {MatIcon} from "@angular/material/icon";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {InviteActions} from "../invite-chip/invite-chip.component";
+import {
+  InviteDirection
+} from "../../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
 
 @Component({
   selector: 'app-invite-details-popup',
@@ -36,7 +39,9 @@ import {InviteActions} from "../invite-chip/invite-chip.component";
   ],
   styleUrl: './invite-details-popup.component.css'
 })
-export class InviteDetailsPopupComponent {
+export class InviteDetailsPopupComponent implements OnInit {
+
+  popupTitle: string = 'Invite Offer';
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -46,6 +51,13 @@ export class InviteDetailsPopupComponent {
     },
     private dialogRef: MatDialogRef<InviteDetailsPopupComponent>,
   ) {}
+
+
+  ngOnInit() {
+    if(this.data.invite.inviteDirection === InviteDirection.REQUEST) {
+      this.popupTitle = 'Join Request';
+    }
+  }
 
   onConfirmAction(action: InviteActions) {
     this.dialogRef.close(action);

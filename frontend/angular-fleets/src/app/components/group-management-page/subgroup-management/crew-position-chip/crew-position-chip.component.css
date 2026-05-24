@@ -16,6 +16,7 @@
 }
 
 #position-drag-handle {
+  width: 100%;
 }
 
 #position-drag-handle:hover {
@@ -52,5 +53,9 @@
 
 .position-member-slot:empty {
   min-height: 20px;
-  border: 1px solid deeppink;
+  /*border: 1px solid deeppink;*/
+}
+
+.position-header.has-member {
+  margin-bottom: 6px;
 }

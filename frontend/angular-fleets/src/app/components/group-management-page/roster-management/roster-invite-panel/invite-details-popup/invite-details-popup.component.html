@@ -1,38 +1,38 @@
-<h2 mat-dialog-title>Invite {{ data.invite.inviteDirection|titlecase }}</h2>
+<h2 mat-dialog-title>{{ popupTitle }}</h2>
 <mat-dialog-content>
   <div class="content-subsection">
-    <div class="field-row">
+
       <span class="field-label">User: </span>
-      <span class="field-val">{{ data.targetMember.username }}({{ data.targetMember.userId }})</span>
-    </div>
-    <div class="field-row">
+      <span class="field-val">{{ data.targetMember.username }}(#{{ data.targetMember.userId }})</span>
+
+
       <span class="field-label">Roster {{ data.invite.inviteDirection|titlecase }}ed: </span>
       <span class="field-val"> {{ data.invite.memberStatus|titlecase }} </span>
-    </div>
+
   </div>
   <div class="content-subsection">
-    <div class="field-row">
+
       <span class="field-label">Has Mic: </span>
       <span class="field-val">{{ data.invite.hasMic }}</span>
-    </div>
-    <div class="field-row">
+
+
       <span class="field-label">Has Headset: </span>
       <span class="field-val">{{ data.invite.hasHeadset }}</span>
-    </div>
+
   </div>
   <div class="content-subsection">
-    <div class="field-row">
+
       <span class="field-label">Invite Status: </span>
       <span class="field-val">{{ data.invite.inviteStatus|titlecase }}</span>
-    </div>
-    <div class="field-row">
+
+
       <span class="field-label">Sent At: </span>
       <span class="field-val">{{ data.invite.sentAt | date: 'MMM, dd hh:mm a'}}</span>
-    </div>
-    <div class="field-row">
+
+
       <span class="field-label">Expires At: </span>
       <span class="field-val">{{ data.invite.expiresAt | date: 'MMM, dd hh:mm a'}}</span>
-    </div>
+
   </div>
   <div class="content-subsection">
     <span class="subsection-header field-label">Message: </span>
@@ -77,6 +77,9 @@
           mat-menu-item
           class="options-item"
           (click)="onConfirmAction(InviteActions.BLOCK)">
+          <mat-icon class="material-symbols-outlined dropdown-icon">
+            block
+          </mat-icon>
           Block User
         </button>
 
@@ -84,6 +87,9 @@
           mat-menu-item
           class="options-item"
           (click)="onConfirmAction(InviteActions.DECLINE)">
+          <mat-icon class="material-symbols-outlined dropdown-icon">
+            cancel
+          </mat-icon>
           Decline
         </button>
 
@@ -91,6 +97,9 @@
           mat-menu-item
           class="options-item"
           (click)="onConfirmAction(InviteActions.WAITLIST)">
+          <mat-icon class="material-symbols-outlined waitlist-icon">
+            acute
+          </mat-icon>
           Waitlist
         </button>
 
@@ -98,6 +107,9 @@
           mat-menu-item
           class="options-item"
           (click)="onConfirmAction(InviteActions.ACCEPT)">
+          <mat-icon class="material-symbols-outlined dropdown-icon">
+            check_circle
+          </mat-icon>
           Accept
         </button>
 
@@ -105,6 +117,9 @@
           mat-menu-item
           class="options-item"
           (click)="onConfirmAction(InviteActions.MESSAGE)">
+          <mat-icon class="material-symbols-outlined dropdown-icon">
+            chat_bubble
+          </mat-icon>
           Message
         </button>
       </mat-menu>
@@ -118,26 +133,38 @@
       Options
     </button>
     <mat-menu #inviteOfferActionsMenu="matMenu" yPosition="above">
-      <button
-        mat-menu-item
-        class="options-item"
-        (click)="onConfirmAction(InviteActions.MESSAGE)">
-        Message
-      </button>
-      <button
-        mat-menu-item
-        class="options-item"
-        (click)="onConfirmAction(InviteActions.DISMISS)">
-        Dismiss
-      </button>
       <ng-container *ngIf="data.invite.inviteDirection === 'REQUEST'">
         <button
           mat-menu-item
           class="options-item"
           (click)="onConfirmAction(InviteActions.BLOCK)">
+          <mat-icon class="material-symbols-outlined dropdown-icon">
+            block
+          </mat-icon>
           Block User
         </button>
       </ng-container>
+
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="onConfirmAction(InviteActions.DISMISS)">
+        <mat-icon class="material-symbols-outlined dropdown-icon">
+          cancel
+        </mat-icon>
+        Dismiss
+      </button>
+
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="onConfirmAction(InviteActions.MESSAGE)">
+        <mat-icon class="material-symbols-outlined dropdown-icon">
+          chat_bubble
+        </mat-icon>
+        Message
+      </button>
+
     </mat-menu>
   </ng-template>
 </mat-dialog-actions>

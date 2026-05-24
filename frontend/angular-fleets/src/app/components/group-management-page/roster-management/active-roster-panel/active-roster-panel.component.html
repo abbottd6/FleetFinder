@@ -4,7 +4,8 @@
   <div *ngIf="(managementInteract.activeRoster$ | async)?.content as activeRoster"
     cdkDropList
     [cdkDropListData]="activeRoster"
-    [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop">
+    [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
+    class="active-members-list">
     <div *ngFor="let member of activeRoster"
       cdkDrag
       [cdkDragData]="member"

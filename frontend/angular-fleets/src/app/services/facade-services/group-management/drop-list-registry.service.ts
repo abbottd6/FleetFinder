@@ -1,4 +1,4 @@
-import {DestroyRef, ElementRef, inject, Injectable} from '@angular/core';
+import {ChangeDetectorRef, DestroyRef, ElementRef, inject, Injectable, NgZone} from '@angular/core';
 import {CdkDrag, CdkDragDrop, CdkDragMove, CdkDropList} from "@angular/cdk/drag-drop";
 import {
   BehaviorSubject,
@@ -105,10 +105,13 @@ export class DropListRegistryService {
   public isDragging$ = new BehaviorSubject<boolean>(false);
 
   public hoveredList$ = new BehaviorSubject<DropListRegistration | null>(null);
-  public hoveredPosition: HTMLElement | null = null;
 
+  public hoveredPositionId$: BehaviorSubject<number | null> = new BehaviorSubject<number | null>(null);
+  public draggedMember$: BehaviorSubject<GroupManagementMemberViewModel | null> = new BehaviorSubject<GroupManagementMemberViewModel | null>(null);
 
-  constructor(private mouseService: MouseEventService) {
+  constructor(private mouseService: MouseEventService,
+              private ngZone: NgZone,
+              private cdr: ChangeDetectorRef) {
 
     this.dragMoved$.pipe(
       takeUntilDestroyed(this.destroyRef),
@@ -211,6 +214,7 @@ export class DropListRegistryService {
 
   public onDragMoved(event: CdkDragMove<any>): void {
     if(getDropEntityType(event.source.data) === 'member') {
+      this.draggedMember$.next(event.source.data);
       this.onMemberDragMoved(event);
       return;
     }
@@ -222,12 +226,25 @@ export class DropListRegistryService {
     const { x, y } = event.pointerPosition;
     const slot = document.elementFromPoint(x,y)?.closest('[data-position-id]') as HTMLElement | null;
 
-    if(slot === this.hoveredPosition) return;
+    const positionIdString = slot?.getAttribute('data-position-id') ?? null;
 
-    this.hoveredPosition?.classList.remove('position-drag-hover');
+    if(!positionIdString) {
+      this.ngZone.run(() => {
+        this.hoveredPositionId$.next(null);
+      });
+    }
 
-    this.hoveredPosition = slot;
-    this.hoveredPosition?.classList.add('position-drag-hover');
+    const newHoveredPositionId = Number(positionIdString);
+
+    console.log('hoveredId: ', newHoveredPositionId);
+
+    if(newHoveredPositionId !== this.hoveredPositionId$.getValue()) {
+      this.ngZone.run(() => {
+        this.hoveredPositionId$.next(newHoveredPositionId);
+      });
+
+      this.cdr.markForCheck();
+    }
   }
 
   registerList(

@@ -198,6 +198,8 @@ export class SubgroupManagementInteractService {
           }
         })
     }
+
+    this.dropListRegistry.draggedMember$.next(null);
   }
 
 

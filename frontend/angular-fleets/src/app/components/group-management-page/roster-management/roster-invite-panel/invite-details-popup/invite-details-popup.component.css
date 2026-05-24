@@ -25,21 +25,42 @@
   margin-top: 15px;
 }
 
-.field-row {
-  display: flex;
-  flex-direction: row;
-  margin-top: 4px;
+.content-subsection {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 25px;
+  align-items: baseline;
+  padding: 5px 10px;
 }
 
 .field-label {
-  margin-right: 4px;
-  color: rgb(53, 114, 163);
+  font-size: 12px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(150, 168, 183, 0.8);
 }
 
 .field-val {
-  margin-right: 10px;
-  margin-left: 10px;
+  font-size: 15px;
+  color: rgba(150, 168, 183, 1);
 }
+
+/*.field-row {*/
+/*  display: flex;*/
+/*  flex-direction: row;*/
+/*  margin-top: 4px;*/
+/*}*/
+
+/*.field-label {*/
+/*  margin-right: 4px;*/
+/*  color: rgb(53, 114, 163);*/
+/*}*/
+
+/*.field-val {*/
+/*  margin-right: 10px;*/
+/*  margin-left: 10px;*/
+/*}*/
 
 .subsection-header {
   margin-bottom: 5px;
@@ -67,4 +88,10 @@
   color: var(--bs-gray-900);
   border-color: rgba(255, 131, 7, .75);
   background-color: rgba(255, 131, 7, .25);
+}
+
+.waitlist-icon {
+  font-variation-settings: 'wght' 300;
+  font-size: 26px;
+  transition: color 0.2s ease;
 }

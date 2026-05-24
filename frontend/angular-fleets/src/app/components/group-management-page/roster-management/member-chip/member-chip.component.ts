@@ -31,7 +31,6 @@ export class MemberChipComponent implements OnInit, OnDestroy {
   @Input() member!: GroupManagementMemberViewModel;
 
   ngOnInit() {
-    console.log(this.member);
   }
 
   toggleDetailsExpand() {

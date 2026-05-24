@@ -1,4 +1,3 @@
-import {UserMonikerSummaryViewModel} from "../../nested-models/user-moniker-summary-view-model";
 import {MemberPositionSummaryViewModel} from "../../nested-models/member-position-summary-view-model";
 import {InGroupRankViewModel} from "./in-group-rank-view-model";
 import {UserFullMonikerSummary} from "../../nested-models/user-full-moniker-summary";
