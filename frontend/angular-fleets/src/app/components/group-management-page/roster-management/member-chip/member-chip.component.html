@@ -2,8 +2,13 @@
 
   <div class="chip-header"
        [class.member-details-collapsed]="!detailsExpanded">
-    <span class="header-left" cdkDragHandle>
-      {{ member.userSummary.username }} ({{member.userSummary.inGameUsername}})
+    <span class="header-left drag-handle" cdkDragHandle>
+        <span class="header-primary">
+          {{ member.userSummary.username }}
+        </span>
+        <span class="header-secondary" matTooltip="In-game Username">
+          &commat;{{member.userSummary.inGameUsername}}
+        </span>
       <ng-container *ngIf="member.hasMic && member.hasHeadset; else parseComms">
         <mat-icon class="material-symbols-outlined comms-icons">
           headset_mic
@@ -53,7 +58,7 @@
        [class.details-expanded]="detailsExpanded">
 
     <section class="columns-wrapper">
-      @let role = member.memberRole;
+      @let role = member.memberPosition;
 
         <span class="field-label">Role: </span>
         <span class="field-val" [class.has-val]="role != null">{{ role != null ? role.roleSummary.roleTitle : 'Unassigned' }}</span>
@@ -82,10 +87,8 @@
       </div>
     </section>
     <div class="bottom-timestamp-row">
-      <div class="label-val-pair">
         <span class="field-label">Last Active: </span>
         <span class="field-val">{{ member.userSummary.lastAccess | date:'MMM, dd hh:mm a'}}</span>
-      </div>
     </div>
   </div>
 </div>

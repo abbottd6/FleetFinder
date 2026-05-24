@@ -13,5 +13,5 @@ import java.util.List;
 public class GroupCompositionDto {
 
     private List<GroupCompositionSubgroupDto> subgroups = new ArrayList<>();
-
+    private List<GroupCompositionCrewPositionDto> crewPositions = new ArrayList<>();
 }

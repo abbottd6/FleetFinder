@@ -8,6 +8,9 @@ import {Observable} from "rxjs";
 import {
   GroupCompositionDto
 } from "../../../../models/group-management-models/view-models/group-composition/group-composition-dto";
+import {
+  GroupCompCrewPositionViewModel
+} from "../../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -34,5 +37,9 @@ export class GroupCompositionApiService {
 
   deleteSubgroup(groupId: number, subgroupId: number) {
     return this.httpClient.delete<void>(`${this.baseUrl}/delete-subgroup/${groupId}/${subgroupId}`);
+  }
+
+  assignMemberToPosition(position: GroupCompCrewPositionViewModel): Observable<number> {
+    return this.httpClient.patch<number>(`${this.baseUrl}/assign-member-position`, position);
   }
 }

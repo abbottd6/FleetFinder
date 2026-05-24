@@ -11,7 +11,7 @@ export class GroupManagementMemberViewModel {
     public userSummary: UserFullMonikerSummary,
     public memberStatus: string,
     public memberNote: string,
-    public memberRole: MemberPositionSummaryViewModel,
+    public memberPosition: MemberPositionSummaryViewModel,
     public memberRank: InGroupRankViewModel,
     public hasMic: boolean,
     public hasHeadset: boolean,

@@ -2,9 +2,15 @@
   <div class="position-header" cdkDragHandle>
     <span id="position-drag-handle">{{ position.groupRole.roleTitle }}</span>
   </div>
-  <ng-container *ngIf="position.assignedMember?.userSummary !== null">
-    <app-member-chip
-      [member]="position.assignedMember">
-    </app-member-chip>
-  </ng-container>
+  <div class="position-member-slot"
+    cdkDropList
+    [attr.data-position-id]="position.positionId">
+    <div *ngFor="let member of assignedMember"
+      cdkDrag
+      [cdkDragData]="member">
+      <app-member-chip
+        [member]="member">
+      </app-member-chip>
+    </div>
+  </div>
 </div>

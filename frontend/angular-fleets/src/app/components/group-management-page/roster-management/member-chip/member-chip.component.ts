@@ -26,12 +26,12 @@ import {CdkDragHandle} from "@angular/cdk/drag-drop";
 export class MemberChipComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  protected detailsExpanded: boolean = true;
+  protected detailsExpanded: boolean = false;
 
   @Input() member!: GroupManagementMemberViewModel;
 
   ngOnInit() {
-
+    console.log(this.member);
   }
 
   toggleDetailsExpand() {

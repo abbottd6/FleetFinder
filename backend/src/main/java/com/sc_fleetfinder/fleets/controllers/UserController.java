@@ -1,26 +1,20 @@
 package com.sc_fleetfinder.fleets.controllers;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.AddBookmarkRequestDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrEditListingTemplateDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GenericPageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.AddHiddenRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.ModerationAndReporting.SubmitListingReportDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.CreatePushSubRequestDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdatePushSubRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateUserDto;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.UpdateUserNotePrefDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.UserSummaryResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingTemplateResponseDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.NotificationPrefsAndPushSubs.GetPushSubDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PrivateUserResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.PublicUserResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.HiddenListingService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingBookmarkService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingTemplateService;
-import com.sc_fleetfinder.fleets.services.CRUD_services.PushSubscriptionService;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.reporting_services.ListingReportingService;
 import jakarta.validation.Valid;
@@ -73,7 +67,7 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize("isAuthenticated() and hasRole('user')")
     public PublicUserResponseDto getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+        return userService.getPublicUserDtoByUserId(id);
     }
 
     @GetMapping("/search_users")

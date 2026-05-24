@@ -13,7 +13,14 @@ import {
 import {
   GroupCompositionDto
 } from "../../../models/group-management-models/view-models/group-composition/group-composition-dto";
-import {CdkDrag, CdkDragDrop, CdkDropList, moveItemInArray, transferArrayItem} from "@angular/cdk/drag-drop";
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDragEnd, CdkDragMove,
+  CdkDropList,
+  moveItemInArray,
+  transferArrayItem
+} from "@angular/cdk/drag-drop";
 import {
   GroupCompCrewPositionViewModel
 } from "../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
@@ -36,6 +43,9 @@ export class SubgroupManagementInteractService {
   protected subgroupTreesSubject = new BehaviorSubject<GroupCompSubgroupViewModel[]>([]);
   public subgroupTrees$ = this.subgroupTreesSubject.asObservable();
 
+  protected crewPositionsSubject = new BehaviorSubject<GroupCompCrewPositionViewModel[]>([]);
+  public crewPositions$ = this.crewPositionsSubject.asObservable();
+
   reorientingDropList: boolean = false;
 
   protected groupPositionsRatio$: BehaviorSubject<GroupCompPositionsBrief> = new BehaviorSubject<GroupCompPositionsBrief>({
@@ -47,11 +57,12 @@ export class SubgroupManagementInteractService {
               private dropListRegistry: DropListRegistryService,
               private dialog: MatDialog) {}
 
-  getExistingSubgroupTrees(groupId: number) {
+  getExistingGroupComposition (groupId: number) {
     this.compositionApi.getExistingGroupStructure(groupId).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
-        next: (subgroupTrees: GroupCompositionDto) => {
-          this.subgroupTreesSubject.next(subgroupTrees.subgroups);
+        next: (groupComp: GroupCompositionDto) => {
+          this.subgroupTreesSubject.next(groupComp.subgroups);
+          this.crewPositionsSubject.next(groupComp.crewPositions);
         }
       })
   }
@@ -69,6 +80,13 @@ export class SubgroupManagementInteractService {
           this.subgroupTreesSubject.next([
             ...currentList,
             ...newSubgroups
+          ])
+
+          const newPositions = responseDto.crewPositions;
+          const currentPositions = this.crewPositionsSubject.getValue();
+          this.crewPositionsSubject.next([
+            ...currentPositions,
+            ...newPositions
           ])
         }
       });
@@ -88,14 +106,7 @@ export class SubgroupManagementInteractService {
         if(result) {
           this.compositionApi.deleteSubgroup(subgroup.listingId, subgroup.subgroupId).pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
-              const current = this.subgroupTreesSubject.getValue();
-              const idx = current.findIndex(sub => sub.subgroupId === subgroup.subgroupId);
-              if(idx > -1) {
-                this.subgroupTreesSubject.next([
-                  ...current.slice(0, idx),
-                  ...current.slice(idx + 1)
-                ])
-              }
+              this.getExistingGroupComposition(subgroup.listingId);
             })
         }
       })
@@ -148,16 +159,48 @@ export class SubgroupManagementInteractService {
     this.dropListRegistry.resetAfterDragEnd();
   }
 
-  onMemberDrop(event: CdkDragDrop<GroupManagementMemberViewModel[]>) {
-    if(event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+  onMemberDrop(dropData: CdkDragEnd<GroupManagementMemberViewModel>) {
+    console.log('drop point: ', dropData.dropPoint);
+    if (!('memberStatus' in dropData.source.data)) return;
+    const {x, y} = dropData.dropPoint;
+    const element = document.elementFromPoint(x, y);
+    const positionEl = element?.closest('[data-position-id]');
+    if (!positionEl) {
+      console.log('no positionEl')
+      return;
+    }
 
-    } else {
-      transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+    const rawPositionId = positionEl.getAttribute('data-position-id');
 
-      const current = this.subgroupTreesSubject.getValue();
+    if(rawPositionId === null) {
+      return;
+    }
+
+    const targetPositionId = Number(rawPositionId);
+    if(Number.isNaN(targetPositionId)) {
+      return;
+    }
+
+    // if(event.previousContainer === event.container) {
+    //   moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+    //
+    // } else {
+    //   transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+
+    const position = this.crewPositionsSubject.getValue().find(pos => pos.positionId === targetPositionId);
+
+    if(position) {
+      const positionCopy = { ...position, assignedMember: dropData.source.data };
+      this.compositionApi.assignMemberToPosition(positionCopy).pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((groupId: number) => {
+          if(groupId) {
+            this.getExistingGroupComposition(groupId);
+          }
+        })
     }
   }
+
+
 
   clearTrees() {
     this.subgroupTreesSubject.next([]);

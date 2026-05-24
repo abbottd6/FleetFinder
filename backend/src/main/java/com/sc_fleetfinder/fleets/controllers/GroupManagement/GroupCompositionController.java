@@ -2,6 +2,7 @@ package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.CrewTemplateSummaryDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionDto;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementSubgroup;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -72,5 +73,16 @@ public class GroupCompositionController {
         groupCompService.deleteSubgroup(user, groupId, subgroupId);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/assign-member-position")
+    public ResponseEntity<?> assignMemberPosition(@AuthenticationPrincipal Jwt jwt,
+                                                  @RequestBody GroupCompositionCrewPositionDto positionDto) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        Long groupId = groupCompService.assignMemberPosition(manager, positionDto);
+
+        return ResponseEntity.ok(groupId);
     }
 }

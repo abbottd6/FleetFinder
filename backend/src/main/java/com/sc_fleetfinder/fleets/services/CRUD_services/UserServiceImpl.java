@@ -82,7 +82,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PublicUserResponseDto getUserById(Long id) {
+    public Users findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User", id));
+    }
+
+    @Override
+    public PublicUserResponseDto getPublicUserDtoByUserId(Long id) {
         return userRepository.findById(id)
                 .filter(u -> !u.getIsDeleted())
                 .map(userConversionService::convertToPublicDto)

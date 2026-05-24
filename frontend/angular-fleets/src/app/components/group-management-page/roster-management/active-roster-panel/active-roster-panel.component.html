@@ -4,11 +4,12 @@
   <div *ngIf="(managementInteract.activeRoster$ | async)?.content as activeRoster"
     cdkDropList
     [cdkDropListData]="activeRoster"
-    [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
-    (cdkDropListDropped)="subgroupInteract.onMemberDrop($event)">
+    [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop">
     <div *ngFor="let member of activeRoster"
       cdkDrag
-      [cdkDragData]="member">
+      [cdkDragData]="member"
+      (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
+      (cdkDragEnded)="subgroupInteract.onMemberDrop($event)">
       <app-member-chip
         [member]="member">
       </app-member-chip>

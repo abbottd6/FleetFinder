@@ -19,7 +19,9 @@ public interface UserService {
 
     List<PublicUserResponseDto> getAllUsers();
 
-    PublicUserResponseDto getUserById(Long id);
+    Users findUserById(Long id);
+
+    PublicUserResponseDto getPublicUserDtoByUserId(Long id);
 
     /**
      * Perform repository-level uniqueness checks on keycloakId, email, and username.

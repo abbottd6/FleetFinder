@@ -1,5 +1,5 @@
 import {DestroyRef, ElementRef, inject, Injectable} from '@angular/core';
-import {CdkDrag, CdkDragMove, CdkDropList} from "@angular/cdk/drag-drop";
+import {CdkDrag, CdkDragDrop, CdkDragMove, CdkDropList} from "@angular/cdk/drag-drop";
 import {
   BehaviorSubject,
   debounceTime,
@@ -72,9 +72,6 @@ export const DROP_COMPATIBILITY_PREDICATES: Record< string, DropPredicate> = {
 
   POSITION_TO_SUBGROUP_POSITIONS: (dropData, target) =>
     'positionId' in dropData && (target.entityType === 'position'),
-
-  MEMBER_TO_POSITION: (dropData, target) =>
-    ('memberStatus' in dropData) && (target.entityType === 'member'),
 }
 
 export function getDropEntityType(dropData: DropData): DropListEntityType {
@@ -108,6 +105,8 @@ export class DropListRegistryService {
   public isDragging$ = new BehaviorSubject<boolean>(false);
 
   public hoveredList$ = new BehaviorSubject<DropListRegistration | null>(null);
+  public hoveredPosition: HTMLElement | null = null;
+
 
   constructor(private mouseService: MouseEventService) {
 
@@ -122,6 +121,8 @@ export class DropListRegistryService {
       if(!point) return;
 
       this.dropDataType$.next(getDropEntityType(event.source.data));
+
+      console.log('dropDataType$: ', this.dropDataType$.getValue());
 
       // console.log('move target handle: ', handle?.id);
       // console.log('handleContainerEl: ', handle?.containerEl.id)
@@ -151,8 +152,10 @@ export class DropListRegistryService {
         this.hoveredTargetId$.next(handle.dropList.id);
         this.targetBoundingContainer$.next(handle.containerEl);
 
+        //TODO Potentially clean this up with cdkDropListSortPredicate
+        //would need to make it only apply to the selected list, so probably add just a sortPredicate field to the list registry
+        // i dont know if this would solve the _startReceiving problem though
         if(this.targetBoundingContainer$.getValue()?.id === 'content-root') {
-          // handle.dropList._dropListRef.disabled = false;
           handle.dropList._dropListRef.sortingDisabled = false;
           handle.dropList._dropListRef._startReceiving(event.source.dropContainer._dropListRef, event.source._dragRef as any);
           handle.dropList._dropListRef._sortItem(event.source._dragRef, point.x, point.y, event.delta);
@@ -207,8 +210,24 @@ export class DropListRegistryService {
   }
 
   public onDragMoved(event: CdkDragMove<any>): void {
+    if(getDropEntityType(event.source.data) === 'member') {
+      this.onMemberDragMoved(event);
+      return;
+    }
     this.isDragging$.next(true)
     this.dragMoved$.next(event);
+  }
+
+  onMemberDragMoved(event: CdkDragMove) {
+    const { x, y } = event.pointerPosition;
+    const slot = document.elementFromPoint(x,y)?.closest('[data-position-id]') as HTMLElement | null;
+
+    if(slot === this.hoveredPosition) return;
+
+    this.hoveredPosition?.classList.remove('position-drag-hover');
+
+    this.hoveredPosition = slot;
+    this.hoveredPosition?.classList.add('position-drag-hover');
   }
 
   registerList(

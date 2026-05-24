@@ -19,7 +19,11 @@
 }
 
 #position-drag-handle:hover {
-  cursor: all-scroll;
+  cursor: grab;
+}
+
+#position-drag-handle:active {
+  cursor: grabbing;
 }
 
 /* ------------------------ CDK DRAG PREVIEW (PICKED UP) --------------------------------------------*/
@@ -44,3 +48,9 @@
 
 /* --------------------- CHIP EXPAND/COLLAPSE ANIMATIONS --------------------------------------------*/
 
+
+
+.position-member-slot:empty {
+  min-height: 20px;
+  border: 1px solid deeppink;
+}

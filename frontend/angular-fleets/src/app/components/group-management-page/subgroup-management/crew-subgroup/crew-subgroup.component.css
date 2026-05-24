@@ -89,11 +89,11 @@
 }
 
 .drag-handle:hover {
-  cursor: all-scroll;
+  cursor: grab;
 }
 
 .drag-handle:active {
-  cursor: move;
+  cursor: grabbing;
 }
 
 .drag-handle::before {
@@ -177,6 +177,9 @@
   display: none;
 }
 
+::ng-deep body:has(.cdk-drop-list-dragging) * {
+  cursor: grabbing !important;
+}
 
 
 /* ----------------------- DROP LIST BLOCKER / WRAPPER -----------------------------------------------*/

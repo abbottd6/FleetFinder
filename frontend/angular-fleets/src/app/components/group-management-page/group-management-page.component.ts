@@ -140,7 +140,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
     this.listingTitle = this.managementInteract.sessionManager.listing.listingTitle;
 
-    this.subgroupMgmtInteract.getExistingSubgroupTrees(this.groupId);
+    this.subgroupMgmtInteract.getExistingGroupComposition(this.groupId);
 
     this.cdr.detectChanges();
   }
