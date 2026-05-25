@@ -15,7 +15,7 @@ export class GroupCompCrewPositionViewModel {
     public sortOrder: number,
     public groupRole: RoleClassSummaryViewModel,
     public positionNote: string,
-    public assignedMember: GroupManagementMemberViewModel,
+    public assignedMember: GroupManagementMemberViewModel | null,
     public filledAt: Date,
     public vacatedAt: Date,
     public createdAt: Date

@@ -6,14 +6,17 @@
     [cdkDropListData]="activeRoster"
     [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
     class="active-members-list">
-    <div *ngFor="let member of activeRoster"
-      cdkDrag
-      [cdkDragData]="member"
-      (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
-      (cdkDragEnded)="subgroupInteract.onMemberDrop($event)">
-      <app-member-chip
-        [member]="member">
-      </app-member-chip>
-    </div>
+    @for(member of activeRoster; track member.userSummary.userId) {
+      <div cdkDrag
+        [cdkDragDisabled]="member.memberPosition != null"
+        [cdkDragData]="member"
+        (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
+        (cdkDragEnded)="subgroupInteract.onMemberDrop($event)">
+        <app-member-chip
+          [class.member-assigned]="member.memberPosition != null"
+          [member]="member">
+        </app-member-chip>
+      </div>
+    }
   </div>
 </div>

@@ -46,6 +46,10 @@
   cursor: grab;
 }
 
+:host-context(.cdk-drag-disabled) .header-left.drag-handle:hover {
+  cursor: default;
+}
+
 .header-left.drag-handle:active {
   cursor: grabbing;
 }

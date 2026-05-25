@@ -100,7 +100,7 @@
       <!--      && (dropListRegistry.validDropTargetType$ | async) === 'subgroup'"-->
       <!--      [class.empty-subgroup]="emptySubgroupTree && emptyPositionTree"-->
 <!--      [cdkDropListDisabled]="(this.dropListRegistry.isDragging$ | async) && (this.dropListRegistry.hoveredTargetId$ | async) !== thisDropListId"-->
-      <div class="drop-list-facade">
+      <div class="drop-list-facade" [class.chip-self-collapsed]="!selfExpanded">
         <div class="drop-list-entry-blocker"
              *ngIf="(displayListEntryBlocker$ | async)">
         </div>
@@ -122,9 +122,9 @@
              [class.orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
              [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'"
              [class.is-hovered-list]="(isHoveredTarget$ | async)"
-             [class.deeply-nested]="selfDepth > 1" >
-            <div *ngFor="let childSubgroup of subgroup.subgroups"
-                 cdkDrag
+             [class.deeply-nested]="selfDepth > 1">
+          @for (childSubgroup of subgroup.subgroups; track childSubgroup.subgroupId) {
+            <div cdkDrag
                  [cdkDragData]="childSubgroup"
                  (cdkDragStarted)="dragStarted($event)"
                  (cdkDragMoved)="onDragMoved($event)"
@@ -139,10 +139,11 @@
                 [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
               </app-crew-subgroup>
             </div>
-          </div>
+          }
+        </div>
       </div>
 
-        <!--      [class.empty-subgroup]="emptyPositionTree && emptySubgroupTree"-->
+      <!--      [class.empty-subgroup]="emptyPositionTree && emptySubgroupTree"-->
       <div class="positions-list-wrapper">
         <div *ngIf="listNativeTotalPositionsCount !== 0 && selfExpanded" class="positions-collapse-button-container">
           <span>Positions</span>
@@ -192,16 +193,17 @@
             </div>
           </ng-container>
           <ng-template #notCollapsed>
-            <div *ngFor="let position of subgroup.crewPositions"
-                 cdkDrag
-                 [cdkDragData]="position"
-                 (cdkDragMoved)="onDragMoved($event)"
-                 (cdkDragStarted)="dragStarted($event)"
-                 (cdkDragReleased)="resetAfterDragReleased($event)">
-              <app-crew-position-chip
-                [position]="position">
-              </app-crew-position-chip>
-            </div>
+            @for(position of subgroup.crewPositions; track position.positionId) {
+              <div cdkDrag
+                   [cdkDragData]="position"
+                   (cdkDragMoved)="onDragMoved($event)"
+                   (cdkDragStarted)="dragStarted($event)"
+                   (cdkDragReleased)="resetAfterDragReleased($event)">
+                <app-crew-position-chip
+                  [position]="position">
+                </app-crew-position-chip>
+              </div>
+            }
           </ng-template>
         </div>
 

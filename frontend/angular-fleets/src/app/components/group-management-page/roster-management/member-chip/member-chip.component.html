@@ -58,16 +58,18 @@
        [class.details-expanded]="detailsExpanded">
 
     <section class="columns-wrapper">
-      @let role = member.memberPosition;
+      @let position = member.memberPosition;
 
         <span class="field-label">Role: </span>
-        <span class="field-val" [class.has-val]="role != null">{{ role != null ? role.roleSummary.roleTitle : 'Unassigned' }}</span>
+        <span class="field-val" [class.has-val]="position != null">{{ position != null ? position.roleSummary.roleTitle : 'Unassigned' }}</span>
 
         <span class="field-label">Group: </span>
-        @if(role != null) {
-          <span class="field-val">{{ role.subgroupSummary.subgroupLabel.length > 23 ? (
-            role.subgroupSummary.subgroupLabel | slice:0:23) + '...'
-            : role.subgroupSummary.subgroupLabel }}
+        @if(position != null) {
+          <span class="field-val has-val">
+            {{ position.subgroupSummary.parentSubgroupLabel }} -
+            {{ position.subgroupSummary.subgroupLabel.length > 23 ? (
+            position.subgroupSummary.subgroupLabel | slice:0:23) + '...'
+            : position.subgroupSummary.subgroupLabel }}
           </span>
         } @else {
           <span class="field-val">Unassigned</span>
@@ -75,15 +77,18 @@
 
       @let rank = member.memberRank;
           <span class="field-label">Rank: </span>
-          <span class="field-val">{{ rank.rankTitle }}</span>
+          <span class="field-val has-val">{{ rank.rankTitle }}</span>
 
           <span class="field-label">RSVP Status: </span>
-          <span class="field-label">{{member.rsvpStatus != null ? toTitleCase(member.rsvpStatus) : 'N/A'}}</span>
-
+          <span class="field-label" [class.has-val]="member.rsvpStatus != null">
+            {{member.rsvpStatus != null ? toTitleCase(member.rsvpStatus) : 'N/A'}}
+          </span>
 
       <div class="label-val-pair">
         <span class="field-label">Discord: </span>
-        <span class="field-val">{{ member.userSummary.discordUsername }}</span>
+        <span class="field-val" [class.has-val]="member.userSummary.discordUsername != null">
+          {{ member.userSummary.discordUsername }}
+        </span>
       </div>
     </section>
     <div class="bottom-timestamp-row">

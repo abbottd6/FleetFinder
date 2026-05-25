@@ -85,4 +85,15 @@ public class GroupCompositionController {
 
         return ResponseEntity.ok(groupId);
     }
+
+    @PatchMapping("/clear-member-position-assignment")
+    public ResponseEntity<?> clearPositionAssignment(@AuthenticationPrincipal Jwt jwt,
+                                                     @RequestBody GroupCompositionCrewPositionDto positionDto) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        Long groupId = groupCompService.clearMemberPositionAssignment(manager, positionDto);
+
+        return ResponseEntity.ok(groupId);
+    }
 }

@@ -1,19 +1,49 @@
 <div class="position-chip">
   <div class="position-header" cdkDragHandle [class.has-member]="assignedMember.length > 0">
-    <span id="position-drag-handle">
-      {{ position.groupRole.roleTitle }}
-    </span>
+    <div class="header-left">
+      <span id="position-drag-handle">
+        {{ position.groupRole.roleTitle }}
+      </span>
+      <button class="header-button scaled-minus">
+        <mat-icon class="scaled-minus" matTooltip="Edit title">edit</mat-icon>
+      </button>
+    </div>
+    <div class="header-right">
+      <button class="header-button options-button"
+              type="button"
+              [matMenuTriggerFor]="positionOptionsMenu">
+        <mat-icon matTooltip="Options">more_vert</mat-icon>
+      </button>
+      <mat-menu #positionOptionsMenu="matMenu" yPosition="below" panelClass="position-options-menu">
+        <button
+          mat-menu-item
+          class="options-item"
+          [disabled]="assignedMember.length === 0"
+          (click)="subgroupInteract.clearPositionAssignment(position)">
+          <mat-icon class="material-symbols-outlined dropdown-icon">person_cancel</mat-icon>
+          <span>Clear Assignment</span>
+        </button>
+
+        <button
+          mat-menu-item
+          class="options-item">
+          <mat-icon class="material-symbols-outlined dropdown-icon">cancel</mat-icon>
+          <span>Remove Position</span>
+        </button>
+      </mat-menu>
+    </div>
   </div>
   <div class="position-member-slot"
     cdkDropList
     [attr.data-position-id]="position.positionId">
-    <div *ngFor="let member of assignedMember"
-      cdkDrag
-      [cdkDragData]="member">
-      <app-member-chip
-        [member]="member">
-      </app-member-chip>
-    </div>
+    @for(member of assignedMember; track member.userSummary.userId) {
+      <div cdkDrag
+        [cdkDragData]="member">
+        <app-member-chip
+          [member]="member">
+        </app-member-chip>
+      </div>
+    }
     <ng-container *ngIf="(dropListRegistry.hoveredPositionId$ | async) === position.positionId">
       <div class="member-drop-placeholder">
         <app-member-chip

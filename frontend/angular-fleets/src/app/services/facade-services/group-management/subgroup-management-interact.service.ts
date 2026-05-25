@@ -160,13 +160,11 @@ export class SubgroupManagementInteractService {
   }
 
   onMemberDrop(dropData: CdkDragEnd<GroupManagementMemberViewModel>) {
-    console.log('drop point: ', dropData.dropPoint);
     if (!('memberStatus' in dropData.source.data)) return;
     const {x, y} = dropData.dropPoint;
     const element = document.elementFromPoint(x, y);
     const positionEl = element?.closest('[data-position-id]');
     if (!positionEl) {
-      console.log('no positionEl')
       return;
     }
 
@@ -181,28 +179,32 @@ export class SubgroupManagementInteractService {
       return;
     }
 
-    // if(event.previousContainer === event.container) {
-    //   moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    //
-    // } else {
-    //   transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
-
     const position = this.crewPositionsSubject.getValue().find(pos => pos.positionId === targetPositionId);
 
     if(position) {
       const positionCopy = { ...position, assignedMember: dropData.source.data };
+
+      //TODO RETURN THE UPDATED MEMBER INSTEAD OF GID SO IT CAN BE REASSIGNED TO UPDATE GROUP/ROLE
       this.compositionApi.assignMemberToPosition(positionCopy).pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((groupId: number) => {
           if(groupId) {
             this.getExistingGroupComposition(groupId);
+            this.dropListRegistry.draggedMember$.next(null);
+            this.dropListRegistry.hoveredPositionId$.next(null);
           }
         })
     }
-
-    this.dropListRegistry.draggedMember$.next(null);
   }
 
-
+  clearPositionAssignment(position: GroupCompCrewPositionViewModel) {
+    this.compositionApi.clearMemberPositionAssignment(position).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((groupId: number) => {
+        if(groupId) {
+          position.assignedMember = null;
+          this.getExistingGroupComposition(groupId);
+        }
+      })
+  }
 
   clearTrees() {
     this.subgroupTreesSubject.next([]);

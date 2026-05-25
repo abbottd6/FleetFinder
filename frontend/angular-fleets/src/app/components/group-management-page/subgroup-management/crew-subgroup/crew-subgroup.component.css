@@ -192,6 +192,10 @@
   grid-area: 1 / 1;
 }
 
+.drop-list-facade.chip-self-collapsed {
+  border-bottom: 1px solid var(--border-bottom-fade-gray);
+}
+
 .drop-list-entry-blocker {
   pointer-events: all;
   z-index: 100;
@@ -238,7 +242,6 @@
   grid-auto-rows: max-content;
   grid-template-columns: minmax(0, 375px) !important;
   overflow-y: auto;
-
 }
 
 .chip-contents.subgroups.orientation-mixed {
@@ -462,7 +465,6 @@
 }
 
 :host ::ng-deep .mat-mdc-menu-content button.mat-mdc-menu-item-text {
-
   align-content: center;
   vertical-align: center;
 }

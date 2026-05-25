@@ -218,4 +218,21 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
 
         return listing.getGroupId();
     }
+
+    @Override
+    @Transactional
+    public Long clearMemberPositionAssignment(Users manager, GroupCompositionCrewPositionDto dto) {
+        GroupListing listing =  gls.findGroupListingEntityById(dto.getGroupId());
+
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_POSITIONS);
+
+        CrewPosition currentPosition = this.cpr.findById(dto.getPositionId())
+                .orElseThrow(() -> new ResourceNotFoundException("CrewPosition", dto.getPositionId()));
+
+        currentPosition.setAssignedMemberUserId(null);
+
+        cpr.save(currentPosition);
+
+        return listing.getGroupId();
+    }
 }

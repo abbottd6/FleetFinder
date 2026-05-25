@@ -42,4 +42,8 @@ export class GroupCompositionApiService {
   assignMemberToPosition(position: GroupCompCrewPositionViewModel): Observable<number> {
     return this.httpClient.patch<number>(`${this.baseUrl}/assign-member-position`, position);
   }
+
+  clearMemberPositionAssignment(position: GroupCompCrewPositionViewModel): Observable<number> {
+    return this.httpClient.patch<number>(`${this.baseUrl}/clear-member-position-assignment`, position);
+  }
 }

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {
   GroupCompCrewPositionViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
@@ -15,6 +15,9 @@ import {
 import {
   GroupManagementMemberViewModel
 } from "../../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
+import {MatIcon} from "@angular/material/icon";
+import {MatTooltip} from "@angular/material/tooltip";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 
 @Component({
   selector: 'app-crew-position-chip',
@@ -24,12 +27,17 @@ import {
     MemberChipComponent,
     NgForOf,
     NgIf,
-    AsyncPipe
+    AsyncPipe,
+    MatIcon,
+    MatTooltip,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger
   ],
   templateUrl: './crew-position-chip.component.html',
   styleUrl: './crew-position-chip.component.css'
 })
-export class CrewPositionChipComponent implements OnInit {
+export class CrewPositionChipComponent implements OnInit, OnChanges {
   @Input() position!: GroupCompCrewPositionViewModel;
 
   protected assignedMember!: GroupManagementMemberViewModel[];
@@ -41,5 +49,11 @@ export class CrewPositionChipComponent implements OnInit {
 
   ngOnInit() {
     this.assignedMember = this.position?.assignedMember ? [this.position.assignedMember] : [];
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes['position']) {
+      this.assignedMember = this.position?.assignedMember ? [this.position.assignedMember] : [];
+    }
   }
 }

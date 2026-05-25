@@ -23,3 +23,8 @@
   width: 100%;
   gap: 6px;
 }
+
+.member-assigned {
+  opacity: 0.6;
+}
+

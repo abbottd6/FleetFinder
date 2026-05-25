@@ -13,4 +13,6 @@ public interface GroupCompositionService {
     void deleteSubgroup(Users user, Long groupId, Long subgroupId);
 
     Long assignMemberPosition(Users manager, GroupCompositionCrewPositionDto dto);
+
+    Long clearMemberPositionAssignment(Users manager, GroupCompositionCrewPositionDto dto);
 }
