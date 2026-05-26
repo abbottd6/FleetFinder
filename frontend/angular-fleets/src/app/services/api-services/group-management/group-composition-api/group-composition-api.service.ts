@@ -11,6 +11,9 @@ import {
 import {
   GroupCompCrewPositionViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
+import {
+  UpdateSubgroupDropListOrientationRequest
+} from "../../../../models/group-management-models/request-models/update-subgroup-drop-list-orientation-request";
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +40,10 @@ export class GroupCompositionApiService {
 
   deleteSubgroup(groupId: number, subgroupId: number) {
     return this.httpClient.delete<void>(`${this.baseUrl}/delete-subgroup/${groupId}/${subgroupId}`);
+  }
+
+  updateSubgroupDropListOrientation(requestDto: UpdateSubgroupDropListOrientationRequest) {
+    return this.httpClient.patch<void>(`${this.baseUrl}/update-subgroup-orientation`, requestDto);
   }
 
   assignMemberToPosition(position: GroupCompCrewPositionViewModel): Observable<number> {

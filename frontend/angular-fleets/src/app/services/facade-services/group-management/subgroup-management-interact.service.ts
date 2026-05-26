@@ -30,6 +30,10 @@ import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-gener
 import {
   GroupManagementMemberViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
+import {GroupManagementInteractService} from "./group-management-interact.service";
+import {
+  UpdateSubgroupDropListOrientationRequest
+} from "../../../models/group-management-models/request-models/update-subgroup-drop-list-orientation-request";
 
 export interface GroupCompPositionsBrief {
   assigned: number,
@@ -54,6 +58,7 @@ export class SubgroupManagementInteractService {
   });
 
   constructor(private compositionApi: GroupCompositionApiService,
+              private groupMgmtInteract: GroupManagementInteractService,
               private dropListRegistry: DropListRegistryService,
               private dialog: MatDialog) {}
 
@@ -61,8 +66,9 @@ export class SubgroupManagementInteractService {
     this.compositionApi.getExistingGroupStructure(groupId).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (groupComp: GroupCompositionDto) => {
-          this.subgroupTreesSubject.next(groupComp.subgroups);
-          this.crewPositionsSubject.next(groupComp.crewPositions);
+          this.subgroupTreesSubject.next(groupComp.subgroups ?? []);
+          this.crewPositionsSubject.next(groupComp.crewPositions ?? []);
+          this.dropListRegistry.pageDataLoading = false;
         }
       })
   }
@@ -107,9 +113,17 @@ export class SubgroupManagementInteractService {
           this.compositionApi.deleteSubgroup(subgroup.listingId, subgroup.subgroupId).pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
               this.getExistingGroupComposition(subgroup.listingId);
+              this.groupMgmtInteract.fetchActiveRoster(subgroup.listingId);
             })
         }
       })
+  }
+
+  updateSubgroupDropListOrientation(subgroup: GroupCompSubgroupViewModel) {
+    const request = new UpdateSubgroupDropListOrientationRequest(subgroup);
+
+    this.compositionApi.updateSubgroupDropListOrientation(request).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {})
   }
 
   onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
@@ -189,6 +203,7 @@ export class SubgroupManagementInteractService {
         .subscribe((groupId: number) => {
           if(groupId) {
             this.getExistingGroupComposition(groupId);
+            this.groupMgmtInteract.fetchActiveRoster(groupId);
             this.dropListRegistry.draggedMember$.next(null);
             this.dropListRegistry.hoveredPositionId$.next(null);
           }
@@ -202,6 +217,7 @@ export class SubgroupManagementInteractService {
         if(groupId) {
           position.assignedMember = null;
           this.getExistingGroupComposition(groupId);
+          this.groupMgmtInteract.fetchActiveRoster(groupId)
         }
       })
   }

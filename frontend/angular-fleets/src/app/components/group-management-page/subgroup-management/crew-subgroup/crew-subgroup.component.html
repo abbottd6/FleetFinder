@@ -96,17 +96,12 @@
       </div>
     </div>
     <div class="both-lists-wrapper">
-      <!--      [class.is-hovered-container]="((dropListRegistry.hoveredContainer$ | async)?.id === (thisContainerId$ | async))-->
-      <!--      && (dropListRegistry.validDropTargetType$ | async) === 'subgroup'"-->
-      <!--      [class.empty-subgroup]="emptySubgroupTree && emptyPositionTree"-->
-<!--      [cdkDropListDisabled]="(this.dropListRegistry.isDragging$ | async) && (this.dropListRegistry.hoveredTargetId$ | async) !== thisDropListId"-->
+
       <div class="drop-list-facade" [class.chip-self-collapsed]="!selfExpanded">
         <div class="drop-list-entry-blocker"
              *ngIf="(displayListEntryBlocker$ | async)">
         </div>
 
-<!--        [cdkDropListDisabled]="(this.dropListRegistry.isDragging$ | async) && (this.dropListRegistry.hoveredTargetId$ | async) !== thisDropListId"-->
-<!--        -->
         <div class="chip-contents subgroups"
              cdkDropList
              #nativeSubgroupListElement
@@ -123,7 +118,7 @@
              [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'"
              [class.is-hovered-list]="(isHoveredTarget$ | async)"
              [class.deeply-nested]="selfDepth > 1">
-          @for (childSubgroup of subgroup.subgroups; track childSubgroup.subgroupId) {
+          @for (childSubgroup of nativeSubgroupsForDisplay; track childSubgroup.subgroupId) {
             <div cdkDrag
                  [cdkDragData]="childSubgroup"
                  (cdkDragStarted)="dragStarted($event)"
@@ -161,11 +156,9 @@
            #nativePositionListElement
            #nativePositionList="cdkDropList"
            cdkDropListOrientation="vertical"
-             (cdkDropListEntered)="onEntered($event)"
-             (cdkDropListExited)="onExited($event)"
            [cdkDropListData]="subgroup.crewPositions"
-           [cdkDropListConnectedTo]="this.connectedToPositions"
-           [cdkDropListEnterPredicate]="this.dropListRegistry.isCompatibleDrop"
+           [cdkDropListConnectedTo]="connectedToPositions"
+           [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
            (cdkDropListDropped)="subgroupInteract.onPositionDrop($event, subgroup)"
            [class.chip-subgroup-expanded]="selfExpanded"
            [class.chip-subgroup-collapsed]="!selfExpanded"
@@ -180,16 +173,6 @@
               <span class="summary-data-left">
                 Positions: {{ listNativeAssignedPositionsCount }}/{{ listNativeTotalPositionsCount }}
               </span>
-<!--            <span *ngIf="listNativeTotalPositionsCount !== 0" class="summary-data-right">-->
-<!--              <button class="chip-positions-collapse-button"-->
-<!--                      type="button"-->
-<!--                      (click)="toggleCollapsePositions()">-->
-<!--                <mat-icon [class.rotate]="positionsExpanded"-->
-<!--                          [matTooltip]="(positionsExpanded) ? 'Collapse positions' : 'Expand positions'">-->
-<!--                  arrow_drop_up-->
-<!--                </mat-icon>-->
-<!--              </button>-->
-<!--            </span>-->
             </div>
           </ng-container>
           <ng-template #notCollapsed>

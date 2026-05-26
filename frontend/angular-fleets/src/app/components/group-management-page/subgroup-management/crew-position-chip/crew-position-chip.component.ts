@@ -25,7 +25,6 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
     DragDropModule,
     CdkDragHandle,
     MemberChipComponent,
-    NgForOf,
     NgIf,
     AsyncPipe,
     MatIcon,

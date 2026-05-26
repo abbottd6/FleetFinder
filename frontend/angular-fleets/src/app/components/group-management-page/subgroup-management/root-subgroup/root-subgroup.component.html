@@ -12,9 +12,6 @@
     <mat-panel-title class="child-container-header">
       {{ listingTitle }}
     </mat-panel-title>
-    <!--    <mat-panel-description>-->
-    <!--      Link your Discord to have FleetyBot send your notifications as Discord messages.-->
-    <!--    </mat-panel-description>-->
     <div class="header-right">
       <button class="header-button"
               type="button"
@@ -83,51 +80,47 @@
     </div>
   </mat-expansion-panel-header>
 
-  <!--<div class="group-composition-container">-->
   <ng-container *ngIf="(subgroupInteract.subgroupTrees$ | async) as subgroups">
-      <div>
-        <div class="drop-list-facade">
-          <!--      <div class="drop-list-entry-blocker"-->
-          <!--           *ngIf="(displayListEntryBlocker$ | async)">-->
-          <!--      </div>-->
-          <div
-            class="root-subgroup-drop-list"
-            [class.orientation-horizontal]="rootOrientation === 'horizontal'"
-            [class.orientation-vertical]="rootOrientation === 'vertical'"
-            [class.orientation-mixed]="rootOrientation === 'mixed'"
-            cdkDropList
-            cdkDropListGroup
-            #rootSubgroupListElement
-            #rootSubgroupList="cdkDropList"
-            [cdkDropListOrientation]="rootOrientation"
-            [cdkDropListData]="subgroups"
-            (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
-            [cdkDropListEnterPredicate]="rootEnterPredicate"
-            [cdkDropListConnectedTo]="connectedToSubgroups">
-            @for(treeRoot of subgroups; track treeRoot.subgroupId) {
-              <div cdkDrag
-                   [cdkDragData]="treeRoot"
-                   (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
-                   (cdkDragReleased)="resetAfterDragReleased($event)">
-                <app-crew-subgroup
-                  [subgroup]="treeRoot"
-                  [parentContainer]="rootContainerRegistrationRef"
-                  [dropListParentEl]="rootListRegistrationRef"
-                  [collapseAllFromRoot$]="collapseAll$"
-                  [collapseChildrenFromRoot$]="collapseRootChildrenNotRoots$"
-                  [parentTreeDepth]="-1">
-                </app-crew-subgroup>
-              </div>
-            }
-            <div class="add-new-button-container">
-              <button class="add-new-button">
-                <mat-icon class="material-symbols-outlined add-2">add_circle_outline</mat-icon>
-              </button>
+    <div>
+      <div class="drop-list-facade">
+        <div
+          class="root-subgroup-drop-list"
+          [class.orientation-horizontal]="rootOrientation === 'horizontal'"
+          [class.orientation-vertical]="rootOrientation === 'vertical'"
+          [class.orientation-mixed]="rootOrientation === 'mixed'"
+          cdkDropList
+          cdkDropListGroup
+          #rootSubgroupListElement
+          #rootSubgroupList="cdkDropList"
+          [cdkDropListOrientation]="rootOrientation"
+          [cdkDropListData]="subgroups"
+          (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
+          [cdkDropListEnterPredicate]="rootEnterPredicate"
+          [cdkDropListConnectedTo]="connectedToSubgroups">
+          @for (treeRoot of subgroups; track treeRoot.subgroupId) {
+            <div cdkDrag
+                 [cdkDragData]="treeRoot"
+                 (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
+                 (cdkDragReleased)="resetAfterDragReleased($event)">
+              <app-crew-subgroup
+                [subgroup]="treeRoot"
+                [parentContainer]="rootContainerRegistrationRef"
+                [dropListParentEl]="rootListRegistrationRef"
+                [collapseAllFromRoot$]="collapseAll$"
+                [collapseChildrenFromRoot$]="collapseRootChildrenNotRoots$"
+                [parentTreeDepth]="-1">
+              </app-crew-subgroup>
             </div>
+          }
+          <div class="add-new-button-container">
+            <button class="add-new-button">
+              <mat-icon class="material-symbols-outlined add-2">add_circle_outline</mat-icon>
+            </button>
           </div>
         </div>
       </div>
-    </ng-container>
+    </div>
+  </ng-container>
 </mat-expansion-panel>
 
 

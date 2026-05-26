@@ -1,10 +1,11 @@
 import {
-  AfterViewInit, ChangeDetectorRef,
+  AfterViewChecked,
+  AfterViewInit,
   Component,
   ElementRef, inject,
-  Input,
+  Input, OnChanges,
   OnDestroy,
-  OnInit,
+  OnInit, SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import {
@@ -17,7 +18,7 @@ import {MatTooltip} from "@angular/material/tooltip";
 import {
   BehaviorSubject,
   combineLatest, distinctUntilChanged,
-  Observable,
+  Observable, of,
   Subject,
   takeUntil,
 } from "rxjs";
@@ -43,13 +44,10 @@ import {
 } from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
 import {toTitleCase} from "../../../../utils/global-functions";
 
-
-
 @Component({
   selector: 'app-crew-subgroup',
   imports: [
     CrewPositionChipComponent,
-    NgForOf,
     NgIf,
     MatIcon,
     MatTooltip,
@@ -63,22 +61,23 @@ import {toTitleCase} from "../../../../utils/global-functions";
   templateUrl: './crew-subgroup.component.html',
   styleUrl: './crew-subgroup.component.css'
 })
-export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
+export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   protected dropListRegistry = inject(DropListRegistryService);
   protected groupManagementUiPrefs = inject(GroupManagementUiPrefsService);
 
   private destroy$ = new Subject<void>();
 
-  @Input() subgroup!: GroupCompSubgroupViewModel;
-  @Input() collapseFromParent$!: BehaviorSubject<boolean>;
-  @Input() collapseAllFromRoot$!: BehaviorSubject<boolean>;
-  @Input() collapseChildrenFromRoot$!: BehaviorSubject<boolean>;
-
+  @Input({ required: true}) subgroup!: GroupCompSubgroupViewModel;
+  @Input() collapseFromParent$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  @Input() collapseAllFromRoot$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  @Input() collapseChildrenFromRoot$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   @Input() dropListParentEl!: DropListRegistration;
   @Input() parentTreeDepth!: number;
   @Input() parentContainer!: ElementContainerRegistration;
   protected selfDepth!: number;
+
+  protected nativeSubgroupsForDisplay: GroupCompSubgroupViewModel[] = [];
 
   @ViewChild('nativeSubgroupList') nativeSubgroupList!: CdkDropList;
   @ViewChild('nativeSubgroupListElement', {read: ElementRef }) nativeSubgroupListElement!: ElementRef<HTMLElement>;
@@ -91,7 +90,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('chipWrapperContainer', {read: ElementRef }) chipWrapperContainer!: ElementRef<HTMLElement>;
   protected thisDropListId$= new BehaviorSubject<string | null>(null);
 
-  protected isHoveredTarget$: Observable<boolean> = new Observable<boolean>;
+  protected isHoveredTarget$: Observable<boolean> = of(false);
 
   protected containerRegistrationRef!: ElementContainerRegistration;
   protected subgroupListRegistrationRef!: DropListRegistration;
@@ -104,13 +103,13 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected selfCollapsedStatePropagatedToChildren$ = new BehaviorSubject<boolean>(true);
 
   // selfExpanded is used to enable/disable expansion styles for this individual instance of this component
-  protected selfExpanded: boolean = this.collapseAllFromRoot$ !== null ? false : this.collapseFromParent$.getValue();
+  protected selfExpanded!: boolean;
 
   // childrenExpanded tracks the expansion state of the nested children for each instance of this component
   // to connect the states of the different toggle button functionalities (collapse self vs. collapse children)
-  protected childrenExpanded: boolean = this.collapseChildrenFromRoot$ !== null ? true : this.collapseFromParent$.getValue();
+  protected childrenExpanded!: boolean;
 
-  protected positionsExpanded: boolean = this.childrenExpanded;
+  protected positionsExpanded!: boolean;
 
   protected nativeTogglesNextOrientation!: DropListOrientation;
 
@@ -167,11 +166,15 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
       dragging && (dataType === 'subgroup') && !isHovered)
   )
 
-  constructor(protected subgroupInteract: SubgroupManagementInteractService,
-              private cdr: ChangeDetectorRef){}
+  constructor(protected subgroupInteract: SubgroupManagementInteractService){}
 
   ngOnInit() {
+    this.nativeSubgroupsForDisplay = this.subgroup.subgroups;
     this.selfDepth = this.parentTreeDepth + 1;
+
+    this.selfExpanded = this.collapseAllFromRoot$.getValue() ? this.collapseFromParent$.getValue() : false;
+    this.childrenExpanded = this.collapseChildrenFromRoot$.getValue() ? this.collapseFromParent$.getValue() : false;
+    this.positionsExpanded = this.childrenExpanded;
 
     if(this.subgroup.dropListOrientation === 'horizontal') {
       this.nativeTogglesNextOrientation = 'vertical';
@@ -233,8 +236,6 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
             .map(listReg => listReg.dropList)
         });
       });
-
-    this.cdr.detectChanges()
   }
 
   ngAfterViewInit() {
@@ -257,17 +258,16 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subgroupHoverTargetRegistrationRef = this.dropListRegistry.registerHoverTarget(this.nativeSubgroupList.id,
       this.nativeSubgroupList, this.subgroupHoverTarget, this.containerRegistrationRef, this.selfDepth);
 
-    this.dropListRegistry.pageDataLoading = false;
-
     this.isHoveredTarget$ = this.dropListRegistry.hoveredTargetId$.pipe(
       map(hoveredId => hoveredId === this.thisDropListId$.getValue()),
     );
-
-    // console.log(`Subgroup ${this.subgroupListRegistrationRef.id} orientation: ${this.selfDropListOrientation} \n depth: ${this.selfDepth}`);
   }
 
-  onEntered(e: CdkDragEnter) { console.log('ENTERED:', e.container.id)};
-  onExited(e: CdkDragExit) { console.log('EXITED', e.container.id);}
+  ngOnChanges(changes: SimpleChanges) {
+    if(changes['subgroup']) {
+      this.nativeSubgroupsForDisplay = [...(this.subgroup.subgroups ?? [])];
+    }
+  }
 
   dragStarted(event: CdkDragStart) {
     // console.log('list sortingDisabled: ', event.source.dropContainer.sortingDisabled);
@@ -303,6 +303,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.subgroup.dropListOrientation = 'horizontal'
       this.nativeTogglesNextOrientation = 'vertical'
     }
+
+    this.subgroupInteract.updateSubgroupDropListOrientation(this.subgroup);
 
     setTimeout(() => this.subgroupInteract.reorientingDropList = false, 500);
   }

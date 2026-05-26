@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 import {Subject} from "rxjs";
 import {
   GroupManagementMemberViewModel
@@ -35,6 +35,26 @@ export class MemberChipComponent implements OnInit, OnDestroy {
 
   toggleDetailsExpand() {
     this.detailsExpanded = !this.detailsExpanded;
+  }
+
+  abbreviateLabel(parentLabel: string) {
+    if(!parentLabel) return '';
+
+    const labelWords = parentLabel.trim().split(/\s+/);
+
+    if(labelWords.length > 1) {
+      return labelWords.map(w => w[0].toUpperCase()).join('');
+    }
+
+    return parentLabel.length > 6 ? parentLabel.slice(0, 6) + '...' : parentLabel;
+  }
+
+  buildMemberRoleTooltip() {
+    const parts = [
+      this.member.memberPosition?.subgroupSummary?.parentSubgroupLabel,
+      this.member.memberPosition?.roleSummary?.roleTitle
+    ].filter(Boolean);
+    return parts.join(' - ')
   }
 
   ngOnDestroy() {

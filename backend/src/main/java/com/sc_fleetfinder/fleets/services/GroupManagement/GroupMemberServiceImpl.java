@@ -119,6 +119,9 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
 
     @Override
     public Optional<CrewPosition> findGroupMemberCrewPosition(GroupMember member) {
+        if(member == null) {
+            return Optional.empty();
+        }
         return cpr.findMemberPositionByAssignedMemberIdAndListingId(member, member.getGroupListing().getGroupId());
     }
 

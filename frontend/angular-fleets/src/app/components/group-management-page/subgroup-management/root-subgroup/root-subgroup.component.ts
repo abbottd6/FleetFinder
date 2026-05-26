@@ -1,5 +1,5 @@
 import {
-  AfterViewInit,
+  AfterViewInit, ChangeDetectorRef,
   Component,
   ElementRef,
   inject,
@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import {
   BehaviorSubject,
-  combineLatest,
+  combineLatest, distinctUntilChanged,
   filter,
   Subject,
   take,
@@ -59,7 +59,6 @@ import {toTitleCase} from "../../../../utils/global-functions";
     MatMenu,
     MatMenuItem,
     MatTooltip,
-    NgForOf,
     NgIf,
     MatMenuTrigger,
     CdkDropListGroup,
@@ -75,8 +74,6 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected readonly dropListRegistry = inject(DropListRegistryService);
   protected readonly groupManagementUiPrefs = inject(GroupManagementUiPrefsService);
-
-
 
   @Input() listingTitle!: string;
   @Input() groupId!: number;
@@ -106,15 +103,6 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected collapseAll$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   protected collapseRootChildrenNotRoots$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-  // protected displayListEntryBlocker$: Observable<boolean> =  combineLatest([
-  //   this.dropListRegistry.isDragging$,
-  //   this.dropListRegistry.dropDataType$,
-  //   this.isHoveredTarget$
-  // ]).pipe(
-  //   map(([dragging, dataType, isHovered]) =>
-  //     dragging && (dataType === 'subgroup') && !isHovered),
-  // )
-
   constructor(protected subgroupInteract: SubgroupManagementInteractService){
   }
 
@@ -129,31 +117,29 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    console.log('rootDropListOrientation: ', this.rootOrientation);
-
     this.subgroupInteract.subgroupTrees$.pipe(
       filter(trees => trees?.length > 0),
       take(1),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.rootListRegistrationRef = this.dropListRegistry.registerList('content-root', 'root',
-        this.rootSubgroupList, this.rootSubgroupListElement, 0, 'root');
+      Promise.resolve().then(() => {
+        this.rootListRegistrationRef = this.dropListRegistry.registerList('content-root', 'root',
+          this.rootSubgroupList, this.rootSubgroupListElement, 0, 'root');
 
-      this.rootDropListId$.next(this.rootSubgroupList.id);
+        this.rootDropListId$.next(this.rootSubgroupList.id);
 
-      this.rootContainerRegistrationRef = this.dropListRegistry.registerContainer(this.rootListRegistrationRef.id, 'root',
-        [this.rootSubgroupList], this.groupCompRootContainer, 0, 'content-root');
+        this.rootContainerRegistrationRef = this.dropListRegistry.registerContainer(this.rootListRegistrationRef.id, 'root',
+          [this.rootSubgroupList], this.groupCompRootContainer, 0, 'content-root');
 
-      this.rootHoverTargetRegistrationRef = this.dropListRegistry.registerHoverTarget(this.rootSubgroupList.id,
-        this.rootSubgroupList, this.rootListHoverTarget, this.rootContainerRegistrationRef, 0);
-
-      this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
-        .subscribe(registeredLists => {
-          this.connectedToSubgroups = registeredLists.filter(l => l.id !== this.rootSubgroupList?.id)
-            .map(regList => regList.dropList);
-        })
-
-      console.log(this.rootContainerRegistrationRef.element.nativeElement.getBoundingClientRect());
+        this.rootHoverTargetRegistrationRef = this.dropListRegistry.registerHoverTarget(this.rootSubgroupList.id,
+          this.rootSubgroupList, this.rootListHoverTarget, this.rootContainerRegistrationRef, 0);
+      }).then(() => {
+        this.dropListRegistry.allSubgroupLists$.pipe(takeUntil(this.destroy$))
+          .subscribe(registeredLists => {
+            this.connectedToSubgroups = registeredLists.filter(l => l.id !== this.rootSubgroupList?.id)
+              .map(regList => regList.dropList);
+          })
+      })
     })
   }
 

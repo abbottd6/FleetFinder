@@ -2,44 +2,60 @@
 
   <div class="chip-header"
        [class.member-details-collapsed]="!detailsExpanded">
-    <span class="header-left drag-handle" cdkDragHandle>
-        <span class="header-primary">
-          {{ member.userSummary.username }}
-        </span>
-        <span class="header-secondary" matTooltip="In-game Username">
-          &commat;{{member.userSummary.inGameUsername}}
-        </span>
-      <ng-container *ngIf="member.hasMic && member.hasHeadset; else parseComms">
-        <mat-icon class="material-symbols-outlined comms-icons">
-          headset_mic
-        </mat-icon>
-      </ng-container>
-      <!-- determine comms icons to display -->
-      <ng-template #parseComms>
-        <mat-icon *ngIf="!member.hasMic && !member.hasHeadset; else partialComms"
-              class="material-symbols-outlined comms-icons">
-          headset_off
-        </mat-icon>
-        <ng-template #partialComms>
-          <mat-icon *ngIf="member.hasMic; else noMic"
-                class="material-symbols-outlined comms-icons">
-            mic
-          </mat-icon>
-          <ng-template #noMic>
-            <mat-icon class="material-symbols-outlined comms-icons">
-              mic_off
-            </mat-icon>
-          </ng-template>
-          <mat-icon *ngIf="member.hasHeadset; else noHeadset"
-                class="material-symbols-outlined comms-icons">
-            headphones
-          </mat-icon>
-          <ng-template #noHeadset>
-            <mat-icon>headset_off</mat-icon>
-          </ng-template>
-        </ng-template>
-      </ng-template>
-    </span>
+    <div class="header-left drag-handle" cdkDragHandle>
+      <div class="member-header-grid-rows">
+        <div class="header-grid-columns">
+          <span class="header-primary">
+            {{ member.userSummary.username }}
+          </span>
+          <span class="comms-icons-container">
+            <ng-container *ngIf="member.hasMic && member.hasHeadset; else parseComms">
+              <mat-icon class="material-symbols-outlined comms-icons">
+                headset_mic
+              </mat-icon>
+            </ng-container>
+              <!-- determine comms icons to display -->
+            <ng-template #parseComms>
+              <mat-icon *ngIf="!member.hasMic && !member.hasHeadset; else partialComms"
+                        class="material-symbols-outlined comms-icons">
+                headset_off
+              </mat-icon>
+              <ng-template #partialComms>
+                <mat-icon *ngIf="member.hasMic; else noMic"
+                          class="material-symbols-outlined comms-icons">
+                  mic
+                </mat-icon>
+                <ng-template #noMic>
+                  <mat-icon class="material-symbols-outlined comms-icons">
+                    mic_off
+                  </mat-icon>
+                </ng-template>
+                <mat-icon *ngIf="member.hasHeadset; else noHeadset"
+                          class="material-symbols-outlined comms-icons">
+                  headphones
+                </mat-icon>
+                <ng-template #noHeadset>
+                  <mat-icon>headset_off</mat-icon>
+                </ng-template>
+              </ng-template>
+            </ng-template>
+          </span>
+        </div>
+        <div class="header-grid-columns">
+          <span class="header-secondary" matTooltip="In-Game Username">
+            &commat;{{ member.userSummary.inGameUsername }}
+          </span>
+          <span class="header-secondary" [matTooltip]="buildMemberRoleTooltip()">
+            @if(member.memberPosition) {
+              {{ abbreviateLabel(member.memberPosition.subgroupSummary.parentSubgroupLabel) }}
+              {{ abbreviateLabel(member.memberPosition.roleSummary.roleTitle) }}
+            } @else {
+              Unassigned
+            }
+          </span>
+        </div>
+      </div>
+    </div>
 
     <span class="header-right">
       <button class="member-details-toggle-button"

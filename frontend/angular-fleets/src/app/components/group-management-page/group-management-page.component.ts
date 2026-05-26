@@ -97,13 +97,14 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
               protected memberManagementApi: MemberManagementApiService,
               protected subgroupMgmtInteract: SubgroupManagementInteractService,
               private route: ActivatedRoute,
-              protected dropListRegistry: DropListRegistryService,
-              private cdr: ChangeDetectorRef) {}
+              protected dropListRegistry: DropListRegistryService) {}
 
   ngOnInit() {
     if(!this.userService.userLoggedIn) {
       this.router.navigateByUrl('');
     }
+
+    this.dropListRegistry.pageDataLoading = true;
 
     const stringId = this.route.snapshot.paramMap.get('groupId');
 
@@ -141,8 +142,6 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
     this.listingTitle = this.managementInteract.sessionManager.listing.listingTitle;
 
     this.subgroupMgmtInteract.getExistingGroupComposition(this.groupId);
-
-    this.cdr.detectChanges();
   }
 
   ngAfterViewInit() {

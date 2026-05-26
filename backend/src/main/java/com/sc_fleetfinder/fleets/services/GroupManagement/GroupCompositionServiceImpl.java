@@ -1,10 +1,11 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.CrewPositionRepository;
-import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupManagementSubgroupRepository;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionSubgroupDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.MemberPositionSummaryDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -22,17 +23,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementConstants.*;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class GroupCompositionServiceImpl implements GroupCompositionService {
 
-    private final Long ROOT_SUBGROUP_ID = 0L;
-
     private final InGroupRankService rankService;
     private final GroupListingService gls;
     private final GroupMemberManagementService memberService;
-    private final GroupManagementSubgroupRepository gmsr;
+    private final SubgroupManagementService subgroupService;
     private final CrewPositionRepository cpr;
     private final CrewTemplateService templateService;
     private final UserService userService;
@@ -71,12 +72,7 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
                 .toList();
 
     // fetch the newly created subgroups
-        HashMap<Long, List<GroupManagementSubgroup>> newSubgroups = gmsr.findTreeByRoot(rootIds, listing.getGroupId())
-                .stream()
-                .collect(Collectors.groupingBy(sub ->
-                        sub.getParentSubgroup() == null ? ROOT_SUBGROUP_ID : sub.getParentSubgroup().getSubgroupId(),
-                        HashMap::new,
-                        Collectors.toList()));
+        HashMap<Long, List<GroupManagementSubgroup>> newSubgroups = subgroupService.findTreeMapByRootId(rootIds, listing.getGroupId());
 
     // fetch the newly created positions
         List<CrewPosition> newPositionsList = cpr.findAllPositionsForSubgroupTrees(rootIds, groupId).stream().toList();
@@ -99,18 +95,14 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         memberService.verifyAndReturnUserAsGroupMember(user, groupId);
 
         //generate a list of the root subgroup ids to build trees from
-        List<Long> rootIds = gmsr.findGroupCompositionRootIds(groupId);
+        List<Long> rootIds = subgroupService.findGroupCompositionRootIds(groupId);
 
         if(rootIds.isEmpty()) {
             return new GroupCompositionDto();
         }
 
-        HashMap<Long, List<GroupManagementSubgroup>> existingSubgroups = gmsr.findTreeByRoot(rootIds, groupId)
-                .stream()
-                .collect(Collectors.groupingBy(sub ->
-                        sub.getParentSubgroup() == null ? ROOT_SUBGROUP_ID : sub.getParentSubgroup().getSubgroupId(),
-                        HashMap::new,
-                        Collectors.toList()));
+        //build map with parent subgroup id as key and list of child subgroups within each parent
+        HashMap<Long, List<GroupManagementSubgroup>> existingSubgroups = subgroupService.findTreeMapByRootId(rootIds, groupId);
 
         List<CrewPosition> existingPositionsList = cpr.findAllPositionsForSubgroupTrees(rootIds, groupId).stream().toList();
 
@@ -131,12 +123,14 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
                                                                HashMap<Long, List<CrewSubgroupTemplate>> subgroups,
                                                                HashMap<Long, List<CrewPositionTemplate>> positions) {
 
-        GroupManagementSubgroup currentNode = gmsr.save(new GroupManagementSubgroup(listing, rootSubgroupId, parentSubgroup, template));
+        GroupManagementSubgroup currentNode = subgroupService.saveSubgroup(new GroupManagementSubgroup(listing,
+                rootSubgroupId, parentSubgroup, template));
+
         Long treeRootId = rootSubgroupId == null ? currentNode.getSubgroupId() : rootSubgroupId;
 
         if(currentNode.getRootSubgroupId() == null) {
             currentNode.setRootSubgroupId(treeRootId);
-            gmsr.save(currentNode);
+            subgroupService.saveSubgroup(currentNode);
         }
 
         List<CrewPositionTemplate> nestedPositions = positions.get(template.getTemplateSubgroupId());
@@ -175,8 +169,13 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
 
         List<GroupCompositionCrewPositionDto> levelPositions = crewPositions.getOrDefault(currentNode.getSubgroupId(), List.of())
                 .stream()
-                .map(pos -> modelMapper.map(pos, GroupCompositionCrewPositionDto.class))
-                .toList();
+                .map(pos -> {
+                    GroupCompositionCrewPositionDto dto = modelMapper.map(pos, GroupCompositionCrewPositionDto.class);
+                    memberService.findGroupMemberCrewPosition(pos.getAssignedMember())
+                            .map(cp -> modelMapper.map(cp, MemberPositionSummaryDto.class))
+                            .ifPresent(memberPosition -> dto.getAssignedMember().setMemberPosition(memberPosition));
+                    return dto;
+                }).toList();
 
         GroupCompositionSubgroupDto dto = modelMapper.map(currentNode, GroupCompositionSubgroupDto.class);
 
@@ -194,12 +193,24 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
     @Override
     @Transactional
     public void deleteSubgroup(Users user, Long groupId, Long subgroupId) {
-        GroupListing listing = gls.findGroupListingEntityById(groupId);
 
-        GroupManagementSubgroup subgroup = gmsr.findById(subgroupId)
-                .orElseThrow(() -> new ResourceNotFoundException("GroupManagementSubgroup", subgroupId));
+        GroupManagementSubgroup subgroup = subgroupService.findSubgroupById(subgroupId);
 
-        gmsr.delete(subgroup);
+        subgroupService.deleteSubgroup(subgroup);
+    }
+
+    @Override
+    @Transactional
+    public void updateSubgroupDropListOrientation(Users manager, UpdateSubgroupDropListOrientationDto dto) {
+        GroupListing listing =  gls.findGroupListingEntityById(dto.getGroupId());
+
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_SUBGROUPS);
+
+        GroupManagementSubgroup update = subgroupService.findSubgroupById(dto.getSubgroupId());
+
+        update.setDropListOrientation(dto.getOrientation());
+
+        subgroupService.saveSubgroup(update);
     }
 
     @Override

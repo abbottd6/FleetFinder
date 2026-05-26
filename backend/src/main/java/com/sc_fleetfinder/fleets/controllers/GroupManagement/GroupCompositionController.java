@@ -1,10 +1,9 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.CrewTemplateSummaryDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionDto;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementSubgroup;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.CrewTemplateService;
@@ -95,5 +94,16 @@ public class GroupCompositionController {
         Long groupId = groupCompService.clearMemberPositionAssignment(manager, positionDto);
 
         return ResponseEntity.ok(groupId);
+    }
+
+    @PatchMapping("/update-subgroup-orientation")
+    public ResponseEntity<?> updateSubgroupDropListOrientation(@AuthenticationPrincipal Jwt jwt,
+                                                               @RequestBody UpdateSubgroupDropListOrientationDto dto) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        groupCompService.updateSubgroupDropListOrientation(manager, dto);
+
+        return ResponseEntity.ok().build();
     }
 }

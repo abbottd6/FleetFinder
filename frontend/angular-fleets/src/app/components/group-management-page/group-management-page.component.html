@@ -56,10 +56,12 @@
           <!-- save structure as template -->
         </div>
       </div>
-      <app-root-subgroup
-        [listingTitle]="listingTitle"
-        [groupId]="groupId">
-      </app-root-subgroup>
+      <ng-container *ngIf="!dropListRegistry.pageDataLoading">
+        <app-root-subgroup
+          [listingTitle]="listingTitle"
+          [groupId]="groupId">
+        </app-root-subgroup>
+      </ng-container>
     </div>
   </div>
 </div>

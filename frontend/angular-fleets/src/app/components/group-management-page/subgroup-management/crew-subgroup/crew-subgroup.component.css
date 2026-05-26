@@ -311,6 +311,11 @@
   width: calc(100% - 3px);
 }
 
+.chip-contents-collapsed.orientation-vertical .chip-positions-collapsed {
+  width: 96%;
+  margin-left: 4px;
+  margin-right: auto;
+}
 
 .chip-contents:not(.chip-contents-collapsed).position-list.orientation-horizontal,
 .chip-contents:not(.chip-contents-collapsed).position-list.orientation-mixed {
