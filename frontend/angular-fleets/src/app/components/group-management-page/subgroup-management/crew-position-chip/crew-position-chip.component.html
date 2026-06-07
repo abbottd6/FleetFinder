@@ -35,16 +35,19 @@
   </div>
   <div class="position-member-slot"
     cdkDropList
+    [cdkDropListData]="position.assignedMember"
     [attr.data-position-id]="position.positionId">
     @for(member of assignedMember; track member.userSummary.userId) {
       <div cdkDrag
-        [cdkDragData]="member">
+        [cdkDragData]="member"
+        (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
+        (cdkDragEnded)="subgroupInteract.onMemberDrop($event)">
         <app-member-chip
           [member]="member">
         </app-member-chip>
       </div>
     }
-    <ng-container *ngIf="(dropListRegistry.hoveredPositionId$ | async) === position.positionId">
+    <ng-container *ngIf="(dropListRegistry.hoveredPositionId$ | async) === position.positionId && position.assignedMember === null">
       <div class="member-drop-placeholder">
         <app-member-chip
           [member]="dropListRegistry.draggedMember$.getValue()!">

@@ -442,6 +442,7 @@
 
 .material-symbols-outlined.orientation-state-horizontal {
   transform: rotate(133deg);
+  margin-bottom: 2px;
 }
 
 .material-symbols-outlined.orientation-state-vertical {

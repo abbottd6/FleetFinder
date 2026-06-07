@@ -46,7 +46,7 @@
         <button *ngIf="hasChildSubgroups"
                 class="header-button"
                 type="button"
-                (click)="collapseChildren()">
+                (click)="toggleCollapseChildren()">
         <span class="material-symbols-outlined"
               [matTooltip]="childrenExpanded ? 'Collapse children' : 'Expand Children'">
           <ng-container *ngIf="childrenExpanded; else childrenCollapsed">

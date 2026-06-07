@@ -101,7 +101,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   )
 
   protected collapseAll$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  protected collapseRootChildrenNotRoots$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected collapseRootChildrenNotRoots$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   constructor(protected subgroupInteract: SubgroupManagementInteractService){
   }

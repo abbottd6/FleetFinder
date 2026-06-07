@@ -1,5 +1,4 @@
 import {
-  AfterViewChecked,
   AfterViewInit,
   Component,
   ElementRef, inject,
@@ -12,7 +11,7 @@ import {
   GroupCompSubgroupViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
 import {CrewPositionChipComponent} from "../crew-position-chip/crew-position-chip.component";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {
@@ -24,8 +23,6 @@ import {
 } from "rxjs";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {
-  CdkDragEnter,
-  CdkDragExit,
   CdkDragHandle,
   CdkDragMove, CdkDragRelease, CdkDragStart,
   CdkDropList,
@@ -103,13 +100,13 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   protected selfCollapsedStatePropagatedToChildren$ = new BehaviorSubject<boolean>(true);
 
   // selfExpanded is used to enable/disable expansion styles for this individual instance of this component
-  protected selfExpanded!: boolean;
+  protected selfExpanded: boolean = true;
 
   // childrenExpanded tracks the expansion state of the nested children for each instance of this component
   // to connect the states of the different toggle button functionalities (collapse self vs. collapse children)
-  protected childrenExpanded!: boolean;
+  protected childrenExpanded: boolean = true;
 
-  protected positionsExpanded!: boolean;
+  protected positionsExpanded: boolean = true;
 
   protected nativeTogglesNextOrientation!: DropListOrientation;
 
@@ -175,6 +172,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     this.selfExpanded = this.collapseAllFromRoot$.getValue() ? this.collapseFromParent$.getValue() : false;
     this.childrenExpanded = this.collapseChildrenFromRoot$.getValue() ? this.collapseFromParent$.getValue() : false;
     this.positionsExpanded = this.childrenExpanded;
+    this.selfCollapsedStatePropagatedToChildren$.next(this.selfExpanded);
 
     if(this.subgroup.dropListOrientation === 'horizontal') {
       this.nativeTogglesNextOrientation = 'vertical';
@@ -189,12 +187,12 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
         .subscribe(collapse => {
         this.selfExpanded = collapse;
         this.childrenExpanded = collapse;
+        this.positionsExpanded = collapse;
         this.selfCollapsedStatePropagatedToChildren$.next(collapse);
       })
     }
 
     if(this.collapseAllFromRoot$ != null) {
-
       if(this.collapseAllFromRoot$.getValue()) {
         this.selfExpanded = false;
         this.childrenExpanded = false;
@@ -207,6 +205,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
         distinctUntilChanged()
       ).subscribe(collapse => {
         this.selfExpanded = !this.selfExpanded;
+        this.positionsExpanded = this.selfExpanded;
+        this.childrenExpanded = this.selfExpanded;
         this.selfCollapsedStatePropagatedToChildren$.next(false);
       })
     }
@@ -217,6 +217,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
         distinctUntilChanged())
         .subscribe(collapse => {
           this.childrenExpanded = !this.childrenExpanded;
+          this.positionsExpanded = this.childrenExpanded;
           this.selfCollapsedStatePropagatedToChildren$.next(this.childrenExpanded);
       })
     }
@@ -313,7 +314,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     this.selfExpanded = !this.selfExpanded;
 
     this.childrenExpanded = this.selfExpanded;
-    this.positionsExpanded = this.childrenExpanded;
+    this.positionsExpanded = this.selfExpanded;
 
     this.selfCollapsedStatePropagatedToChildren$.next(this.selfExpanded);
   }
@@ -322,7 +323,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     this.positionsExpanded = !this.positionsExpanded;
   }
 
-  collapseChildren() {
+  toggleCollapseChildren() {
     if(!this.selfExpanded) {
       this.selfExpanded = true;
     }

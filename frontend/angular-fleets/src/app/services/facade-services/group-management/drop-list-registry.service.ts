@@ -236,8 +236,6 @@ export class DropListRegistryService {
 
     const newHoveredPositionId = Number(positionIdString);
 
-    console.log('hoveredId: ', newHoveredPositionId);
-
     if(newHoveredPositionId !== this.hoveredPositionId$.getValue()) {
       this.ngZone.run(() => {
         this.hoveredPositionId$.next(newHoveredPositionId);
@@ -405,6 +403,12 @@ export class DropListRegistryService {
     console.log('droppable: ', droppable);
 
     return droppable
+  }
+
+  isCompatibleMemberDrop = (dragData: CdkDrag, dropList: CdkDropList): boolean => {
+    if(getDropEntityType(dragData.data) !== 'member') return false;
+
+    return dropList.data.length === 0;
   }
 
   public resetAfterDragEnd() {

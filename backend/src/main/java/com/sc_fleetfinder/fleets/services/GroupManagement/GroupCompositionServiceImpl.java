@@ -17,10 +17,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementConstants.*;
@@ -223,11 +225,25 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         CrewPosition currentPosition = this.cpr.findById(dto.getPositionId())
                 .orElseThrow(() -> new ResourceNotFoundException("CrewPosition", dto.getPositionId()));
 
+        Users assigneeAsUser = userService.findUserById(dto.getAssignedMember().getUserSummary().getUserId());
+
+        GroupMember assigneeAsMember = memberService.verifyAndReturnUserAsGroupMember(assigneeAsUser, listing.getGroupId());
+
+        Optional<CrewPosition> wasPreviouslyAssigned = memberService.findGroupMemberCrewPosition(assigneeAsMember);
+
+        wasPreviouslyAssigned.ifPresent(this::clearPositionAssignedMemberTransaction);
+
         currentPosition.setAssignedMemberUserId(dto.getAssignedMember().getUserSummary().getUserId());
 
         cpr.save(currentPosition);
 
         return listing.getGroupId();
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    private void clearPositionAssignedMemberTransaction(CrewPosition position) {
+        position.setAssignedMemberUserId(null);
+        cpr.saveAndFlush(position);
     }
 
     @Override
