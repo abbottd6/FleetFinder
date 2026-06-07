@@ -100,8 +100,8 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     map(([hoveredId, rootId]) => hoveredId === rootId)
   )
 
-  protected collapseAll$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  protected collapseRootChildrenNotRoots$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected allExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  protected rootChildrenExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   constructor(protected subgroupInteract: SubgroupManagementInteractService){
   }
@@ -186,15 +186,15 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleCollapseAll() {
-    this.collapseAll$.next(!this.collapseAll$.getValue());
-    this.collapseRootChildrenNotRoots$.next(true);
+    this.allExpanded$.next(!this.allExpanded$.getValue());
+    this.rootChildrenExpanded$.next(this.allExpanded$.getValue());
   }
 
   toggleCollapseRootsChildren() {
-    if(this.collapseAll$.getValue()) {
-      this.collapseAll$.next(false);
+    if(!this.allExpanded$.getValue()) {
+      this.allExpanded$.next(true);
     }
-    this.collapseRootChildrenNotRoots$.next(!this.collapseRootChildrenNotRoots$.getValue())
+    this.rootChildrenExpanded$.next(!this.rootChildrenExpanded$.getValue())
   }
 
   ngOnDestroy() {

@@ -30,8 +30,8 @@
               type="button"
               (click)="toggleCollapseAll()">
         <mat-icon class="root-subgroup-header-button-icon"
-                  [class.rotate]="(collapseAll$ | async)"
-                  [matTooltip]="!(collapseAll$ | async) ? 'Collapse to roots' : 'Expand roots'">
+                  [class.rotate]="!(allExpanded$ | async)"
+                  [matTooltip]="(allExpanded$ | async) ? 'Collapse All' : 'Expand All'">
           arrow_drop_up
         </mat-icon>
       </button>
@@ -40,8 +40,8 @@
               type="button"
               (click)="toggleCollapseRootsChildren()">
           <span class="material-symbols-outlined"
-                [matTooltip]="(collapseRootChildrenNotRoots$ | async) ? 'Expand Children' : 'Collapse children'">
-                    <ng-container *ngIf="(collapseRootChildrenNotRoots$ | async) === false; else childrenCollapsed">
+                [matTooltip]="(rootChildrenExpanded$ | async) ? 'Collapse Children' : 'Expand Children'">
+                    <ng-container *ngIf="(rootChildrenExpanded$ | async) === true; else childrenCollapsed">
                       <span class="root-subgroup-header-button-icon">
                         collapse_content
                       </span>
@@ -51,7 +51,7 @@
                         expand_content
                       </span>
                     </ng-template>
-                  </span>
+          </span>
       </button>
 
       <button class="header-button"
@@ -106,8 +106,8 @@
                 [subgroup]="treeRoot"
                 [parentContainer]="rootContainerRegistrationRef"
                 [dropListParentEl]="rootListRegistrationRef"
-                [collapseAllFromRoot$]="collapseAll$"
-                [collapseChildrenFromRoot$]="collapseRootChildrenNotRoots$"
+                [expandedFromParent$]="allExpanded$"
+                [rootChildrenExpanded$]="rootChildrenExpanded$"
                 [parentTreeDepth]="-1">
               </app-crew-subgroup>
             </div>

@@ -117,7 +117,20 @@
              [class.orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
              [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'"
              [class.is-hovered-list]="(isHoveredTarget$ | async)"
-             [class.deeply-nested]="selfDepth > 1">
+             [class.deeply-nested]="selfDepth > 1"
+             (scroll)="updateHorizontalScrollButtonVisibility()">
+
+          <ng-container *ngIf="canScrollHorizontal$ | async">
+            <button class="drop-list-horizontal-scroll left"
+                    [class.show-scroll-button]="showLeftScroll"
+                    [class.do-not-show-scroll-button]="!showLeftScroll"
+                    (click)="scrollHorizontal('left')">
+              <span class="material-symbols-outlined scroll-arrow-scaled">
+                arrow_back_ios
+              </span>
+            </button>
+          </ng-container>
+
           @for (childSubgroup of nativeSubgroupsForDisplay; track childSubgroup.subgroupId) {
             <div cdkDrag
                  [cdkDragData]="childSubgroup"
@@ -130,11 +143,21 @@
                 [parentContainer]="containerRegistrationRef"
                 [parentTreeDepth]="selfDepth"
                 [dropListParentEl]="subgroupListRegistrationRef"
-                [collapseFromParent$]="selfCollapsedStatePropagatedToChildren$"
+                [expandedFromParent$]="selfExpandedPropagateToChildren$"
                 [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
               </app-crew-subgroup>
             </div>
           }
+          <ng-container *ngIf="canScrollHorizontal$ | async">
+            <button class="drop-list-horizontal-scroll right"
+                    [class.show-scroll-button]="showRightScroll"
+                    [class.do-not-show-scroll-button]="!showRightScroll"
+                    (click)="scrollHorizontal('right')">
+              <span class="material-symbols-outlined scroll-arrow-scaled">
+                arrow_forward_ios
+              </span>
+            </button>
+          </ng-container>
         </div>
       </div>
 
@@ -162,14 +185,14 @@
            (cdkDropListDropped)="subgroupInteract.onPositionDrop($event, subgroup)"
            [class.chip-subgroup-expanded]="selfExpanded"
            [class.chip-subgroup-collapsed]="!selfExpanded"
-           [class.chip-contents-collapsed]="selfExpanded"
            [class.orientation-horizontal]="subgroup.dropListOrientation === 'horizontal'"
            [class.orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
            [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'"
            [class.is-hovered-list]="(isHoveredTarget$ | async)">
           <ng-container *ngIf="!positionsExpanded; else notCollapsed">
             <div class="chip-positions-collapsed"
-                 [class.orientation-horizontal-mixed]="subgroup.dropListOrientation === 'horizontal' || subgroup.dropListOrientation === 'mixed'">
+                 [class.orientation-horizontal]="subgroup.dropListOrientation === 'horizontal'"
+                 [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'">
               <span class="summary-data-left">
                 Positions: {{ listNativeAssignedPositionsCount }}/{{ listNativeTotalPositionsCount }}
               </span>

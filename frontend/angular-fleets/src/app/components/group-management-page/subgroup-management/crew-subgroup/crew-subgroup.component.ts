@@ -65,9 +65,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   private destroy$ = new Subject<void>();
 
   @Input({ required: true}) subgroup!: GroupCompSubgroupViewModel;
-  @Input() collapseFromParent$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  @Input() collapseAllFromRoot$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  @Input() collapseChildrenFromRoot$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  @Input() expandedFromParent$?: BehaviorSubject<boolean>;
+  @Input() rootChildrenExpanded$?: BehaviorSubject<boolean>;
 
   @Input() dropListParentEl!: DropListRegistration;
   @Input() parentTreeDepth!: number;
@@ -97,7 +96,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   protected connectedToPositions: CdkDropList[] = [];
 
   // collapseFromSelf$ is the collapse state passed as input to children
-  protected selfCollapsedStatePropagatedToChildren$ = new BehaviorSubject<boolean>(true);
+  protected selfExpandedPropagateToChildren$ = new BehaviorSubject<boolean>(false);
 
   // selfExpanded is used to enable/disable expansion styles for this individual instance of this component
   protected selfExpanded: boolean = true;
@@ -109,6 +108,11 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   protected positionsExpanded: boolean = true;
 
   protected nativeTogglesNextOrientation!: DropListOrientation;
+
+  //horizontal orientation only
+  protected canScrollHorizontal$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected showLeftScroll: boolean = false;
+  protected showRightScroll: boolean = false;
 
   protected get listNativeAssignedPositionsCount(): number {
     return this.subgroup.crewPositions.filter(p => p.assignedMember !== null).length;
@@ -169,10 +173,10 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     this.nativeSubgroupsForDisplay = this.subgroup.subgroups;
     this.selfDepth = this.parentTreeDepth + 1;
 
-    this.selfExpanded = this.collapseAllFromRoot$.getValue() ? this.collapseFromParent$.getValue() : false;
-    this.childrenExpanded = this.collapseChildrenFromRoot$.getValue() ? this.collapseFromParent$.getValue() : false;
-    this.positionsExpanded = this.childrenExpanded;
-    this.selfCollapsedStatePropagatedToChildren$.next(this.selfExpanded);
+    this.selfExpanded = this.expandedFromParent$?.getValue() ?? true;
+    this.childrenExpanded = this.rootChildrenExpanded$?.getValue() ?? true;
+    this.positionsExpanded = this.rootChildrenExpanded$?.getValue() ?? true;
+    this.selfExpandedPropagateToChildren$.next(this.selfExpanded);
 
     if(this.subgroup.dropListOrientation === 'horizontal') {
       this.nativeTogglesNextOrientation = 'vertical';
@@ -182,43 +186,24 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
       this.nativeTogglesNextOrientation = 'horizontal';
     }
 
-    if(this.collapseFromParent$ != null) {
-      this.collapseFromParent$.pipe(takeUntil(this.destroy$))
+    if(this.expandedFromParent$ != null) {
+      this.expandedFromParent$.pipe(takeUntil(this.destroy$))
         .subscribe(collapse => {
         this.selfExpanded = collapse;
         this.childrenExpanded = collapse;
         this.positionsExpanded = collapse;
-        this.selfCollapsedStatePropagatedToChildren$.next(collapse);
+        this.selfExpandedPropagateToChildren$.next(collapse);
       })
     }
 
-    if(this.collapseAllFromRoot$ != null) {
-      if(this.collapseAllFromRoot$.getValue()) {
-        this.selfExpanded = false;
-        this.childrenExpanded = false;
-        this.collapseFromParent$?.next(this.selfCollapsedStatePropagatedToChildren$.getValue())
-        this.selfCollapsedStatePropagatedToChildren$.next(false);
-      }
-
-      this.collapseAllFromRoot$.pipe(
-        takeUntil(this.destroy$),
-        distinctUntilChanged()
-      ).subscribe(collapse => {
-        this.selfExpanded = !this.selfExpanded;
-        this.positionsExpanded = this.selfExpanded;
-        this.childrenExpanded = this.selfExpanded;
-        this.selfCollapsedStatePropagatedToChildren$.next(false);
-      })
-    }
-
-    if(this.collapseChildrenFromRoot$ != null) {
-      this.collapseChildrenFromRoot$.pipe(
+    if(this.rootChildrenExpanded$ != null) {
+      this.rootChildrenExpanded$.pipe(
         takeUntil(this.destroy$),
         distinctUntilChanged())
-        .subscribe(collapse => {
-          this.childrenExpanded = !this.childrenExpanded;
-          this.positionsExpanded = this.childrenExpanded;
-          this.selfCollapsedStatePropagatedToChildren$.next(this.childrenExpanded);
+        .subscribe(expanded => {
+          this.childrenExpanded = expanded;
+          this.positionsExpanded = expanded;
+          this.selfExpandedPropagateToChildren$.next(expanded);
       })
     }
 
@@ -241,6 +226,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
 
   ngAfterViewInit() {
     this.nativeSubgroupList.sortingDisabled = false;
+
+    this.updateHorizontalScrollButtonVisibility();
 
     this.subgroupListRegistrationRef = this.dropListRegistry.registerList(`subgroup-${this.subgroup.subgroupId}`,
       'subgroup', this.nativeSubgroupList, this.nativeSubgroupListElement,
@@ -297,12 +284,15 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     if(current === 'horizontal') {
       this.subgroup.dropListOrientation = 'vertical';
       this.nativeTogglesNextOrientation = 'mixed';
+      this.canScrollHorizontal$.next(false);
     } else if(current === 'vertical') {
       this.subgroup.dropListOrientation = 'mixed';
       this.nativeTogglesNextOrientation = 'horizontal';
+      this.canScrollHorizontal$.next(false);
     } else {
       this.subgroup.dropListOrientation = 'horizontal'
       this.nativeTogglesNextOrientation = 'vertical'
+      setTimeout(() => this.updateHorizontalScrollButtonVisibility(), 500);
     }
 
     this.subgroupInteract.updateSubgroupDropListOrientation(this.subgroup);
@@ -316,7 +306,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     this.childrenExpanded = this.selfExpanded;
     this.positionsExpanded = this.selfExpanded;
 
-    this.selfCollapsedStatePropagatedToChildren$.next(this.selfExpanded);
+    this.selfExpandedPropagateToChildren$.next(this.selfExpanded);
   }
 
   toggleCollapsePositions() {
@@ -330,7 +320,14 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
 
     this.childrenExpanded = !this.childrenExpanded;
     this.positionsExpanded = this.childrenExpanded;
-    this.selfCollapsedStatePropagatedToChildren$.next(this.childrenExpanded);
+    this.selfExpandedPropagateToChildren$.next(this.childrenExpanded);
+  }
+
+  scrollHorizontal(dir: 'left' | 'right') {
+    const scrollSegment = this.nativeSubgroupListElement.nativeElement.clientWidth * 0.3;
+    let delayUpdate = true;
+
+    this.nativeSubgroupListElement.nativeElement.scrollBy({left: dir === 'right' ? scrollSegment : -scrollSegment, behavior: 'smooth'});
   }
 
   get chipSelfOrientationVertical(): boolean {
@@ -338,6 +335,14 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     const selfDepthIsZero = false;
 
     return false;
+  }
+
+  updateHorizontalScrollButtonVisibility() {
+    const el = this.nativeSubgroupListElement.nativeElement;
+    const max = el.scrollWidth - el.clientWidth;
+    this.canScrollHorizontal$.next((max > 1) && (this.subgroup.dropListOrientation === 'horizontal'));
+    this.showLeftScroll = el.scrollLeft > 5;
+    this.showRightScroll = el.scrollLeft < max - 1;
   }
 
   ngOnDestroy() {
