@@ -8,8 +8,9 @@
 }
 
 .mat-mdc-form-field {
-  width: 95%;
+  width: 98%;
   margin-bottom: 8px;
+  margin-inline: auto;
 }
 
 :host ::ng-deep .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mat-mdc-notch-piece {

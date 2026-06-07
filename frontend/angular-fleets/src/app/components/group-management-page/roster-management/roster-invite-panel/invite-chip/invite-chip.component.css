@@ -1,7 +1,3 @@
-:host {
-  width: 96%;
-}
-
 .chip-self {
   display: flex;
   flex-direction: row;

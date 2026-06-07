@@ -93,4 +93,27 @@
       font-size: clamp(0.5rem, 0.8rem, 1rem)
     }
   }
+
+  mat-button-toggle-group {
+    --mat-standard-button-toggle-divider-color: rgba(150, 168, 183, .3);
+    --mat-standard-button-toggle-text-color: rgba(150, 168, 183, .55);
+    --mat-standard-button-toggle-background-color: transparent;
+    --mat-standard-button-toggle-selected-state-text-color: rgba(255, 255, 255, .65);
+    --mat-standard-button-toggle-selected-state-background-color: rgba(63, 105, 149, 0.35);
+    --mat-standard-button-toggle-hover-state-layer-opacity: 0.08;
+
+    border: 1px solid rgba(150, 168, 183, .3);
+    border-radius: 6px;
+    overflow: hidden;
+    width: fit-content;
+    font-size: 16px;
+  }
+
+  .mat-button-toggle-checkbox-wrapper {
+    display: none;
+  }
+
+  .mat-button-toggle-checked .mat-button-toggle-button:has(.mat-button-toggle-checkbox-wrapper) {
+    padding-left: 0;
+  }
 }

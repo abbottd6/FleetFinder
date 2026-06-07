@@ -1,29 +1,34 @@
 .options-accordion-panel {
   display: flex;
   flex-direction: column;
-  width: 96%;
   margin: 10px auto 10px 0;
 }
 
 .mat-expansion-panel {
-  background-color: rgba(136, 138, 143, 0.1);
+  background-color: rgba(17, 17, 19, 0.05);
+  box-shadow: rgba(0, 0, 0, 0.2) 0 3px 1px -2px,
+              rgba(0, 0, 0, 0.12) 0 1px 5px 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.mat-expansion-panel-header,
-.mat-expansion-panel-header:focus:not(:hover) {
-  &.cdk-mouse-focused:not(:hover),
-  &.cdk-touch-focused:not(:hover) {
-    background-color: transparent;
-  }
+:host .mat-expansion-panel-header,
+:host .mat-expansion-panel-header.mat-expanded {
+  min-height: 45px;
+  height: 45px;
+  margin-bottom: 0;
+  transition: 0.25s ease !important;
 }
 
-.mat-expansion-panel-header,
-.mat-expansion-panel-header.mat-expanded {
-  height: 45px;
-  transition: color 0.25s ease !important;
+:host ::ng-deep .mat-expansion-panel-header.mat-expanded {
+  background-color: rgba(17, 17, 19, 0.15);
+}
+
+:host ::ng-deep .mat-expansion-panel-header.mat-expanded {
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: rgba(0, 0, 0, 0) 0 0 0 0;
 }
 
 mat-panel-title {
@@ -46,6 +51,12 @@ mat-panel-title {
   fill: rgba(255, 131, 7, .3);
 }
 
+:host ::ng-deep .mat-expansion-panel-body {
+  background-color: rgba(17, 17, 19, 0.1);
+  box-shadow: rgba(0, 0, 0, 0.2) 0 3px 1px -2px,
+              rgba(0, 0, 0, 0.12) 0 1px 5px 0;
+}
+
 .child-container-header {
   margin: 10px 10px 10px 10px;
   padding: 2px;
@@ -59,7 +70,6 @@ mat-panel-title {
 }
 
 .options-subgroup {
-  margin-block-end: 12px;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -67,93 +77,16 @@ mat-panel-title {
 
 .options-subgroup-header {
   border-bottom: 1px solid var(--border-bottom-fade-gray);
-  width: 100%;
-  margin-block-end: 6px;
+  width: 90%;
+  margin-top: 12px;
+  margin-bottom: 4px;
+  margin-inline: auto;
   font-size: 16px;
   font-family: 'Orbitron', sans-serif;
 }
 
-/*.toggle-row {*/
-/*  display: grid;*/
-/*  grid-template-columns: 1fr 0.5fr;*/
-/*  align-content: baseline;*/
-/*  margin-top: 5px;*/
-/*  margin-bottom: 15px;*/
-/*}*/
-
-/*.toggle-label {*/
-/*  align-content: center;*/
-/*}*/
-
-/*.toggle-row mat-slide-toggle {*/
-/*  display: flex;*/
-/*  flex: 0 0 auto;*/
-/*  justify-content: right;*/
-/*  margin-bottom: 0;*/
-/*}*/
-
-/*:host ::ng-deep .mat-mdc-slide-toggle {*/
-/*  display: flex;*/
-/*  align-items: center;*/
-/*  margin-top: 0;*/
-/*  margin-bottom: 10px;*/
-/*}*/
-
-/*:host ::ng-deep .mdc-switch__track {*/
-/*  color: rgba(136, 138, 143, 0.75) !important;*/
-/*  border-radius: 100px;*/
-/*  scale: 0.85;*/
-/*}*/
-
-/*:host ::ng-deep .mdc-switch--checked .mdc-switch__track {*/
-/*  !*background-color:rgba(255, 131, 7, .35);*!*/
-/*  background-color: rgba(53, 114, 163, 0.5);*/
-/*  border: 1px solid rgba(52, 58, 64, 0.85);*/
-/*}*/
-
-/*:host ::ng-deep .mdc-switch--unselected .mdc-switch__track {*/
-/*  !*background-color: rgba(136, 138, 143, 0.3);*!*/
-/*  background-color: rgba(255, 131, 7, .1);*/
-/*}*/
-
-/*:host ::ng-deep .mdc-switch__shadow {*/
-/*  background-color: rgba(150, 168, 183, 1);*/
-/*  border-radius: 100px;*/
-/*}*/
-
-/*:host ::ng-deep .mat-mdc-slide-toggle {*/
-/*  !*fill: ;*!*/
-/*  --mdc-switch-selected-icon-color: rgba(52, 58, 64, 1);*/
-/*  --mdc-switch-unselected-icon-color: rgba(52, 58, 64, 1);*/
-/*}*/
-
-/*:host ::ng-deep .mdc-switch__icon .mdc-switch__icon--off {*/
-/*  fill: rgba(52, 58, 64, 1);*/
-/*}*/
-
-::ng-deep .radio-row .mat-mdc-radio-button .mdc-radio {
-  padding: 0;
-}
-
-::ng-deep .radio-row .mat-mdc-radio-button .mdc-radio__inner-circle,
-::ng-deep .radio-row .mat-mdc-radio-button .mdc-radio__outer-circle {
-  transition: color 0.2s ease;
-}
-
-::ng-deep .radio-row .mat-mdc-radio-button .mdc-radio__inner-circle {
-  color: rgba(53, 114, 163, 0.7);
-}
-
-::ng-deep .mat-mdc-radio-button.mat-mdc-radio-checked .mdc-radio__outer-circle {
-  color: rgba(53, 114, 163, 0.7);
-}
-
-::ng-deep .mat-mdc-radio-button:not(.mat-mdc-radio-checked):hover .mdc-radio__outer-circle {
-  color: rgba(255, 131, 7, .5);
-}
-
-.radio-row {
-  width: 100%;
+.toggle-button-row {
   display: flex;
-  gap: 15px;
+  margin-top: 10px;
+  margin-inline: auto;
 }

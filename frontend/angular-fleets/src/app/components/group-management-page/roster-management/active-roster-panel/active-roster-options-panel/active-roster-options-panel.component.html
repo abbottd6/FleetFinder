@@ -1,1 +1,29 @@
-<p>options-panel works!</p>
+<mat-accordion class="options-accordion-panel">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Options
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="options-body-container">
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">Role Status</span>
+        <mat-button-toggle-group class="toggle-button-row">
+          <mat-button-toggle value="BOTH">Both</mat-button-toggle>
+          <mat-button-toggle value="ASSIGNED">Assigned</mat-button-toggle>
+          <mat-button-toggle value="UNASSIGNED">Unassigned</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">RSVP Status</span>
+        <mat-button-toggle-group class="toggle-button-row">
+          <mat-button-toggle value="BOTH">Both</mat-button-toggle>
+          <mat-button-toggle value="OFFER">Confirmed</mat-button-toggle>
+          <mat-button-toggle value="REQUEST">Other</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>
+

@@ -10,6 +10,7 @@ import {MatRadioButton, MatRadioGroup} from "@angular/material/radio";
 import {InvitePanelFilterState} from "../roster-invite-panel.component";
 import {BehaviorSubject} from "rxjs";
 import {AsyncPipe} from "@angular/common";
+import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
 
 @Component({
   selector: 'app-invite-options-panel',
@@ -21,7 +22,9 @@ import {AsyncPipe} from "@angular/common";
     ReactiveFormsModule,
     MatRadioGroup,
     AsyncPipe,
-    MatRadioButton
+    MatRadioButton,
+    MatButtonToggleGroup,
+    MatButtonToggle
   ],
   templateUrl: './invite-options-panel.component.html',
   styleUrl: './invite-options-panel.component.css'

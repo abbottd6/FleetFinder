@@ -8,24 +8,24 @@
     <div class="options-body-container">
       <div class="options-subgroup">
         <span class="options-subgroup-header">Status</span>
-        <mat-radio-group [value]="(inviteFilterState$ | async)?.status"
+        <mat-button-toggle-group [value]="(inviteFilterState$ | async)?.status"
                          (change)="onStatusChange($event.value)"
-                         class="radio-row">
-          <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
-          <mat-radio-button value="PENDING" labelPosition="before">Pending:</mat-radio-button>
-          <mat-radio-button value="ACTIONED" labelPosition="before">Actioned:</mat-radio-button>
-        </mat-radio-group>
+                         class="toggle-button-row">
+          <mat-button-toggle value="BOTH">Both</mat-button-toggle>
+          <mat-button-toggle value="PENDING">Pending</mat-button-toggle>
+          <mat-button-toggle value="ACTIONED">Actioned</mat-button-toggle>
+        </mat-button-toggle-group>
       </div>
 
       <div class="options-subgroup">
         <span class="options-subgroup-header">Direction</span>
-        <mat-radio-group [value]="(inviteFilterState$ | async)?.direction"
+        <mat-button-toggle-group [value]="(inviteFilterState$ | async)?.direction"
                          (change)="onDirectionChange($event.value)"
-                         class="radio-row">
-          <mat-radio-button value="BOTH" labelPosition="before">Both:</mat-radio-button>
-          <mat-radio-button value="OFFER" labelPosition="before">Offers:</mat-radio-button>
-          <mat-radio-button value="REQUEST" labelPosition="before">Requests:</mat-radio-button>
-        </mat-radio-group>
+                         class="toggle-button-row">
+          <mat-button-toggle value="BOTH">Both</mat-button-toggle>
+          <mat-button-toggle value="OFFER">Offers</mat-button-toggle>
+          <mat-button-toggle value="REQUEST">Requests</mat-button-toggle>
+        </mat-button-toggle-group>
       </div>
     </div>
   </mat-expansion-panel>
