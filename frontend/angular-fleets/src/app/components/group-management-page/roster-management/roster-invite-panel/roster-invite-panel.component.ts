@@ -82,6 +82,7 @@ const INVITE_FILTER_PREDICATES: Record<string, InvitePredicate> = {
     FormsModule,
     ReactiveFormsModule,
     RosterTextFieldFilterComponent,
+    MatIcon,
   ],
   styleUrl: './roster-invite-panel.component.css'
 })
@@ -198,7 +199,7 @@ export class RosterInvitePanelComponent implements OnInit, AfterViewInit, OnDest
 
   catchFilterStateChange(state: InvitePanelFilterState) {
     this.inviteFilterState$.next(state);
-    this.mgmtUiPrefs.saveInviteUiPrefs(state);
+    // this.mgmtUiPrefs.saveInviteUiPrefs(state);
   }
 
   ngOnDestroy() {

@@ -1,5 +1,14 @@
 import {Component, inject, Input, OnDestroy, OnInit} from '@angular/core';
-import {BehaviorSubject, Observable, Subject, takeUntil} from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  Observable,
+  Subject,
+  takeUntil
+} from "rxjs";
 import {
   GroupManagementInteractService
 } from "../../../../services/facade-services/group-management/group-management-interact.service";
@@ -17,12 +26,36 @@ import {
 import {
   SubgroupManagementInteractService
 } from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
+import {
+  MatAccordion,
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle
+} from "@angular/material/expansion";
+import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
+import {RosterTextFieldFilterComponent} from "../roster-text-field-filter/roster-text-field-filter.component";
+import {FormControl} from "@angular/forms";
+import {map} from "rxjs/operators";
 
-export interface ActiveRosterFilterState {
-  assignment: 'ASSIGNED' | 'UNASSIGNED' | 'BOTH',
-  comms: 'HAS_COMMS' | 'NO_COMMS' | 'BOTH',
+export interface ActiveMemberFilterState {
+  roleStatus: 'ASSIGNED' | 'UNASSIGNED' | 'BOTH',
+  rsvpStatus: 'CONFIRMED' | 'PENDING' | 'BOTH',
+  comms: 'BOTH' | 'MIC' | 'AUDIO' | 'ANY' | 'NONE',
   terms: string | null;
 }
+
+type ActiveMemberPredicate = (member: GroupManagementMemberViewModel) => boolean;
+
+const ACTIVE_MEMBER_FILTER_PREDICATES: Record<string, ActiveMemberPredicate> = {
+  ASSIGNED: (m) => m.memberPosition !== null,
+  UNASSIGNED: (m) => m.memberPosition === null,
+  BOTH: (m) => m.hasMic && m.hasHeadset,
+  MIC: (m) => m.hasMic,
+  AUDIO: (m) => m.hasHeadset,
+  NONE: (m) => !m.hasMic && !m.hasHeadset,
+  CONFIRMED: (m) => m.rsvpStatus !== null && m.rsvpStatus === 'CONFIRMED',
+  PENDING: (m) => m.rsvpStatus !== null && m.rsvpStatus === 'PENDING',
+};
 
 @Component({
   selector: 'app-active-roster-panel',
@@ -30,12 +63,12 @@ export interface ActiveRosterFilterState {
   templateUrl: './active-roster-panel.component.html',
   imports: [
     ActiveRosterOptionsPanelComponent,
-    NgForOf,
     AsyncPipe,
     MemberChipComponent,
     CdkDropList,
     NgIf,
     CdkDrag,
+    RosterTextFieldFilterComponent,
   ],
   styleUrl: './active-roster-panel.component.css'
 })
@@ -44,11 +77,13 @@ export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
 
   @Input() groupId!: number;
 
-  rosterFilterState$ = new BehaviorSubject<ActiveRosterFilterState>({
-    assignment: 'BOTH', comms: 'BOTH', terms: null
+  protected memberFilterTermsCtrl = new FormControl<string | null>(null);
+
+  activeMemberFilterState$ = new BehaviorSubject<ActiveMemberFilterState>({
+    roleStatus: 'BOTH', rsvpStatus: 'BOTH', comms: 'ANY', terms: null
   })
 
-  rosterForDisplay$!: Observable<GroupManagementMemberViewModel[]>;
+  activeRosterForDisplay$!: Observable<GroupManagementMemberViewModel[]>;
 
   constructor(protected managementInteract: GroupManagementInteractService,
               protected dropListRegistry: DropListRegistryService,
@@ -56,6 +91,50 @@ export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
+    this.memberFilterTermsCtrl.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.setAndFilterByTerms();
+    })
+
+    this.activeRosterForDisplay$ = combineLatest([
+      this.managementInteract.activeRoster$,
+      this.activeMemberFilterState$
+    ]).pipe(
+      takeUntil(this.destroy$),
+      filter(([members]) => !!members),
+      map(([members, filterState]) =>
+        this.filterActiveMembers(members.content, filterState))
+    )
+  }
+
+  filterActiveMembers(members: GroupManagementMemberViewModel[], filterState: ActiveMemberFilterState): GroupManagementMemberViewModel[] {
+    return members.filter(member => {
+      const roleMatch = filterState.roleStatus === 'BOTH' || ACTIVE_MEMBER_FILTER_PREDICATES[filterState.roleStatus](member);
+      const rsvpMatch = filterState.rsvpStatus === 'BOTH' || ACTIVE_MEMBER_FILTER_PREDICATES[filterState.rsvpStatus](member);
+      const commsMatch = filterState.comms === 'ANY' || ACTIVE_MEMBER_FILTER_PREDICATES[filterState.comms](member);
+      const termsMatch = !filterState.terms ||
+        member.userSummary.username.includes(filterState.terms) ||
+        member.userSummary.discordUsername?.includes(filterState.terms) ||
+        member.userSummary.inGameUsername?.includes(filterState.terms);
+
+
+      return roleMatch && rsvpMatch && commsMatch && termsMatch;
+    });
+  }
+
+  setAndFilterByTerms() {
+    const current = this.activeMemberFilterState$.getValue();
+    this.activeMemberFilterState$.next({
+      ...current,
+      terms: this.memberFilterTermsCtrl.value
+    })
+  }
+
+  catchFilterStateChange(state: ActiveMemberFilterState) {
+    this.activeMemberFilterState$.next(state);
   }
 
   ngOnDestroy() {
