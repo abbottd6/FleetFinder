@@ -61,8 +61,6 @@ export class InviteChipComponent implements OnInit, OnDestroy {
 
   protected readonly inviteActions = InviteActions;
 
-  protected inviteMember!: UserMonikerSummaryViewModel;
-
   protected isHovered: boolean = false;
 
   @Output() inviteActionEmitter = new EventEmitter<InviteWithActionInterface>();
@@ -72,12 +70,11 @@ export class InviteChipComponent implements OnInit, OnDestroy {
 
   constructor(private dialog: MatDialog){}
 
+  get inviteMember(): UserMonikerSummaryViewModel {
+    return this.invite?.inviteDirection === 'REQUEST' ? this.invite.senderSummary : this.invite.recipientSummary;
+  }
+
   ngOnInit() {
-    if(this.invite.inviteDirection === 'REQUEST') {
-      this.inviteMember = this.invite.senderSummary;
-    } else {
-      this.inviteMember = this.invite.recipientSummary;
-    }
   }
 
   openInviteDetailsPopup() {
@@ -108,9 +105,10 @@ export class InviteChipComponent implements OnInit, OnDestroy {
   emitInviteAltAction(action: InviteActions) {
     if(action === InviteActions.MESSAGE) {
       this.messageRequestEmitter.emit(this.inviteMember);
+    } else {
+      const altAction: InviteWithActionInterface = {action: action, invite: this.invite};
+      this.inviteActionEmitter.emit(altAction);
     }
-    const altAction: InviteWithActionInterface = { action: action, invite: this.invite };
-    this.inviteActionEmitter.emit(altAction);
   }
 
   ngOnDestroy() {

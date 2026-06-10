@@ -66,7 +66,7 @@
         <button
           mat-menu-item
           class="options-item"
-          (click)="managementInteract.openConversation(invite.recipientSummary)">
+          (click)="managementInteract.openConversation(invite.senderSummary)">
           <mat-icon class="material-symbols-outlined dropdown-icon">
             chat_bubble
           </mat-icon>
@@ -118,7 +118,7 @@
       <button
         mat-menu-item
         class="options-item"
-        (click)="managementInteract.openConversation(invite.recipientSummary)">
+        (click)="managementInteract.openConversation(invite.inviteDirection === 'OFFER' ? invite.recipientSummary : invite.senderSummary)">
         <mat-icon class="material-symbols-outlined dropdown-icon">
           chat_bubble
         </mat-icon>
