@@ -93,6 +93,11 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected rootOrientation: DropListOrientation = this.groupManagementUiPrefs.getRootDropListOrientation;
   protected togglesNextOrientation!: DropListOrientation;
 
+  //horizontal orientation only
+  protected canScrollHorizontal$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  protected showLeftScroll: boolean = false;
+  protected showRightScroll: boolean = false;
+
   protected isHoveredTarget$ = combineLatest([
     this.dropListRegistry.hoveredTargetId$,
     this.rootDropListId$
@@ -196,6 +201,22 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     }
     this.rootChildrenExpanded$.next(!this.rootChildrenExpanded$.getValue())
   }
+
+  scrollHorizontal(dir: 'left' | 'right') {
+    const scrollSegment = this.rootSubgroupListElement.nativeElement.clientWidth * 0.3;
+    let delayUpdate = true;
+
+    this.rootSubgroupListElement.nativeElement.scrollBy({left: dir === 'right' ? scrollSegment : -scrollSegment, behavior: 'smooth'});
+  }
+
+  updateHorizontalScrollButtonVisibility() {
+    const el = this.rootSubgroupListElement.nativeElement;
+    const max = el.scrollWidth - el.clientWidth;
+    this.canScrollHorizontal$.next((max > 1) && (this.rootOrientation === 'horizontal'));
+    this.showLeftScroll = el.scrollLeft > 5;
+    this.showRightScroll = el.scrollLeft < max - 1;
+  }
+
 
   ngOnDestroy() {
     // this.subgroupInteract.clearTrees();

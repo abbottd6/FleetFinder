@@ -1,4 +1,4 @@
-import {Component, inject, Input, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -36,6 +36,11 @@ import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-to
 import {RosterTextFieldFilterComponent} from "../roster-text-field-filter/roster-text-field-filter.component";
 import {FormControl} from "@angular/forms";
 import {map} from "rxjs/operators";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {MatIcon} from "@angular/material/icon";
+import {
+  MgmtMemberQuickAccessMenuService
+} from "../../../../services/component-services/group-management-quick-access-menus/mgmt-member-quick-access-menu.service";
 
 export interface ActiveMemberFilterState {
   roleStatus: 'ASSIGNED' | 'UNASSIGNED' | 'BOTH',
@@ -69,13 +74,20 @@ const ACTIVE_MEMBER_FILTER_PREDICATES: Record<string, ActiveMemberPredicate> = {
     NgIf,
     CdkDrag,
     RosterTextFieldFilterComponent,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger,
   ],
   styleUrl: './active-roster-panel.component.css'
 })
-export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
+export class ActiveRosterPanelComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   @Input() groupId!: number;
+
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  @ViewChild('contextMenuAnchor', { read: ElementRef }) protected contextMenuAnchor!: ElementRef<HTMLElement>;
 
   protected memberFilterTermsCtrl = new FormControl<string | null>(null);
 
@@ -87,7 +99,8 @@ export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
 
   constructor(protected managementInteract: GroupManagementInteractService,
               protected dropListRegistry: DropListRegistryService,
-              protected subgroupInteract: SubgroupManagementInteractService){}
+              protected subgroupInteract: SubgroupManagementInteractService,
+              protected rosterMemberQuickMenu: MgmtMemberQuickAccessMenuService){}
 
   ngOnInit() {
 
@@ -108,6 +121,10 @@ export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
       map(([members, filterState]) =>
         this.filterActiveMembers(members.content, filterState))
     )
+  }
+
+  ngAfterViewInit() {
+    this.rosterMemberQuickMenu.registerMenu(this.menuTrigger, this.contextMenuAnchor);
   }
 
   filterActiveMembers(members: GroupManagementMemberViewModel[], filterState: ActiveMemberFilterState): GroupManagementMemberViewModel[] {

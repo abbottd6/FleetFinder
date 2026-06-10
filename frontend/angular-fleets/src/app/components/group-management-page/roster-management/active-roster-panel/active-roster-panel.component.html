@@ -20,10 +20,91 @@
         (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
         (cdkDragEnded)="subgroupInteract.onMemberDrop($event)">
         <app-member-chip
+          [member]="member"
           [class.member-assigned]="member.memberPosition != null"
-          [member]="member">
+          (contextmenu)="rosterMemberQuickMenu.openContextMenu($event, member)"
+          (touchstart)="rosterMemberQuickMenu.onTouchStart($event, member)"
+          (touchend)="rosterMemberQuickMenu.onTouchEnd($event)">
         </app-member-chip>
       </div>
     }
   </div>
 </div>
+
+<!-- Context Menu -->
+<div
+  #contextMenuAnchor
+  class="context-menu-anchor"
+  [matMenuTriggerFor]="activeRosterOptionsMenu"
+  #menuTrigger="matMenuTrigger">
+</div>
+
+<mat-menu #activeRosterOptionsMenu="matMenu">
+  <ng-container *ngIf="(managementInteract.selectedMember$ | async)?.memberStatus === 'ACTIVE'; else waitlist">
+    <button
+      mat-menu-item
+      class="options-item">
+      <mat-icon class="material-symbols-outlined dropdown-icon">
+        chat_bubble
+      </mat-icon>
+      Message
+    </button>
+
+    <button
+      mat-menu-item
+      class="options-item">
+      <mat-icon class="material-symbols-outlined dropdown-icon">
+        crown
+      </mat-icon>
+      Assign Rank
+    </button>
+
+    <button
+      mat-menu-item
+      class="options-item">
+      <mat-icon class="material-symbols-outlined dropdown-icon">
+        question_mark
+      </mat-icon>
+      Clear Position
+    </button>
+
+    <button
+      mat-menu-item
+      class="options-item">
+      <mat-icon class="material-symbols-outlined dropdown-icon">
+        person_cancel
+      </mat-icon>
+      Kick
+    </button>
+  </ng-container>
+
+
+  <ng-template #waitlist>
+    <button
+      mat-menu-item
+      class="options-item">
+      <mat-icon class="material-symbols-outlined dropdown-icon">
+        chat_bubble
+      </mat-icon>
+      Message
+    </button>
+
+    <button
+      mat-menu-item
+      class="options-item">
+      <mat-icon class="material-symbols-outlined dropdown-icon">
+        group_add
+      </mat-icon>
+      Invite to Active
+    </button>
+
+    <button
+      mat-menu-item
+      class="options-item">
+      <mat-icon class="material-symbols-outlined dropdown-icon">
+        person_cancel
+      </mat-icon>
+      Kick
+    </button>
+  </ng-template>
+</mat-menu>

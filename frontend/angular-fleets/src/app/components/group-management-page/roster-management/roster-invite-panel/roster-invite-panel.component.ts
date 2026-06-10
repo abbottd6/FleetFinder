@@ -90,6 +90,7 @@ export class RosterInvitePanelComponent implements OnInit, AfterViewInit, OnDest
   private destroy$ = new Subject<void>();
 
   @Input() groupId!: number;
+
   @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
   @ViewChild('contextMenuAnchor', { read: ElementRef }) protected contextMenuAnchor!: ElementRef<HTMLElement>;
 

@@ -96,7 +96,20 @@
           [cdkDropListData]="subgroups"
           (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
           [cdkDropListEnterPredicate]="rootEnterPredicate"
-          [cdkDropListConnectedTo]="connectedToSubgroups">
+          [cdkDropListConnectedTo]="connectedToSubgroups"
+          (scroll)="updateHorizontalScrollButtonVisibility()">
+
+          <ng-container *ngIf="canScrollHorizontal$ | async">
+            <button class="drop-list-horizontal-scroll left"
+                    [class.show-scroll-button]="showLeftScroll"
+                    [class.do-not-show-scroll-button]="!showLeftScroll"
+                    (click)="scrollHorizontal('left')">
+              <span class="material-symbols-outlined scroll-arrow-scaled">
+                arrow_back_ios
+              </span>
+            </button>
+          </ng-container>
+
           @for (treeRoot of subgroups; track treeRoot.subgroupId) {
             <div cdkDrag
                  [cdkDragData]="treeRoot"
@@ -117,6 +130,18 @@
               <mat-icon class="material-symbols-outlined add-2">add_circle_outline</mat-icon>
             </button>
           </div>
+
+          <ng-container *ngIf="canScrollHorizontal$ | async">
+            <button class="drop-list-horizontal-scroll right"
+                    [class.show-scroll-button]="showRightScroll"
+                    [class.do-not-show-scroll-button]="!showRightScroll"
+                    (click)="scrollHorizontal('right')">
+              <span class="material-symbols-outlined scroll-arrow-scaled">
+                arrow_forward_ios
+              </span>
+            </button>
+          </ng-container>
+
         </div>
       </div>
     </div>

@@ -51,6 +51,8 @@ export class GroupManagementInteractService {
   private selectedInviteSubject = new BehaviorSubject<GroupManagementInviteViewModel | null>(null);
   public selectedInvite$ = this.selectedInviteSubject.asObservable();
 
+  private selectedMemberSubject = new BehaviorSubject<GroupManagementMemberViewModel | null>(null);
+  public selectedMember$ = this.selectedMemberSubject.asObservable();
 
   constructor(private managementApi: MemberManagementApiService,
               private chatHostSrv: ChatHostService,
@@ -99,6 +101,14 @@ export class GroupManagementInteractService {
 
   clearSelectedInvite() {
     this.selectedInviteSubject.next(null);
+  }
+
+  setSelectedMember(member: GroupManagementMemberViewModel) {
+    this.selectedMemberSubject.next(member);
+  }
+
+  clearSelectedMember() {
+    this.selectedMemberSubject.next(null);
   }
 
   acceptGroupInviteRequest(acceptedInvite: GroupManagementInviteViewModel) {

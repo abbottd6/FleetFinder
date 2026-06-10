@@ -148,6 +148,7 @@
               </app-crew-subgroup>
             </div>
           }
+
           <ng-container *ngIf="canScrollHorizontal$ | async">
             <button class="drop-list-horizontal-scroll right"
                     [class.show-scroll-button]="showRightScroll"
@@ -158,6 +159,7 @@
               </span>
             </button>
           </ng-container>
+
         </div>
       </div>
 
