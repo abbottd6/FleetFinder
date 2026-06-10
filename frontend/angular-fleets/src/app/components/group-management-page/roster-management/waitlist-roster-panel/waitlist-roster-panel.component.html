@@ -11,11 +11,14 @@
     class="waitlist-members-list">
     @for(member of waitlistRoster; track member.userSummary.userId) {
       <app-member-chip
-        [member]="member">
+        [member]="member"
+        (contextmenu)="rosterMemberQuickMenu.openContextMenu($event, member)"
+        (touchstart)="rosterMemberQuickMenu.onTouchStart($event, member)"
+        (touchend)="rosterMemberQuickMenu.onTouchEnd($event)">
       </app-member-chip>
     }
   </div>
   <ng-container *ngIf="(waitlistMembersForDisplay$ | async)?.length === 0">
-    <span class="waitlist-empty-message">No waitlist members</span>
+    <span class="waitlist-empty-message">No matching waitlist members</span>
   </ng-container>
 </div>

@@ -2,10 +2,7 @@ package com.sc_fleetfinder.fleets.services.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.CrewPositionRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionSubgroupDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.MemberPositionSummaryDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -261,5 +258,23 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         cpr.save(currentPosition);
 
         return listing.getGroupId();
+    }
+
+    @Override
+    @Transactional
+    public GroupManagerMemberResponseDto clearPositionAssignmentByMember(Users manager, GroupManagerMemberResponseDto dto) {
+        GroupListing listing = gls.findGroupListingEntityById(dto.getListingId());
+
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_POSITIONS);
+
+        CrewPosition assignedTo = this.cpr.findById(dto.getMemberPosition().getPositionId())
+                .orElseThrow(() -> new ResourceNotFoundException("CrewPosition", dto.getMemberPosition().getPositionId()));
+
+        assignedTo.setAssignedMemberUserId(null);
+        cpr.save(assignedTo);
+
+        dto.setMemberPosition(null);
+
+        return dto;
     }
 }

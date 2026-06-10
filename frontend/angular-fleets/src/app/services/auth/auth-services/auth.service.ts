@@ -1,5 +1,5 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
-import {OidcSecurityService} from "angular-auth-oidc-client";
+import {EventTypes, OidcSecurityService, PublicEventsService} from "angular-auth-oidc-client";
 import {
   distinctUntilChanged,
   EMPTY,
@@ -12,22 +12,27 @@ import {
   timer
 } from "rxjs";
 import {ActivatedRoute, Router} from "@angular/router";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private destroyRef = inject(DestroyRef);
+
   private readonly oidc = inject(OidcSecurityService);
 
   public authClaims$ = this.oidc.userData$;
 
   public isLoggedIn$ = this.oidc.isAuthenticated$.pipe(
+    takeUntilDestroyed(this.destroyRef),
     map(oidcAuthObj => oidcAuthObj.isAuthenticated),
     distinctUntilChanged(),
     shareReplay({ bufferSize: 1, refCount: true }),
   );
 
   public readonly accessToken$ = this.oidc.getAccessToken().pipe(
+    takeUntilDestroyed(this.destroyRef),
     filter((token): token is string => !!token),
     distinctUntilChanged(),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -35,6 +40,7 @@ export class AuthService {
 
 
   public readonly tokenReady$: Observable<string> = this.isLoggedIn$.pipe(
+    takeUntilDestroyed(this.destroyRef),
     switchMap(loggedIn => {
       if (!loggedIn) return EMPTY;
 
@@ -49,8 +55,10 @@ export class AuthService {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  constructor(private router: Router, private route: ActivatedRoute) {
-    this.oidc.checkAuth().pipe().subscribe(({ isAuthenticated }) => {
+  constructor(private router: Router) {
+    this.oidc.checkAuth().pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(({ isAuthenticated }) => {
       if (isAuthenticated) {
         const url = sessionStorage.getItem('post_login_url');
         if(url) {
@@ -59,6 +67,13 @@ export class AuthService {
         }
       }
     });
+
+    this.oidc.isAuthenticated$.pipe(
+      takeUntilDestroyed(this.destroyRef),
+      map(({ isAuthenticated }) => isAuthenticated),
+      distinctUntilChanged(),
+      filter(authenticated => !authenticated)
+    ).subscribe(() => this.router.navigateByUrl('/'));
   }
 
   forceNewToken() {

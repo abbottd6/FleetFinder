@@ -3,7 +3,7 @@ import {GroupListingViewModel} from "../../models/group-listing/group-listing-vi
 import {AsyncPipe, DatePipe, NgClass, NgIf} from "@angular/common";
 import {UserService} from "../../services/user-services/user.service";
 import {MatIconModule} from "@angular/material/icon";
-import {RouterLink} from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import {map, Observable, shareReplay, take} from "rxjs";
 import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {ChatHostService} from "../../services/facade-services/chat/chat-host.service";
@@ -48,8 +48,10 @@ export class GroupListingModalComponent implements OnInit {
 
   protected isHiding: boolean = false;
 
-  constructor(private userService: UserService, protected chatHostSrv: ChatHostService,
-              protected listingInteract: ListingViewInteractionsService) {
+  constructor(private userService: UserService,
+              protected chatHostSrv: ChatHostService,
+              protected listingInteract: ListingViewInteractionsService,
+              private router: Router) {
 
     this.userService.sessionUser$.pipe(takeUntilDestroyed(this.modalDestroyRef)).pipe(
       map(user => user?.groupListingsDto ?? [])
@@ -85,14 +87,18 @@ export class GroupListingModalComponent implements OnInit {
     );
   }
 
-
+  ownerManageListing() {
+    this.isHiding = true;
+    this.isVisible = false;
+    this.close.emit(undefined);
+    this.router.navigateByUrl('/user-account');
+  }
 
   closeModal(action: CloseValue['value'], group: GroupListingViewModel | null) {
     this.isHiding = true;
 
     setTimeout(() => {
-      this.isHiding = false;
-      this.isVisible = false;
+      this.isHiding = true;
       this.isVisible = false;
       history.pushState({ listingModal: false }, '');
 

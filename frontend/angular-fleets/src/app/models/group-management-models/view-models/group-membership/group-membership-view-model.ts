@@ -7,13 +7,13 @@ export class GroupMembershipViewModel {
   constructor(
     public userSummary: UserMonikerSummaryViewModel,
     public memberStatus: string,
-    public memberRole: MemberPositionSummaryViewModel,
+    public memberRole: MemberPositionSummaryViewModel | null,
     public memberRank: InGroupRankViewModel,
-    public memberNote: string,
+    public memberNote: string | null,
     public hasMic: boolean,
     public hasHeadset: boolean,
     public hasExtNotes: boolean,
-    public rsvpStatus: string,
+    public rsvpStatus: string | null,
     public joinedAt: Date,
     public isAuthorizedManager: boolean,
     public listing: GroupListingViewModel

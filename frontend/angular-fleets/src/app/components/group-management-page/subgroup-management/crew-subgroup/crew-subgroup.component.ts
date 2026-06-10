@@ -324,8 +324,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   scrollHorizontal(dir: 'left' | 'right') {
-    const scrollSegment = this.nativeSubgroupListElement.nativeElement.clientWidth * 0.3;
-    let delayUpdate = true;
+    const scrollSegment = this.nativeSubgroupListElement.nativeElement.clientWidth * 0.5;
 
     this.nativeSubgroupListElement.nativeElement.scrollBy({left: dir === 'right' ? scrollSegment : -scrollSegment, behavior: 'smooth'});
   }

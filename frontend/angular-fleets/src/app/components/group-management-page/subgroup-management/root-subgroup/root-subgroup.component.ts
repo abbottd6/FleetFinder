@@ -146,6 +146,8 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
           })
       })
     })
+
+    this.updateHorizontalScrollButtonVisibility();
   }
 
   rootEnterPredicate = (dragData: CdkDrag, dropList: CdkDropList): boolean => {
@@ -155,7 +157,6 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     // console.log('root pred result: ', (isSubgroup && isHovered));
     return isSubgroup && isHovered;
   }
-
 
   getClientRect() {
     console.log(this.rootContainerRegistrationRef.element.nativeElement.getBoundingClientRect());
@@ -175,19 +176,23 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.groupManagementUiPrefs.setRootDropListOrientation('vertical');
       this.rootOrientation = 'vertical';
       this.togglesNextOrientation = 'mixed';
+      this.canScrollHorizontal$.next(false);
     } else if(current === 'vertical') {
       this.groupManagementUiPrefs.setRootDropListOrientation('mixed');
       this.rootOrientation = 'mixed';
       this.togglesNextOrientation = 'horizontal';
+      this.canScrollHorizontal$.next(false);
     } else {
       this.groupManagementUiPrefs.setRootDropListOrientation('horizontal')
       this.rootOrientation = 'horizontal'
       this.togglesNextOrientation = 'vertical'
+      this.canScrollHorizontal$.next(true);
     }
 
-    this.rootOrientation = this.groupManagementUiPrefs.getRootDropListOrientation;
-
-    setTimeout(() => this.subgroupInteract.reorientingDropList = false, 500);
+    setTimeout(() => {
+      this.updateHorizontalScrollButtonVisibility();
+      this.subgroupInteract.reorientingDropList = false
+    }, 500);
   }
 
   toggleCollapseAll() {
@@ -203,8 +208,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   scrollHorizontal(dir: 'left' | 'right') {
-    const scrollSegment = this.rootSubgroupListElement.nativeElement.clientWidth * 0.3;
-    let delayUpdate = true;
+    const scrollSegment = this.rootSubgroupListElement.nativeElement.clientWidth * 0.5;
 
     this.rootSubgroupListElement.nativeElement.scrollBy({left: dir === 'right' ? scrollSegment : -scrollSegment, behavior: 'smooth'});
   }

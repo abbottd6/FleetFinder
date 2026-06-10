@@ -10,12 +10,12 @@ export class GroupManagementMemberViewModel {
     public userSummary: UserFullMonikerSummary,
     public memberStatus: string,
     public memberNote: string,
-    public memberPosition: MemberPositionSummaryViewModel,
+    public memberPosition: MemberPositionSummaryViewModel | null,
     public memberRank: InGroupRankViewModel,
     public hasMic: boolean,
     public hasHeadset: boolean,
     public hasExtNotes: boolean,
-    public rsvpStatus: string,
+    public rsvpStatus: string | null,
     public joinedAt: Date
   ){}
 }

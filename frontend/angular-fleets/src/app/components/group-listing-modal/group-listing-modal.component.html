@@ -231,9 +231,11 @@
           <div class="footer-buttons-right">
             <button type="button" class="modal-buttons" (click)="closeModal(null, null)">Close</button>
             <ng-container *ngIf="userIsListingOwner(); else notOwner">
-              <a [routerLink]="['/user-account']" (click)="closeModal(null, null)">
-                <button type="button" class="modal-buttons">Manage</button>
-              </a>
+              <button type="button"
+                      class="modal-buttons"
+                      (click)="ownerManageListing()">
+                Manage
+              </button>
             </ng-container>
             <ng-template #notOwner>
               <button type="button"

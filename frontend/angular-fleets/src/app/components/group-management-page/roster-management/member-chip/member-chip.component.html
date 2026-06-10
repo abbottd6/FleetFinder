@@ -1,6 +1,9 @@
 <div class="chip-self">
 
   <div class="chip-header"
+       (contextmenu)="rosterMemberQuickMenu.openContextMenu($event, member)"
+       (touchstart)="rosterMemberQuickMenu.onTouchStart($event, member)"
+       (touchend)="rosterMemberQuickMenu.onTouchEnd($event)"
        [class.member-details-collapsed]="!detailsExpanded">
     <div class="header-left drag-handle" cdkDragHandle>
       <div class="member-header-grid-rows">
@@ -42,7 +45,7 @@
           </span>
         </div>
         <div class="header-grid-columns">
-          <span class="header-secondary" matTooltip="In-Game Username">
+          <span class="header-secondary">
             &commat;{{ member.userSummary.inGameUsername }}
           </span>
           <span class="header-secondary" [matTooltip]="buildMemberRoleTooltip()">

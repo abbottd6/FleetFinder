@@ -14,6 +14,9 @@ import {
 import {
   UpdateSubgroupDropListOrientationRequest
 } from "../../../../models/group-management-models/request-models/update-subgroup-drop-list-orientation-request";
+import {
+  GroupManagementMemberViewModel
+} from "../../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -52,5 +55,11 @@ export class GroupCompositionApiService {
 
   clearMemberPositionAssignment(position: GroupCompCrewPositionViewModel): Observable<number> {
     return this.httpClient.patch<number>(`${this.baseUrl}/clear-member-position-assignment`, position);
+  }
+
+  clearPositionAssignmentByMember(member: GroupManagementMemberViewModel): Observable<GroupManagementMemberViewModel> {
+    return this.httpClient.patch<GroupManagementMemberViewModel>(
+      `${this.baseUrl}/clear-assignment-by-member`, member
+    );
   }
 }

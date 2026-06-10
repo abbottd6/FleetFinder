@@ -29,3 +29,7 @@
   margin-top: 10px;
   margin-inline: auto;
 }
+
+:host app-member-chip .header-left.drag-handle:hover {
+  cursor: pointer;
+}

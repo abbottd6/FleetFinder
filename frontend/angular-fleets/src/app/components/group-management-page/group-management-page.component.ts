@@ -38,6 +38,11 @@ import {
 
 import {RootSubgroupComponent} from "./subgroup-management/root-subgroup/root-subgroup.component";
 import {map} from "rxjs/operators";
+import {MatIcon} from "@angular/material/icon";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {
+  MgmtMemberQuickAccessMenuService
+} from "../../services/component-services/group-management-quick-access-menus/mgmt-member-quick-access-menu.service";
 
 @Component({
   selector: 'app-group-management-page',
@@ -50,17 +55,24 @@ import {map} from "rxjs/operators";
     LoadCrewTemplateFormComponent,
     DragDropModule,
     RootSubgroupComponent,
-    AsyncPipe
+    AsyncPipe,
+    MatIcon,
+    MatMenu,
+    MatMenuItem,
+    MatMenuTrigger
   ],
   styleUrl: './group-management-page.component.css',
   providers: [DropListRegistryService, SubgroupManagementInteractService]
 })
 export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  private readonly managementInteract = inject(GroupManagementInteractService);
+  protected readonly managementInteract = inject(GroupManagementInteractService);
 
   //for page size calculation
   @ViewChild('managementContainer') managementContainer!: ElementRef;
+
+  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
+  @ViewChild('memberContextMenuAnchor', { read: ElementRef }) protected memberContextMenuAnchor!: ElementRef<HTMLElement>;
 
   protected containerHeight!: string;
 
@@ -97,7 +109,8 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
               protected memberManagementApi: MemberManagementApiService,
               protected subgroupMgmtInteract: SubgroupManagementInteractService,
               private route: ActivatedRoute,
-              protected dropListRegistry: DropListRegistryService) {}
+              protected dropListRegistry: DropListRegistryService,
+              protected rosterMemberQuickMenu: MgmtMemberQuickAccessMenuService) {}
 
   ngOnInit() {
     if(!this.userService.userLoggedIn) {
@@ -147,6 +160,8 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   ngAfterViewInit() {
     const top = this.managementContainer.nativeElement.getBoundingClientRect().top;
     this.containerHeight = `calc(98vh - ${top}px)`;
+
+    this.rosterMemberQuickMenu.registerMenu(this.menuTrigger, this.memberContextMenuAnchor);
   }
 
   createFromTemplate(template: CrewTemplateViewModel) {

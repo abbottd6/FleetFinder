@@ -35,3 +35,9 @@
   width: 100%;
 }
 
+.invites-empty-message {
+  color: rgba(150, 168, 183, 0.75);
+  margin-top: 10px;
+  margin-inline: auto;
+}
+

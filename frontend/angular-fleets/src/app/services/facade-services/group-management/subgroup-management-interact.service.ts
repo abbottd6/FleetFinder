@@ -14,10 +14,8 @@ import {
   GroupCompositionDto
 } from "../../../models/group-management-models/view-models/group-composition/group-composition-dto";
 import {
-  CdkDrag,
   CdkDragDrop,
-  CdkDragEnd, CdkDragMove,
-  CdkDropList,
+  CdkDragEnd,
   moveItemInArray,
   transferArrayItem
 } from "@angular/cdk/drag-drop";
@@ -58,7 +56,7 @@ export class SubgroupManagementInteractService {
   });
 
   constructor(private compositionApi: GroupCompositionApiService,
-              private groupMgmtInteract: GroupManagementInteractService,
+              private managementInteract: GroupManagementInteractService,
               private dropListRegistry: DropListRegistryService,
               private dialog: MatDialog) {}
 
@@ -113,7 +111,7 @@ export class SubgroupManagementInteractService {
           this.compositionApi.deleteSubgroup(subgroup.listingId, subgroup.subgroupId).pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
               this.getExistingGroupComposition(subgroup.listingId);
-              this.groupMgmtInteract.fetchActiveRoster(subgroup.listingId);
+              this.managementInteract.fetchActiveRoster(subgroup.listingId);
             })
         }
       })
@@ -203,7 +201,7 @@ export class SubgroupManagementInteractService {
         .subscribe((groupId: number) => {
           if(groupId) {
             this.getExistingGroupComposition(groupId);
-            this.groupMgmtInteract.fetchActiveRoster(groupId);
+            this.managementInteract.fetchActiveRoster(groupId);
             this.dropListRegistry.draggedMember$.next(null);
             this.dropListRegistry.hoveredPositionId$.next(null);
           }
@@ -217,9 +215,24 @@ export class SubgroupManagementInteractService {
         if(groupId) {
           position.assignedMember = null;
           this.getExistingGroupComposition(groupId);
-          this.groupMgmtInteract.fetchActiveRoster(groupId)
+          this.managementInteract.fetchActiveRoster(groupId)
         }
       })
+  }
+
+  clearPositionAssignmentByMember() {
+    const member = this.managementInteract.selectedMemberSubject$.getValue();
+
+    if(!member) return;
+
+    this.compositionApi.clearPositionAssignmentByMember(member).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (updatedMember: GroupManagementMemberViewModel) => {
+        this.managementInteract.findAndReplaceActiveRosterMember(updatedMember);
+        this.getExistingGroupComposition(member.listingId);
+      }
+    });
   }
 
   clearTrees() {

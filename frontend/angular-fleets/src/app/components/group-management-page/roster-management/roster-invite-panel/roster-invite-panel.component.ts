@@ -108,9 +108,8 @@ export class RosterInvitePanelComponent implements OnInit, AfterViewInit, OnDest
               protected invitesQuickMenu: MgmtInvitesQuickAccessMenuService){}
 
   ngOnInit() {
-    const tempFilterState = this.mgmtUiPrefs.storedInviteFilters;
     this.inviteFilterState$.next({
-      ...tempFilterState,
+      ...this.mgmtUiPrefs.storedInviteFilters,
       terms: null
     });
 
@@ -200,7 +199,7 @@ export class RosterInvitePanelComponent implements OnInit, AfterViewInit, OnDest
 
   catchFilterStateChange(state: InvitePanelFilterState) {
     this.inviteFilterState$.next(state);
-    // this.mgmtUiPrefs.saveInviteUiPrefs(state);
+    this.mgmtUiPrefs.saveInviteUiPrefs(state);
   }
 
   ngOnDestroy() {

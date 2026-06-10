@@ -65,3 +65,93 @@
     </div>
   </div>
 </div>
+
+<!-- Context Menu -->
+<div
+  #memberContextMenuAnchor
+  class="context-menu-anchor"
+  [matMenuTriggerFor]="memberOptionsMenu"
+  #menuTrigger="matMenuTrigger">
+</div>
+
+<mat-menu #memberOptionsMenu="matMenu">
+  @if (managementInteract.selectedMemberSubject$ | async; as member) {
+    <ng-container *ngIf="member.memberStatus === 'ACTIVE'; else waitlist">
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="managementInteract.openConversation(member.userSummary)"
+        [disabled]="member.userSummary.userId === managementInteract.sessionManager?.userSummary?.userId">
+        <mat-icon class="material-symbols-outlined dropdown-icon">
+          chat_bubble
+        </mat-icon>
+        Message
+      </button>
+
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="subgroupMgmtInteract.clearPositionAssignmentByMember()"
+        [disabled]="!member.memberPosition">
+        <mat-icon class="material-symbols-outlined dropdown-icon" style="transform: rotate(-90deg)">
+          ungroup
+        </mat-icon>
+        Clear Assignment
+      </button>
+
+      <button
+        mat-menu-item
+        class="options-item"
+        [disabled]="member.memberRank.rankTitle === 'Owner'">
+        <mat-icon class="material-symbols-outlined dropdown-icon">
+          crown
+        </mat-icon>
+        Assign Rank
+      </button>
+
+      <button
+        mat-menu-item
+        class="options-item"
+        [disabled]="member.memberRank.rankTitle === 'Owner'">
+        <mat-icon class="material-symbols-outlined dropdown-icon">
+          group_remove
+        </mat-icon>
+        Remove Member
+      </button>
+    </ng-container>
+
+    <ng-template #waitlist>
+
+      <button
+        mat-menu-item
+        class="options-item"
+        (click)="managementInteract.openConversation(member.userSummary)"
+        [disabled]="member.userSummary.userId === managementInteract.sessionManager?.userSummary?.userId">
+        <mat-icon class="material-symbols-outlined dropdown-icon">
+          chat_bubble
+        </mat-icon>
+        Message
+      </button>
+
+      <button
+        mat-menu-item
+        class="options-item">
+        <mat-icon class="material-symbols-outlined dropdown-icon">
+          group_add
+        </mat-icon>
+        Invite to Active
+      </button>
+
+      <button
+        mat-menu-item
+        class="options-item">
+        <mat-icon class="material-symbols-outlined dropdown-icon">
+          person_cancel
+        </mat-icon>
+        Remove Member
+      </button>
+
+    </ng-template>
+  }
+
+</mat-menu>

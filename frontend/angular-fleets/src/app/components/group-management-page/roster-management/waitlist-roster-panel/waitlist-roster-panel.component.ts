@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {MemberChipComponent} from "../member-chip/member-chip.component";
 import {
   GroupManagementInteractService
@@ -16,19 +16,18 @@ import {
   takeUntil
 } from "rxjs";
 import {
-  GroupManagementUiPrefsService
-} from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
-import {
-  GroupListingFetchService
-} from "../../../../services/api-services/group-listings-fetch-api/group-listing-fetch.service";
-import {InviteActions, InviteWithActionInterface} from "../roster-invite-panel/invite-chip/invite-chip.component";
-import {
   GroupManagementMemberViewModel
 } from "../../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
 import {RosterTabOptions} from "../roster-management.component";
 import {WaitlistOptionsPanelComponent} from "./waitlist-options-panel/waitlist-options-panel.component";
 import {RosterTextFieldFilterComponent} from "../roster-text-field-filter/roster-text-field-filter.component";
 import {FormControl} from "@angular/forms";
+import {
+  MgmtMemberQuickAccessMenuService
+} from "../../../../services/component-services/group-management-quick-access-menus/mgmt-member-quick-access-menu.service";
+import {
+  GroupManagementUiPrefsService
+} from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
 
 export const WaitlistRosterActions = {
   MOVE_TO_ACTIVE: 'ACTIVE',
@@ -64,7 +63,6 @@ const WAITLIST_MEMBER_FILTER_PREDICATES: Record<string, WaitlistMemberPredicate>
   imports: [
     AsyncPipe,
     MemberChipComponent,
-    NgForOf,
     NgIf,
     WaitlistOptionsPanelComponent,
     RosterTextFieldFilterComponent,
@@ -84,10 +82,15 @@ export class WaitlistRosterPanelComponent implements OnInit, OnDestroy {
   protected waitlistMembersForDisplay$!: Observable<GroupManagementMemberViewModel[]>;
 
   constructor(protected managementInteract: GroupManagementInteractService,
-              private mgmtUiPrefs: GroupManagementUiPrefsService,
-              private listingFetch: GroupListingFetchService){}
+              protected rosterMemberQuickMenu: MgmtMemberQuickAccessMenuService,
+              private mgmtUiPrefs: GroupManagementUiPrefsService){}
 
   ngOnInit() {
+
+    this.waitlistMemberFilterState$.next({
+      ...this.mgmtUiPrefs.storedWaitlistRosterFilters,
+      terms: null,
+    })
 
     this.waitlistFilterTermsCtrl.valueChanges.pipe(
       takeUntil(this.destroy$),
@@ -129,6 +132,7 @@ export class WaitlistRosterPanelComponent implements OnInit, OnDestroy {
 
   catchFilterStateChange(state: WaitlistMemberFilterState) {
     this.waitlistMemberFilterState$.next(state);
+    this.mgmtUiPrefs.saveWaitlistUiPrefs(state);
   }
 
   ngOnDestroy() {

@@ -27,7 +27,7 @@ export class MgmtMemberQuickAccessMenuService {
 
   openContextMenu(event: MouseEvent, member: GroupManagementMemberViewModel) {
     event.preventDefault();
-    this.managementInteract.setSelectedMember(member);
+    this.managementInteract.selectedMemberSubject$.next(member);
 
     this.openMenuAt(event.clientX, event.clientY);
   }
@@ -46,7 +46,7 @@ export class MgmtMemberQuickAccessMenuService {
 
   onTouchStart(event: TouchEvent, member: GroupManagementMemberViewModel) {
     if(event.touches.length !== 1) return;
-    this.managementInteract.setSelectedMember(member)
+    this.managementInteract.selectedMemberSubject$.next(member)
     this.longPressTriggered = false;
 
     const touch = event.touches[0];

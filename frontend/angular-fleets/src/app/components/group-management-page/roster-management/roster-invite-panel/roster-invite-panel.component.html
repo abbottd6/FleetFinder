@@ -18,6 +18,9 @@
         (touchend)="invitesQuickMenu.onTouchEnd($event)">
       </app-invite-chip>
     </ng-container>
+    @if((invitesForDisplay$ | async)?.length === 0) {
+      <span class="invites-empty-message">No matching invites</span>
+    }
   </div>
 </div>
 <div class="bottom-button-container">

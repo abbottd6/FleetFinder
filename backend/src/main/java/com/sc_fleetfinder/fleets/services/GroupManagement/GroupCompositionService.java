@@ -3,6 +3,7 @@ package com.sc_fleetfinder.fleets.services.GroupManagement;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 
 public interface GroupCompositionService {
@@ -18,4 +19,6 @@ public interface GroupCompositionService {
     Long assignMemberPosition(Users manager, GroupCompositionCrewPositionDto dto);
 
     Long clearMemberPositionAssignment(Users manager, GroupCompositionCrewPositionDto dto);
+
+    GroupManagerMemberResponseDto clearPositionAssignmentByMember(Users manager, GroupManagerMemberResponseDto dto);
 }

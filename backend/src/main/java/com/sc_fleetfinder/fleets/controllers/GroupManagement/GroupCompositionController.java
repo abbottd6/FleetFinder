@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupD
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.CrewTemplateSummaryDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.CrewTemplateService;
@@ -94,6 +95,17 @@ public class GroupCompositionController {
         Long groupId = groupCompService.clearMemberPositionAssignment(manager, positionDto);
 
         return ResponseEntity.ok(groupId);
+    }
+
+    @PatchMapping("/clear-assignment-by-member")
+    public ResponseEntity<?> clearAssignmentByMember(@AuthenticationPrincipal Jwt jwt,
+                                                     @RequestBody GroupManagerMemberResponseDto dto) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        GroupManagerMemberResponseDto response = groupCompService.clearPositionAssignmentByMember(manager, dto);
+
+        return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/update-subgroup-orientation")

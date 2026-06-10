@@ -1,13 +1,32 @@
-import {Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
-import {Subject} from "rxjs";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  ViewChild
+} from '@angular/core';
+import {BehaviorSubject, Subject} from "rxjs";
 import {
   GroupManagementMemberViewModel
 } from "../../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
-import {DatePipe, NgIf, SlicePipe} from "@angular/common";
+import {AsyncPipe, DatePipe, NgIf, SlicePipe} from "@angular/common";
 import {MatIcon} from "@angular/material/icon";
 import {MatTooltip} from "@angular/material/tooltip";
 import {toTitleCase} from "../../../../utils/global-functions";
 import {CdkDragHandle} from "@angular/cdk/drag-drop";
+import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
+import {
+  GroupManagementInteractService
+} from "../../../../services/facade-services/group-management/group-management-interact.service";
+import {
+  MgmtMemberQuickAccessMenuService
+} from "../../../../services/component-services/group-management-quick-access-menus/mgmt-member-quick-access-menu.service";
+import {FormControl} from "@angular/forms";
+import {ActiveMemberFilterState} from "../active-roster-panel/active-roster-panel.component";
 
 @Component({
   selector: 'app-member-chip',
@@ -19,7 +38,7 @@ import {CdkDragHandle} from "@angular/cdk/drag-drop";
     MatTooltip,
     SlicePipe,
     DatePipe,
-    CdkDragHandle
+    CdkDragHandle,
   ],
   styleUrl: './member-chip.component.css'
 })
@@ -29,6 +48,8 @@ export class MemberChipComponent implements OnInit, OnDestroy {
   protected detailsExpanded: boolean = false;
 
   @Input() member!: GroupManagementMemberViewModel;
+
+  constructor(protected rosterMemberQuickMenu: MgmtMemberQuickAccessMenuService){}
 
   ngOnInit() {
   }

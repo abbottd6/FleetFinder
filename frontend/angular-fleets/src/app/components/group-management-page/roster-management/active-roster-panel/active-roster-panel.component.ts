@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ElementRef, inject, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {
   BehaviorSubject,
   combineLatest,
@@ -13,7 +13,7 @@ import {
   GroupManagementInteractService
 } from "../../../../services/facade-services/group-management/group-management-interact.service";
 import {ActiveRosterOptionsPanelComponent} from "./active-roster-options-panel/active-roster-options-panel.component";
-import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {MemberChipComponent} from "../member-chip/member-chip.component";
 import {RosterTabOptions} from "../roster-management.component";
 import {
@@ -26,21 +26,15 @@ import {
 import {
   SubgroupManagementInteractService
 } from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
-import {
-  MatAccordion,
-  MatExpansionPanel,
-  MatExpansionPanelHeader,
-  MatExpansionPanelTitle
-} from "@angular/material/expansion";
-import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
 import {RosterTextFieldFilterComponent} from "../roster-text-field-filter/roster-text-field-filter.component";
 import {FormControl} from "@angular/forms";
 import {map} from "rxjs/operators";
-import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
-import {MatIcon} from "@angular/material/icon";
 import {
   MgmtMemberQuickAccessMenuService
 } from "../../../../services/component-services/group-management-quick-access-menus/mgmt-member-quick-access-menu.service";
+import {
+  GroupManagementUiPrefsService
+} from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
 
 export interface ActiveMemberFilterState {
   roleStatus: 'ASSIGNED' | 'UNASSIGNED' | 'BOTH',
@@ -74,20 +68,13 @@ const ACTIVE_MEMBER_FILTER_PREDICATES: Record<string, ActiveMemberPredicate> = {
     NgIf,
     CdkDrag,
     RosterTextFieldFilterComponent,
-    MatIcon,
-    MatMenu,
-    MatMenuItem,
-    MatMenuTrigger,
   ],
   styleUrl: './active-roster-panel.component.css'
 })
-export class ActiveRosterPanelComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   @Input() groupId!: number;
-
-  @ViewChild(MatMenuTrigger) menuTrigger!: MatMenuTrigger;
-  @ViewChild('contextMenuAnchor', { read: ElementRef }) protected contextMenuAnchor!: ElementRef<HTMLElement>;
 
   protected memberFilterTermsCtrl = new FormControl<string | null>(null);
 
@@ -100,9 +87,13 @@ export class ActiveRosterPanelComponent implements OnInit, AfterViewInit, OnDest
   constructor(protected managementInteract: GroupManagementInteractService,
               protected dropListRegistry: DropListRegistryService,
               protected subgroupInteract: SubgroupManagementInteractService,
-              protected rosterMemberQuickMenu: MgmtMemberQuickAccessMenuService){}
+              private mgmtUiPrefs: GroupManagementUiPrefsService){}
 
   ngOnInit() {
+    this.activeMemberFilterState$.next({
+      ...this.mgmtUiPrefs.storedActiveRosterFilters,
+      terms: null
+    });
 
     this.memberFilterTermsCtrl.valueChanges.pipe(
       takeUntil(this.destroy$),
@@ -121,10 +112,6 @@ export class ActiveRosterPanelComponent implements OnInit, AfterViewInit, OnDest
       map(([members, filterState]) =>
         this.filterActiveMembers(members.content, filterState))
     )
-  }
-
-  ngAfterViewInit() {
-    this.rosterMemberQuickMenu.registerMenu(this.menuTrigger, this.contextMenuAnchor);
   }
 
   filterActiveMembers(members: GroupManagementMemberViewModel[], filterState: ActiveMemberFilterState): GroupManagementMemberViewModel[] {
@@ -151,6 +138,7 @@ export class ActiveRosterPanelComponent implements OnInit, AfterViewInit, OnDest
 
   catchFilterStateChange(state: ActiveMemberFilterState) {
     this.activeMemberFilterState$.next(state);
+    this.mgmtUiPrefs.saveActiveRosterUiPrefs(state);
   }
 
   ngOnDestroy() {

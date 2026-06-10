@@ -26,6 +26,7 @@ import {newEmptyPage, Page} from "../../../models/page-interface";
 import {toTitleCase} from "../../../utils/global-functions";
 import {ChatHostService} from "../chat/chat-host.service";
 import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
+import {UserFullMonikerSummary} from "../../../models/group-management-models/nested-models/user-full-moniker-summary";
 
 @Injectable({
   providedIn: 'root'
@@ -51,8 +52,7 @@ export class GroupManagementInteractService {
   private selectedInviteSubject = new BehaviorSubject<GroupManagementInviteViewModel | null>(null);
   public selectedInvite$ = this.selectedInviteSubject.asObservable();
 
-  private selectedMemberSubject = new BehaviorSubject<GroupManagementMemberViewModel | null>(null);
-  public selectedMember$ = this.selectedMemberSubject.asObservable();
+  public selectedMemberSubject$ = new BehaviorSubject<GroupManagementMemberViewModel | null>(null);
 
   constructor(private managementApi: MemberManagementApiService,
               private chatHostSrv: ChatHostService,
@@ -64,6 +64,21 @@ export class GroupManagementInteractService {
 
   setActiveRoster(roster: Page<GroupManagementMemberViewModel>) {
     this.activeRosterSubject.next(roster);
+  }
+
+  findAndReplaceActiveRosterMember(member: GroupManagementMemberViewModel) {
+    const snapshot = this.activeRosterSubject.getValue();
+    const idx = snapshot.content.findIndex(m => m.userSummary.userId === member.userSummary.userId);
+
+    if(idx >= 0) {
+      this.activeRosterSubject.next({
+        ...snapshot,
+        content: [
+          ...snapshot.content.slice(0, idx),
+          member,
+          ...snapshot.content.slice(idx + 1)]
+      })
+    }
   }
 
   fetchActiveRoster(groupId: number) {
@@ -101,14 +116,6 @@ export class GroupManagementInteractService {
 
   clearSelectedInvite() {
     this.selectedInviteSubject.next(null);
-  }
-
-  setSelectedMember(member: GroupManagementMemberViewModel) {
-    this.selectedMemberSubject.next(member);
-  }
-
-  clearSelectedMember() {
-    this.selectedMemberSubject.next(null);
   }
 
   acceptGroupInviteRequest(acceptedInvite: GroupManagementInviteViewModel) {
@@ -334,7 +341,7 @@ export class GroupManagementInteractService {
       })
   }
 
-  openConversation(recipient: UserMonikerSummaryViewModel) {
+  openConversation(recipient: UserMonikerSummaryViewModel | UserFullMonikerSummary) {
     const title = this.sessionManager?.listing.listingTitle ?? 'Group Invite';
     this.chatHostSrv.provisionConversation(title, recipient.userId);
   }

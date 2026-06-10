@@ -20,7 +20,9 @@
           class="options-item"
           [disabled]="assignedMember.length === 0"
           (click)="subgroupInteract.clearPositionAssignment(position)">
-          <mat-icon class="material-symbols-outlined dropdown-icon">person_cancel</mat-icon>
+          <mat-icon class="material-symbols-outlined dropdown-icon" style="transform: rotate(-90deg)">
+            ungroup
+          </mat-icon>
           <span>Clear Assignment</span>
         </button>
 
@@ -28,7 +30,7 @@
           mat-menu-item
           class="options-item">
           <mat-icon class="material-symbols-outlined dropdown-icon">cancel</mat-icon>
-          <span>Remove Position</span>
+          <span>Delete Position</span>
         </button>
       </mat-menu>
     </div>
