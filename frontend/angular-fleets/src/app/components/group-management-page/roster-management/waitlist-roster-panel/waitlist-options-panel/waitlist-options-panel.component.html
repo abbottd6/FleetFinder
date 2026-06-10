@@ -1,1 +1,25 @@
-<p>waitlist-options-panel works!</p>
+<mat-accordion class="options-accordion-panel">
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title class="child-container-header">
+        Options
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="options-body-container">
+
+      <div class="options-subgroup">
+        <span class="options-subgroup-header">Comms</span>
+        <mat-button-toggle-group [value]="(waitlistMemberFilterState$ | async)?.comms"
+                                 (change)="onCommsFilterChange($event.value)"
+                                 class="toggle-button-row">
+          <mat-button-toggle value="BOTH">Both</mat-button-toggle>
+          <mat-button-toggle value="MIC">Mic</mat-button-toggle>
+          <mat-button-toggle value="AUDIO">Audio</mat-button-toggle>
+          <mat-button-toggle value="ANY">Any</mat-button-toggle>
+          <mat-button-toggle value="NONE">None</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+    </div>
+  </mat-expansion-panel>
+</mat-accordion>

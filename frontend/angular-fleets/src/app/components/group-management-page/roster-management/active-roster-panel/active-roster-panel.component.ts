@@ -120,7 +120,6 @@ export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
         member.userSummary.discordUsername?.includes(filterState.terms) ||
         member.userSummary.inGameUsername?.includes(filterState.terms);
 
-
       return roleMatch && rsvpMatch && commsMatch && termsMatch;
     });
   }

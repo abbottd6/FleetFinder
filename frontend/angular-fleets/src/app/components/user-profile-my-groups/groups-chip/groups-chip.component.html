@@ -94,7 +94,7 @@
       </ng-template>
       <button class="chip-buttons"
               (click)="memberInteract.memberLeaveGroup(membership)"
-              [disabled]="membership.memberRank.rankTitle === 'Owner'">
+              [disabled]="membership.memberRank?.rankTitle === 'Owner'">
         <mat-icon>logout</mat-icon>
         Leave Group
       </button>

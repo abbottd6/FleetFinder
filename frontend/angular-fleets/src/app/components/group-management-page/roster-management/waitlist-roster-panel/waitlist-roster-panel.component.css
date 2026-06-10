@@ -1,0 +1,31 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  height: 65vh;
+  width: 100%;
+}
+
+.panel-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  max-height: 60vh;
+  overflow-y: scroll;
+  scrollbar-color: rgba(188, 191, 200, .1) transparent;
+  scrollbar-arrow-color: transparent !important;
+  scrollbar-width: thin;
+}
+
+.waitlist-members-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 6px;
+}
+
+.waitlist-empty-message {
+  color: rgba(150, 168, 183, 0.75);
+  margin-top: 10px;
+  margin-inline: auto;
+}

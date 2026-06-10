@@ -1,12 +1,21 @@
 <div class="panel-wrapper">
-  <app-active-roster-options-panel>
-  </app-active-roster-options-panel>
-  <ng-container *ngFor="let member of (managementInteract.waitlistRoster$ | async)?.content">
-    <app-member-chip
-      [member]="member">
-    </app-member-chip>
-  </ng-container>
-  <ng-container *ngIf="(managementInteract.waitlistRoster$ | async)?.content?.length === 0">
-    <span>No waitlist members</span>
+  <app-waitlist-options-panel
+    [waitlistMemberFilterState$]="waitlistMemberFilterState$"
+    (emitFilterState)="catchFilterStateChange($event)">
+  </app-waitlist-options-panel>
+  <app-roster-text-field-filter
+    [placeholder]="'Filter by username...'"
+    [textFieldFilterCtrl]="waitlistFilterTermsCtrl">
+  </app-roster-text-field-filter>
+  <div *ngIf="(waitlistMembersForDisplay$ | async) as waitlistRoster"
+    class="waitlist-members-list">
+    @for(member of waitlistRoster; track member.userSummary.userId) {
+      <app-member-chip
+        [member]="member">
+      </app-member-chip>
+    }
+  </div>
+  <ng-container *ngIf="(waitlistMembersForDisplay$ | async)?.length === 0">
+    <span class="waitlist-empty-message">No waitlist members</span>
   </ng-container>
 </div>

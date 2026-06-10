@@ -1,13 +1,20 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {
-    ActiveRosterOptionsPanelComponent
-} from "../active-roster-panel/active-roster-options-panel/active-roster-options-panel.component";
 import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {MemberChipComponent} from "../member-chip/member-chip.component";
 import {
   GroupManagementInteractService
 } from "../../../../services/facade-services/group-management/group-management-interact.service";
-import {BehaviorSubject, combineLatest, filter, map, Observable, Subject, takeUntil} from "rxjs";
+import {
+  BehaviorSubject,
+  combineLatest,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  map,
+  Observable,
+  Subject,
+  takeUntil
+} from "rxjs";
 import {
   GroupManagementUiPrefsService
 } from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
@@ -19,6 +26,9 @@ import {
   GroupManagementMemberViewModel
 } from "../../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
 import {RosterTabOptions} from "../roster-management.component";
+import {WaitlistOptionsPanelComponent} from "./waitlist-options-panel/waitlist-options-panel.component";
+import {RosterTextFieldFilterComponent} from "../roster-text-field-filter/roster-text-field-filter.component";
+import {FormControl} from "@angular/forms";
 
 export const WaitlistRosterActions = {
   MOVE_TO_ACTIVE: 'ACTIVE',
@@ -33,8 +43,18 @@ export type WaitlistMemberWithActionInterface = {
   member: GroupManagementMemberViewModel
 }
 
-export interface WaitlistPanelFilterState {
+export interface WaitlistMemberFilterState {
+  comms: 'BOTH' | 'MIC' | 'AUDIO' | 'ANY' | 'NONE',
   terms: string | null;
+}
+
+type WaitlistMemberPredicate = (member: GroupManagementMemberViewModel) => boolean;
+
+const WAITLIST_MEMBER_FILTER_PREDICATES: Record<string, WaitlistMemberPredicate> = {
+  BOTH: (m) => m.hasMic && m.hasHeadset,
+  MIC: (m) => m.hasMic,
+  AUDIO: (m) => m.hasHeadset,
+  NONE: (m) => !m.hasMic && !m.hasHeadset,
 }
 
 @Component({
@@ -42,11 +62,12 @@ export interface WaitlistPanelFilterState {
     standalone: true,
     templateUrl: './waitlist-roster-panel.component.html',
   imports: [
-    ActiveRosterOptionsPanelComponent,
     AsyncPipe,
     MemberChipComponent,
     NgForOf,
     NgIf,
+    WaitlistOptionsPanelComponent,
+    RosterTextFieldFilterComponent,
   ],
     styleUrl: './waitlist-roster-panel.component.css'
 })
@@ -55,9 +76,10 @@ export class WaitlistRosterPanelComponent implements OnInit, OnDestroy {
 
   @Input() groupId!: number;
 
-  waitlistFilterState$ = new BehaviorSubject<WaitlistPanelFilterState>({
-    terms: null
-  });
+  waitlistMemberFilterState$ = new BehaviorSubject<WaitlistMemberFilterState>({
+    comms: 'ANY', terms: null });
+
+  protected waitlistFilterTermsCtrl = new FormControl<string | null>(null);
 
   protected waitlistMembersForDisplay$!: Observable<GroupManagementMemberViewModel[]>;
 
@@ -67,16 +89,17 @@ export class WaitlistRosterPanelComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
 
-    // uiPrefs does not store waitlist filters yet because only field is 'terms'
-    // const tempFilterState = this.mgmtUiPrefs.storedWaitlistFilters;
-    this.waitlistFilterState$.next({
-      // ...tempFilterState,
-      terms: null
-    });
+    this.waitlistFilterTermsCtrl.valueChanges.pipe(
+      takeUntil(this.destroy$),
+      debounceTime(500),
+      distinctUntilChanged()
+    ).subscribe(() => {
+      this.setAndFilterByTerms();
+    })
 
     this.waitlistMembersForDisplay$ = combineLatest([
       this.managementInteract.waitlistRoster$,
-      this.waitlistFilterState$
+      this.waitlistMemberFilterState$
     ]).pipe(
       filter(([members]) => !!members),
       map(([members, filterState]) =>
@@ -84,45 +107,28 @@ export class WaitlistRosterPanelComponent implements OnInit, OnDestroy {
     )
   }
 
-  filterWaitlistMembers(members: GroupManagementMemberViewModel[], filterState: WaitlistPanelFilterState): GroupManagementMemberViewModel[] {
-    if(filterState.terms == null) return members;
-
-    const staticTerms = filterState.terms;
-
+  filterWaitlistMembers(members: GroupManagementMemberViewModel[], filterState: WaitlistMemberFilterState): GroupManagementMemberViewModel[] {
     return members.filter(member => {
-      // const directionMatch = filterState.direction === 'BOTH' || WAITLIST_FILTER_PREDICATES[filterState.direction](invite);
-      // const statusMatch = filterState.status === 'BOTH' || WAITLIST_FILTER_PREDICATES[filterState.status](invite);
-      const termsMatch = member.userSummary.username.includes(staticTerms) || member.userSummary.inGameUsername.includes(staticTerms);
-      return termsMatch;
+      const commsMatch = filterState.comms === 'ANY' || WAITLIST_MEMBER_FILTER_PREDICATES[filterState.comms](member);
+      const termsMatch = !filterState.terms ||
+        member.userSummary.username.includes(filterState.terms) ||
+        member.userSummary.discordUsername?.includes(filterState.terms) ||
+        member.userSummary.inGameUsername?.includes(filterState.terms);
+
+      return commsMatch && termsMatch;
     });
   }
 
-  changeInviteStatus(inviteStatusChange: InviteWithActionInterface) {
-    switch (inviteStatusChange.action) {
-
-      case InviteActions.ACCEPT:
-        this.managementInteract.acceptGroupInviteRequest(inviteStatusChange.invite);
-        break;
-      case InviteActions.DECLINE:
-        this.managementInteract.declineGroupInviteRequest(inviteStatusChange.invite);
-        break;
-      case InviteActions.RESCIND:
-        this.managementInteract.rescindGroupInviteOffer(inviteStatusChange.invite);
-        break;
-      case InviteActions.DISMISS:
-        this.managementInteract.dismissGroupInvite(inviteStatusChange.invite);
-        break;
-      case InviteActions.WAITLIST:
-        inviteStatusChange.invite.memberStatus = 'WAITLIST';
-        this.managementInteract.waitlistMemberFromJoinRequest(inviteStatusChange.invite);
-        break;
-    }
+  setAndFilterByTerms() {
+    const current = this.waitlistMemberFilterState$.getValue();
+    this.waitlistMemberFilterState$.next({
+      ...current,
+      terms: this.waitlistFilterTermsCtrl.value
+    })
   }
 
-  catchFilterStateChange(state: WaitlistPanelFilterState) {
-    this.waitlistFilterState$.next(state);
-    // waitlist filter state is not stored yet because it only includes search terms
-    // this.mgmtUiPrefs.saveInviteUiPrefs(state);
+  catchFilterStateChange(state: WaitlistMemberFilterState) {
+    this.waitlistMemberFilterState$.next(state);
   }
 
   ngOnDestroy() {
