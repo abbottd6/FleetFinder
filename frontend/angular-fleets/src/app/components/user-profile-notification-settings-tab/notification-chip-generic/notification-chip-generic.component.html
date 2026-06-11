@@ -1,7 +1,6 @@
 <ng-container *ngIf="(hasLink && hasLink.length > 0); else noLink">
-  <div class="clickable chip-self"
-       (click)="routeLink(hasLink)">
-    <div class="header-row">
+  <div class="clickable chip-self">
+    <div class="header-row" (click)="routeLink(hasLink)">
       <ng-container *ngIf="noteType">
         <h5 class="header-context-left">{{ noteType }}</h5>
       </ng-container>
@@ -13,10 +12,10 @@
     </div>
 
     <div class="content-body">
-      <div class="title-column">
+      <div class="title-column" (click)="routeLink(hasLink)">
         <p>{{ targetTitle }}</p>
       </div>
-      <div class="message-column">
+      <div class="message-column" (click)="routeLink(hasLink)">
         <div>
           <ng-container *ngIf="isExpired; else notExpired">
               <span

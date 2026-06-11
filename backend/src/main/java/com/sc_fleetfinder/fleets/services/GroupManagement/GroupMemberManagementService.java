@@ -27,4 +27,6 @@ public interface GroupMemberManagementService extends GroupMemberService {
     GroupManagerInviteResponseDto sendGroupInviteOffer(Users sender, SendGroupInviteOfferDto dto);
 
     GroupManagerInviteResponseDto rescindGroupInviteOffer(Users manager, Long inviteId);
+
+    void removeGroupMember(Users manager, Long groupId, Long userId);
 }

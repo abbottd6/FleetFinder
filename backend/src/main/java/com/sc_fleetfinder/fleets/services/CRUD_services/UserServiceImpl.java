@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import jakarta.persistence.criteria.Predicate;
@@ -401,5 +402,11 @@ public class UserServiceImpl implements UserService {
         }
 
         return spec;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Users saveAndFlush(Users user) {
+        return  userRepository.saveAndFlush(user);
     }
 }

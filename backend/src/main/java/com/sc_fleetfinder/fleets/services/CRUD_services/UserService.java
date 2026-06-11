@@ -56,4 +56,6 @@ public interface UserService {
     void updateLastActive(HashMap<String, Instant> toUpdate);
 
     Page<UserSummaryResponseDto> searchUsers(Users sessionUser, String searchCriteria);
+
+    Users saveAndFlush(Users user);
 }

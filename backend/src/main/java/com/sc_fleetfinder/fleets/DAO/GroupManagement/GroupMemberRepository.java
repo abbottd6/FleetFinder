@@ -34,9 +34,7 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
             nativeQuery = true)
     Page<GroupMember> findAllByUserOrderByEventTimeProximity(@Param("userId") Long userId, Pageable pageable);
 
-    Optional<GroupMember> findByUserAndGroupListing(Users user, GroupListing listing);
-
-    Integer deleteByUserAndGroupListing(Users user, GroupListing listing);
+    Optional<GroupMember> findByUserUserIdAndGroupListing(Long userId, GroupListing listing);
 
     @Query("""
             SELECT m FROM GroupMember m
@@ -107,4 +105,60 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
                                                   @Param("recipientId") Long recipientId,
                                                   @Param("listingId") Long listingId,
                                                   @Param("listingTitle") String listingTitle);
+
+    @Modifying
+    @Query(value = """
+           INSERT IGNORE INTO notification_outbox (
+            event_type, entity_type, entity_id, entity_owner_id, entity_new_status,
+            parent_entity_id, parent_entity_type, payload_json, status, push_sub_id,
+            delivery_channel, do_not_duplicate, sibling_key, created_at
+            )
+           SELECT
+                :noteType                   AS event_type,
+                'group_listing'             AS entity_type,
+                :listingId                  AS entity_id,
+                :formerMemberUserId         AS entity_owner_id,
+                'Removed'                   AS entity_new_status,
+                :formerMemberUserId         AS parent_entity_id,
+                'users'                     AS parent_entity_type,
+                JSON_OBJECT(
+                    'noteTopic',            'You were removed from a group.',
+                    'targetId',             :formerMemberUserId,
+                    'targetLabel',          :listingTitle,
+                    'targetStatus',         NULL,
+                    'contextElementLabel',  NULL
+                )                           AS payload_json,
+                'PENDING'                   AS status,
+                push.id_push_sub            AS push_sub_id,
+                channels.delivery_channel   AS delivery_channel,
+                channels.do_not_duplicate   AS do_not_duplicate,
+                SHA2(CONCAT(:noteType, '|', 'group_listing', '|', :formerMemberUserId, '|', :listingOwnerId, '|', :removalTimestamp), 256) AS sibling_key,
+                NOW()                       AS created_at
+           FROM users user
+           CROSS JOIN (
+                SELECT 'IN_APP' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'DISCORD' AS delivery_channel, 1 AS do_not_duplicate UNION ALL
+                SELECT 'PUSH' AS delviery_channel, NULL AS do_not_duplicate
+           ) AS channels
+           LEFT JOIN push_subscription push
+                ON push.user_id = :formerMemberUserId
+                AND channels.delivery_channel = 'PUSH'
+                AND push.group_notes_enabled = 1
+           WHERE user.id_user = :formerMemberUserId
+                AND (
+                    channels.delivery_channel = 'IN_APP'
+                    OR (channels.delivery_channel = 'DISCORD'
+                        AND user.discord_user_id IS NOT NULL
+                        AND user.external_group_notes_enabled = 1)
+                    OR (channels.delivery_channel = 'PUSH'
+                        AND push.group_notes_enabled = 1)
+                )
+           """, nativeQuery = true)
+    Integer generateOutboxNotesForRemovedFromGroupNotifyEvent(@Param("noteType") String noteType,
+                                                              @Param("formerMemberUserId") Long userId,
+                                                              @Param("listingTitle") String listingTitle,
+                                                              @Param("listingId") Long listingId,
+                                                              @Param("listingOwnerId") Long listingOwnerId,
+                                                              @Param("removalTimestamp") String removalTs);
+
 }

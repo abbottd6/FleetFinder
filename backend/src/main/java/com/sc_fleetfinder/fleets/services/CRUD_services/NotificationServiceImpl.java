@@ -172,6 +172,11 @@ public class NotificationServiceImpl implements NotificationService {
                 identifyDeliveryChannel_andSend(savedMemberLeftNote, outboxEntity);
                 break;
 
+            case NotificationType.REMOVED_FROM_GROUP:
+                Notification removedMemberNote = buildRemovedFromGroupNotification(outboxEntity);
+                identifyDeliveryChannel_andSend(removedMemberNote, outboxEntity);
+                break;
+
             case NotificationType.LISTING_VIS_STATUS_CHANGED:
                 Notification savedVisNote = buildListingStatusChangeNotification(outboxEntity);
                 identifyDeliveryChannel_andSend(savedVisNote, outboxEntity);
@@ -286,6 +291,10 @@ public class NotificationServiceImpl implements NotificationService {
                 payload.setTag("Member Left Your Group");
                 dataField.setUrl("https://scfleetfinder.com/user-account/groups?section=memberships");
                 break;
+
+            case NotificationType.REMOVED_FROM_GROUP:
+                payload.setTag("Removed From Group");
+                dataField.setUrl("https://scfleetfinder.com/user-account/notifications");
 
             case NotificationType.MOD_DELETE:
                 payload.setTag("Mod Action");
@@ -415,6 +424,17 @@ public class NotificationServiceImpl implements NotificationService {
         Notification newNote = new Notification(outboxEntity, title, message);
 
         //TODO SET DISCORD VALUES
+        return notificationRepo.save(newNote);
+    }
+
+    private Notification buildRemovedFromGroupNotification(NotificationOutbox outboxEntity) {
+        checkSiblingReadStatus(outboxEntity);
+
+        String title = outboxEntity.getPayloadJson().getNoteTopic();
+        String message = outboxEntity.getPayloadJson().getTargetLabel();
+
+        Notification newNote = new Notification(outboxEntity, title, message);
+
         return notificationRepo.save(newNote);
     }
 

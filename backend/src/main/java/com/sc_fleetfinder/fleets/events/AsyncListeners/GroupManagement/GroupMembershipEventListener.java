@@ -2,18 +2,23 @@ package com.sc_fleetfinder.fleets.events.AsyncListeners.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupInviteRepository;
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupMemberRepository;
+import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
-import com.sc_fleetfinder.fleets.events.GroupManagement.GroupMemberLeftNotifyEvent;
-import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupMemberNotifyEvent;
-import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupInviteOrRequestNotifyEvent;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberStatus;
+import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.GroupManagement.*;
+import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberManagementServiceImpl;
 import com.sc_fleetfinder.fleets.utils.NotificationType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
+
+import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
@@ -22,6 +27,14 @@ public class GroupMembershipEventListener {
 
     private final GroupInviteRepository inviteRepo;
     private final GroupMemberRepository memberRepo;
+    private final GroupMemberManagementServiceImpl memberManagementService;
+
+    @EventListener
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void handleNewListingCreateOwnerMember(NewListingCreateOwnerMember event) {
+        memberManagementService.createOwnerMember(event.owner(), event.listing());
+    }
 
     @Async
     @EventListener
@@ -31,7 +44,7 @@ public class GroupMembershipEventListener {
 
         Integer count = inviteRepo.generateOutboxNotificationsForNewBidirectionalGroupInvite(request.getInviteId());
 
-        log.info("Generated {} notification outbox entries to user {}, for invite ID: {}",
+        log.debug("Generated {} notification outbox entries to user {}, for invite ID: {}",
                 count, request.getRecipient().getUserId(), request.getInviteId());
     }
 
@@ -49,7 +62,7 @@ public class GroupMembershipEventListener {
                 event.invite().getInviteId(),
                 noteType.toString());
 
-        log.info("Generated {} notification outbox entries to user {}, for new member: {}",
+        log.debug("Generated {} notification outbox entries to user {}, for new member: {}",
                 count, event.notificationRecipient().getUserId(), event.newMember().getGroupMemberId());
     }
 
@@ -68,7 +81,27 @@ public class GroupMembershipEventListener {
                 event.listing().getGroupId(),
                 event.listing().getListingTitle());
 
-        log.info("Generated {} notification outbox entries to user {}, for member leaving group: {}",
+        log.debug("Generated {} notification outbox entries to user {}, for member leaving group: {}",
                 count, event.listing().getUsers().getUserId(), event.listing().getGroupId());
+    }
+
+    @Async
+    @EventListener
+    @Transactional
+    public void handleGroupMemberRemovedNotify(RemovedFromGroupNotifyEvent event) {
+        NotificationType noteType = NotificationType.REMOVED_FROM_GROUP;
+
+        // these args are all Longs, careful adjusting.
+        Integer notesCount = memberRepo.generateOutboxNotesForRemovedFromGroupNotifyEvent(
+                noteType.toString(),
+                event.removedMember().getUserId(),
+                event.removedFromListing().getListingTitle(),
+                event.removedFromListing().getGroupId(),
+                event.removedFromListing().getUsers().getUserId(),
+                Instant.now().toString()
+        );
+
+        log.info("Removed from group notify event generated {} notification outbox entries to user {}, " +
+                "regarding group: {}", notesCount, event.removedMember().getUsername(), event.removedFromListing().getGroupId());
     }
 }

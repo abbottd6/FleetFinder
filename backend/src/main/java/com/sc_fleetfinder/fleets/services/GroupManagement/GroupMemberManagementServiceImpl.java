@@ -1,9 +1,7 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
-import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.*;
 import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
-import com.sc_fleetfinder.fleets.DAO.UserRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
@@ -11,10 +9,12 @@ import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupMemberNotifyEvent;
 import com.sc_fleetfinder.fleets.events.GroupManagement.NewGroupInviteOrRequestNotifyEvent;
+import com.sc_fleetfinder.fleets.events.GroupManagement.RemovedFromGroupNotifyEvent;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
-import com.sc_fleetfinder.fleets.exceptions.InviteStateConflictException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.exception.ConstraintViolationException;
@@ -37,22 +37,21 @@ import java.util.Optional;
 public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl implements GroupMemberManagementService {
 
     protected GroupMemberManagementServiceImpl(GroupMemberRepository memberRepo, InGroupRankService rankService,
-                                               PushSubscriptionRepository pushSubRepo, GroupListingRepository glr,
+                                               PushSubscriptionRepository pushSubRepo, GroupListingService gls,
                                                GroupInviteRepository inviteRepo, CrewPositionRepository cpr,
                                                ModelMapper modelMapper,
                                                GroupRankAssignedPrivilegeRepository assignedPrivilegeRepository,
                                                CrewRoleClassificationRepository roleRepo,
-                                               UserRepository userRepo,
+                                               UserService userService,
                                                ApplicationEventPublisher eventPublisher) {
-        super(memberRepo, rankService, pushSubRepo, glr, inviteRepo, cpr, modelMapper, assignedPrivilegeRepository,
-                eventPublisher, userRepo, roleRepo);
+        super(memberRepo, rankService, pushSubRepo, gls, inviteRepo, cpr, modelMapper, assignedPrivilegeRepository,
+                eventPublisher, userService, roleRepo);
     }
 
 
     @Override
     public Page<GroupManagerMemberResponseDto> getActiveRosterGroupMembers(Users user, Long listingId) {
-        GroupListing listing = glr.findById(listingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Group Listing", listingId));
+        GroupListing listing = gls.findGroupListingEntityById(listingId);
 
         RankPrivilegeOptions action = RankPrivilegeOptions.MANAGE_ROSTERS;
 
@@ -75,8 +74,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
     @Override
     public Page<GroupManagerMemberResponseDto> getWaitlistMembers(Users user, Long listingId) {
-        GroupListing listing = glr.findById(listingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Group Listing", listingId));
+        GroupListing listing = gls.findGroupListingEntityById(listingId);
 
         RankPrivilegeOptions action = RankPrivilegeOptions.MANAGE_ROSTERS;
 
@@ -99,8 +97,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
     @Override
     public Page<GroupManagerInviteResponseDto> getGroupInvitesPage(Users user, Long listingId) {
-        GroupListing listing = glr.findById(listingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Group Listing", listingId));
+        GroupListing listing = gls.findGroupListingEntityById(listingId);
 
         RankPrivilegeOptions action = RankPrivilegeOptions.MANAGE_ROSTERS;
 
@@ -116,9 +113,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
     @Override
     @Transactional
     public GroupManagerMemberResponseDto provisionNewGroupMemberFromJoinRequest(Users actingUser, GroupManagerInviteResponseDto dto) {
-        GroupListing listing = glr.findById(dto.getListingId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Group Listing", dto.getListingId()));
+        GroupListing listing = gls.findGroupListingEntityById(dto.getListingId());
 
         GroupInvite invite = inviteRepo.findById(dto.getInviteId()).orElseThrow(() -> new ResourceNotFoundException(
                 "Group Invite", dto.getInviteId()));
@@ -146,7 +141,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
 
             if(savedMember.getMemberStatus() == GroupMemberStatus.ACTIVE) {
                 listing.setCurrentPartySize(listing.getCurrentPartySize() + 1);
-                glr.save(listing);
+                gls.saveListing(listing);
             }
 
             return modelMapper.map(savedMember, GroupManagerMemberResponseDto.class);
@@ -232,12 +227,13 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
         String message = "You've been offered a waitlist position in response to your join request.";
         UserMonikerSummary recipientSummary = modelMapper.map(invite.getSender(), UserMonikerSummary.class);
 
-
         GroupRoleSummaryDto waitlistRoleSummary = modelMapper.map(Optional.ofNullable(invite.getInviteRole()), GroupRoleSummaryDto.class);
 
+        // this is for sending an active roster invite to a member who is already on the waitlist
+        boolean convertWaitlistMemberToActiveMember = false;
 
         SendGroupInviteOfferDto waitlistOfferDto = new SendGroupInviteOfferDto(invite,
-                GroupMemberStatus.WAITLIST, recipientSummary, waitlistRoleSummary, message);
+                GroupMemberStatus.WAITLIST, recipientSummary, waitlistRoleSummary, message, convertWaitlistMemberToActiveMember);
 
         return sendGroupInviteOffer(actingUser, waitlistOfferDto);
     }
@@ -245,8 +241,7 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
     @Override
     @Transactional
     public GroupManagerInviteResponseDto sendGroupInviteOffer(Users sender, SendGroupInviteOfferDto dto) {
-        GroupListing listing = glr.findById(dto.getListingId())
-                .orElseThrow(() -> new ResourceNotFoundException("GroupListing", dto.getListingId()));
+        GroupListing listing = gls.findGroupListingEntityById(dto.getListingId());
 
         Boolean groupActionAuth = this.rankService.verifyUserRankPermissions(
                 sender, listing, RankPrivilegeOptions.INVITE);
@@ -268,15 +263,17 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
                 }
             }
 
-
             CrewRoleClassification role = Optional.ofNullable(dto.getRoleSummary())
                     .flatMap(r -> roleRepo.findById(r.getRoleId()))
                     .orElse(null);
 
-            Users recipient = userRepo.findById(dto.getRecipientSummary().getUserId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", dto.getRecipientSummary().getUserId()));
+            Users recipient = userService.findUserById(dto.getRecipientSummary().getUserId());
 
-            throwIfUserIsAlreadyAMember(recipient, dto.getListingId());
+            // invites are resent to waitlist members when manager converts them to
+            // active members, should not throw for existing member under these conditions.
+            if(!dto.isConvertFromWaitlistMember()) {
+                throwIfUserIsAlreadyAMember(recipient, dto.getListingId());
+            }
 
             try {
                 GroupInvite savedInvite = inviteRepo.save(new GroupInvite(sender, recipient, listing, direction,
@@ -315,5 +312,26 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
         //TODO save outbox notification for recipient
 
         return modelMapper.map(saved, GroupManagerInviteResponseDto.class);
+    }
+
+    @Override
+    @Transactional
+    public void removeGroupMember(Users manager, Long listingId, Long userId) {
+        GroupListing listing = gls.findGroupListingEntityById(listingId);
+
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_ROSTERS);
+
+        Optional<GroupMember> toRemove = memberRepo.findByUserUserIdAndGroupListing(userId, listing);
+
+        toRemove.ifPresent(memberRepo::delete);
+
+        memberRepo.flush();
+
+        listing.setCurrentPartySize(listing.getCurrentPartySize() - 1);
+        gls.saveListing(listing);
+
+        Users removedUser = userService.findUserById(userId);
+
+        eventPublisher.publishEvent(new RemovedFromGroupNotifyEvent(removedUser, listing));
     }
 }

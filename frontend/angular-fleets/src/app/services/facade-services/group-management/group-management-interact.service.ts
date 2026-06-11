@@ -11,6 +11,7 @@ import {
 } from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
 import {MatDialog} from "@angular/material/dialog";
 import {
+  InviteOfferFormShape,
   SendGroupInvitePopupComponent
 } from "../../../components/pop-ups/send-group-invite-popup/send-group-invite-popup.component";
 import {
@@ -27,6 +28,13 @@ import {toTitleCase} from "../../../utils/global-functions";
 import {ChatHostService} from "../chat/chat-host.service";
 import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
 import {UserFullMonikerSummary} from "../../../models/group-management-models/nested-models/user-full-moniker-summary";
+import {FormGroup} from "@angular/forms";
+import {
+  GroupInviteViewModel
+} from "../../../models/group-management-models/view-models/group-membership/group-invite-view-model";
+import {
+  ConvertWaitlistMemberInvite
+} from "../../../models/group-management-models/request-models/convert-waitlist-member-invite";
 
 @Injectable({
   providedIn: 'root'
@@ -231,6 +239,27 @@ export class GroupManagementInteractService {
       })
   }
 
+  sendActiveInviteToWaitlistMember(waitlistMember: GroupManagementMemberViewModel) {
+    const activeInvite = new ConvertWaitlistMemberInvite(waitlistMember);
+
+    this.managementApi.sendGroupInviteOffer(activeInvite).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (responseInv: GroupManagementInviteViewModel)=> {
+          this.onInviteSendSuccess(responseInv);
+        },
+        error: (err) => {
+          if(err.status === 409) {
+          } else {
+            const msg = 'There was an error sending this invite.';
+            this.showSnackBarMessage(msg);
+            if (!environment.production) {
+              console.log(err.message);
+            }
+          }
+        }
+      });
+  }
+
   openSendInvitePopup(sender: GroupMembershipViewModel | null, recipient: UserMonikerSummaryViewModel | null) {
     if(!this.userService.userLoggedIn) {
       const msg = 'You must be logged in to perform this action.';
@@ -252,33 +281,7 @@ export class GroupManagementInteractService {
         this.managementApi.sendGroupInviteOffer(invite).pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe({
             next: (responseInv: GroupManagementInviteViewModel)=> {
-              const msg = 'Invite sent to ' + responseInv.recipientSummary.username;
-              this.showSnackBarMessage(msg);
-
-              const current = this.groupInvitesSubject.getValue();
-              if(current) {
-                this.groupInvitesSubject.next({
-                  ...current,
-                  content: [...current.content, responseInv]
-                });
-              } else {
-                this.groupInvitesSubject.next({
-                  content: [responseInv],
-                  page: {
-                    size: 1,
-                    number: 0,
-                    totalElements: 1,
-                    totalPages: 1,
-                  },
-                  sort: {
-                    empty: true,
-                    sorted: false,
-                    unsorted: true,
-                    asc: false,
-                    desc: true,
-                  },
-                })
-              }
+              this.onInviteSendSuccess(responseInv);
             },
             error: (err) => {
               if(err.status === 409) {
@@ -295,6 +298,97 @@ export class GroupManagementInteractService {
           });
       }
     });
+  }
+
+  private onInviteSendSuccess(responseInv: GroupManagementInviteViewModel) {
+    const msg = 'Invite sent to ' + responseInv.recipientSummary.username;
+    this.showSnackBarMessage(msg);
+
+    const current = this.groupInvitesSubject.getValue();
+    if(current) {
+      this.groupInvitesSubject.next({
+        ...current,
+        content: [...current.content, responseInv]
+      });
+    } else {
+      this.groupInvitesSubject.next({
+        content: [responseInv],
+        page: {
+          size: 1,
+          number: 0,
+          totalElements: 1,
+          totalPages: 1,
+        },
+        sort: {
+          empty: true,
+          sorted: false,
+          unsorted: true,
+          asc: false,
+          desc: true,
+        },
+      })
+    }
+  }
+
+  openRemoveMemberPopup(member: GroupManagementMemberViewModel): boolean {
+    let memberRemoved: boolean = false;
+    const message = member.memberPosition !== null ?
+      'Member is assigned role: ' + member.memberPosition.roleSummary.roleTitle : 'Member is not currently assigned a position.';
+    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
+      data: {
+        title: 'Remove ' + member.userSummary.username + ' from the group?',
+        message: message
+      }
+    })
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if(result) {
+        const groupId = member.listingId;
+        const userId = member.userSummary.userId;
+
+        this.managementApi.managerRemoveMember(groupId, userId).pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe({
+            next: () => {
+              if(member.memberStatus === 'ACTIVE') {
+                const activeRosterSnapshot = this.activeRosterSubject.getValue();
+                const idx = activeRosterSnapshot.content.findIndex(
+                  m => m.userSummary.userId === member.userSummary.userId);
+
+                if(idx >= 0) {
+                  this.activeRosterSubject.next({
+                    ...activeRosterSnapshot,
+                    content: [
+                      ...activeRosterSnapshot.content.slice(0, idx),
+                      ...activeRosterSnapshot.content.slice(idx + 1)]
+                  })
+                }
+              } else {
+                const waitlistRosterSnapshot = this.waitlistRosterSubject.getValue();
+                const idx = waitlistRosterSnapshot.content.findIndex(
+                  m => m.userSummary.userId === member.userSummary.userId);
+
+                if(idx >= 0) {
+                  this.waitlistRosterSubject.next({
+                    ...waitlistRosterSnapshot,
+                    content: [
+                      ...waitlistRosterSnapshot.content.slice(0, idx),
+                      ...waitlistRosterSnapshot.content.slice(idx + 1)]
+                  })
+                }
+              }
+
+              memberRemoved = true;
+              this.showSnackBarMessage(member.userSummary.username + " was removed from the group.")
+            },
+            error: () => {
+              memberRemoved = false;
+              this.showSnackBarMessage("There was an error removing this member from the group.")
+            }
+          })
+      }
+    })
+
+    return memberRemoved;
   }
 
   rescindGroupInviteOffer(inviteWithNewStatus: GroupManagementInviteViewModel) {

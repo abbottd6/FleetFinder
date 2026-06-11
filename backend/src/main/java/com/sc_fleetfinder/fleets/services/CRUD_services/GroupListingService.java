@@ -34,4 +34,6 @@ public interface GroupListingService {
     GroupListingResponseDto getGroupListingDtoById(Long id);
 
     GroupListing findGroupListingEntityById(Long groupId);
+
+    GroupListing saveListing(GroupListing listing);
 }

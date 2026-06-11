@@ -150,4 +150,16 @@ public class GroupMemberManagementController {
 
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping("/remove_group_member/{groupId}/{userId}")
+    public ResponseEntity<?> removeGroupMember(@AuthenticationPrincipal Jwt jwt,
+                                               @PathVariable Long groupId,
+                                               @PathVariable Long userId) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        memberManagementService.removeGroupMember(manager, groupId, userId);
+
+        return ResponseEntity.ok().build();
+    }
 }

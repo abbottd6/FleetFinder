@@ -1,6 +1,6 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
 import {environment} from "../../../../environments/environment";
-import {HttpClient, HttpResponse, HttpStatusCode} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {
   GroupManagementMemberViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
@@ -76,5 +76,9 @@ export class MemberManagementApiService {
 
   managerDismissInvite(invId: number): Observable<void> {
     return this.httpClient.put<void>(`${this.baseUrl}/manager_dismiss_invite/${invId}`, {});
+  }
+
+  managerRemoveMember(groupId: number, removeUserId: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.baseUrl}/remove_group_member/${groupId}/${removeUserId}`);
   }
 }

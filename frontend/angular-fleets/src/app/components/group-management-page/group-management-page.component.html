@@ -112,6 +112,7 @@
       <button
         mat-menu-item
         class="options-item"
+        (click)="this.subgroupMgmtInteract.removeGroupMember()"
         [disabled]="member.memberRank.rankTitle === 'Owner'">
         <mat-icon class="material-symbols-outlined dropdown-icon">
           group_remove
@@ -135,7 +136,8 @@
 
       <button
         mat-menu-item
-        class="options-item">
+        class="options-item"
+        (click)="managementInteract.sendActiveInviteToWaitlistMember(member)">
         <mat-icon class="material-symbols-outlined dropdown-icon">
           group_add
         </mat-icon>
@@ -144,7 +146,9 @@
 
       <button
         mat-menu-item
-        class="options-item">
+        class="options-item"
+        (click)="this.subgroupMgmtInteract.removeGroupMember()"
+        [disabled]="member.memberRank.rankTitle === 'Owner'">
         <mat-icon class="material-symbols-outlined dropdown-icon">
           person_cancel
         </mat-icon>

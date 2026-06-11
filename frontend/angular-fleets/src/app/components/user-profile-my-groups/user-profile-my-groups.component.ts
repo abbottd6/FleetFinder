@@ -67,17 +67,17 @@ type MembershipPredicate = (membership: GroupMembershipViewModel) => boolean;
 const MEMBERSHIP_FILTER_PREDICATES: Record<string, MembershipPredicate> = {
   UPCOMING: (m) => {
     const now = Date.now();
-    const oneHourAgo = now - 60 * 60 * 1000;
-    const eventTime = m.listing.eventSchedule ? new Date(m.listing.eventSchedule).getTime() : new Date(m.listing.creationTimestamp).getTime();
+    const threeHoursAgo = now - 60 * 180 * 1000;
+    const eventTime = m.listing.eventSchedule ? new Date(m.listing.eventSchedule).getTime() : new Date(m.listing.lastUpdated).getTime();
 
-    return (eventTime > oneHourAgo)
+    return (eventTime > threeHoursAgo)
   },
   PAST: (m) => {
     const now = Date.now();
-    const oneHourAgo = now - 60 * 60 * 1000;
-    const eventTime = m.listing.eventSchedule ? new Date(m.listing.eventSchedule).getTime() : new Date(m.listing.creationTimestamp).getTime();
+    const threeHoursAgo = now - 60 * 180 * 1000;
+    const eventTime = m.listing.eventSchedule ? new Date(m.listing.eventSchedule).getTime() : new Date(m.listing.lastUpdated).getTime();
 
-    return (eventTime < oneHourAgo);
+    return (eventTime < threeHoursAgo);
   },
   PRIVILEGES: (m) => m.isAuthorizedManager,
   NO_PRIVILEGES: (m) => (!m.isAuthorizedManager),

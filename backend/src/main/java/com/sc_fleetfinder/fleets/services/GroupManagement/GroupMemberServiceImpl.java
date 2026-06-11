@@ -4,7 +4,6 @@ import com.sc_fleetfinder.fleets.DAO.GroupListingRepository;
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.*;
 import com.sc_fleetfinder.fleets.DAO.PushSubscriptionRepository;
 import com.sc_fleetfinder.fleets.DAO.UserRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.PushSubscription;
@@ -13,6 +12,8 @@ import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.DuplicateEntryException;
 import com.sc_fleetfinder.fleets.exceptions.InviteStateConflictException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
+import com.sc_fleetfinder.fleets.services.CRUD_services.GroupListingService;
+import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.ApplicationEventPublisher;
@@ -28,31 +29,31 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
     protected final GroupMemberRepository memberRepo;
     protected final InGroupRankService rankService;
     protected final PushSubscriptionRepository pushSubRepo;
-    protected final GroupListingRepository glr;
+    protected final GroupListingService gls;
     protected final GroupInviteRepository inviteRepo;
     protected final CrewPositionRepository cpr;
     protected final ModelMapper modelMapper;
     protected final GroupRankAssignedPrivilegeRepository assignedPrivilegeRepository;
     protected final ApplicationEventPublisher eventPublisher;
-    protected final UserRepository userRepo;
+    protected final UserService userService;
     protected final CrewRoleClassificationRepository roleRepo;
 
     protected GroupMemberServiceImpl(GroupMemberRepository memberRepo, InGroupRankService rankService,
-                           PushSubscriptionRepository pushSubRepo, GroupListingRepository glr,
+                           PushSubscriptionRepository pushSubRepo, GroupListingService gls,
                            GroupInviteRepository inviteRepo, CrewPositionRepository cpr,
                            ModelMapper modelMapper, GroupRankAssignedPrivilegeRepository assignedPrivilegeRepository,
-                           ApplicationEventPublisher eventPublisher, UserRepository userRepo,
+                           ApplicationEventPublisher eventPublisher, UserService userService,
                            CrewRoleClassificationRepository roleRepo) {
         this.memberRepo = memberRepo;
         this.rankService = rankService;
         this.pushSubRepo = pushSubRepo;
-        this.glr = glr;
+        this.gls = gls;
         this.inviteRepo = inviteRepo;
         this.cpr = cpr;
         this.modelMapper = modelMapper;
         this.assignedPrivilegeRepository = assignedPrivilegeRepository;
         this.eventPublisher = eventPublisher;
-        this.userRepo = userRepo;
+        this.userService = userService;
         this.roleRepo = roleRepo;
     }
 
@@ -99,8 +100,7 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
     @Override
     @Transactional(readOnly = true)
     public Boolean verifyUserIsAuthorizedManager(Users user, Long listingId) {
-        GroupListing listing = glr.findById(listingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Group Listing", listingId));
+        GroupListing listing = gls.findGroupListingEntityById(listingId);
 
         RankPrivilegeOptions action = RankPrivilegeOptions.MANAGE_ROSTERS;
 
@@ -110,10 +110,9 @@ public abstract class GroupMemberServiceImpl implements GroupMemberService{
     @Override
     @Transactional(readOnly = true)
     public GroupMember verifyAndReturnUserAsGroupMember(Users user, Long listingId) {
-        GroupListing listing = glr.findById(listingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Group Listing", listingId));
+        GroupListing listing = gls.findGroupListingEntityById(listingId);
 
-        return memberRepo.findByUserAndGroupListing(user, listing)
+        return memberRepo.findByUserUserIdAndGroupListing(user.getUserId(), listing)
                 .orElseThrow(() -> new ResourceNotFoundException("Group Member", user.getUserId(), listingId));
     }
 

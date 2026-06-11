@@ -10,6 +10,7 @@ export const NotificationType = {
   NEW_INVITE: 'NEW_GROUP_INVITE',
   NEW_MEMBER: 'NEW_GROUP_MEMBER',
   MEMBER_LEFT: 'GROUP_MEMBER_LEFT',
+  REMOVED_FROM_GROUP: 'REMOVED_FROM_GROUP',
   NEW_LISTING_MATCH: 'NEW_LISTING_MATCH',
   LISTING_ARCHIVED: 'LISTING_ARCHIVED',
   MOD_DELETE: 'MOD_DELETE',
@@ -130,6 +131,19 @@ export class NotificationChipGenericComponent implements OnInit {
         this.contextElStatus = toTitleCase(this.inputNote.targetMetadata?.targetStatus ?? '');
 
         this.hasLink = "user-account/groups?section=memberships"
+
+        break;
+
+      case (NotificationType.REMOVED_FROM_GROUP):
+        this.noteType = 'Removed from Group: ';
+
+        this.header = this.inputNote.title;
+
+        if(this.inputNote.targetMetadata?.targetLabel && this.inputNote.targetMetadata?.targetLabel.length > 42) {
+          this.targetTitle = "From Group: " + "\"" + this.inputNote.targetMetadata?.targetLabel.substring(0, 42) + "\"";
+        } else {
+          this.targetTitle = "From Group: " + "\"" + this.inputNote.targetMetadata?.targetLabel;
+        }
 
         break;
 

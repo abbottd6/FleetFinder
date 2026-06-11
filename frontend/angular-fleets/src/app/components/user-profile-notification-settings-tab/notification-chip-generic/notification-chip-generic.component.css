@@ -37,6 +37,7 @@
 }
 
 .action-column {
+  padding: 15px;
   flex: 0 0 auto;
 }
 

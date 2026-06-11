@@ -14,6 +14,7 @@ import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ListingArchive;
 import com.sc_fleetfinder.fleets.entities.NewListingNotifyQueue;
 import com.sc_fleetfinder.fleets.entities.Users;
+import com.sc_fleetfinder.fleets.events.GroupManagement.NewListingCreateOwnerMember;
 import com.sc_fleetfinder.fleets.exceptions.ActionNotAuthorizedException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupMemberManagementService;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -68,7 +70,7 @@ public class GroupListingServiceImpl implements GroupListingService {
     private final ListingReportRepository lrr;
     private final NotificationOutboxRepository outboxRepo;
     private final NewListingNotifyQueueRepository listingNotifyQueueRepository;
-    private final GroupMemberManagementService memberManagementService;
+    private final ApplicationEventPublisher eventPublisher;
 
     @PersistenceContext
     private EntityManager em;
@@ -108,7 +110,7 @@ public class GroupListingServiceImpl implements GroupListingService {
 
         if(requestingUser.getGroupListings().size() >= USER_MAX_LISTING_COUNT) {
             Map<String, String> response = new HashMap<>();
-            response.put("response", "Listing creation unsuccesful. Limit of " + USER_MAX_LISTING_COUNT + " reached.");
+            response.put("response", "Listing creation unsuccessful. Limit of " + USER_MAX_LISTING_COUNT + " reached.");
 
             return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 
@@ -122,9 +124,9 @@ public class GroupListingServiceImpl implements GroupListingService {
                 GroupListing listingWithId = groupListingRepository.save(groupListing);
                 groupListingRepository.flush();
 
-                log.info("Listing ID: {}", listingWithId.getGroupId());
+                log.debug("Listing ID: {}", listingWithId.getGroupId());
 
-                memberManagementService.createOwnerMember(requestingUser, listingWithId);
+                eventPublisher.publishEvent(new NewListingCreateOwnerMember(requestingUser, listingWithId));
 
                 NewListingNotifyQueue queued = new NewListingNotifyQueue(listingWithId);
 
@@ -251,6 +253,12 @@ public class GroupListingServiceImpl implements GroupListingService {
                     log.error("GetGroupListingById failed to find an entity with the given group Id: {}.", groupId);
                     return new ResourceNotFoundException("GroupListing", groupId);
                 });
+    }
+
+    @Override
+    @Transactional
+    public GroupListing saveListing(GroupListing listing) {
+        return  groupListingRepository.saveAndFlush(listing);
     }
 
     private Specification<GroupListing> notHiddenBy(Users user) {

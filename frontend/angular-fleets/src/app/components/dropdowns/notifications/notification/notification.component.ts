@@ -76,6 +76,9 @@ export class NotificationComponent implements OnInit {
         this.context = toTitleCase(this.note.targetMetadata?.targetStatus ?? '');
         this.hasLink = 'user-account/groups?section=memberships';
         break;
+      case ('REMOVED_FROM_GROUP'):
+        this.header = this.note.title;
+        break;
       case ('LISTING_ARCHIVED'):
         this.header = this.note.title;
         break;

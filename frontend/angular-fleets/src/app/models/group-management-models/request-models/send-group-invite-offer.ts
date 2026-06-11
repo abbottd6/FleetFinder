@@ -11,6 +11,7 @@ export class SendGroupInviteOffer {
       memberStatus: inviteForm.controls.rosterClassCtrl.value?.toUpperCase(),
       roleSummary: inviteForm.controls.roleSummaryCtrl.value,
       inviteMessage: inviteForm.controls.messageCtrl.value,
+      convertFromWaitlistMember: false,
       expiresAt: inviteForm.controls.expiryCtrl.value
     })
   }

@@ -6,7 +6,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {
   CrewTemplateViewModel
 } from "../../../models/group-management-models/view-models/group-composition/crew-template-view-model";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, groupBy} from "rxjs";
 import {
   GroupCompSubgroupViewModel
 } from "../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
@@ -233,6 +233,18 @@ export class SubgroupManagementInteractService {
         this.getExistingGroupComposition(member.listingId);
       }
     });
+  }
+
+  removeGroupMember() {
+    const selectedMember = this.managementInteract.selectedMemberSubject$.getValue();
+
+    if(!selectedMember) return;
+
+    const memberRemoved = this.managementInteract.openRemoveMemberPopup(selectedMember);
+
+    if(memberRemoved) {
+      this.getExistingGroupComposition(selectedMember.listingId);
+    }
   }
 
   clearTrees() {

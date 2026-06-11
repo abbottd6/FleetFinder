@@ -21,12 +21,13 @@ public class SendGroupInviteOfferDto {
                             GroupMemberStatus rosterOffer,
                             UserMonikerSummary recipientSummary,
                             GroupRoleSummaryDto roleSummary,
-                            String message) {
+                            String message, boolean convertFromWaitlistMember) {
         this.listingId = invite.getGroupListing().getGroupId();
         this.recipientSummary = recipientSummary;
         this.memberStatus = rosterOffer;
         this.roleSummary = roleSummary;
         this.inviteMessage = message;
+        this.convertFromWaitlistMember = convertFromWaitlistMember;
         this.expiresAt = null;
     }
 
@@ -38,5 +39,6 @@ public class SendGroupInviteOfferDto {
     private GroupMemberStatus memberStatus;
     private GroupRoleSummaryDto roleSummary;
     private String inviteMessage;
+    private boolean convertFromWaitlistMember;
     private Instant expiresAt;
 }

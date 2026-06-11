@@ -32,7 +32,7 @@ public class InGroupRankServiceImpl implements InGroupRankService {
 
     @Override
     public Boolean verifyUserRankPermissions(Users user, GroupListing listing, RankPrivilegeOptions action) {
-        memberRepo.findByUserAndGroupListing(user, listing)
+        memberRepo.findByUserUserIdAndGroupListing(user.getUserId(), listing)
                 .orElseThrow(() -> new ActionNotAuthorizedException(user.getUserId(), action.toString(),
                         "Group Management entity", listing.getGroupId()));
 

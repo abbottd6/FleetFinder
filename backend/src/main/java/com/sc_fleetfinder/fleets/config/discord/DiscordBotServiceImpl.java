@@ -103,6 +103,14 @@ public class DiscordBotServiceImpl implements DiscordBotService {
                 value2 = "https://scfleetfinder.com/user-account/groups?section=memberships";
                 break;
 
+            case NotificationType.REMOVED_FROM_GROUP:
+                field1 = "Group: ";
+                value1 = note.getTargetMetadata().getTargetLabel();
+
+                field2 = "Review: ";
+                value2 = "https://scfleetfinder.com/user-account/notifications";
+                break;
+
             case NotificationType.MOD_DELETE:
                 field1 = "Action performed by a(n): ";
                 value1 = note.getTargetMetadata().getTargetLabel();
@@ -117,6 +125,14 @@ public class DiscordBotServiceImpl implements DiscordBotService {
 
                 field2 = "You can visit the How To page to learn more about status meanings:";
                 value2 = "https://scfleetfinder.com/user-account";
+        }
+
+        if(value1 == null) {
+            value1 = "undefined";
+        }
+
+        if(value2 == null) {
+            value2 = "undefined";
         }
 
         Map<String, Object> embed = Map.of(
