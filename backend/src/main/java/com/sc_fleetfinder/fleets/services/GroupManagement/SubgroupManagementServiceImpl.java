@@ -1,7 +1,9 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupManagementSubgroupRepository;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionSubgroupDto;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementSubgroup;
+import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,5 +57,12 @@ public class SubgroupManagementServiceImpl implements SubgroupManagementService 
     @Transactional
     public void deleteSubgroup(GroupManagementSubgroup subgroup) {
         gmsr.delete(subgroup);
+    }
+
+    @Override
+    @Transactional
+    public GroupManagementSubgroup updateSubgroupLabel(GroupManagementSubgroup subgroup, String newLabel) {
+        subgroup.setSubgroupLabel(newLabel);
+        return gmsr.save(subgroup);
     }
 }

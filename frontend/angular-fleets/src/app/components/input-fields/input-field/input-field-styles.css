@@ -29,7 +29,6 @@
 /* input text/placeholder text */
 :host ::ng-deep .mdc-text-field--outlined .mdc-text-field__input {
   padding-left: 1rem;
-  wrap-option: wrap;
   caret-color: rgba(255, 131, 7, 0.5) !important;
 }
 

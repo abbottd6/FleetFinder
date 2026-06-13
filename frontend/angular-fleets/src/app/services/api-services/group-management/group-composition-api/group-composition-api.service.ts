@@ -17,6 +17,9 @@ import {
 import {
   GroupManagementMemberViewModel
 } from "../../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
+import {
+  GroupCompSubgroupViewModel
+} from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +50,10 @@ export class GroupCompositionApiService {
 
   updateSubgroupDropListOrientation(requestDto: UpdateSubgroupDropListOrientationRequest) {
     return this.httpClient.patch<void>(`${this.baseUrl}/update-subgroup-orientation`, requestDto);
+  }
+
+  updateSubgroupLabel(subgroupId: number, newLabel: string): Observable<void> {
+    return this.httpClient.patch<void>(`${this.baseUrl}/update-subgroup-label/${subgroupId}`, newLabel);
   }
 
   assignMemberToPosition(position: GroupCompCrewPositionViewModel): Observable<number> {

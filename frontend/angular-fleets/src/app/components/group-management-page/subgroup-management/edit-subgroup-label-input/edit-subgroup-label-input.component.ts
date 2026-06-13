@@ -1,10 +1,15 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {
   GroupCompSubgroupViewModel
-} from "../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
+} from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
 import {FormControl, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
-import {MatError, MatFormField, MatHint, MatInput, MatLabel} from "@angular/material/input";
+import {MatError, MatFormField, MatInput} from "@angular/material/input";
 import {NgIf} from "@angular/common";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatIcon} from "@angular/material/icon";
+import {
+  SubgroupManagementInteractService
+} from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
 
 @Component({
   selector: 'app-edit-subgroup-label-input',
@@ -12,16 +17,18 @@ import {NgIf} from "@angular/common";
     FormsModule,
     MatError,
     MatFormField,
-    MatHint,
-    MatLabel,
     NgIf,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatInput,
+    MatFormFieldModule,
+    MatIcon
   ],
   templateUrl: './edit-subgroup-label-input.component.html',
   styleUrl: './edit-subgroup-label-input.component.css'
 })
 export class EditSubgroupLabelInputComponent implements OnInit {
   @Input() subgroup!: GroupCompSubgroupViewModel;
+  @Output() emitEditingTitle = new EventEmitter<string>;
   characterCount: number = 0;
 
   protected subgroupLabelCtrl = new FormControl<string>('', {
@@ -31,12 +38,20 @@ export class EditSubgroupLabelInputComponent implements OnInit {
                  Validators.maxLength(32)]
   });
 
+  constructor(private subgroupInteract: SubgroupManagementInteractService){};
+
   ngOnInit(){
     this.subgroupLabelCtrl.setValue(this.subgroup.subgroupLabel);
+
+    this.characterCount = this.subgroupLabelCtrl.value.length;
   }
 
   updateCharacterCount() {
     const value = this.subgroupLabelCtrl.value || '';
     this.characterCount = value.length;
+  }
+
+  updateLabel() {
+    this.emitEditingTitle.emit(this.subgroupLabelCtrl.value);
   }
 }

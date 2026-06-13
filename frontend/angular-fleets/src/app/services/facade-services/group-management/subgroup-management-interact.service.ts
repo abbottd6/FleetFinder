@@ -124,6 +124,15 @@ export class SubgroupManagementInteractService {
       .subscribe(() => {})
   }
 
+  updateSubgroupLabel(subgroupId: number, newLabel: string) {
+    this.compositionApi.updateSubgroupLabel(subgroupId, newLabel).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: () => {
+          this.managementInteract.showSnackBarMessage('There was an error updating this label.')
+        }
+      })
+  }
+
   onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
 
     const targetContainer = this.dropListRegistry.allSubgroupLists$.getValue()

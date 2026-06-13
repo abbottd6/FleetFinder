@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -326,6 +327,14 @@ public class GroupMemberManagementServiceImpl extends GroupMemberServiceImpl imp
         toRemove.ifPresent(memberRepo::delete);
 
         memberRepo.flush();
+
+        List<GroupInvite> associatedInvites = inviteRepo.findByUserIdAndListingId(userId, listingId);
+
+        associatedInvites.forEach(inv -> {
+            inv.setInviteStatus(GroupInviteStatus.LEFT_OR_REMOVED);
+        });
+
+        inviteRepo.saveAll(associatedInvites);
 
         listing.setCurrentPartySize(listing.getCurrentPartySize() - 1);
         gls.saveListing(listing);

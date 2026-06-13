@@ -277,4 +277,13 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
 
         return dto;
     }
+
+    @Override
+    public void updateSubgroupLabelNoReturn(Users manager, Long subgroupId, String newLabel) {
+        GroupManagementSubgroup subgroup = subgroupService.findSubgroupById(subgroupId);
+
+        rankService.verifyUserRankPermissions(manager, subgroup.getGroupListing(), RankPrivilegeOptions.MANAGE_SUBGROUPS);
+
+        subgroupService.updateSubgroupLabel(subgroup, newLabel);
+    }
 }

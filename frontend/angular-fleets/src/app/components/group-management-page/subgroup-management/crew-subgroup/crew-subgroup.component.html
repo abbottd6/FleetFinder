@@ -9,50 +9,46 @@
     <div class="subgroup-header drag-handle"
          cdkDragHandle
          #subgroupHoverTarget>
-      <button
-        class="sort-icon"
-        (mousedown)="move_disableSorting()">
-        <mat-icon matTooltip="Move: disable sort">drag_indicator</mat-icon>
-      </button>
-      <div class="header-left" *ngIf="!editingTitle; else editing">
-        <span>{{ subgroup.subgroupLabel }}</span>
-        <button class="header-button scaled-minus"
-          (click)="enableEditTitle()">
-          <mat-icon class="scaled-minus" matTooltip="Edit title">edit</mat-icon>
+      <ng-container *ngIf="!editingTitle; else editing">
+        <button
+          class="sort-icon"
+          (mousedown)="move_disableSorting()">
+          <mat-icon matTooltip="Move: disable sort">drag_indicator</mat-icon>
         </button>
-      </div>
-      <ng-template #editing>
-        <app-edit-subgroup-label-input
-          [subgroup]="subgroup">
-        </app-edit-subgroup-label-input>
-      </ng-template>
-      <div class="header-right">
+        <div class="header-left">
+          <span>{{ subgroup.subgroupLabel }}</span>
+          <button class="header-button scaled-minus"
+                  (click)="enableSubgroupLabelEditing()">
+            <mat-icon class="scaled-minus" matTooltip="Edit title">edit</mat-icon>
+          </button>
+        </div>
+        <div class="header-right">
 
-        <button class="header-button rotate-button"
-                type="button"
-                (click)="toggleDropListOrientation()">
-          <mat-icon class="material-symbols-outlined"
-                    [class.orientation-state-horizontal]="subgroup.dropListOrientation === 'horizontal'"
-                    [class.orientation-state-vertical]="subgroup.dropListOrientation === 'vertical'"
-                    [class.orientation-state-mixed]="subgroup.dropListOrientation === 'mixed'"
-                    [matTooltip]="`Change content orientation from '${toTitleCase(subgroup.dropListOrientation)}' to '${toTitleCase(nativeTogglesNextOrientation)}'`">
-            screen_rotation_alt
-          </mat-icon>
-        </button>
+          <button class="header-button rotate-button"
+                  type="button"
+                  (click)="toggleDropListOrientation()">
+            <mat-icon class="material-symbols-outlined"
+                      [class.orientation-state-horizontal]="subgroup.dropListOrientation === 'horizontal'"
+                      [class.orientation-state-vertical]="subgroup.dropListOrientation === 'vertical'"
+                      [class.orientation-state-mixed]="subgroup.dropListOrientation === 'mixed'"
+                      [matTooltip]="`Change content orientation from '${toTitleCase(subgroup.dropListOrientation)}' to '${toTitleCase(nativeTogglesNextOrientation)}'`">
+              screen_rotation_alt
+            </mat-icon>
+          </button>
 
-        <button class="header-button"
-                type="button"
-                (click)="toggleCollapseSelf()">
-          <mat-icon [class.rotate]="!selfExpanded"
-                    [matTooltip]="selfExpanded ? 'Collapse self' : 'Expand self'">
-            arrow_drop_up
-          </mat-icon>
-        </button>
+          <button class="header-button"
+                  type="button"
+                  (click)="toggleCollapseSelf()">
+            <mat-icon [class.rotate]="!selfExpanded"
+                      [matTooltip]="selfExpanded ? 'Collapse self' : 'Expand self'">
+              arrow_drop_up
+            </mat-icon>
+          </button>
 
-        <button *ngIf="hasChildSubgroups"
-                class="header-button"
-                type="button"
-                (click)="toggleCollapseChildren()">
+          <button *ngIf="hasChildSubgroups"
+                  class="header-button"
+                  type="button"
+                  (click)="toggleCollapseChildren()">
         <span class="material-symbols-outlined"
               [matTooltip]="childrenExpanded ? 'Collapse children' : 'Expand Children'">
           <ng-container *ngIf="childrenExpanded; else childrenCollapsed">
@@ -62,44 +58,51 @@
             expand_content
           </ng-template>
         </span>
-        </button>
-
-        <button class="header-button"
-                type="button"
-                [matMenuTriggerFor]="subgroupOptionsMenu">
-          <mat-icon matTooltip="Options">more_vert</mat-icon>
-        </button>
-        <mat-menu #subgroupOptionsMenu="matMenu" yPosition="below" panelClass="subgroup-options-menu">
-          <button
-            mat-menu-item
-            class="options-item">
-            <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
-            <span>New position</span>
           </button>
 
-          <button
-            mat-menu-item
-            class="options-item">
-            <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
-            <span>New subgroup</span>
+          <button class="header-button"
+                  type="button"
+                  [matMenuTriggerFor]="subgroupOptionsMenu">
+            <mat-icon matTooltip="Options">more_vert</mat-icon>
           </button>
+          <mat-menu #subgroupOptionsMenu="matMenu" yPosition="below" panelClass="subgroup-options-menu">
+            <button
+              mat-menu-item
+              class="options-item">
+              <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
+              <span>New position</span>
+            </button>
 
-          <button
-            mat-menu-item
-            class="options-item"
-            (click)="subgroupInteract.deleteSubgroup(subgroup)">
-            <mat-icon class="material-symbols-outlined dropdown-icon">remove_circle_outline</mat-icon>
-            <span>Delete</span>
-          </button>
+            <button
+              mat-menu-item
+              class="options-item">
+              <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
+              <span>New subgroup</span>
+            </button>
 
-          <button
-            mat-menu-item
-            class="options-item">
-            <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
-            <span>Save template</span>
-          </button>
-        </mat-menu>
-      </div>
+            <button
+              mat-menu-item
+              class="options-item"
+              (click)="subgroupInteract.deleteSubgroup(subgroup)">
+              <mat-icon class="material-symbols-outlined dropdown-icon">remove_circle_outline</mat-icon>
+              <span>Delete</span>
+            </button>
+
+            <button
+              mat-menu-item
+              class="options-item">
+              <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
+              <span>Save template</span>
+            </button>
+          </mat-menu>
+        </div>
+      </ng-container>
+      <ng-template #editing>
+        <app-edit-subgroup-label-input
+          [subgroup]="subgroup"
+          (emitEditingTitle)="updateSubgroupLabel($event)">
+        </app-edit-subgroup-label-input>
+      </ng-template>
     </div>
     <div class="both-lists-wrapper">
 
@@ -140,6 +143,7 @@
           @for (childSubgroup of nativeSubgroupsForDisplay; track childSubgroup.subgroupId) {
             <div cdkDrag
                  [cdkDragData]="childSubgroup"
+                 [cdkDragDisabled]="childEditingLabel"
                  (cdkDragStarted)="dragStarted($event)"
                  (cdkDragMoved)="onDragMoved($event)"
                  (cdkDragReleased)="resetAfterDragReleased($event)"
@@ -150,6 +154,7 @@
                 [parentTreeDepth]="selfDepth"
                 [dropListParentEl]="subgroupListRegistrationRef"
                 [expandedFromParent$]="selfExpandedPropagateToChildren$"
+                (emitEditingLabel)="updateChildEditingLabel($event)"
                 [class.nested-subgroup]="childSubgroup.parentSubgroupId != null">
               </app-crew-subgroup>
             </div>

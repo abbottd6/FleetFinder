@@ -21,4 +21,6 @@ public interface GroupCompositionService {
     Long clearMemberPositionAssignment(Users manager, GroupCompositionCrewPositionDto dto);
 
     GroupManagerMemberResponseDto clearPositionAssignmentByMember(Users manager, GroupManagerMemberResponseDto dto);
+
+    void updateSubgroupLabelNoReturn(Users manager, Long subgroupId, String newLabel);
 }

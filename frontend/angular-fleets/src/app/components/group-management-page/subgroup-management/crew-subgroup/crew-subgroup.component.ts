@@ -1,10 +1,10 @@
 import {
   AfterViewInit,
   Component,
-  ElementRef, inject,
+  ElementRef, EventEmitter, inject,
   Input, OnChanges,
   OnDestroy,
-  OnInit, SimpleChanges,
+  OnInit, Output, SimpleChanges,
   ViewChild,
 } from '@angular/core';
 import {
@@ -42,7 +42,7 @@ import {
 import {toTitleCase} from "../../../../utils/global-functions";
 import {
   EditSubgroupLabelInputComponent
-} from "../../../input-fields/edit-subgroup-label-input/edit-subgroup-label-input.component";
+} from "../edit-subgroup-label-input/edit-subgroup-label-input.component";
 
 @Component({
   selector: 'app-crew-subgroup',
@@ -76,6 +76,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   @Input() parentTreeDepth!: number;
   @Input() parentContainer!: ElementContainerRegistration;
   protected selfDepth!: number;
+
+  @Output() emitEditingLabel = new EventEmitter<boolean>;
 
   protected nativeSubgroupsForDisplay: GroupCompSubgroupViewModel[] = [];
 
@@ -113,7 +115,10 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
 
   protected nativeTogglesNextOrientation!: DropListOrientation;
 
+  // 'editingTitle' is used in the template for the subgroup where the subgroup label is being edited.
   protected editingTitle: boolean = false;
+  // 'childEditingTitle' is used in that subgroups parent to disable cdkDrag while editing (so text can be highlighted etc.)
+  protected childEditingLabel: boolean = false;
 
   //horizontal orientation only
   protected canScrollHorizontal$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -350,8 +355,20 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     this.showRightScroll = el.scrollLeft < max - 1;
   }
 
-  enableEditTitle() {
+  enableSubgroupLabelEditing() {
     this.editingTitle = true;
+    this.emitEditingLabel.emit(true);
+  }
+
+  updateChildEditingLabel(isEditing: boolean) {
+    this.childEditingLabel = isEditing;
+  }
+
+  updateSubgroupLabel(newLabel: string) {
+    this.subgroupInteract.updateSubgroupLabel(this.subgroup.subgroupId, newLabel);
+    this.subgroup.subgroupLabel = newLabel;
+    this.editingTitle = false;
+    this.emitEditingLabel.emit(false);
   }
 
   ngOnDestroy() {

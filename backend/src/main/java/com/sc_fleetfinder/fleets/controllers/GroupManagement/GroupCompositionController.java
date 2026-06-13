@@ -1,14 +1,12 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.CrewTemplateSummaryDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.CrewTemplateService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupCompositionService;
+import com.sc_fleetfinder.fleets.services.GroupManagement.SubgroupManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +25,7 @@ public class GroupCompositionController {
     private final UserService userService;
     private final CrewTemplateService crewTemplateService;
     private final GroupCompositionService groupCompService;
+    private final SubgroupManagementService subgroupService;
 
     @GetMapping("/my-crew-templates")
     public ResponseEntity<?> getMyCrewTemplateOptions(@AuthenticationPrincipal Jwt jwt) {
@@ -115,6 +114,18 @@ public class GroupCompositionController {
         Users manager = userService.verifyUser(kcId);
 
         groupCompService.updateSubgroupDropListOrientation(manager, dto);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/update-subgroup-label/{subgroupId}")
+    public ResponseEntity<?> updateSubgroupLabel(@AuthenticationPrincipal Jwt jwt,
+                                                 @PathVariable Long subgroupId,
+                                                 @RequestBody String newLabel) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        groupCompService.updateSubgroupLabelNoReturn(manager, subgroupId, newLabel);
 
         return ResponseEntity.ok().build();
     }
