@@ -61,7 +61,11 @@
       <div class="label-val-pair">
         <span class="field-label">Status:</span>
         <span class="field-val has-val" [class.actioned]="invite.inviteStatus !== 'PENDING'">
-          {{ invite.inviteStatus|titlecase }}
+          @if(invite.inviteStatus === 'LEFT_OR_REMOVED') {
+            Departed
+          } @else {
+            {{ invite.inviteStatus|titlecase }}
+          }
         </span>
       </div>
       <div class="label-val-pair">

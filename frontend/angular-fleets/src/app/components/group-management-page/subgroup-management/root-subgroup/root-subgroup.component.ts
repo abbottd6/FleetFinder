@@ -224,9 +224,11 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     // this.subgroupInteract.clearTrees();
-    this.dropListRegistry.unregisterList(this.rootListRegistrationRef);
-    this.dropListRegistry.unregisterContainer(this.rootContainerRegistrationRef);
-    this.dropListRegistry.unregisterHoverTarget(this.rootHoverTargetRegistrationRef);
+    if(this.rootListRegistrationRef) {
+      this.dropListRegistry.unregisterList(this.rootListRegistrationRef);
+      this.dropListRegistry.unregisterContainer(this.rootContainerRegistrationRef);
+      this.dropListRegistry.unregisterHoverTarget(this.rootHoverTargetRegistrationRef);
+    }
     // this.dropListRegistry.clearAllRegisteredLists();
 
     this.destroy$.next();

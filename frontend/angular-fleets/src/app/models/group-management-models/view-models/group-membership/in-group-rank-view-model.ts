@@ -3,11 +3,11 @@ import {UserMonikerSummaryViewModel} from "../../nested-models/user-moniker-summ
 export class InGroupRankViewModel {
   constructor(
     public rankId: number,
-    public listingId: number,
-    public rankSubgroupScope: number,
-    public rankTitle: string,
-    public rankNotes: string,
-    public createdByUser: UserMonikerSummaryViewModel,
+    public listingId: number | null,
+    public rankSubgroupScope: number | null,
+    public rankTitle: string | null,
+    public rankNotes: string | null,
+    public createdByUser: UserMonikerSummaryViewModel | null,
     public createdAt: Date
   ){}
 }

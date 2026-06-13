@@ -14,12 +14,18 @@
         (mousedown)="move_disableSorting()">
         <mat-icon matTooltip="Move: disable sort">drag_indicator</mat-icon>
       </button>
-      <div class="header-left">
+      <div class="header-left" *ngIf="!editingTitle; else editing">
         <span>{{ subgroup.subgroupLabel }}</span>
-        <button class="header-button scaled-minus">
+        <button class="header-button scaled-minus"
+          (click)="enableEditTitle()">
           <mat-icon class="scaled-minus" matTooltip="Edit title">edit</mat-icon>
         </button>
       </div>
+      <ng-template #editing>
+        <app-edit-subgroup-label-input
+          [subgroup]="subgroup">
+        </app-edit-subgroup-label-input>
+      </ng-template>
       <div class="header-right">
 
         <button class="header-button rotate-button"

@@ -79,9 +79,11 @@ public class GroupMembershipEventListener {
                 event.formerMember().getMemberStatus().toString(),
                 event.listing().getUsers().getUserId(),
                 event.listing().getGroupId(),
-                event.listing().getListingTitle());
+                event.listing().getListingTitle(),
+                Instant.now().toString()
+        );
 
-        log.debug("Generated {} notification outbox entries to user {}, for member leaving group: {}",
+        log.info("Generated {} notification outbox entries to user {}, for member leaving group: {}",
                 count, event.listing().getUsers().getUserId(), event.listing().getGroupId());
     }
 
@@ -101,7 +103,7 @@ public class GroupMembershipEventListener {
                 Instant.now().toString()
         );
 
-        log.info("Removed from group notify event generated {} notification outbox entries to user {}, " +
+        log.debug("Removed from group notify event generated {} notification outbox entries to user {}, " +
                 "regarding group: {}", notesCount, event.removedMember().getUsername(), event.removedFromListing().getGroupId());
     }
 }

@@ -125,7 +125,10 @@
               </app-crew-subgroup>
             </div>
           }
-          <div class="add-new-button-container">
+          <div class="add-new-button-container"
+               [class.add-new-horizontal]="rootOrientation === 'horizontal'"
+               [class.add-new-vertical]="rootOrientation === 'vertical'"
+               [class.add-new-mixed]="rootOrientation === 'mixed'">
             <button class="add-new-button">
               <mat-icon class="material-symbols-outlined add-2">add_circle_outline</mat-icon>
             </button>

@@ -1,0 +1,21 @@
+<div  class="subgroup-label-input">
+  <mat-form-field>
+    <mat-label>Listing Title</mat-label>
+    <mat-error *ngIf="subgroupLabelCtrl?.hasError && (subgroupLabelCtrl.dirty || !subgroupLabelCtrl.untouched)">
+        <span *ngIf="subgroupLabelCtrl?.hasError?.('minlength')">
+          Label must be at least 5 characters
+        </span>
+      <span *ngIf="subgroupLabelCtrl?.hasError?.('required')">
+          Label is required
+        </span>
+    </mat-error>
+    <input
+      [formControl]="subgroupLabelCtrl"
+      (input)="updateCharacterCount()"
+      maxlength="32"
+      placeholder="Enter listing title..."
+      autocomplete="off"
+      [attr.aria-labelledby]="'listing-title'">
+    <mat-hint align="start">{{ characterCount }}/32</mat-hint>
+  </mat-form-field>
+</div>

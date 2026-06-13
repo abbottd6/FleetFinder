@@ -8,6 +8,7 @@ import com.sc_fleetfinder.fleets.DTO.requestDTOs.SortablePageRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupListingResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupInviteRequestOrResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupMembershipResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupRankDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.MemberPositionSummaryDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewRoleClassification;
@@ -40,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -219,7 +221,17 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
             listing.setCurrentPartySize(listing.getCurrentPartySize() + 1);
             gls.saveListing(listing);
 
-            return modelMapper.map(savedMember, GroupMembershipResponseDto.class);
+            //building response dto from member details
+            GroupMembershipResponseDto savedMemberDto = modelMapper.map(savedMember, GroupMembershipResponseDto.class);
+            MemberPositionSummaryDto positionSummaryDto = findGroupMemberCrewPosition(savedMember)
+                    .map(cp -> modelMapper.map(cp, MemberPositionSummaryDto.class))
+                    .orElse(null);
+            Boolean isAuthorized = hasGroupManagementPrivileges(savedMember.getMemberRank());
+            savedMemberDto.setIsAuthorizedManager(isAuthorized);
+            savedMemberDto.setMemberRole(positionSummaryDto);
+            savedMemberDto.setMemberRank(modelMapper.map(newMemberRank, GroupRankDto.class));
+
+            return savedMemberDto;
 
         } catch (DataIntegrityViolationException e) {
             if (e.getCause() instanceof ConstraintViolationException cve &&
@@ -273,8 +285,13 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
 
         memberRepo.delete(deletedMember);
 
-        inviteRepo.deleteByUserAndGroupListing(
-                actingUser.getUserId(), listing.getGroupId());
+        List<GroupInvite> associatedInvites = inviteRepo.findByUserIdAndListingId(actingUser.getUserId(), listing.getGroupId());
+
+        associatedInvites.forEach(inv -> {
+            inv.setInviteStatus(GroupInviteStatus.LEFT_OR_REMOVED);
+        });
+
+        inviteRepo.saveAll(associatedInvites);
 
         listing.setCurrentPartySize(listing.getCurrentPartySize() - 1);
         gls.saveListing(listing);
@@ -283,7 +300,7 @@ public class GroupMemberUserServiceImpl extends GroupMemberServiceImpl implement
         if((listing.getEventSchedule() != null) && (now.isBefore(listing.getEventSchedule().plus(1, ChronoUnit.HOURS)))) {
             eventPublisher.publishEvent(new GroupMemberLeftNotifyEvent(deletedMember, listing));
         } else if(listing.getGroupStatus().getGroupStatus().equals("Current/Live")
-                && now.isBefore(listing.getCreationTimestamp().plus(2, ChronoUnit.HOURS))) {
+                && now.isBefore(listing.getLastUpdated().plus(2, ChronoUnit.HOURS))) {
             eventPublisher.publishEvent(new GroupMemberLeftNotifyEvent(deletedMember, listing));
         }
     }

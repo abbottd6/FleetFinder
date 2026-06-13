@@ -76,7 +76,7 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
                 push.id_push_sub            AS push_sub_id,
                 channels.delivery_channel   AS delivery_channel,
                 channels.do_not_duplicate   AS do_not_duplicate,
-                SHA2(CONCAT(:noteType, '|', 'group_member', '|', :formerMemberUserId, '|', :recipientId, '|', :formerMemberStatus), 256) AS sibling_key,
+                SHA2(CONCAT(:noteType, '|', 'group_member', '|', :formerMemberUserId, '|', :recipientId, '|', :leftAtTimestamp), 256) AS sibling_key,
                 NOW()                       AS created_at
            FROM users user
            CROSS JOIN (
@@ -104,7 +104,8 @@ public interface GroupMemberRepository extends JpaRepository<GroupMember, GroupM
                                                   @Param("formerMemberStatus") String status,
                                                   @Param("recipientId") Long recipientId,
                                                   @Param("listingId") Long listingId,
-                                                  @Param("listingTitle") String listingTitle);
+                                                  @Param("listingTitle") String listingTitle,
+                                                  @Param("leftAtTimestamp") String leftAtTimestamp);
 
     @Modifying
     @Query(value = """

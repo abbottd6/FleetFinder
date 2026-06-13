@@ -1,7 +1,7 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
 import {FormControl, FormGroup, NonNullableFormBuilder, Validators} from "@angular/forms";
 import {requiredIfGroupStatusFuture} from "../../common/validators/custom-validators";
-import {forkJoin, Subscription} from "rxjs";
+import {forkJoin} from "rxjs";
 import {GroupListingViewModel} from "../../models/group-listing/group-listing-view-model";
 import {LookupService} from "../api-services/reference-data-api/lookup.service";
 import {environment} from "../../../environments/environment";

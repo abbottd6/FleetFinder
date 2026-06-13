@@ -28,7 +28,6 @@ export interface CloseValue {
     DatePipe,
     NgIf,
     MatIconModule,
-    RouterLink,
     MatMenuTrigger,
     MatMenu,
     MatMenuItem,

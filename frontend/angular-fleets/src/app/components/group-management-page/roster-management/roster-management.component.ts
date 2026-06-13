@@ -60,6 +60,10 @@ export class RosterManagementComponent implements OnInit, AfterViewInit, OnDestr
       return;
     }
 
+    this.managementInteract.fetchActiveRoster(this.groupId);
+    this.managementInteract.fetchGroupInvites(this.groupId);
+    this.managementInteract.fetchWaitlistRoster(this.groupId);
+
     this.selectedTab$.next(RosterTabOptions.Active);
     this.handleTabLoad(0);
   }
@@ -77,13 +81,13 @@ export class RosterManagementComponent implements OnInit, AfterViewInit, OnDestr
   handleTabLoad(idx: number) {
     if (idx === 0) {
       this.selectedTab$.next(RosterTabOptions.Active);
-      this.managementInteract.fetchActiveRoster(this.groupId);
+
     } else if (idx === 1) {
       this.selectedTab$.next(RosterTabOptions.Invite);
-      this.managementInteract.fetchGroupInvites(this.groupId);
+
     } else if (idx === 2) {
       this.selectedTab$.next(RosterTabOptions.Waitlist);
-      this.managementInteract.fetchWaitlistRoster(this.groupId);
+
     }
   }
 

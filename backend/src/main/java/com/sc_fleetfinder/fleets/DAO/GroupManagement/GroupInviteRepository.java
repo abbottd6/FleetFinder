@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.DAO.GroupManagement;
 
+import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupInvite;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.InviteDirection;
@@ -10,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> {
@@ -48,6 +50,14 @@ public interface GroupInviteRepository extends JpaRepository<GroupInvite, Long> 
                         OR (gi.recipient.userId = :userId AND gi.inviteDirection = "OFFER"))
             """)
     void deleteByUserAndGroupListing(@Param("userId") Long userId, @Param("listingId") Long listingId);
+
+    @Query("""
+            SELECT inv FROM GroupInvite inv
+            WHERE inv.groupListing.groupId = :groupId
+                AND((inv.inviteDirection = "OFFER" AND inv.recipient.userId = :userId)
+                OR (inv.inviteDirection = "REQUEST" AND inv.sender.userId = :userId))
+            """)
+    List<GroupInvite> findByUserIdAndListingId(@Param("userId") Long userId, @Param("groupId") Long groupId);
 
     @Modifying
     @Query("""

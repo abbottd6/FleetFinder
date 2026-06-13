@@ -110,7 +110,11 @@ recipientSummary
             call_received
           </mat-icon>
         </ng-template>
+        @if(invite.inviteStatus === 'LEFT_OR_REMOVED') {
+          Departed
+        } @else {
          {{ invite.inviteStatus|titlecase }}
+        }
       </span>
     </div>
     <div class="actions-container">

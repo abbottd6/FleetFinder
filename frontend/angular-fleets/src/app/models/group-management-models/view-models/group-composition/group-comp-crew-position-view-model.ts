@@ -1,5 +1,4 @@
 import {RoleClassSummaryViewModel} from "../../nested-models/role-class-summary-view-model";
-import {UserMonikerSummaryViewModel} from "../../nested-models/user-moniker-summary-view-model";
 import {GroupManagementMemberViewModel} from "../group-membership/group-management-member-view-model";
 
 export class GroupCompCrewPositionViewModel {

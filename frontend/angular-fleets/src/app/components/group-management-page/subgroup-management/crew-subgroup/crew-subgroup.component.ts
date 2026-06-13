@@ -40,6 +40,9 @@ import {
   GroupManagementUiPrefsService
 } from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
 import {toTitleCase} from "../../../../utils/global-functions";
+import {
+  EditSubgroupLabelInputComponent
+} from "../../../input-fields/edit-subgroup-label-input/edit-subgroup-label-input.component";
 
 @Component({
   selector: 'app-crew-subgroup',
@@ -54,6 +57,7 @@ import {toTitleCase} from "../../../../utils/global-functions";
     DragDropModule,
     CdkDragHandle,
     AsyncPipe,
+    EditSubgroupLabelInputComponent,
   ],
   templateUrl: './crew-subgroup.component.html',
   styleUrl: './crew-subgroup.component.css'
@@ -108,6 +112,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   protected positionsExpanded: boolean = true;
 
   protected nativeTogglesNextOrientation!: DropListOrientation;
+
+  protected editingTitle: boolean = false;
 
   //horizontal orientation only
   protected canScrollHorizontal$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -342,6 +348,10 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     this.canScrollHorizontal$.next((max > 1) && (this.subgroup.dropListOrientation === 'horizontal'));
     this.showLeftScroll = el.scrollLeft > 5;
     this.showRightScroll = el.scrollLeft < max - 1;
+  }
+
+  enableEditTitle() {
+    this.editingTitle = true;
   }
 
   ngOnDestroy() {
