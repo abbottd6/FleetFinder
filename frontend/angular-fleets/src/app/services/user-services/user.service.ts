@@ -7,7 +7,7 @@ import {
   filter,
   map,
   Observable,
-  of,
+  of, pairwise,
   shareReplay,
   switchMap,
   take,
@@ -24,6 +24,7 @@ import {
 } from "../../components/pop-ups/confirm-delink-discord-popup/confirm-delink-discord-popup.component";
 import {MatDialog} from "@angular/material/dialog";
 import {EventTypes, PublicEventsService} from "angular-auth-oidc-client";
+import {Router} from "@angular/router";
 
 export enum UserRole {
   admin = 'admin',
@@ -84,8 +85,10 @@ export class UserService {
       shareReplay({bufferSize: 1, refCount: true})
   );
 
-  constructor(private dialog: MatDialog, private userApiService: UserApiService,
-              private eventService: PublicEventsService) {
+  constructor(private dialog: MatDialog,
+              private userApiService: UserApiService,
+              private eventService: PublicEventsService,
+              private router: Router) {
 
     this.auth.authClaims$.pipe(
       filter(data => !!data && !!data.userData)
@@ -127,12 +130,16 @@ export class UserService {
       }
     });
 
-    //logoff on token expiry
-    this.eventService.registerForEvents().pipe(
-      filter(event => event.type === EventTypes.TokenExpired),
+    //logoff on token expiry and renew failure
+    this.auth.isLoggedIn$.pipe(
+      pairwise(),
+      filter(([was, now]) => was && !now),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe(() => {
+      this.router.navigateByUrl('/')
       this.auth.logout();
+      this.userLoggedInSubject.next(false);
+      this.userSubject.next(null);
     })
 
     combineLatest([this.auth.tokenReady$, this.ws.isConnected$]).pipe(

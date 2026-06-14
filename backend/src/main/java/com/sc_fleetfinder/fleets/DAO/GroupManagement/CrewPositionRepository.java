@@ -30,4 +30,10 @@ public interface CrewPositionRepository extends JpaRepository<CrewPosition, Long
            """)
     List<CrewPosition> findAllPositionsForSubgroupTrees(@Param("rootIds") List<Long> rootIds,
                                                         @Param("groupId") Long groupId);
+
+    @Query("""
+           SELECT cp FROM CrewPosition cp
+           WHERE cp.groupListing.groupId = :groupId
+           """)
+    List<CrewPosition> findAllPositionsByGroupId(@Param("groupId") Long groupId);
 }

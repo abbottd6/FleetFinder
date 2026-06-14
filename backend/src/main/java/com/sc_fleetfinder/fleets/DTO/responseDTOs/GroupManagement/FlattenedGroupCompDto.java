@@ -10,12 +10,10 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupCompositionDto {
+public class FlattenedGroupCompDto {
 
-    public GroupCompositionDto(Long groupId) {
+    public FlattenedGroupCompDto(Long groupId) {
         this.groupId = groupId;
-        subgroups = new ArrayList<>();
-        crewPositions = new ArrayList<>();
     }
 
     private Long groupId;

@@ -28,4 +28,10 @@ public interface GroupManagementSubgroupRepository extends JpaRepository<GroupMa
                     sub.created_at
            """, nativeQuery = true)
     List<Long> findGroupCompositionRootIds(@Param("groupId") Long groupId);
+
+    @Query(value = """
+           SELECT sub FROM GroupManagementSubgroup sub
+           WHERE sub.groupListing.groupId = :groupId
+           """)
+    List<GroupManagementSubgroup> findSubgroupsByGroupListingId(@Param("groupId") Long groupId);
 }

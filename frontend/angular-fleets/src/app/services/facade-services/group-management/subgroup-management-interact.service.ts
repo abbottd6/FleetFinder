@@ -32,6 +32,7 @@ import {GroupManagementInteractService} from "./group-management-interact.servic
 import {
   UpdateSubgroupDropListOrientationRequest
 } from "../../../models/group-management-models/request-models/update-subgroup-drop-list-orientation-request";
+import {HttpErrorResponse} from "@angular/common/http";
 
 export interface GroupCompPositionsBrief {
   assigned: number,
@@ -156,11 +157,22 @@ export class SubgroupManagementInteractService {
       })
     }
 
+    const groupId = this.managementInteract.sessionManager?.listing?.groupId;
+
+    if(!groupId) return;
+
+    const compStateDto = new GroupCompositionDto(groupId, this.subgroupTreesSubject.getValue(), this.crewPositionsSubject.getValue());
+
+    this.compositionApi.updateGroupCompositionState(compStateDto).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: (err: HttpErrorResponse) => {
+          this.managementInteract.showSnackBarMessage('Error persisting changes.')
+        }
+      })
+
     this.dropListRegistry.resetAfterDragEnd();
   }
 
-  //todo THIS IS WRONG and breaking
-  // is it still? grabbedFrom is unused and probably does not need to be here, its in event already
   onPositionDrop(event: CdkDragDrop<GroupCompCrewPositionViewModel[]>, grabbedFrom: GroupCompSubgroupViewModel) {
     if(event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -176,6 +188,19 @@ export class SubgroupManagementInteractService {
       const current = this.subgroupTreesSubject.getValue();
       const parentIdx = current.findIndex(sub => sub.subgroupId === grabbedFrom.subgroupId);
     }
+
+    const groupId = this.managementInteract.sessionManager?.listing?.groupId;
+
+    if(!groupId) return;
+
+    const compStateDto = new GroupCompositionDto(groupId, this.subgroupTreesSubject.getValue(), this.crewPositionsSubject.getValue());
+
+    this.compositionApi.updateGroupCompositionState(compStateDto).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        error: (err: HttpErrorResponse) => {
+          this.managementInteract.showSnackBarMessage('Error persisting changes.')
+        }
+      })
 
     this.dropListRegistry.resetAfterDragEnd();
   }

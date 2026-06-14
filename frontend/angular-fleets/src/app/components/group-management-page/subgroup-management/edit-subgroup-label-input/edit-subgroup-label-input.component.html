@@ -13,6 +13,7 @@
       matInput
       [formControl]="subgroupLabelCtrl"
       (input)="updateCharacterCount()"
+      (keyup.enter)="updateLabel()"
       maxlength="32"
       placeholder="Enter listing title..."
       autocomplete="off"

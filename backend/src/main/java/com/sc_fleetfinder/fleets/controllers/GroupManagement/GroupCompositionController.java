@@ -48,6 +48,17 @@ public class GroupCompositionController {
         return ResponseEntity.ok(responseDto);
     }
 
+    @PutMapping("/update-group-composition-tree")
+    public ResponseEntity<?> updateGroupCompositionState(@AuthenticationPrincipal Jwt jwt,
+                                                         @RequestBody GroupCompositionDto groupCompDto) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        groupCompService.updateGroupCompositionState(manager, groupCompDto);
+
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/create-subgroup-from-template/{groupId}")
     public ResponseEntity<?> createSubgroupFromTemplate(@AuthenticationPrincipal Jwt jwt,
                                                         @PathVariable Long groupId,

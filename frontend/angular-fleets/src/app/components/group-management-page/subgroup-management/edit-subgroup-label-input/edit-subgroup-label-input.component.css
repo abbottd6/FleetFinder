@@ -35,11 +35,11 @@
 .embedded-save-button {
   margin-left: auto;
   /*padding: 0.5rem 0 0.5rem 2rem;*/
-  align-self: flex-end;
   color: rgba(188, 191, 200, .75);
   text-decoration: none;
   background-color: transparent;
   border: none;
+  font-variation-settings: 'wght' 200;
   transition: color 0.15s ease;
 }
 

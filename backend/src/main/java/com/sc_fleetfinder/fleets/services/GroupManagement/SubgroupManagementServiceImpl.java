@@ -1,9 +1,7 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupManagementSubgroupRepository;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionSubgroupDto;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementSubgroup;
-import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +46,20 @@ public class SubgroupManagementServiceImpl implements SubgroupManagementService 
     }
 
     @Override
+    public List<GroupManagementSubgroup> findSubgroupsByGroupId(Long groupId) {
+        return gmsr.findSubgroupsByGroupListingId(groupId);
+    }
+
+    @Override
     @Transactional
     public GroupManagementSubgroup saveSubgroup(GroupManagementSubgroup subgroup) {
         return gmsr.save(subgroup);
+    }
+
+    @Override
+    @Transactional
+    public List<GroupManagementSubgroup> saveListOf(List<GroupManagementSubgroup> subgroups) {
+        return gmsr.saveAll(subgroups);
     }
 
     @Override

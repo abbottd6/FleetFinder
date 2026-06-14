@@ -35,6 +35,10 @@ export class GroupCompositionApiService {
       `${this.baseUrl}/get-existing-group-structure/${groupId}`);
   }
 
+  updateGroupCompositionState(groupCompDto: GroupCompositionDto): Observable<void> {
+    return this.httpClient.put<void>(`${this.baseUrl}/update-group-composition-tree`, groupCompDto);
+  }
+
   fetchCrewTemplateSummaries(): Observable<CrewTemplateViewModel[]> {
     return this.httpClient.get<CrewTemplateViewModel[]>(`${this.baseUrl}/my-crew-templates`);
   }

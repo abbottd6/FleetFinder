@@ -1,5 +1,5 @@
 import {DestroyRef, inject, Injectable} from '@angular/core';
-import {EventTypes, OidcSecurityService, PublicEventsService} from "angular-auth-oidc-client";
+import {OidcSecurityService} from "angular-auth-oidc-client";
 import {
   distinctUntilChanged,
   EMPTY,
@@ -11,7 +11,7 @@ import {
   take,
   timer
 } from "rxjs";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Router} from "@angular/router";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Injectable({
@@ -68,12 +68,12 @@ export class AuthService {
       }
     });
 
-    this.oidc.isAuthenticated$.pipe(
-      takeUntilDestroyed(this.destroyRef),
-      map(({ isAuthenticated }) => isAuthenticated),
-      distinctUntilChanged(),
-      filter(authenticated => !authenticated)
-    ).subscribe(() => this.router.navigateByUrl('/'));
+    // this.oidc.isAuthenticated$.pipe(
+    //   takeUntilDestroyed(this.destroyRef),
+    //   map(({ isAuthenticated }) => isAuthenticated),
+    //   distinctUntilChanged(),
+    //   filter(authenticated => !authenticated)
+    // ).subscribe(() => this.router.navigateByUrl('/'));
   }
 
   forceNewToken() {
