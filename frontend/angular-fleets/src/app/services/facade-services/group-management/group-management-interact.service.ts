@@ -56,6 +56,7 @@ export class GroupManagementInteractService {
   public groupInvites$ = this.groupInvitesSubject.asObservable();
 
   public sessionManager: GroupMembershipViewModel | undefined = undefined;
+  public groupId!: number;
 
   private selectedInviteSubject = new BehaviorSubject<GroupManagementInviteViewModel | null>(null);
   public selectedInvite$ = this.selectedInviteSubject.asObservable();
@@ -67,7 +68,6 @@ export class GroupManagementInteractService {
               protected dialog: MatDialog,
               private userService: UserService,
               private snackBar: MatSnackBar) {
-
   }
 
   setActiveRoster(roster: Page<GroupManagementMemberViewModel>) {

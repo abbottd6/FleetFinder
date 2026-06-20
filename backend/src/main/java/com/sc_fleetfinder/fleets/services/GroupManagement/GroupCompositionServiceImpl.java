@@ -214,14 +214,28 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
                         .collect(Collectors.toMap(GroupManagementSubgroup::getSubgroupId, Function.identity()));
 
         flattenedDto.getSubgroups().forEach(subDto -> {
+
             GroupManagementSubgroup entity = subgroupsMap.get(subDto.getSubgroupId());
-            if(entity == null) return;
+
+            // if the dto contains a subgroup that is not in db, create it
+            // this might occur if a user 'undoes' a delete operation
+            if(entity == null) {
+                GroupManagementSubgroup parentSubgroup = subgroupsMap.get(subDto.getParentSubgroupId());
+                entity = new GroupManagementSubgroup(subDto, listing, parentSubgroup);
+                subgroupService.saveSubgroup(entity);
+            };
 
             entity.setRootSubgroupId(subDto.getRootSubgroupId());
             entity.setParentSubgroup(subgroupsMap.get(subDto.getParentSubgroupId()));
             entity.setSortOrder(subDto.getSortOrder());
             entity.setSubgroupLabel(subDto.getSubgroupLabel());
         });
+
+        // if the db contains a subgroup that is not in the dto tree, delete it.
+        // this might occur if a user undoes a create operation
+//        subgroupsMap.values().forEach(subgroup -> {
+//            if()
+//        })
 
         // find roles available within this listing scope for position assignments because the position dto uses a dto
         // (can't assign the role classification from the dto to the position entity's role)

@@ -77,7 +77,6 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   protected containerHeight!: string;
 
   protected listingTitle!: string;
-  protected groupId!: number;
 
   protected createFromIsExpanding: boolean = false;
   protected showCreateFromTemplate: boolean = false;
@@ -123,9 +122,9 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
     this.managementInteract.sessionManager = history.state?.membership as GroupMembershipViewModel | undefined;
 
-    this.groupId = Number(stringId);
+    this.managementInteract.groupId = Number(stringId);
 
-    if(!this.groupId || (this.groupId !== this.managementInteract.sessionManager?.listing.groupId)) {
+    if(!this.managementInteract.groupId || (this.managementInteract.groupId !== this.managementInteract.sessionManager?.listing.groupId)) {
       this.router.navigateByUrl('/nothing-here-page')
       return;
     } else if (!(this.managementInteract.sessionManager?.isAuthorizedManager)) {
@@ -133,7 +132,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
       alert('You are not authorized to manage that group.');
     }
 
-    this.memberManagementApi.verifyGroupManagementAuthorization(this.groupId).pipe(takeUntil(this.destroy$))
+    this.memberManagementApi.verifyGroupManagementAuthorization(this.managementInteract.groupId).pipe(takeUntil(this.destroy$))
       .subscribe({
         next: response => {
           if(response) {
@@ -154,7 +153,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
     this.listingTitle = this.managementInteract.sessionManager.listing.listingTitle;
 
-    this.subgroupMgmtInteract.getExistingGroupComposition(this.groupId);
+    this.subgroupMgmtInteract.getExistingGroupComposition(this.managementInteract.groupId);
   }
 
   ngAfterViewInit() {
@@ -165,7 +164,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   }
 
   createFromTemplate(template: CrewTemplateViewModel) {
-    this.subgroupMgmtInteract.createSubgroupFromTemplate(this.groupId, template);
+    this.subgroupMgmtInteract.createSubgroupFromTemplate(this.managementInteract.groupId, template);
 
     setTimeout(() => this.toggleDoNotShowCreateFrom(), 300);
   }

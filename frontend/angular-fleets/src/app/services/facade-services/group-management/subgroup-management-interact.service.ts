@@ -6,7 +6,7 @@ import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 import {
   CrewTemplateViewModel
 } from "../../../models/group-management-models/view-models/group-composition/crew-template-view-model";
-import {BehaviorSubject, groupBy} from "rxjs";
+import {BehaviorSubject, catchError, EMPTY, throwError} from "rxjs";
 import {
   GroupCompSubgroupViewModel
 } from "../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
@@ -24,7 +24,6 @@ import {
 } from "../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
 import {DropListRegistryService} from "./drop-list-registry.service";
 import {MatDialog} from "@angular/material/dialog";
-import {ConfirmGenericComponent} from "../../../components/pop-ups/confirm-generic/confirm-generic.component";
 import {
   GroupManagementMemberViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
@@ -33,10 +32,16 @@ import {
   UpdateSubgroupDropListOrientationRequest
 } from "../../../models/group-management-models/request-models/update-subgroup-drop-list-orientation-request";
 import {HttpErrorResponse} from "@angular/common/http";
+import {BoundedHistoryStack} from "../../../models/bounded-history-stack";
 
-export interface GroupCompPositionsBrief {
+export interface GroupCompPositionsRatio {
   assigned: number,
   total: number
+}
+
+export interface SubgroupHistoryElement {
+  actionLabel: string,
+  tree: GroupCompSubgroupViewModel[]
 }
 
 @Injectable()
@@ -46,12 +51,15 @@ export class SubgroupManagementInteractService {
   protected subgroupTreesSubject = new BehaviorSubject<GroupCompSubgroupViewModel[]>([]);
   public subgroupTrees$ = this.subgroupTreesSubject.asObservable();
 
+  private readonly stackSize = 20;
+  private subgroupHistoryCache = new BoundedHistoryStack<SubgroupHistoryElement>(this.stackSize);
+
   protected crewPositionsSubject = new BehaviorSubject<GroupCompCrewPositionViewModel[]>([]);
   public crewPositions$ = this.crewPositionsSubject.asObservable();
 
   reorientingDropList: boolean = false;
 
-  protected groupPositionsRatio$: BehaviorSubject<GroupCompPositionsBrief> = new BehaviorSubject<GroupCompPositionsBrief>({
+  protected groupPositionsRatio$: BehaviorSubject<GroupCompPositionsRatio> = new BehaviorSubject<GroupCompPositionsRatio>({
     assigned: 0,
     total: 0
   });
@@ -97,23 +105,55 @@ export class SubgroupManagementInteractService {
       });
   }
 
-  deleteSubgroup(subgroup: GroupCompSubgroupViewModel) {
-    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
-      data: {
-        message: 'Delete this subgroup and all of its structurally nested contents? Any group members assigned ' +
-          'to this group will have their position assignment reset.',
-        title: 'Subgroup: \"' + subgroup.subgroupLabel + '\", and its contents.',
-      }
-    });
+  persistState() {
+    this.subgroupTreesSubject.next([...this.subgroupTreesSubject.value])
 
-    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(result => {
-        if(result) {
-          this.compositionApi.deleteSubgroup(subgroup.listingId, subgroup.subgroupId).pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(() => {
-              this.getExistingGroupComposition(subgroup.listingId);
-              this.managementInteract.fetchActiveRoster(subgroup.listingId);
-            })
+    const groupId = this.managementInteract.sessionManager?.listing?.groupId;
+
+    if(!groupId) {
+      console.log('not group id')
+      return EMPTY;
+    }
+
+    const latest = new GroupCompositionDto(groupId, this.subgroupTreesSubject.getValue(), this.crewPositionsSubject.getValue());
+
+    return this.compositionApi.updateGroupCompositionState(latest).pipe(
+      catchError((err: HttpErrorResponse)=> {
+        this.managementInteract.showSnackBarMessage('Error persisting changes.');
+        return throwError(() => err);
+      })
+    )
+  }
+
+  pushSubgroupActionToHistoryCache(actionLabel: string) {
+    const historyEl: SubgroupHistoryElement = {
+      actionLabel: actionLabel,
+      tree: structuredClone(this.subgroupTreesSubject.value)
+    }
+
+    this.subgroupHistoryCache.push(structuredClone(historyEl));
+  }
+
+  get undoIsDisabled(): boolean {
+    return !this.subgroupHistoryCache.canUndo;
+  }
+
+  get peekAtLastActionLabel(): string | undefined {
+    return this.subgroupHistoryCache.peek()?.actionLabel;
+  }
+
+  undoLastSubgroupAction(): void {
+    const previousState = this.subgroupHistoryCache.pop();
+    if (!previousState) return;
+
+    this.subgroupTreesSubject.next(previousState.tree);
+
+    this.persistState().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          if (previousState.actionLabel.includes('Member')) {
+            this.managementInteract.fetchActiveRoster(this.managementInteract.groupId);
+          }
         }
       })
   }
@@ -135,13 +175,11 @@ export class SubgroupManagementInteractService {
   }
 
   onSubgroupDrop(event: CdkDragDrop<GroupCompSubgroupViewModel[]>) {
+    const actionLabel = 'Move Subgroup';
+    this.pushSubgroupActionToHistoryCache(actionLabel);
 
     const targetContainer = this.dropListRegistry.allSubgroupLists$.getValue()
       .find(list => list.dropList.id === this.dropListRegistry.hoveredTargetId$.getValue())
-
-    // console.log('previous container: ', event.previousContainer.id);
-    // console.log('targetContainer: ', targetContainer?.dropList.id);
-    // console.log('previdx: ', event.previousIndex, ', currentIdx: ', event.currentIndex);
 
     if(!targetContainer) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
@@ -157,23 +195,15 @@ export class SubgroupManagementInteractService {
       })
     }
 
-    const groupId = this.managementInteract.sessionManager?.listing?.groupId;
-
-    if(!groupId) return;
-
-    const compStateDto = new GroupCompositionDto(groupId, this.subgroupTreesSubject.getValue(), this.crewPositionsSubject.getValue());
-
-    this.compositionApi.updateGroupCompositionState(compStateDto).pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        error: (err: HttpErrorResponse) => {
-          this.managementInteract.showSnackBarMessage('Error persisting changes.')
-        }
-      })
+    this.persistState().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
 
     this.dropListRegistry.resetAfterDragEnd();
   }
 
   onPositionDrop(event: CdkDragDrop<GroupCompCrewPositionViewModel[]>, grabbedFrom: GroupCompSubgroupViewModel) {
+    const actionLabel = 'Move Crew Position';
+    this.pushSubgroupActionToHistoryCache(actionLabel);
+
     if(event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
 
@@ -189,18 +219,7 @@ export class SubgroupManagementInteractService {
       const parentIdx = current.findIndex(sub => sub.subgroupId === grabbedFrom.subgroupId);
     }
 
-    const groupId = this.managementInteract.sessionManager?.listing?.groupId;
-
-    if(!groupId) return;
-
-    const compStateDto = new GroupCompositionDto(groupId, this.subgroupTreesSubject.getValue(), this.crewPositionsSubject.getValue());
-
-    this.compositionApi.updateGroupCompositionState(compStateDto).pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        error: (err: HttpErrorResponse) => {
-          this.managementInteract.showSnackBarMessage('Error persisting changes.')
-        }
-      })
+    this.persistState().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
 
     this.dropListRegistry.resetAfterDragEnd();
   }
@@ -228,6 +247,9 @@ export class SubgroupManagementInteractService {
     const position = this.crewPositionsSubject.getValue().find(pos => pos.positionId === targetPositionId);
 
     if(position) {
+      const actionLabel = 'Assign Member';
+      this.pushSubgroupActionToHistoryCache(actionLabel);
+
       const positionCopy = { ...position, assignedMember: dropData.source.data };
 
       //TODO RETURN THE UPDATED MEMBER INSTEAD OF GID SO IT CAN BE REASSIGNED TO UPDATE GROUP/ROLE
@@ -244,6 +266,9 @@ export class SubgroupManagementInteractService {
   }
 
   clearPositionAssignment(position: GroupCompCrewPositionViewModel) {
+    const actionLabel = 'Unassign Member';
+    this.pushSubgroupActionToHistoryCache(actionLabel);
+
     this.compositionApi.clearMemberPositionAssignment(position).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((groupId: number) => {
         if(groupId) {
@@ -258,6 +283,9 @@ export class SubgroupManagementInteractService {
     const member = this.managementInteract.selectedMemberSubject$.getValue();
 
     if(!member) return;
+
+    const actionLabel = 'Unassign Member';
+    this.pushSubgroupActionToHistoryCache(actionLabel);
 
     this.compositionApi.clearPositionAssignmentByMember(member).pipe(
       takeUntilDestroyed(this.destroyRef)

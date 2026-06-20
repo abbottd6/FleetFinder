@@ -43,6 +43,8 @@ import {toTitleCase} from "../../../../utils/global-functions";
 import {
   EditSubgroupLabelInputComponent
 } from "../edit-subgroup-label-input/edit-subgroup-label-input.component";
+import {MatDialog} from "@angular/material/dialog";
+import {ConfirmGenericComponent} from "../../../pop-ups/confirm-generic/confirm-generic.component";
 
 @Component({
   selector: 'app-crew-subgroup',
@@ -77,6 +79,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   @Input() parentContainer!: ElementContainerRegistration;
   protected selfDepth!: number;
 
+  @Output() emitDeleteSubgroup = new EventEmitter<GroupCompSubgroupViewModel>;
   @Output() emitEditingLabel = new EventEmitter<boolean>;
 
   protected nativeSubgroupsForDisplay: GroupCompSubgroupViewModel[] = [];
@@ -178,7 +181,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
       dragging && (dataType === 'subgroup') && !isHovered)
   )
 
-  constructor(protected subgroupInteract: SubgroupManagementInteractService){}
+  constructor(protected subgroupInteract: SubgroupManagementInteractService,
+              private dialog: MatDialog){}
 
   ngOnInit() {
     this.nativeSubgroupsForDisplay = this.subgroup.subgroups;
@@ -268,13 +272,12 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     }
   }
 
-  dragStarted(event: CdkDragStart) {
-    // console.log('list sortingDisabled: ', event.source.dropContainer.sortingDisabled);
-    console.log('entityType: ', getDropEntityType(event.source.data));
-  }
+  // dragStarted(event: CdkDragStart) {
+  //   console.log('list sortingDisabled: ', event.source.dropContainer.sortingDisabled);
+  //   console.log('entityType: ', getDropEntityType(event.source.data));
+  // }
 
   move_disableSorting() {
-    console.log('parent: ', this.parentContainer.dropLists[0].id);
     this.parentContainer.dropLists[0].sortingDisabled = true;
   }
 
@@ -290,6 +293,10 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
 
   toggleDropListOrientation() {
     this.subgroupInteract.reorientingDropList = true;
+
+    const actionLabel = 'Change List Orientation';
+    this.subgroupInteract.pushSubgroupActionToHistoryCache(actionLabel);
+
     const current = this.subgroup.dropListOrientation;
 
     if(current === 'horizontal') {
@@ -355,6 +362,32 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     this.showRightScroll = el.scrollLeft < max - 1;
   }
 
+  catchChildDeleteSubgroupEmission(forDelete: GroupCompSubgroupViewModel) {
+    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
+      data: {
+        message: 'Delete this subgroup and all of its structurally nested contents? Any group members assigned ' +
+          'to this group will have their position assignment reset.',
+        title: 'Subgroup: \"' + forDelete.subgroupLabel + '\", and its contents.',
+      }
+    });
+
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+
+          const actionLabel = 'Delete Subgroup';
+          this.subgroupInteract.pushSubgroupActionToHistoryCache(actionLabel);
+
+          this.subgroup.subgroups = this.subgroup.subgroups.filter(
+            sub => sub.subgroupId !== forDelete.subgroupId);
+
+          this.nativeSubgroupsForDisplay = this.subgroup.subgroups;
+
+          this.subgroupInteract.persistState().pipe(takeUntil(this.destroy$)).subscribe();
+        }
+      });
+  }
+
   enableSubgroupLabelEditing() {
     this.editingTitle = true;
     this.emitEditingLabel.emit(true);
@@ -365,6 +398,9 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   updateSubgroupLabel(newLabel: string) {
+    const actionLabel = 'Update Subgroup Label'
+    this.subgroupInteract.pushSubgroupActionToHistoryCache(actionLabel);
+
     this.subgroupInteract.updateSubgroupLabel(this.subgroup.subgroupId, newLabel);
     this.subgroup.subgroupLabel = newLabel;
     this.editingTitle = false;

@@ -10,7 +10,28 @@
     #rootListHoverTarget
     [class.is-hovered-container]="isHoveredTarget$ | async">
     <mat-panel-title class="child-container-header">
-      {{ listingTitle }}
+      <div class="header-title-buttons-container">
+        <button class="header-action-buttons"
+                type="button">
+          <mat-icon class="material-symbols-outlined">
+            question_mark
+          </mat-icon>
+        </button>
+
+        <button class="header-action-buttons"
+                type="button"
+                (click)="subgroupInteract.undoLastSubgroupAction()"
+                [disabled]="subgroupInteract.undoIsDisabled"
+                [matTooltip]="'Undo: ' + subgroupInteract.peekAtLastActionLabel">
+          <mat-icon class="material-symbols-outlined">
+            undo
+          </mat-icon>
+        </button>
+      </div>
+      <span class="header-group-title">
+        {{ listingTitle }}
+      </span>
+
     </mat-panel-title>
     <div class="header-right">
       <button class="header-button"

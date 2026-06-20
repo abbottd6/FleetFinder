@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionSubgroupDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.SubgroupDropListOrientation;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -36,9 +36,21 @@ public class GroupManagementSubgroup {
         this.dropListOrientation = template.getDropListOrientation();
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id_subgroup")
+    public GroupManagementSubgroup(GroupCompositionSubgroupDto subDto,
+                                   GroupListing listing,
+                                   GroupManagementSubgroup parentSubgroup) {
+        this.groupListing = listing;
+        this.rootSubgroupId = subDto.getRootSubgroupId();
+        this.parentSubgroup = parentSubgroup;
+        this.subgroupLabel = subDto.getSubgroupLabel();
+        this.subgroupNotes = subDto.getSubgroupNotes();
+        this.sortOrder = subDto.getSortOrder();
+        this.dropListOrientation = subDto.getDropListOrientation();
+    }
+
+                                   @Id
+                                   @GeneratedValue(strategy = GenerationType.IDENTITY)
+                                   @Column(name="id_subgroup")
     private Long subgroupId;
 
     @ManyToOne
