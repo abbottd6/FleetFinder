@@ -41,7 +41,10 @@ public class PositionManagementServiceImpl implements PositionManagementService 
     @Override
     @Transactional
     public void softDeletePosition(Long positionId) {
-        cpr.findById(positionId).ifPresent(pos -> pos.setDeletedAt(Instant.now()));
+        cpr.findById(positionId).ifPresent(pos -> {
+            pos.setDeletedAt(Instant.now());
+            pos.setAssignedMemberUserId(null);
+        });
     }
 
     @Override

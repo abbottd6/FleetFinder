@@ -29,8 +29,8 @@ import {
   DropListOrientation
 } from "@angular/cdk/drag-drop";
 import {
-  SubgroupManagementInteractService
-} from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
+  GroupCompositionInteractService
+} from "../../../../services/facade-services/group-management/group-composition-interact.service";
 import {AsyncPipe, NgForOf, NgIf} from "@angular/common";
 import {CrewSubgroupComponent} from "../crew-subgroup/crew-subgroup.component";
 import {MatIcon} from "@angular/material/icon";
@@ -113,7 +113,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected allExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   protected rootChildrenExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-  constructor(protected subgroupInteract: SubgroupManagementInteractService,
+  constructor(protected compositionInteract: GroupCompositionInteractService,
               private dialog: MatDialog){
   }
 
@@ -128,7 +128,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.subgroupInteract.subgroupTrees$.pipe(
+    this.compositionInteract.subgroupTrees$.pipe(
       filter(trees => trees?.length > 0),
       take(1),
       takeUntil(this.destroy$)
@@ -175,7 +175,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   toggleDropListOrientation() {
-    this.subgroupInteract.reorientingDropList = true;
+    this.compositionInteract.reorientingDropList = true;
     const current = this.groupManagementUiPrefs.getRootDropListOrientation;
 
     if(current === 'horizontal') {
@@ -197,7 +197,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
 
     setTimeout(() => {
       this.updateHorizontalScrollButtonVisibility();
-      this.subgroupInteract.reorientingDropList = false
+      this.compositionInteract.reorientingDropList = false
     }, 500);
   }
 
@@ -215,9 +215,9 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
         if (result) {
 
           const actionLabel = 'Delete Subgroup';
-          this.subgroupInteract.pushSubgroupActionToHistoryCache(actionLabel);
+          this.compositionInteract.pushSubgroupActionToHistoryCache(actionLabel);
 
-          this.subgroupInteract.deleteRootLevelSubgroup(forDelete);
+          this.compositionInteract.deleteRootLevelSubgroup(forDelete);
         }
       });
   }

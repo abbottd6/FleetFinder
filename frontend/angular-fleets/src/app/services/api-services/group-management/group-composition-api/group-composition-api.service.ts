@@ -48,8 +48,16 @@ export class GroupCompositionApiService {
       `${this.baseUrl}/create-subgroup-from-template/${groupId}`, template);
   }
 
+  createNewPosition(newPosition: GroupCompCrewPositionViewModel) {
+
+  }
+
   deleteSubgroup(groupId: number, subgroupId: number) {
     return this.httpClient.delete<void>(`${this.baseUrl}/delete-subgroup/${groupId}/${subgroupId}`);
+  }
+
+  softDeletePosition(groupId: number, positionId: number): Observable<void> {
+    return this.httpClient.delete<void>(`${this.baseUrl}/delete-position/${groupId}/${positionId}`);
   }
 
   updateSubgroupDropListOrientation(requestDto: UpdateSubgroupDropListOrientationRequest) {

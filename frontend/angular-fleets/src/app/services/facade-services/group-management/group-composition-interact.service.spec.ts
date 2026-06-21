@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { SubgroupManagementInteractService } from './subgroup-management-interact.service';
+import { GroupCompositionInteractService } from './group-composition-interact.service';
 
 describe('SubgroupManagementInteractService', () => {
-  let service: SubgroupManagementInteractService;
+  let service: GroupCompositionInteractService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(SubgroupManagementInteractService);
+    service = TestBed.inject(GroupCompositionInteractService);
   });
 
   it('should be created', () => {

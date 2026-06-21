@@ -19,4 +19,9 @@ public class CrewRoleServiceImpl implements CrewRoleService {
     public List<CrewRoleClassification> getRolesForListingByUserId(Long userId) {
         return crcr.findByUserAndGlobalClassifications(userId);
     }
+
+    @Override
+    public CrewRoleClassification findByRoleId(Long roleId) {
+        return crcr.findById(roleId).orElse(null);
+    }
 }

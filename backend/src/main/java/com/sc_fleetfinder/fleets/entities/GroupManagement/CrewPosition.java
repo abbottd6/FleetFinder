@@ -1,6 +1,7 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberId;
 import jakarta.persistence.*;
@@ -34,6 +35,18 @@ public class CrewPosition {
         this.sortOrder = template.getSortOrder();
         this.positionRole = template.getPositionRole();
         this.positionNote = template.getPositionNotes();
+    }
+
+    public CrewPosition(GroupCompositionCrewPositionDto positionDto,
+                        GroupListing listing,
+                        GroupManagementSubgroup subgroup,
+                        CrewRoleClassification crewRole) {
+        this.groupListing = listing;
+        this.subgroup = subgroup;
+        this.rootSubgroupId = subgroup.getRootSubgroupId();
+        this.positionRole = crewRole;
+        this.positionNote = positionDto.getPositionNote();
+        this.deletedAt = null;
     }
 
     public CrewPosition(GroupListing listing) {

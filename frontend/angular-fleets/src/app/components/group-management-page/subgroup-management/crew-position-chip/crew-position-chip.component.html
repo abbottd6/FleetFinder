@@ -19,7 +19,7 @@
           mat-menu-item
           class="options-item"
           [disabled]="assignedMember.length === 0"
-          (click)="subgroupInteract.clearPositionAssignment(position)">
+          (click)="compositionInteract.clearPositionAssignment(position)">
           <mat-icon class="material-symbols-outlined dropdown-icon" style="transform: rotate(-90deg)">
             ungroup
           </mat-icon>
@@ -28,7 +28,8 @@
 
         <button
           mat-menu-item
-          class="options-item">
+          class="options-item"
+          (click)="emitPositionDelete.emit(position)">
           <mat-icon class="material-symbols-outlined dropdown-icon">cancel</mat-icon>
           <span>Delete Position</span>
         </button>
@@ -43,7 +44,7 @@
       <div cdkDrag
         [cdkDragData]="member"
         (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
-        (cdkDragEnded)="subgroupInteract.onMemberDrop($event)">
+        (cdkDragEnded)="compositionInteract.onMemberDrop($event)">
         <app-member-chip
           [member]="member">
         </app-member-chip>

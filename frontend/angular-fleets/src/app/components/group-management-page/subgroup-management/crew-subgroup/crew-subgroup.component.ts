@@ -29,8 +29,8 @@ import {
   DragDropModule, DropListOrientation
 } from "@angular/cdk/drag-drop";
 import {
-  SubgroupManagementInteractService
-} from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
+  GroupCompositionInteractService
+} from "../../../../services/facade-services/group-management/group-composition-interact.service";
 import {
   DropListRegistration,
   DropListRegistryService, ElementContainerRegistration, getDropEntityType, SubgroupHoverTargetRegistration
@@ -45,6 +45,12 @@ import {
 } from "../edit-subgroup-label-input/edit-subgroup-label-input.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ConfirmGenericComponent} from "../../../pop-ups/confirm-generic/confirm-generic.component";
+import {
+  GroupManagementInteractService
+} from "../../../../services/facade-services/group-management/group-management-interact.service";
+import {
+  GroupCompCrewPositionViewModel
+} from "../../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
 
 @Component({
   selector: 'app-crew-subgroup',
@@ -181,7 +187,8 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
       dragging && (dataType === 'subgroup') && !isHovered)
   )
 
-  constructor(protected subgroupInteract: SubgroupManagementInteractService,
+  constructor(protected compositionInteract: GroupCompositionInteractService,
+              private managementInteract: GroupManagementInteractService,
               private dialog: MatDialog){}
 
   ngOnInit() {
@@ -292,10 +299,10 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   }
 
   toggleDropListOrientation() {
-    this.subgroupInteract.reorientingDropList = true;
+    this.compositionInteract.reorientingDropList = true;
 
     const actionLabel = 'Change List Orientation';
-    this.subgroupInteract.pushSubgroupActionToHistoryCache(actionLabel);
+    this.compositionInteract.pushSubgroupActionToHistoryCache(actionLabel);
 
     const current = this.subgroup.dropListOrientation;
 
@@ -313,9 +320,9 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
       setTimeout(() => this.updateHorizontalScrollButtonVisibility(), 500);
     }
 
-    this.subgroupInteract.updateSubgroupDropListOrientation(this.subgroup);
+    this.compositionInteract.updateSubgroupDropListOrientation(this.subgroup);
 
-    setTimeout(() => this.subgroupInteract.reorientingDropList = false, 500);
+    setTimeout(() => this.compositionInteract.reorientingDropList = false, 500);
   }
 
   toggleCollapseSelf() {
@@ -376,16 +383,32 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
         if (result) {
 
           const actionLabel = 'Delete Subgroup';
-          this.subgroupInteract.pushSubgroupActionToHistoryCache(actionLabel);
+          this.compositionInteract.pushSubgroupActionToHistoryCache(actionLabel);
 
           this.subgroup.subgroups = this.subgroup.subgroups.filter(
             sub => sub.subgroupId !== forDelete.subgroupId);
 
           this.nativeSubgroupsForDisplay = this.subgroup.subgroups;
 
-          this.subgroupInteract.persistState().pipe(takeUntil(this.destroy$)).subscribe();
+          this.compositionInteract.persistState().pipe(takeUntil(this.destroy$))
+            .subscribe({
+                next: () => {
+                  this.managementInteract.fetchActiveRoster(this.managementInteract.groupId);
+                }
+          });
         }
       });
+  }
+
+  catchPositionDeleteEmission(posForDelete: GroupCompCrewPositionViewModel) {
+    const actionLabel = 'Delete Position';
+
+    this.compositionInteract.pushSubgroupActionToHistoryCache(actionLabel);
+
+    this.subgroup.crewPositions = this.subgroup.crewPositions.filter(
+      p => p.positionId !== posForDelete.positionId);
+
+    this.compositionInteract.deleteCrewPosition(posForDelete);
   }
 
   enableSubgroupLabelEditing() {
@@ -399,9 +422,9 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
 
   updateSubgroupLabel(newLabel: string) {
     const actionLabel = 'Update Subgroup Label'
-    this.subgroupInteract.pushSubgroupActionToHistoryCache(actionLabel);
+    this.compositionInteract.pushSubgroupActionToHistoryCache(actionLabel);
 
-    this.subgroupInteract.updateSubgroupLabel(this.subgroup.subgroupId, newLabel);
+    this.compositionInteract.updateSubgroupLabel(this.subgroup.subgroupId, newLabel);
     this.subgroup.subgroupLabel = newLabel;
     this.editingTitle = false;
     this.emitEditingLabel.emit(false);

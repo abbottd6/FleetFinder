@@ -20,9 +20,9 @@
 
         <button class="header-action-buttons"
                 type="button"
-                (click)="subgroupInteract.undoLastSubgroupAction()"
-                [disabled]="subgroupInteract.undoIsDisabled"
-                [matTooltip]="'Undo: ' + subgroupInteract.peekAtLastActionLabel">
+                (click)="compositionInteract.undoLastSubgroupAction()"
+                [disabled]="compositionInteract.undoIsDisabled"
+                [matTooltip]="'Undo: ' + compositionInteract.peekAtLastActionLabel">
           <mat-icon class="material-symbols-outlined">
             undo
           </mat-icon>
@@ -101,7 +101,7 @@
     </div>
   </mat-expansion-panel-header>
 
-  <ng-container *ngIf="(subgroupInteract.subgroupTrees$ | async) as subgroups">
+  <ng-container *ngIf="(compositionInteract.subgroupTrees$ | async) as subgroups">
     <div>
       <div class="drop-list-facade">
         <div
@@ -115,7 +115,7 @@
           #rootSubgroupList="cdkDropList"
           [cdkDropListOrientation]="rootOrientation"
           [cdkDropListData]="subgroups"
-          (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
+          (cdkDropListDropped)="compositionInteract.onSubgroupDrop($event)"
           [cdkDropListEnterPredicate]="rootEnterPredicate"
           [cdkDropListConnectedTo]="connectedToSubgroups"
           (scroll)="updateHorizontalScrollButtonVisibility()">

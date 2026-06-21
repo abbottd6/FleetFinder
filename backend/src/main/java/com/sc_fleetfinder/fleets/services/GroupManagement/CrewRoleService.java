@@ -7,4 +7,6 @@ import java.util.List;
 public interface CrewRoleService {
 
     List<CrewRoleClassification> getRolesForListingByUserId(Long userId);
+
+    CrewRoleClassification findByRoleId(Long roleId);
 }

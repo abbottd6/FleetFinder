@@ -278,13 +278,14 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         positionsOnlyInEntities.removeAll(positionDtoIdSet);
 
         positionsOnlyInEntities.forEach(positionId -> {
-            positionsMap.get(positionId).setDeletedAt(Instant.now());
+            CrewPosition inactivePos = positionsMap.get(positionId);
+
+            if(inactivePos != null) {
+                inactivePos.setDeletedAt(Instant.now());
+                inactivePos.setAssignedMemberUserId(null);
+            }
         });
 
-        // TODO crew positions array is not being updated correctly on changes, positions that should
-        // have been deleted with a subgroup are still in this array and then when this runs after deleting the position
-        // and resets the assignedmemberUserId, which we wanted to be null at this point.
-        // possibly, im not sure.
         flattenedDto.getCrewPositions().forEach(positionDto -> {
             CrewPosition entity = positionsMap.get(positionDto.getPositionId());
 
@@ -380,6 +381,15 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
     }
 
     @Override
+    public void softDeletePosition(Users manager, Long groupId, Long positionId) {
+        GroupListing listing = gls.findGroupListingEntityById(groupId);
+
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_SUBGROUPS);
+
+        positionService.softDeletePosition(positionId);
+    }
+
+    @Override
     @Transactional
     public void updateSubgroupDropListOrientation(Users manager, UpdateSubgroupDropListOrientationDto dto) {
         GroupListing listing =  gls.findGroupListingEntityById(dto.getGroupId());
@@ -391,6 +401,21 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         update.setDropListOrientation(dto.getOrientation());
 
         subgroupService.saveSubgroup(update);
+    }
+
+    @Override
+    public GroupCompositionCrewPositionDto createNewPosition(Users manager, GroupCompositionCrewPositionDto positionDto) {
+        GroupListing listing = gls.findGroupListingEntityById(positionDto.getGroupId());
+
+        GroupManagementSubgroup parentSubgroup = subgroupService.findSubgroupById(positionDto.getSubgroupId());
+
+        CrewRoleClassification crewRole = crewRoleService.findByRoleId(positionDto.getGroupRole().getRoleId());
+
+        CrewPosition newPosition = positionService.saveAndFlush(
+                new CrewPosition(positionDto, listing, parentSubgroup, crewRole)
+        );
+
+        return modelMapper.map(newPosition, GroupCompositionCrewPositionDto.class);
     }
 
     @Override

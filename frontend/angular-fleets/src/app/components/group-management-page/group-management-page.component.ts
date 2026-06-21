@@ -26,8 +26,8 @@ import {
   LoadCrewTemplateFormComponent
 } from "./subgroup-management/load-crew-template/load-crew-template-form.component";
 import {
-  SubgroupManagementInteractService
-} from "../../services/facade-services/group-management/subgroup-management-interact.service";
+  GroupCompositionInteractService
+} from "../../services/facade-services/group-management/group-composition-interact.service";
 import {
   CrewTemplateViewModel
 } from "../../models/group-management-models/view-models/group-composition/crew-template-view-model";
@@ -62,7 +62,7 @@ import {
     MatMenuTrigger
   ],
   styleUrl: './group-management-page.component.css',
-  providers: [DropListRegistryService, SubgroupManagementInteractService]
+  providers: [DropListRegistryService, GroupCompositionInteractService]
 })
 export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -106,7 +106,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   constructor(private userService: UserService,
               private router: Router,
               protected memberManagementApi: MemberManagementApiService,
-              protected subgroupMgmtInteract: SubgroupManagementInteractService,
+              protected subgroupMgmtInteract: GroupCompositionInteractService,
               private route: ActivatedRoute,
               protected dropListRegistry: DropListRegistryService,
               protected rosterMemberQuickMenu: MgmtMemberQuickAccessMenuService) {}

@@ -117,7 +117,7 @@
              #nativeSubgroupList="cdkDropList"
              [cdkDropListOrientation]="subgroup.dropListOrientation"
              [cdkDropListData]="subgroup.subgroups"
-             (cdkDropListDropped)="subgroupInteract.onSubgroupDrop($event)"
+             (cdkDropListDropped)="compositionInteract.onSubgroupDrop($event)"
              [cdkDropListConnectedTo]="connectedToSubgroups"
              [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
              [class.chip-subgroup-expanded]="selfExpanded"
@@ -195,7 +195,7 @@
            [cdkDropListData]="subgroup.crewPositions"
            [cdkDropListConnectedTo]="connectedToPositions"
            [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
-           (cdkDropListDropped)="subgroupInteract.onPositionDrop($event, subgroup)"
+           (cdkDropListDropped)="compositionInteract.onPositionDrop($event, subgroup)"
            [class.chip-subgroup-expanded]="selfExpanded"
            [class.chip-subgroup-collapsed]="!selfExpanded"
            [class.orientation-horizontal]="subgroup.dropListOrientation === 'horizontal'"
@@ -218,7 +218,8 @@
                    (cdkDragMoved)="onDragMoved($event)"
                    (cdkDragReleased)="resetAfterDragReleased($event)">
                 <app-crew-position-chip
-                  [position]="position">
+                  [position]="position"
+                  (emitPositionDelete)="catchPositionDeleteEmission($event)">
                 </app-crew-position-chip>
               </div>
             }

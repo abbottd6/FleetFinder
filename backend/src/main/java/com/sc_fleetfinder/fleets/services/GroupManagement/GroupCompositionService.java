@@ -19,7 +19,11 @@ public interface GroupCompositionService {
 
     void softDeleteSubgroup(Users manager, Long groupId, Long subgroupId);
 
+    void softDeletePosition(Users manager, Long groupId, Long positionId);
+
     void updateSubgroupDropListOrientation(Users manager, UpdateSubgroupDropListOrientationDto dto);
+
+    GroupCompositionCrewPositionDto createNewPosition(Users manager, GroupCompositionCrewPositionDto positionDto);
 
     Long assignMemberPosition(Users manager, GroupCompositionCrewPositionDto dto);
 

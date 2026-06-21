@@ -83,6 +83,29 @@ public class GroupCompositionController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/delete-position/{groupId}/{positionId}")
+    public ResponseEntity<?> softDeletePosition(@AuthenticationPrincipal Jwt jwt,
+                                                @PathVariable Long groupId,
+                                                @PathVariable Long positionId) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        groupCompService.softDeletePosition(manager, groupId, positionId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/create-new-position")
+    public ResponseEntity<?> createNewPosition(@AuthenticationPrincipal Jwt jwt,
+                                               @RequestBody GroupCompositionCrewPositionDto positionDto) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        GroupCompositionCrewPositionDto response = groupCompService.createNewPosition(manager, positionDto);
+
+        return ResponseEntity.ok(response);
+    }
+
     @PatchMapping("/assign-member-position")
     public ResponseEntity<?> assignMemberPosition(@AuthenticationPrincipal Jwt jwt,
                                                   @RequestBody GroupCompositionCrewPositionDto positionDto) {

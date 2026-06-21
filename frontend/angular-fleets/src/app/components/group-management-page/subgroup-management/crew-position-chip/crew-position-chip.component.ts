@@ -1,4 +1,4 @@
-import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from '@angular/core';
 import {
   GroupCompCrewPositionViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
@@ -10,8 +10,8 @@ import {
   DropListRegistryService
 } from "../../../../services/facade-services/group-management/drop-list-registry.service";
 import {
-  SubgroupManagementInteractService
-} from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
+  GroupCompositionInteractService
+} from "../../../../services/facade-services/group-management/group-composition-interact.service";
 import {
   GroupManagementMemberViewModel
 } from "../../../../models/group-management-models/view-models/group-membership/group-management-member-view-model";
@@ -38,11 +38,12 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 })
 export class CrewPositionChipComponent implements OnInit, OnChanges {
   @Input() position!: GroupCompCrewPositionViewModel;
+  @Output() emitPositionDelete = new EventEmitter<GroupCompCrewPositionViewModel>;
 
   protected assignedMember!: GroupManagementMemberViewModel[];
 
   constructor(protected dropListRegistry: DropListRegistryService,
-              protected subgroupInteract: SubgroupManagementInteractService){
+              protected compositionInteract: GroupCompositionInteractService){
 
   }
 

@@ -8,8 +8,8 @@ import {NgIf} from "@angular/common";
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatIcon} from "@angular/material/icon";
 import {
-  SubgroupManagementInteractService
-} from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
+  GroupCompositionInteractService
+} from "../../../../services/facade-services/group-management/group-composition-interact.service";
 
 @Component({
   selector: 'app-edit-subgroup-label-input',
@@ -38,7 +38,7 @@ export class EditSubgroupLabelInputComponent implements OnInit {
                  Validators.maxLength(32)]
   });
 
-  constructor(private subgroupInteract: SubgroupManagementInteractService){};
+  constructor(private subgroupInteract: GroupCompositionInteractService){};
 
   ngOnInit(){
     this.subgroupLabelCtrl.setValue(this.subgroup.subgroupLabel);

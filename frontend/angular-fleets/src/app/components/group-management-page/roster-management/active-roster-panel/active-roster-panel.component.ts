@@ -24,8 +24,8 @@ import {
   DropListRegistryService
 } from "../../../../services/facade-services/group-management/drop-list-registry.service";
 import {
-  SubgroupManagementInteractService
-} from "../../../../services/facade-services/group-management/subgroup-management-interact.service";
+  GroupCompositionInteractService
+} from "../../../../services/facade-services/group-management/group-composition-interact.service";
 import {RosterTextFieldFilterComponent} from "../roster-text-field-filter/roster-text-field-filter.component";
 import {FormControl} from "@angular/forms";
 import {map} from "rxjs/operators";
@@ -86,7 +86,7 @@ export class ActiveRosterPanelComponent implements OnInit, OnDestroy {
 
   constructor(protected managementInteract: GroupManagementInteractService,
               protected dropListRegistry: DropListRegistryService,
-              protected subgroupInteract: SubgroupManagementInteractService,
+              protected subgroupInteract: GroupCompositionInteractService,
               private mgmtUiPrefs: GroupManagementUiPrefsService){}
 
   ngOnInit() {

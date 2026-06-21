@@ -45,7 +45,7 @@ export interface SubgroupHistoryElement {
 }
 
 @Injectable()
-export class SubgroupManagementInteractService {
+export class GroupCompositionInteractService {
   private destroyRef = inject(DestroyRef);
 
   protected subgroupTreesSubject = new BehaviorSubject<GroupCompSubgroupViewModel[]>([]);
@@ -115,7 +115,11 @@ export class SubgroupManagementInteractService {
       return EMPTY;
     }
 
-    const latest = new GroupCompositionDto(groupId, this.subgroupTreesSubject.getValue(), this.crewPositionsSubject.getValue());
+    const latest = new GroupCompositionDto(
+      groupId,
+      this.subgroupTreesSubject.getValue(),
+      this.crewPositionsSubject.getValue()
+    );
 
     return this.compositionApi.updateGroupCompositionState(latest).pipe(
       catchError((err: HttpErrorResponse)=> {
@@ -123,6 +127,22 @@ export class SubgroupManagementInteractService {
         return throwError(() => err);
       })
     )
+  }
+
+  deleteCrewPosition(posForDelete: GroupCompCrewPositionViewModel) {
+    const groupId = posForDelete.groupId;
+    const positionId = posForDelete.positionId;
+
+    this.compositionApi.softDeletePosition(groupId, positionId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.managementInteract.fetchActiveRoster(groupId);
+        }
+      })
+  }
+
+  createNewPosition(parentSubgroup: GroupCompSubgroupViewModel) {
+
   }
 
   deleteRootLevelSubgroup(forDelete: GroupCompSubgroupViewModel) {
@@ -139,7 +159,12 @@ export class SubgroupManagementInteractService {
       })
     }
 
-    this.persistState().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    this.persistState().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: () => {
+          this.managementInteract.fetchActiveRoster(this.managementInteract.groupId);
+        }
+      });
   }
 
   pushSubgroupActionToHistoryCache(actionLabel: string) {
