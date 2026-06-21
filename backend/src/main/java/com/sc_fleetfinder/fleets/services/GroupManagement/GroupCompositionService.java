@@ -9,17 +9,17 @@ import com.sc_fleetfinder.fleets.entities.Users;
 
 public interface GroupCompositionService {
 
-    GroupCompositionDto getExistingGroupComposition(Users user, Long groupId);
+    GroupCompositionDto getExistingGroupComposition(Users manager, Long groupId);
 
-    GroupCompositionDto createStructureFromTemplate(Users user, Long groupId, Long templateId);
+    GroupCompositionDto createStructureFromTemplate(Users manager, Long groupId, Long templateId);
 
     void updateGroupCompositionState(Users manager, GroupCompositionDto groupCompDto);
 
     FlattenedGroupCompDto flattenGroupCompositionDtoSubgroupsAndPositions(GroupCompositionDto groupCompDto);
 
-    void deleteSubgroup(Users user, Long groupId, Long subgroupId);
+    void softDeleteSubgroup(Users manager, Long groupId, Long subgroupId);
 
-    void updateSubgroupDropListOrientation(Users user, UpdateSubgroupDropListOrientationDto dto);
+    void updateSubgroupDropListOrientation(Users manager, UpdateSubgroupDropListOrientationDto dto);
 
     Long assignMemberPosition(Users manager, GroupCompositionCrewPositionDto dto);
 

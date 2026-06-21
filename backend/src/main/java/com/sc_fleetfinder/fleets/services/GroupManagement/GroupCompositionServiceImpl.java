@@ -16,10 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.Instant;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -206,36 +204,54 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         FlattenedGroupCompDto flattenedDto = flattenGroupCompositionDtoSubgroupsAndPositions(groupCompDto);
 
         // fetch the database subgroups and roles
-        List<GroupManagementSubgroup> subgroupEntitiesList = subgroupService.findSubgroupsByGroupId(groupId);
-        List<CrewPosition> positionEntitiesList = positionService.findAllPositionsByGroupId(groupId);
+        List<GroupManagementSubgroup> subgroupEntitiesList = subgroupService.findSubgroupsByGroupId_IncludeDeleted(groupId);
+        List<CrewPosition> positionEntitiesList = positionService.findAllPositionsByGroupId_IncludeDeleted(groupId);
 
         // create subgroup map with same entity instances for faster lookups
         Map<Long, GroupManagementSubgroup> subgroupsMap = subgroupEntitiesList.stream()
                         .collect(Collectors.toMap(GroupManagementSubgroup::getSubgroupId, Function.identity()));
 
+        Set<Long> subgroupEntityIdSet = subgroupsMap.keySet();
+
+        // set of subgroupIds included in the flattened dto
+        // will be used to set deleted on all entities that are not in the dto
+        Set<Long> subgroupDtoIdSet = flattenedDto.getSubgroups().stream()
+                        .map(GroupCompositionSubgroupDto::getSubgroupId)
+                            .filter(Objects::nonNull)
+                                .collect(Collectors.toSet());
+
+        // find all subgroup entities that are not in the dto
+        Set<Long> subgroupsOnlyInEntities = new HashSet<>(subgroupEntityIdSet);
+        subgroupsOnlyInEntities.removeAll(subgroupDtoIdSet);
+
+        // soft delete all entities not in the dto
+        subgroupsOnlyInEntities.forEach(subId -> {
+            GroupManagementSubgroup sub = subgroupsMap.get(subId);
+            if(sub != null) {
+                sub.setDeletedAt(Instant.now());
+                positionService.softDeleteAllBySubgroup(subId);
+            }
+        });
+
         flattenedDto.getSubgroups().forEach(subDto -> {
 
             GroupManagementSubgroup entity = subgroupsMap.get(subDto.getSubgroupId());
 
-            // if the dto contains a subgroup that is not in db, create it
+            // if the dto contains a subgroup has been soft deleted, restore it
             // this might occur if a user 'undoes' a delete operation
             if(entity == null) {
                 GroupManagementSubgroup parentSubgroup = subgroupsMap.get(subDto.getParentSubgroupId());
                 entity = new GroupManagementSubgroup(subDto, listing, parentSubgroup);
                 subgroupService.saveSubgroup(entity);
-            };
+            } else if(entity.getDeletedAt() != null) {
+                entity.setDeletedAt(null);
+            }
 
             entity.setRootSubgroupId(subDto.getRootSubgroupId());
             entity.setParentSubgroup(subgroupsMap.get(subDto.getParentSubgroupId()));
             entity.setSortOrder(subDto.getSortOrder());
             entity.setSubgroupLabel(subDto.getSubgroupLabel());
         });
-
-        // if the db contains a subgroup that is not in the dto tree, delete it.
-        // this might occur if a user undoes a create operation
-//        subgroupsMap.values().forEach(subgroup -> {
-//            if()
-//        })
 
         // find roles available within this listing scope for position assignments because the position dto uses a dto
         // (can't assign the role classification from the dto to the position entity's role)
@@ -249,9 +265,34 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         Map<Long, CrewPosition> positionsMap = positionEntitiesList.stream()
                 .collect(Collectors.toMap(CrewPosition::getPositionId, Function.identity()));
 
+        // collect all positionIds from the dto into a set for comparison to existing entities
+        Set<Long> positionDtoIdSet = flattenedDto.getCrewPositions().stream()
+                        .map(GroupCompositionCrewPositionDto::getPositionId)
+                                .filter(Objects::nonNull)
+                                        .collect(Collectors.toSet());
+
+        // collect all position entities into a set of ids for comparison to the dto
+        Set<Long> positionEntityIds = positionsMap.keySet();
+
+        Set<Long> positionsOnlyInEntities = new HashSet<>(positionEntityIds);
+        positionsOnlyInEntities.removeAll(positionDtoIdSet);
+
+        positionsOnlyInEntities.forEach(positionId -> {
+            positionsMap.get(positionId).setDeletedAt(Instant.now());
+        });
+
+        // TODO crew positions array is not being updated correctly on changes, positions that should
+        // have been deleted with a subgroup are still in this array and then when this runs after deleting the position
+        // and resets the assignedmemberUserId, which we wanted to be null at this point.
+        // possibly, im not sure.
         flattenedDto.getCrewPositions().forEach(positionDto -> {
             CrewPosition entity = positionsMap.get(positionDto.getPositionId());
-            if(entity == null) return;
+
+            if(entity == null) {
+                entity = new CrewPosition(listing);
+            } else if(entity.getDeletedAt() != null) {
+                entity.setDeletedAt(null);
+            }
 
             entity.setSortOrder(positionDto.getSortOrder());
             entity.setSubgroup(subgroupsMap.get(positionDto.getSubgroupId()));
@@ -330,11 +371,12 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
 
     @Override
     @Transactional
-    public void deleteSubgroup(Users user, Long groupId, Long subgroupId) {
+    public void softDeleteSubgroup(Users manager, Long groupId, Long subgroupId) {
+        GroupListing listing = gls.findGroupListingEntityById(groupId);
 
-        GroupManagementSubgroup subgroup = subgroupService.findSubgroupById(subgroupId);
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_SUBGROUPS);
 
-        subgroupService.deleteSubgroup(subgroup);
+        subgroupService.softDeleteSubgroup(subgroupId);
     }
 
     @Override
@@ -376,6 +418,7 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         return listing.getGroupId();
     }
 
+    // TODO check if prop requires new can be removed
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void clearPositionAssignedMemberTransaction(CrewPosition position) {
         position.setAssignedMemberUserId(null);

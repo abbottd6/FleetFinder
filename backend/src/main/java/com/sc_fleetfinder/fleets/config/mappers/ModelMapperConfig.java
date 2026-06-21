@@ -1268,8 +1268,6 @@ public class ModelMapperConfig {
                         return parent != null ? parent.getSubgroupLabel() : null;
                     }).map(GroupManagementSubgroup::getParentSubgroup, SubgroupSummaryDto::setParentSubgroupLabel);
 
-                    mapper.map(GroupManagementSubgroup::getIntendedSubgroupSize, SubgroupSummaryDto::setIntendedSubgroupSize);
-
                     mapper.map(GroupManagementSubgroup::getCreatedAt, SubgroupSummaryDto::setCreatedAt);
                 });
 
@@ -1362,10 +1360,6 @@ public class ModelMapperConfig {
 
                     mapper.map(CrewPosition::getAssignedMember, GroupCompositionCrewPositionDto::setAssignedMember);
 
-                    mapper.map(CrewPosition::getFilledAt, GroupCompositionCrewPositionDto::setFilledAt);
-
-                    mapper.map(CrewPosition::getVacatedAt, GroupCompositionCrewPositionDto::setVacatedAt);
-
                     mapper.map(CrewPosition::getCreatedAt, GroupCompositionCrewPositionDto::setCreatedAt);
                 });
 
@@ -1385,8 +1379,6 @@ public class ModelMapperConfig {
                     mapper.map(CrewPosition::getPositionRole, MemberPositionSummaryDto::setRoleSummary);
 
                     mapper.map(CrewPosition::getPositionNote, MemberPositionSummaryDto::setPositionNote);
-
-                    mapper.map(CrewPosition::getFilledAt, MemberPositionSummaryDto::setFilledAt);
 
                     mapper.map(CrewPosition::getCreatedAt, MemberPositionSummaryDto::setCreatedAt);
                 });

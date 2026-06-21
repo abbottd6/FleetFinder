@@ -6,7 +6,6 @@ import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.CrewTemplateService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupCompositionService;
-import com.sc_fleetfinder.fleets.services.GroupManagement.SubgroupManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -25,7 +24,6 @@ public class GroupCompositionController {
     private final UserService userService;
     private final CrewTemplateService crewTemplateService;
     private final GroupCompositionService groupCompService;
-    private final SubgroupManagementService subgroupService;
 
     @GetMapping("/my-crew-templates")
     public ResponseEntity<?> getMyCrewTemplateOptions(@AuthenticationPrincipal Jwt jwt) {
@@ -74,13 +72,13 @@ public class GroupCompositionController {
     }
 
     @DeleteMapping("/delete-subgroup/{groupId}/{subgroupId}")
-    public ResponseEntity<?> deleteSubgroup(@AuthenticationPrincipal Jwt jwt,
-                                            @PathVariable Long groupId,
-                                            @PathVariable Long subgroupId) {
+    public ResponseEntity<?> softDeleteSubgroup(@AuthenticationPrincipal Jwt jwt,
+                                                @PathVariable Long groupId,
+                                                @PathVariable Long subgroupId) {
         String kcId = jwt.getSubject();
         Users user = userService.verifyUser(kcId);
 
-        groupCompService.deleteSubgroup(user, groupId, subgroupId);
+        groupCompService.softDeleteSubgroup(user, groupId, subgroupId);
 
         return ResponseEntity.ok().build();
     }

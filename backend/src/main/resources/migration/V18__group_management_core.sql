@@ -18,12 +18,6 @@ ALTER TABLE listing_archive
     ADD COLUMN member_banner_msg   VARCHAR(512)                                NULL,
     ADD COLUMN discovery           ENUM ('PUBLIC', 'PRIVATE_LINK', 'CHANNELS') NULL;
 
-ALTER TABLE conversation
-    ADD COLUMN listing_id BIGINT NULL,
-    ADD CONSTRAINT fk_conv_references_group_listing
-        FOREIGN KEY (listing_id) REFERENCES group_listing (id_group)
-            ON DELETE CASCADE;
-
 ALTER TABLE notification
     MODIFY COLUMN target_metadata JSON NULL;
 
@@ -48,6 +42,7 @@ CREATE TABLE IF NOT EXISTS group_management_subgroup
     subgroup_notes         VARCHAR(255) NULL,
     sort_order             TINYINT      NULL,
     drop_list_orientation  ENUM ('horizontal', 'vertical', 'mixed') NOT NULL DEFAULT 'vertical',
+    deleted_at             TIMESTAMP    NULL,
     created_at             TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_subgroup_references_group_listing
@@ -173,8 +168,7 @@ CREATE TABLE IF NOT EXISTS mgmt_crew_position
     position_role_id   BIGINT       NULL, #ref
     position_note      VARCHAR(128) NULL,
     assigned_member_id BIGINT       NULL,     #ref #uq1
-    filled_at          TIMESTAMP    NULL,
-    vacated_at         TIMESTAMP    NULL,
+    deleted_at         TIMESTAMP    NULL,
     created_at         TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_crew_position_references_listing
@@ -204,22 +198,22 @@ CREATE TABLE IF NOT EXISTS mgmt_crew_position
 
 CREATE TABLE IF NOT EXISTS group_invite
 (
-    id_invite           BIGINT                                                NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    listing_id          BIGINT                                                NOT NULL, #ref
-    sender_id           BIGINT                                                NOT NULL, #ref
-    recipient_id        BIGINT                                                NOT NULL, #ref
-    direction           ENUM ('OFFER', 'REQUEST')                             NOT NULL,
-    roster_class        ENUM ('ACTIVE', 'WAITLIST')                           NOT NULL,
-    role_id             BIGINT                                                NULL,
-    invite_status       ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'RESCINDED') NOT NULL DEFAULT 'PENDING',
-    invite_message      VARCHAR(255)                                          NULL,
-    has_mic             TINYINT                                               NULL,
-    has_headset         TINYINT                                               NULL,
-    active              TINYINT                                               NULL     DEFAULT 1,
-    sender_dismissed    TINYINT                                               NOT NULL DEFAULT 0,
-    recipient_dismissed TINYINT                                               NOT NULL DEFAULT 0,
-    expires_at          TIMESTAMP                                             NULL,
-    created_at          TIMESTAMP                                             NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    id_invite           BIGINT                                                                   NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    listing_id          BIGINT                                                                   NOT NULL, #ref
+    sender_id           BIGINT                                                                   NOT NULL, #ref
+    recipient_id        BIGINT                                                                   NOT NULL, #ref
+    direction           ENUM ('OFFER', 'REQUEST')                                                NOT NULL,
+    roster_class        ENUM ('ACTIVE', 'WAITLIST')                                              NOT NULL,
+    role_id             BIGINT                                                                   NULL,
+    invite_status       ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'RESCINDED', 'LEFT_OR_REMOVED') NOT NULL DEFAULT 'PENDING',
+    invite_message      VARCHAR(255)                                                             NULL,
+    has_mic             TINYINT                                                                  NULL,
+    has_headset         TINYINT                                                                  NULL,
+    active              TINYINT                                                                  NULL     DEFAULT 1,
+    sender_dismissed    TINYINT                                                                  NOT NULL DEFAULT 0,
+    recipient_dismissed TINYINT                                                                  NOT NULL DEFAULT 0,
+    expires_at          TIMESTAMP                                                                NULL,
+    created_at          TIMESTAMP                                                                NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT fk_group_invite_references_group_listing
         FOREIGN KEY (listing_id) REFERENCES group_listing (id_group)

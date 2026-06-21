@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class SubgroupManagementServiceImpl implements SubgroupManagementService 
     @Override
     @Transactional(readOnly = true)
     public HashMap<Long, List<GroupManagementSubgroup>> findTreeMapByRootId(List<Long> rootIds, Long groupId) {
-        return gmsr.findTreeByRoot(rootIds, groupId)
+        return gmsr.findTreeByRoot_ExcludeDeleted(rootIds, groupId)
                 .stream()
                 .collect(Collectors.groupingBy(sub ->
                         sub.getParentSubgroup() == null ? ROOT_SUBGROUP_ID : sub.getParentSubgroup().getSubgroupId(),
@@ -42,12 +43,12 @@ public class SubgroupManagementServiceImpl implements SubgroupManagementService 
     @Override
     @Transactional(readOnly = true)
     public List<Long> findGroupCompositionRootIds(Long groupId) {
-        return gmsr.findGroupCompositionRootIds(groupId);
+        return gmsr.findGroupCompositionRootIds_ExcludeDeleted(groupId);
     }
 
     @Override
-    public List<GroupManagementSubgroup> findSubgroupsByGroupId(Long groupId) {
-        return gmsr.findSubgroupsByGroupListingId(groupId);
+    public List<GroupManagementSubgroup> findSubgroupsByGroupId_IncludeDeleted(Long groupId) {
+        return gmsr.findSubgroupsByGroupListingId_IncludeDeleted(groupId);
     }
 
     @Override
@@ -64,8 +65,14 @@ public class SubgroupManagementServiceImpl implements SubgroupManagementService 
 
     @Override
     @Transactional
-    public void deleteSubgroup(GroupManagementSubgroup subgroup) {
-        gmsr.delete(subgroup);
+    public void softDeleteSubgroup(Long subgroupId) {
+        gmsr.findById(subgroupId).ifPresent(sub -> sub.setDeletedAt(Instant.now()));
+    }
+
+    @Override
+    @Transactional
+    public void restoreSoftDeletedSubgroup(Long subgroupId) {
+        gmsr.findById(subgroupId).ifPresent(subgroup -> subgroup.setDeletedAt(null));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewPosition;
-import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewRoleClassification;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 
 import java.util.List;
@@ -13,9 +13,15 @@ public interface PositionManagementService {
 
     Optional<CrewPosition> findMemberPositionByAssignedMemberIdAndLListingId(GroupMember member, Long groupId);
 
-    List<CrewPosition> findAllPositionsByGroupId(Long groupId);
+    List<CrewPosition> findAllPositionsByGroupId_IncludeDeleted(Long groupId);
 
     Optional<CrewPosition> findById(Long id);
+
+    void softDeletePosition(Long positionId);
+
+    void softDeleteAllBySubgroup(Long subgroupId);
+
+    void restoreSoftDeletedPosition(Long positionId, GroupCompositionCrewPositionDto positionDto);
 
     CrewPosition saveAndFlush(CrewPosition position);
 

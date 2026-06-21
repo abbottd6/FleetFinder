@@ -36,6 +36,10 @@ public class CrewPosition {
         this.positionNote = template.getPositionNotes();
     }
 
+    public CrewPosition(GroupListing listing) {
+        this.groupListing = listing;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="id_position")
@@ -74,13 +78,9 @@ public class CrewPosition {
     @Column(name="assigned_member_id")
     private Long assignedMemberUserId;
 
-    @Column(name="filled_at")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Instant filledAt;
-
-    @Column(name="vacated_at")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    private Instant vacatedAt;
+    @Column(name="deleted_at", nullable = true)
+    private Instant deletedAt;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

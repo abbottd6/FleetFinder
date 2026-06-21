@@ -142,7 +142,8 @@
                 [dropListParentEl]="rootListRegistrationRef"
                 [expandedFromParent$]="allExpanded$"
                 [rootChildrenExpanded$]="rootChildrenExpanded$"
-                [parentTreeDepth]="-1">
+                [parentTreeDepth]="-1"
+                (emitDeleteSubgroup)="catchChildDeleteSubgroupEmission($event)">
               </app-crew-subgroup>
             </div>
           }

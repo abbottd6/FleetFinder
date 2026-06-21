@@ -1,8 +1,8 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
 
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionSubgroupDto;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementSubgroup;
+import com.sc_fleetfinder.fleets.entities.Users;
 
 import java.util.HashMap;
 import java.util.List;
@@ -15,13 +15,15 @@ public interface SubgroupManagementService {
 
     List<Long> findGroupCompositionRootIds(Long groupId);
 
-    List<GroupManagementSubgroup> findSubgroupsByGroupId(Long groupId);
+    List<GroupManagementSubgroup> findSubgroupsByGroupId_IncludeDeleted(Long groupId);
 
     GroupManagementSubgroup saveSubgroup(GroupManagementSubgroup subgroup);
 
     List<GroupManagementSubgroup> saveListOf(List<GroupManagementSubgroup> subgroups);
 
-    void deleteSubgroup(GroupManagementSubgroup subgroup);
+    void softDeleteSubgroup(Long subgroupId);
+
+    void restoreSoftDeletedSubgroup(Long subgroupId);
 
     GroupManagementSubgroup updateSubgroupLabel(GroupManagementSubgroup subgroup, String newLabel);
 }

@@ -46,6 +46,11 @@ import {
   GroupManagementUiPrefsService
 } from "../../../../services/facade-services/group-management/group-management-ui-prefs/group-management-ui-prefs.service";
 import {toTitleCase} from "../../../../utils/global-functions";
+import {
+  GroupCompSubgroupViewModel
+} from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
+import {ConfirmGenericComponent} from "../../../pop-ups/confirm-generic/confirm-generic.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-root-subgroup',
@@ -108,7 +113,8 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected allExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   protected rootChildrenExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
-  constructor(protected subgroupInteract: SubgroupManagementInteractService){
+  constructor(protected subgroupInteract: SubgroupManagementInteractService,
+              private dialog: MatDialog){
   }
 
   ngOnInit() {
@@ -193,6 +199,27 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
       this.updateHorizontalScrollButtonVisibility();
       this.subgroupInteract.reorientingDropList = false
     }, 500);
+  }
+
+  catchChildDeleteSubgroupEmission(forDelete: GroupCompSubgroupViewModel) {
+    const dialogRef = this.dialog.open(ConfirmGenericComponent, {
+      data: {
+        message: 'Delete this subgroup and all of its structurally nested contents? Any group members assigned ' +
+          'to this group will have their position assignment reset.',
+        title: 'Subgroup: \"' + forDelete.subgroupLabel + '\", and its contents.',
+      }
+    });
+
+    dialogRef.afterClosed().pipe(takeUntil(this.destroy$))
+      .subscribe(result => {
+        if (result) {
+
+          const actionLabel = 'Delete Subgroup';
+          this.subgroupInteract.pushSubgroupActionToHistoryCache(actionLabel);
+
+          this.subgroupInteract.deleteRootLevelSubgroup(forDelete);
+        }
+      });
   }
 
   toggleCollapseAll() {

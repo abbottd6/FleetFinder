@@ -125,6 +125,23 @@ export class SubgroupManagementInteractService {
     )
   }
 
+  deleteRootLevelSubgroup(forDelete: GroupCompSubgroupViewModel) {
+    const current = this.subgroupTreesSubject.getValue();
+
+    if(current.length === 1) {
+      this.subgroupTreesSubject.next([]);
+    } else {
+      const idx = current.findIndex(sub => sub.subgroupId === forDelete.subgroupId);
+
+      this.subgroupTreesSubject.next({
+        ...current.slice(0, idx),
+        ...current.slice(idx + 1)
+      })
+    }
+
+    this.persistState().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+  }
+
   pushSubgroupActionToHistoryCache(actionLabel: string) {
     const historyEl: SubgroupHistoryElement = {
       actionLabel: actionLabel,
@@ -151,9 +168,7 @@ export class SubgroupManagementInteractService {
     this.persistState().pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
-          if (previousState.actionLabel.includes('Member')) {
-            this.managementInteract.fetchActiveRoster(this.managementInteract.groupId);
-          }
+          this.managementInteract.fetchActiveRoster(this.managementInteract.groupId);
         }
       })
   }

@@ -72,9 +72,6 @@ public class GroupManagementSubgroup {
     @Column(name="subgroup_notes", nullable = true)
     private String subgroupNotes;
 
-    @Column(name="intended_subgroup_size", nullable = true)
-    private Integer intendedSubgroupSize;
-
     @Generated(event = EventType.INSERT)
     @Column(name="sort_order", nullable = true, columnDefinition="TINYINT NULL")
     private Integer sortOrder;
@@ -82,6 +79,10 @@ public class GroupManagementSubgroup {
     @Enumerated(EnumType.STRING)
     @Column(name="drop_list_orientation", nullable = false)
     private SubgroupDropListOrientation dropListOrientation;
+
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    @Column(name="deleted_at", nullable = true)
+    private Instant deletedAt;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
