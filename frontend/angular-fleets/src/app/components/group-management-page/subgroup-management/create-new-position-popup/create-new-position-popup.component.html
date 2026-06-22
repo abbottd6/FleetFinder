@@ -1,1 +1,49 @@
-<p>create-new-position-popup works!</p>
+<h2 mat-dialog-title>Add New Crew Position</h2>
+<mat-dialog-content>
+  <div class="subgroup-details">
+    <div class="field-row">
+      <span class="field-label">Subgroup: </span>
+      <span>{{ data.subgroup.subgroupLabel.length > 42 ? (data.subgroup.subgroupLabel|slice: 0: 39) + '...' : data.subgroup.subgroupLabel }}</span>
+    </div>
+  </div>
+  <div class="content-section-wrapper">
+
+    <app-abstract-string-dropdown
+      [abstractControl]="roleCategoryCtrl"
+      [fieldLabel]="'Role Categories:'"
+      [placeholderLabel]="'category'"
+      [options]="roleCategories"
+      [errorMessage]="'Select a category to choose from the available roles'">
+    </app-abstract-string-dropdown>
+
+    <div class="dropdown-component">
+      <label>Role:</label>
+      <ng-select
+        [items]="filteredClasses"
+        bindLabel="roleTitle"
+        [formControl]="selectedRoleCtrl"
+        placeholder="Select role class..."
+        [disabled]="roleCategoryCtrl.value === null"
+        [attr.aria-labelledby]="'roleClassification-dropdown'">
+      </ng-select>
+    </div>
+
+    <mat-error *ngIf="selectedRoleCtrl?.hasError?.('required') && (selectedRoleCtrl.dirty || !selectedRoleCtrl.untouched)">
+      <span>You must select from one of the listed role labels to create a new position</span>
+    </mat-error>
+
+    <div class="dropdown-component">
+      <app-generic-medium-input-field
+        [min]=0
+        [max]=255
+        [placeholder]="'Optional note...'"
+        [inputCtrl]="positionNoteCtrl">
+      </app-generic-medium-input-field>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button class="action-buttons" (click)="onCancel()">Cancel</button>
+  <button class="action-buttons" (click)="onConfirm()">Submit</button>
+</mat-dialog-actions>

@@ -1,15 +1,17 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateNewCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.FlattenedGroupCompDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
+
+import java.util.List;
 
 public interface GroupCompositionService {
 
     GroupCompositionDto getExistingGroupComposition(Users manager, Long groupId);
+
+    List<GroupRoleSummaryDto> getAvailableRoleClassifications(Users manager, Long groupId);
 
     GroupCompositionDto createStructureFromTemplate(Users manager, Long groupId, Long templateId);
 
@@ -23,7 +25,7 @@ public interface GroupCompositionService {
 
     void updateSubgroupDropListOrientation(Users manager, UpdateSubgroupDropListOrientationDto dto);
 
-    GroupCompositionCrewPositionDto createNewPosition(Users manager, GroupCompositionCrewPositionDto positionDto);
+    GroupCompositionCrewPositionDto createNewPosition(Users manager, CreateNewCrewPositionDto positionDto);
 
     Long assignMemberPosition(Users manager, GroupCompositionCrewPositionDto dto);
 

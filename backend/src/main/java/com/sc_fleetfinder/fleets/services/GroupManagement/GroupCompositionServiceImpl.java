@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateNewCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
@@ -189,6 +190,18 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
 
         dto.setSubgroups(treeSubgroups);
         return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GroupRoleSummaryDto> getAvailableRoleClassifications(Users manager, Long groupId) {
+        GroupListing listing = gls.findGroupListingEntityById(groupId);
+
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_ROLES);
+
+        return crewRoleService.getRolesForListingByUserId(listing.getGroupId()).stream()
+                .map(classification -> modelMapper.map(classification, GroupRoleSummaryDto.class))
+                .toList();
     }
 
     @Override
@@ -404,12 +417,12 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
     }
 
     @Override
-    public GroupCompositionCrewPositionDto createNewPosition(Users manager, GroupCompositionCrewPositionDto positionDto) {
+    public GroupCompositionCrewPositionDto createNewPosition(Users manager, CreateNewCrewPositionDto positionDto) {
         GroupListing listing = gls.findGroupListingEntityById(positionDto.getGroupId());
 
         GroupManagementSubgroup parentSubgroup = subgroupService.findSubgroupById(positionDto.getSubgroupId());
 
-        CrewRoleClassification crewRole = crewRoleService.findByRoleId(positionDto.getGroupRole().getRoleId());
+        CrewRoleClassification crewRole = crewRoleService.findByRoleId(positionDto.getRoleId());
 
         CrewPosition newPosition = positionService.saveAndFlush(
                 new CrewPosition(positionDto, listing, parentSubgroup, crewRole)

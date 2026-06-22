@@ -33,6 +33,10 @@ import {
 } from "../../../models/group-management-models/request-models/update-subgroup-drop-list-orientation-request";
 import {HttpErrorResponse} from "@angular/common/http";
 import {BoundedHistoryStack} from "../../../models/bounded-history-stack";
+import {
+  CreateNewPositionPopupComponent
+} from "../../../components/group-management-page/subgroup-management/create-new-position-popup/create-new-position-popup.component";
+import {NewCrewPositionRequest} from "../../../models/group-management-models/request-models/new-crew-position-request";
 
 export interface GroupCompPositionsRatio {
   assigned: number,
@@ -142,7 +146,29 @@ export class GroupCompositionInteractService {
   }
 
   createNewPosition(parentSubgroup: GroupCompSubgroupViewModel) {
+    const dialogRef = this.dialog.open(CreateNewPositionPopupComponent, {
+      data: {
+        subgroup: parentSubgroup
+      }
+    })
 
+    const actionLabel = 'New Position'
+    this.pushSubgroupActionToHistoryCache(actionLabel);
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((newDto: NewCrewPositionRequest) => {
+        if(newDto) {
+          this.compositionApi.createNewPosition(newDto).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((newPosition: GroupCompCrewPositionViewModel) => {
+              parentSubgroup.crewPositions = [
+                ...parentSubgroup.crewPositions,
+                newPosition
+              ]
+
+              this.subgroupTreesSubject.next([...this.subgroupTreesSubject.value]);
+            })
+        }
+      })
   }
 
   deleteRootLevelSubgroup(forDelete: GroupCompSubgroupViewModel) {

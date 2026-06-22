@@ -68,7 +68,8 @@
           <mat-menu #subgroupOptionsMenu="matMenu" yPosition="below" panelClass="subgroup-options-menu">
             <button
               mat-menu-item
-              class="options-item">
+              class="options-item"
+              (click)="compositionInteract.createNewPosition(subgroup)">
               <mat-icon class="material-symbols-outlined dropdown-icon">add_circle_outline</mat-icon>
               <span>New position</span>
             </button>

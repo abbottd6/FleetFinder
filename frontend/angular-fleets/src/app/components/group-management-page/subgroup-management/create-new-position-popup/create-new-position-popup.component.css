@@ -1,0 +1,111 @@
+@import '../../../input-fields/input-field/input-field-styles.css';
+@import '../../../dropdowns/dropdown-module/dropdown-styles.css';
+
+h2 {
+  border-bottom: 1px solid;
+  max-width: 92%;
+  min-width: 325px;
+  margin-inline: auto;
+  padding-left: 0;
+}
+
+.subgroup-details {
+  margin: 0;
+  padding-left: 0;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.field-label {
+  margin-right: 4px;
+  color: rgb(53, 114, 163);
+}
+
+.field-val {
+  margin-right: 10px;
+
+}
+
+:host .mat-mdc-dialog-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 200px;
+  min-width: 350px;
+  justify-content: flex-start;
+}
+
+.content-section-wrapper {
+  margin: 10px 0 10px 0;
+  background-color: rgba(108, 108, 108, 0.1);
+  box-shadow: 0 0 5px rgba(188, 191, 200, .1);
+}
+
+:host ::ng-deep .dropdown-component .ng-select-searchable {
+  margin-left: 0 !important;
+  margin-right: auto;
+  margin-bottom: 10px;
+  min-width: 250px !important;
+  max-height: 100%;
+}
+
+:host ::ng-deep .dropdown-component label {
+  margin-left: 10px !important;
+  padding-left: 0;
+  margin-right: 15px;
+}
+
+:host ::ng-deep .dropdown-component .ng-dropdown-panel {
+  width: 200px !important;
+}
+
+.action-buttons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+@media(min-width: 725px) and (max-width: 2000px) {
+
+  .action-buttons {
+    font-size: 0.9rem;
+  }
+}
+
+@media(max-width: 1350px)  and (min-width: 725px) {
+  .action-buttons {
+    font-size: clamp(0.6rem, 0.8rem, 1.2rem);
+  }
+}
+
+@media(max-width: 724px) {
+  .action-buttons {
+    font-size: .9rem;
+  }
+  :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
+    font-size: 0.8rem;
+  }
+
+  :host ::ng-deep .ng-select .ng-select-container .ng-value-container {
+    padding: 0;
+    margin: 0 0 0 0;
+  }
+
+  :host ::ng-deep .ng-select.ng-select-focused .ng-select-container .ng-value-container {
+    margin: 0.35rem 0.2rem 0.2rem 0.2rem;
+  }
+
+  .mat-mdc-dialog-content {
+    min-height: 3rem;
+  }
+
+  .ng-select {
+    padding-bottom: 0;
+  }
+}

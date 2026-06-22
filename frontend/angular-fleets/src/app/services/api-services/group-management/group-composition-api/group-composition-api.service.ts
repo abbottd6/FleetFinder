@@ -20,6 +20,12 @@ import {
 import {
   GroupCompSubgroupViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
+import {
+  RoleClassSummaryViewModel
+} from "../../../../models/group-management-models/nested-models/role-class-summary-view-model";
+import {
+  NewCrewPositionRequest
+} from "../../../../models/group-management-models/request-models/new-crew-position-request";
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +41,12 @@ export class GroupCompositionApiService {
       `${this.baseUrl}/get-existing-group-structure/${groupId}`);
   }
 
+  getAvailableRoleClassifications(groupId: number): Observable<RoleClassSummaryViewModel[]> {
+    return this.httpClient.get<RoleClassSummaryViewModel[]>(
+      `${this.baseUrl}/get-available-role-classifications/${groupId}`
+    )
+  }
+
   updateGroupCompositionState(groupCompDto: GroupCompositionDto): Observable<void> {
     return this.httpClient.put<void>(`${this.baseUrl}/update-group-composition-tree`, groupCompDto);
   }
@@ -48,8 +60,8 @@ export class GroupCompositionApiService {
       `${this.baseUrl}/create-subgroup-from-template/${groupId}`, template);
   }
 
-  createNewPosition(newPosition: GroupCompCrewPositionViewModel) {
-
+  createNewPosition(newPosition: NewCrewPositionRequest): Observable<GroupCompCrewPositionViewModel> {
+    return this.httpClient.post<GroupCompCrewPositionViewModel>(`${this.baseUrl}/create-new-position`, newPosition);
   }
 
   deleteSubgroup(groupId: number, subgroupId: number) {

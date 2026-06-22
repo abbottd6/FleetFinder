@@ -1,9 +1,11 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateNewCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
+import com.sc_fleetfinder.fleets.services.GroupManagement.CrewRoleService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.CrewTemplateService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupCompositionService;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,17 @@ public class GroupCompositionController {
         GroupCompositionDto responseDto = groupCompService.getExistingGroupComposition(user, groupId);
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/get-available-role-classifications/{groupId}")
+    public ResponseEntity<?> getAvailableRoleClass(@AuthenticationPrincipal Jwt jwt,
+                                                   @PathVariable Long groupId) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        List<GroupRoleSummaryDto> availableRoleClassifications = groupCompService.getAvailableRoleClassifications(manager, groupId);
+
+        return ResponseEntity.ok(availableRoleClassifications);
     }
 
     @PutMapping("/update-group-composition-tree")
@@ -97,7 +110,7 @@ public class GroupCompositionController {
 
     @PostMapping("/create-new-position")
     public ResponseEntity<?> createNewPosition(@AuthenticationPrincipal Jwt jwt,
-                                               @RequestBody GroupCompositionCrewPositionDto positionDto) {
+                                               @RequestBody CreateNewCrewPositionDto positionDto) {
         String kcId = jwt.getSubject();
         Users manager = userService.verifyUser(kcId);
 
