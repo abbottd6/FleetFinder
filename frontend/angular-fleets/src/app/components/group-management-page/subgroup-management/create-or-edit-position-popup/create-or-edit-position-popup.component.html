@@ -1,9 +1,9 @@
-<h2 mat-dialog-title>Add New Crew Position</h2>
+<h2 mat-dialog-title>{{ contextTitle }}</h2>
 <mat-dialog-content>
   <div class="subgroup-details">
-    <div class="field-row">
+    <div class="field-row header-row">
       <span class="field-label">Subgroup: </span>
-      <span>{{ data.subgroup.subgroupLabel.length > 42 ? (data.subgroup.subgroupLabel|slice: 0: 39) + '...' : data.subgroup.subgroupLabel }}</span>
+      <span>{{ subgroupLabel.length > 42 ? (subgroupLabel|slice: 0: 39) + '...' : subgroupLabel }}</span>
     </div>
   </div>
   <div class="content-section-wrapper">

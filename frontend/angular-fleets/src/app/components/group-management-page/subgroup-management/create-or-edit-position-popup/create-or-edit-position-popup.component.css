@@ -3,7 +3,7 @@
 
 h2 {
   border-bottom: 1px solid;
-  max-width: 92%;
+  width: 92%;
   min-width: 325px;
   margin-inline: auto;
   padding-left: 0;
@@ -20,6 +20,11 @@ h2 {
   margin-top: 10px;
 }
 
+.field-row.header-row {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
 .field-label {
   margin-right: 4px;
   color: rgb(53, 114, 163);
@@ -27,7 +32,6 @@ h2 {
 
 .field-val {
   margin-right: 10px;
-
 }
 
 :host .mat-mdc-dialog-content {

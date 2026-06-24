@@ -21,7 +21,7 @@ public interface PositionManagementService {
 
     void softDeleteAllBySubgroup(Long subgroupId);
 
-    void restoreSoftDeletedPosition(Long positionId, GroupCompositionCrewPositionDto positionDto);
+    void restoreOrSkipSoftDeletedPositionMemberAssignment(GroupCompositionCrewPositionDto positionDto, CrewPosition entity);
 
     CrewPosition saveAndFlush(CrewPosition position);
 

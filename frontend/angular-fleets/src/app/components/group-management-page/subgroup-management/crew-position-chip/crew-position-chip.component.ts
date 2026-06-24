@@ -39,6 +39,7 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 export class CrewPositionChipComponent implements OnInit, OnChanges {
   @Input() position!: GroupCompCrewPositionViewModel;
   @Output() emitPositionDelete = new EventEmitter<GroupCompCrewPositionViewModel>;
+  @Output() emitPositionEdit = new EventEmitter<GroupCompCrewPositionViewModel>;
 
   protected assignedMember!: GroupManagementMemberViewModel[];
 

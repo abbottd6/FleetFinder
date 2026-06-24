@@ -215,12 +215,14 @@
           <ng-template #notCollapsed>
             @for(position of subgroup.crewPositions; track position.positionId) {
               <div cdkDrag
+                   class="position-chip-container"
                    [cdkDragData]="position"
                    (cdkDragMoved)="onDragMoved($event)"
                    (cdkDragReleased)="resetAfterDragReleased($event)">
                 <app-crew-position-chip
                   [position]="position"
-                  (emitPositionDelete)="catchPositionDeleteEmission($event)">
+                  (emitPositionDelete)="catchPositionDeleteEmission($event)"
+                  (emitPositionEdit)="catchPositionEditEmission($event)">
                 </app-crew-position-chip>
               </div>
             }

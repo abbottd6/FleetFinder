@@ -24,8 +24,8 @@ import {
   RoleClassSummaryViewModel
 } from "../../../../models/group-management-models/nested-models/role-class-summary-view-model";
 import {
-  NewCrewPositionRequest
-} from "../../../../models/group-management-models/request-models/new-crew-position-request";
+  NewOrEditPositionRequest
+} from "../../../../models/group-management-models/request-models/new-or-edit-position-request";
 
 @Injectable({
   providedIn: 'root'
@@ -60,8 +60,12 @@ export class GroupCompositionApiService {
       `${this.baseUrl}/create-subgroup-from-template/${groupId}`, template);
   }
 
-  createNewPosition(newPosition: NewCrewPositionRequest): Observable<GroupCompCrewPositionViewModel> {
+  createNewPosition(newPosition: NewOrEditPositionRequest): Observable<GroupCompCrewPositionViewModel> {
     return this.httpClient.post<GroupCompCrewPositionViewModel>(`${this.baseUrl}/create-new-position`, newPosition);
+  }
+
+  editExistingPosition(editDto: NewOrEditPositionRequest, positionId: number): Observable<GroupCompCrewPositionViewModel> {
+    return this.httpClient.put<GroupCompCrewPositionViewModel>(`${this.baseUrl}/edit-crew-position/${positionId}`, editDto);
   }
 
   deleteSubgroup(groupId: number, subgroupId: number) {

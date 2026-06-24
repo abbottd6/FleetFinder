@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateNewCrewPositionDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateOrEditCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
@@ -311,9 +312,7 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
             entity.setSortOrder(positionDto.getSortOrder());
             entity.setSubgroup(subgroupsMap.get(positionDto.getSubgroupId()));
             entity.setRootSubgroupId(positionDto.getRootSubgroupId());
-            entity.setAssignedMemberUserId(positionDto.getAssignedMember() != null
-                            ? positionDto.getAssignedMember().getUserSummary().getUserId()
-                            : null);
+            positionService.restoreOrSkipSoftDeletedPositionMemberAssignment(positionDto, entity);
             entity.setPositionRole(positionDto.getGroupRole() != null
                     ? rolesMap.get(positionDto.getGroupRole().getRoleId())
                     : null);
@@ -417,8 +416,10 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
     }
 
     @Override
-    public GroupCompositionCrewPositionDto createNewPosition(Users manager, CreateNewCrewPositionDto positionDto) {
+    public GroupCompositionCrewPositionDto createNewPosition(Users manager, CreateOrEditCrewPositionDto positionDto) {
         GroupListing listing = gls.findGroupListingEntityById(positionDto.getGroupId());
+
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_POSITIONS);
 
         GroupManagementSubgroup parentSubgroup = subgroupService.findSubgroupById(positionDto.getSubgroupId());
 
@@ -429,6 +430,32 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         );
 
         return modelMapper.map(newPosition, GroupCompositionCrewPositionDto.class);
+    }
+
+    @Override
+    @Transactional
+    public GroupCompositionCrewPositionDto editCrewPosition(Users manager, Long positionId,
+                                                            CreateOrEditCrewPositionDto positionDto) {
+
+        GroupListing listing = gls.findGroupListingEntityById(positionDto.getGroupId());
+
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_POSITIONS);
+
+        CrewRoleClassification crewRole = crewRoleService.findByRoleId(positionDto.getRoleId());
+
+        CrewPosition updated = positionService.findById(positionId).map(position -> {
+            position.setPositionRole(crewRole);
+            position.setPositionNote(positionDto.getPositionNote());
+            return positionService.saveAndFlush(position);
+        }).orElseThrow(() -> new ResourceNotFoundException("Crew Position", positionId));
+
+        GroupCompositionCrewPositionDto response = modelMapper.map(updated, GroupCompositionCrewPositionDto.class);
+
+        memberService.findGroupMemberCrewPosition(updated.getAssignedMember())
+                .map(cp -> modelMapper.map(cp, MemberPositionSummaryDto.class))
+                .ifPresent(memberPosition -> response.getAssignedMember().setMemberPosition(memberPosition));
+
+        return response;
     }
 
     @Override

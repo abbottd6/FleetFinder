@@ -4,7 +4,8 @@
       <span id="position-drag-handle">
         {{ position.groupRole.roleTitle }}
       </span>
-      <button class="header-button scaled-minus">
+      <button class="header-button scaled-minus"
+              (click)="emitPositionEdit.emit(position)">
         <mat-icon class="scaled-minus" matTooltip="Edit title">edit</mat-icon>
       </button>
     </div>

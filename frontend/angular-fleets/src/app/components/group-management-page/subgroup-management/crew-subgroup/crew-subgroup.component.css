@@ -319,6 +319,16 @@
   z-index: 10000 !important;
 }
 
+.chip-contents.position-list.orientation-mixed,
+.chip-contents.position-list.orientation-horizontal {
+  margin-left: 1.35rem;
+}
+
+.chip-contents.position-list.orientation-mixed .position-chip-container,
+.chip-contents.position-list.orientation-horizontal .position-chip-container {
+  max-width: 375px;
+}
+
 .chip-positions-collapsed {
   display: flex;
   min-height: 30px;

@@ -3,7 +3,7 @@ package com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement;
 import lombok.Data;
 
 @Data
-public class CreateNewCrewPositionDto {
+public class CreateOrEditCrewPositionDto {
 
     private Long groupId;
     private Long subgroupId;

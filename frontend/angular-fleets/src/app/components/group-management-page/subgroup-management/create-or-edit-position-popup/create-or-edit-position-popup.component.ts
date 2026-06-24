@@ -34,11 +34,14 @@ import {
   GroupCompCrewPositionViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
 import {
-  NewCrewPositionRequest
-} from "../../../../models/group-management-models/request-models/new-crew-position-request";
+  NewOrEditPositionRequest
+} from "../../../../models/group-management-models/request-models/new-or-edit-position-request";
+import {
+  GroupManagementInteractService
+} from "../../../../services/facade-services/group-management/group-management-interact.service";
 
 @Component({
-  selector: 'app-create-new-position-popup',
+  selector: 'app-create-or-edit-position-popup',
   imports: [
     MatDialogActions,
     AbstractStringDropdownComponent,
@@ -51,10 +54,10 @@ import {
     NgSelectComponent,
     ReactiveFormsModule
   ],
-  templateUrl: './create-new-position-popup.component.html',
-  styleUrl: './create-new-position-popup.component.css'
+  templateUrl: './create-or-edit-position-popup.component.html',
+  styleUrl: './create-or-edit-position-popup.component.css'
 })
-export class CreateNewPositionPopupComponent implements OnInit, OnDestroy {
+export class CreateOrEditPositionPopupComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   readonly roleCategories: string[] = [
@@ -72,19 +75,31 @@ export class CreateNewPositionPopupComponent implements OnInit, OnDestroy {
   protected availableClasses: RoleClassSummaryViewModel[] = [];
   protected filteredClasses: RoleClassSummaryViewModel[] = [];
 
+  protected contextTitle!: string;
+  protected subgroupLabel: string = 'Undefined';
+
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
-      subgroup: GroupCompSubgroupViewModel
+      groupId: number,
+      subgroup: GroupCompSubgroupViewModel | null,
+      position: GroupCompCrewPositionViewModel | null
     },
-    private dialogRef: MatDialogRef<CreateNewPositionPopupComponent>,
-    private compositionApi: GroupCompositionApiService
+    private dialogRef: MatDialogRef<CreateOrEditPositionPopupComponent>,
+    private compositionApi: GroupCompositionApiService,
+    private managementInteract: GroupManagementInteractService
   ) {}
 
   ngOnInit() {
-    this.compositionApi.getAvailableRoleClassifications(this.data.subgroup.listingId).pipe(takeUntil(this.destroy$))
-      .subscribe((classifications: RoleClassSummaryViewModel[]) => {
-        this.availableClasses = classifications;
+    this.compositionApi.getAvailableRoleClassifications(this.data.groupId).pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (classifications: RoleClassSummaryViewModel[]) => {
+          this.availableClasses = classifications;
+          this.initializeContext();
+        },
+        error: () => {
+          this.managementInteract.showSnackBarMessage('Failed to fetch reference data.')
+        }
       })
 
     this.roleCategoryCtrl.valueChanges.pipe(takeUntil(this.destroy$))
@@ -100,6 +115,33 @@ export class CreateNewPositionPopupComponent implements OnInit, OnDestroy {
       });
   }
 
+  initializeContext() {
+    if(this.data.subgroup !== null) {
+      this.subgroupLabel = this.data.subgroup.subgroupLabel;
+      this.contextTitle = 'Add New Crew Position';
+    } else if(this.data.position !== null) {
+      this.subgroupLabel = this.data.position.subgroupLabel;
+      this.contextTitle = 'Edit Crew Position';
+
+      const category = this.data.position.groupRole.roleCategory
+      this.filteredClasses = this.availableClasses.filter(c => c.roleCategory === category);
+
+      this.roleCategoryCtrl.setValue(this.data.position.groupRole.roleCategory);
+      this.roleCategoryCtrl.markAsTouched();
+      this.roleCategoryCtrl.markAsDirty();
+
+      this.selectedRoleCtrl.enable();
+      this.selectedRoleCtrl.setValue(this.data.position.groupRole);
+      this.selectedRoleCtrl.markAsTouched();
+      this.selectedRoleCtrl.markAsDirty();
+
+      this.positionNoteCtrl.setValue(this.data.position.positionNote);
+    } else {
+      this.managementInteract.showSnackBarMessage('Error: Could not identify action subject.')
+      this.dialogRef.close(null);
+    }
+  }
+
   onConfirm(): void {
     const role = this.selectedRoleCtrl.value;
     const positionNote = this.positionNoteCtrl.value;
@@ -110,9 +152,15 @@ export class CreateNewPositionPopupComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const newPosition = new NewCrewPositionRequest(this.data.subgroup, role, positionNote);
+    const subId = this.data.subgroup !== null ? this.data.subgroup.subgroupId : this.data.position?.subgroupId;
 
-    this.dialogRef.close(newPosition);
+    if(subId) {
+      const newPosition = new NewOrEditPositionRequest(this.data.groupId, subId, role, positionNote);
+      this.dialogRef.close(newPosition);
+    } else {
+      this.managementInteract.showSnackBarMessage('Error: Could not identify parent subgroup.');
+      this.dialogRef.close(null);
+    }
   }
 
   onCancel(): void {

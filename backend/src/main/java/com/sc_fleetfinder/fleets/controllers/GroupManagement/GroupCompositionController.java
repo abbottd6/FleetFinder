@@ -1,11 +1,10 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateNewCrewPositionDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateOrEditCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
-import com.sc_fleetfinder.fleets.services.GroupManagement.CrewRoleService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.CrewTemplateService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupCompositionService;
 import lombok.RequiredArgsConstructor;
@@ -110,11 +109,23 @@ public class GroupCompositionController {
 
     @PostMapping("/create-new-position")
     public ResponseEntity<?> createNewPosition(@AuthenticationPrincipal Jwt jwt,
-                                               @RequestBody CreateNewCrewPositionDto positionDto) {
+                                               @RequestBody CreateOrEditCrewPositionDto positionDto) {
         String kcId = jwt.getSubject();
         Users manager = userService.verifyUser(kcId);
 
         GroupCompositionCrewPositionDto response = groupCompService.createNewPosition(manager, positionDto);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/edit-crew-position/{positionId}")
+    public ResponseEntity<?> editCrewPosition(@AuthenticationPrincipal Jwt jwt,
+                                              @RequestBody CreateOrEditCrewPositionDto positionDto,
+                                              @PathVariable Long positionId) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        GroupCompositionCrewPositionDto response = groupCompService.editCrewPosition(manager, positionId, positionDto);
 
         return ResponseEntity.ok(response);
     }

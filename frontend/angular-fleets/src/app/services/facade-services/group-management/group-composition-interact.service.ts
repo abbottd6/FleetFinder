@@ -34,9 +34,9 @@ import {
 import {HttpErrorResponse} from "@angular/common/http";
 import {BoundedHistoryStack} from "../../../models/bounded-history-stack";
 import {
-  CreateNewPositionPopupComponent
-} from "../../../components/group-management-page/subgroup-management/create-new-position-popup/create-new-position-popup.component";
-import {NewCrewPositionRequest} from "../../../models/group-management-models/request-models/new-crew-position-request";
+  CreateOrEditPositionPopupComponent
+} from "../../../components/group-management-page/subgroup-management/create-or-edit-position-popup/create-or-edit-position-popup.component";
+import {NewOrEditPositionRequest} from "../../../models/group-management-models/request-models/new-or-edit-position-request";
 
 export interface GroupCompPositionsRatio {
   assigned: number,
@@ -146,9 +146,11 @@ export class GroupCompositionInteractService {
   }
 
   createNewPosition(parentSubgroup: GroupCompSubgroupViewModel) {
-    const dialogRef = this.dialog.open(CreateNewPositionPopupComponent, {
+    const dialogRef = this.dialog.open(CreateOrEditPositionPopupComponent, {
       data: {
-        subgroup: parentSubgroup
+        groupId: parentSubgroup.listingId,
+        subgroup: parentSubgroup,
+        position: null
       }
     })
 
@@ -156,7 +158,7 @@ export class GroupCompositionInteractService {
     this.pushSubgroupActionToHistoryCache(actionLabel);
 
     dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((newDto: NewCrewPositionRequest) => {
+      .subscribe((newDto: NewOrEditPositionRequest) => {
         if(newDto) {
           this.compositionApi.createNewPosition(newDto).pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((newPosition: GroupCompCrewPositionViewModel) => {
@@ -169,6 +171,39 @@ export class GroupCompositionInteractService {
             })
         }
       })
+  }
+
+  editPosition(parent: GroupCompSubgroupViewModel, toEdit: GroupCompCrewPositionViewModel) {
+    const dialogRef = this.dialog.open(CreateOrEditPositionPopupComponent, {
+      data: {
+        groupId: toEdit.groupId,
+        subgroup: null,
+        position: toEdit
+      }
+    })
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((editDto: NewOrEditPositionRequest) => {
+        if(editDto) {
+          this.compositionApi.editExistingPosition(editDto, toEdit.positionId).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((updated: GroupCompCrewPositionViewModel)=> {
+              const old = parent.crewPositions;
+              const idx = old.findIndex(p => p.positionId === toEdit.positionId);
+
+              parent.crewPositions = [
+                ...old.slice(0, idx),
+                updated,
+                ...old.slice(idx + 1)
+              ];
+
+              this.subgroupTreesSubject.next([...this.subgroupTreesSubject.value]);
+
+              if(updated.assignedMember) {
+                this.managementInteract.fetchActiveRoster(this.managementInteract.groupId);
+              }
+            })
+        }
+      });
   }
 
   deleteRootLevelSubgroup(forDelete: GroupCompSubgroupViewModel) {

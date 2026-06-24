@@ -1,6 +1,6 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateNewCrewPositionDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateOrEditCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
@@ -25,7 +25,9 @@ public interface GroupCompositionService {
 
     void updateSubgroupDropListOrientation(Users manager, UpdateSubgroupDropListOrientationDto dto);
 
-    GroupCompositionCrewPositionDto createNewPosition(Users manager, CreateNewCrewPositionDto positionDto);
+    GroupCompositionCrewPositionDto createNewPosition(Users manager, CreateOrEditCrewPositionDto positionDto);
+
+    GroupCompositionCrewPositionDto editCrewPosition(Users manager, Long positionId, CreateOrEditCrewPositionDto positionDto);
 
     Long assignMemberPosition(Users manager, GroupCompositionCrewPositionDto dto);
 

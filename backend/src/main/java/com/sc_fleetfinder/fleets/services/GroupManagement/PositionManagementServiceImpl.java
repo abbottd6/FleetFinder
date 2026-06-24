@@ -55,8 +55,10 @@ public class PositionManagementServiceImpl implements PositionManagementService 
 
     @Override
     @Transactional
-    public void restoreSoftDeletedPosition(Long positionId, GroupCompositionCrewPositionDto posDto) {
-        Long requestedMemberId = posDto.getAssignedMember().getUserSummary().getUserId();
+    public void restoreOrSkipSoftDeletedPositionMemberAssignment(GroupCompositionCrewPositionDto posDto,
+                                                                 CrewPosition entity) {
+
+        Long requestedMemberId = posDto.getAssignedMember() != null ? posDto.getAssignedMember().getUserSummary().getUserId() : null;
 
         // if the member has been reassigned elsewhere, do not restore the assignment to this restored position
         boolean assignedElsewhere = requestedMemberId != null &&
@@ -64,10 +66,7 @@ public class PositionManagementServiceImpl implements PositionManagementService 
 
         Long assignedMemberId = assignedElsewhere ? null : requestedMemberId;
 
-        cpr.findById(positionId).ifPresent(pos -> {
-            pos.setDeletedAt(null);
-            pos.setAssignedMemberUserId(assignedMemberId);
-        });
+        entity.setAssignedMemberUserId(assignedMemberId);
     }
 
     @Override

@@ -1,10 +1,7 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateNewCrewPositionDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionCrewPositionDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateOrEditCrewPositionDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.GroupMemberId;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -38,7 +35,7 @@ public class CrewPosition {
         this.positionNote = template.getPositionNotes();
     }
 
-    public CrewPosition(CreateNewCrewPositionDto positionDto,
+    public CrewPosition(CreateOrEditCrewPositionDto positionDto,
                         GroupListing listing,
                         GroupManagementSubgroup subgroup,
                         CrewRoleClassification crewRole) {

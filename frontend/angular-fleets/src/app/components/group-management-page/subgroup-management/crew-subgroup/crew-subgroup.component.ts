@@ -400,6 +400,14 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
       });
   }
 
+  catchPositionEditEmission(toEdit: GroupCompCrewPositionViewModel) {
+    const actionLabel = 'Edit Position';
+
+    this.compositionInteract.pushSubgroupActionToHistoryCache(actionLabel);
+
+    this.compositionInteract.editPosition(this.subgroup, toEdit);
+  }
+
   catchPositionDeleteEmission(posForDelete: GroupCompCrewPositionViewModel) {
     const actionLabel = 'Delete Position';
 
