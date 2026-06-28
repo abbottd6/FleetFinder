@@ -57,9 +57,24 @@
       <div class="comms-checkboxes">
         <mat-checkbox [formControl]="micCtrl" [labelPosition]="'before'">Mic:</mat-checkbox>
         <mat-checkbox [formControl]="headsetCtrl" [labelPosition]="'before'">Audio:</mat-checkbox>
+        <mat-checkbox [formControl]="noCommsCtrl" [labelPosition]="'before'">None:</mat-checkbox>
+      </div>
+
+      <div class="comms-group-error"
+            *ngIf="commsFormGroup.hasError('noSelection') && commsFormGroup.touched">
+        <mat-error>
+          Select at least one comms option.
+        </mat-error>
       </div>
     </div>
 
+    <div class="prompt-container"
+         *ngIf="data.listing.joinRequestPrompt !== null">
+      <span class="prompt-label">Owner's Message:</span>
+      <div class="prompt">
+        {{ data.listing.joinRequestPrompt }}
+      </div>
+    </div>
     <div class="dropdown-component">
       <app-generic-medium-input-field
         [min]=0
@@ -72,6 +87,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button class="action-buttons" (click)="onCancel()">Cancel</button>
-  <button class="action-buttons" (click)="onConfirm()">Submit</button>
+  <div class="action-buttons-container">
+    <button class="action-buttons" (click)="onCancel()">Cancel</button>
+    <button class="action-buttons" (click)="onConfirm()">Submit</button>
+  </div>
 </mat-dialog-actions>

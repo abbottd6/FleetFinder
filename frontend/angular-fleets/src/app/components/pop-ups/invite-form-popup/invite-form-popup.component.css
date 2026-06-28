@@ -79,8 +79,9 @@ h2 {
 
 .content-section-wrapper {
   margin: 10px 0 10px 0;
-  background-color: rgba(108, 108, 108, 0.1);
-  box-shadow: 0 0 5px rgba(188, 191, 200, .1);
+  background-color: rgba(33, 37, 41, 0.45);
+  box-shadow: 0 0 5px rgba(33, 37, 41, 0.65);
+  border-radius: 6px;
 }
 
 :host ::ng-deep .dropdown-component .ng-select-searchable {
@@ -117,12 +118,42 @@ h2 {
   justify-content: center;
 }
 
+.action-buttons-container {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+}
+
 .action-buttons:hover {
   color: var(--bs-gray-900);
   border-color: rgba(255, 131, 7, .75);
   background-color: rgba(255, 131, 7, .25);
   cursor: pointer;
   font-size: 0.95rem;
+}
+
+.comms-group-error {
+  display: flex;
+  justify-content: center;
+  margin-right: 6px;
+  color: #9a1919;
+}
+
+.prompt-container {
+  margin-top: 12px;
+}
+
+
+.prompt-label {
+  margin-left: 10px;
+  color: rgba(255, 131, 7, .5);
+}
+
+.prompt {
+  display: flex;
+  max-width: 90%;
+  margin-inline: auto;
+  height: fit-content;
 }
 
 @media(min-width: 725px) and (max-width: 2000px) {

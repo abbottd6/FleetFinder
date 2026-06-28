@@ -1,5 +1,5 @@
-import {Component, Inject} from '@angular/core';
-import {FormControl, ReactiveFormsModule} from "@angular/forms";
+import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
+import {AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors} from "@angular/forms";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -24,6 +24,8 @@ import {
   GenericSmallInputFieldComponent
 } from "../../input-fields/generic-small-input-field/generic-small-input-field.component";
 import {MatCheckbox} from "@angular/material/checkbox";
+import {combineLatest, debounceTime, merge, Subject, takeUntil} from "rxjs";
+import {MatError} from "@angular/material/input";
 
 @Component({
   selector: 'app-invite-request-popup',
@@ -40,18 +42,28 @@ import {MatCheckbox} from "@angular/material/checkbox";
     GenericSmallInputFieldComponent,
     MatCheckbox,
     ReactiveFormsModule,
+    MatError,
   ],
   styleUrl: './invite-form-popup.component.css'
 })
 
 //TODO add template form fields for mic and headset
-export class InviteFormPopupComponent {
+export class InviteFormPopupComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
   inGameUsernameCtrl: FormControl<string> = new FormControl<string>('', {nonNullable: true});
   rosterClassCtrl: FormControl<string> = new FormControl<string>('', {nonNullable: true});
   msgInputCtrl: FormControl<string | null> = new FormControl<string | null>(null);
   roleCtrl: FormControl<RoleClassSummaryViewModel | null> = new FormControl<RoleClassSummaryViewModel | null>(null);
+
   micCtrl: FormControl<boolean> = new FormControl<boolean>(false, {nonNullable: true});
   headsetCtrl: FormControl<boolean> = new FormControl<boolean>(false, {nonNullable: true});
+  noCommsCtrl: FormControl<boolean> = new FormControl<boolean>(false, {nonNullable: true});
+  commsFormGroup: FormGroup = new FormGroup({
+    mic: this.micCtrl,
+    headset: this.headsetCtrl,
+    noComms: this.noCommsCtrl
+  }, { validators: atLeastOneCommsOptionSelected });
 
   showRosterFullMessage: boolean = false;
 
@@ -60,8 +72,6 @@ export class InviteFormPopupComponent {
   groupPositions!: string[];
 
   title!: string;
-
-  //TODO set up hasMic and hasComms fields
 
   constructor(
     @Inject(MAT_DIALOG_DATA)
@@ -92,7 +102,38 @@ export class InviteFormPopupComponent {
     }
   }
 
+  ngOnInit() {
+    this.noCommsCtrl.valueChanges.pipe(
+      takeUntil(this.destroy$))
+      .subscribe(value => {
+        if(value) {
+          this.headsetCtrl.setValue(false, { emitEvent: false });
+          this.micCtrl.setValue(false, { emitEvent: false });
+          this.commsFormGroup.markAllAsTouched();
+          this.commsFormGroup.markAsDirty();
+        }
+      })
+
+    merge(
+      this.headsetCtrl.valueChanges,
+      this.micCtrl.valueChanges
+    ).pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if(this.headsetCtrl.value || this.micCtrl.value) {
+          this.noCommsCtrl.setValue(false, { emitEvent: false });
+          this.commsFormGroup.markAllAsTouched();
+          this.commsFormGroup.markAsDirty();
+        }
+      })
+  }
+
   onConfirm(): void {
+    if(atLeastOneCommsOptionSelected(this.commsFormGroup)) {
+      this.commsFormGroup.markAllAsTouched();
+      this.commsFormGroup.markAsDirty();
+      return;
+    }
+
     const invRequest = new SendGroupInviteRequest(this.data.listing.groupId, this.inGameUsernameCtrl.value,
         this.rosterClassCtrl.value.toUpperCase(), this.msgInputCtrl.value, this.micCtrl.value, this.headsetCtrl.value);
 
@@ -102,4 +143,14 @@ export class InviteFormPopupComponent {
   onCancel(): void {
     this.dialogRef.close(null);
   }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+}
+
+function atLeastOneCommsOptionSelected(group: AbstractControl): ValidationErrors | null {
+  const { mic, headset, noComms } = group.value;
+  return (mic || headset || noComms) ? null : { noSelection: true };
 }
