@@ -107,6 +107,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
               private router: Router,
               protected memberManagementApi: MemberManagementApiService,
               protected subgroupMgmtInteract: GroupCompositionInteractService,
+              protected compositionInteract: GroupCompositionInteractService,
               private route: ActivatedRoute,
               protected dropListRegistry: DropListRegistryService,
               protected rosterMemberQuickMenu: MgmtMemberQuickAccessMenuService) {}
@@ -153,7 +154,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
     this.listingTitle = this.managementInteract.sessionManager.listing.listingTitle;
 
-    this.subgroupMgmtInteract.getExistingGroupComposition(this.managementInteract.groupId);
+    this.subgroupMgmtInteract.getExistingGroupComposition();
   }
 
   ngAfterViewInit() {

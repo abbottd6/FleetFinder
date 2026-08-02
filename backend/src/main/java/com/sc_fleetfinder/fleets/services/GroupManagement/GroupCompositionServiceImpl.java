@@ -163,7 +163,7 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
 
 
 
-        return new GroupCompositionDto(groupId, rootSubgroups, crewPositionsDto);
+        return new GroupCompositionDto(groupId, rootSubgroups);
     }
 
     private GroupCompositionSubgroupDto getChildrenSubgroupsAndPositions(GroupManagementSubgroup currentNode,

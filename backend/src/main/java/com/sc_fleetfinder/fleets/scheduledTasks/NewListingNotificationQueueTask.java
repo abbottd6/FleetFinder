@@ -20,20 +20,27 @@ public class NewListingNotificationQueueTask {
         int batchSize = 100;
 
         long claimStartTime = System.currentTimeMillis();
-        queueRepository.claimForProcessing(batchSize);
-        log.info("Claim duration: {} ms", System.currentTimeMillis() - claimStartTime);
+        int claimed = queueRepository.claimForProcessing(batchSize);
+        if(claimed > 0) {
+            log.info("Claim duration: {} ms", System.currentTimeMillis() - claimStartTime);
+            log.info("New listings claimed for Custom Notification matching: {}", claimed);
+        }
 
         long generationStartTime = System.currentTimeMillis();
         int newOutboxEntries = queueRepository.generateNotificationOutboxEntriesForNewListingQueueOnCustomNoteMatches();
-        log.info("Matching and outbox notification generation duration: {} ms",
-                System.currentTimeMillis() - generationStartTime);
 
-        log.info("The NewListingQueue created {} outbox entries for custom " +
-                "notifications on all channels.", newOutboxEntries);
+        if(newOutboxEntries > 0) {
+            log.info("Matching and outbox notification generation duration: {} ms",
+                    System.currentTimeMillis() - generationStartTime);
 
+            log.info("The NewListingQueue created {} outbox entries for custom " +
+                    "notifications on all channels.", newOutboxEntries);
+        }
 
         int markedAs = this.queueRepository.markProcessed();
-        log.info("Custom note matching task finished by marking {} new listings as " +
-                "processed.", markedAs);
+        if(markedAs > 0) {
+            log.info("Custom note matching task finished by marking {} new listings as " +
+                    "processed.", markedAs);
+        }
     }
 }

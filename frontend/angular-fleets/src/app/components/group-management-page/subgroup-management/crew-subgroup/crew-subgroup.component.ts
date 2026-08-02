@@ -162,7 +162,13 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
         sum + this.recursivelyCountPositionsInTree(child), 0);
   }
 
-  private recursivelyCountAssignedNestedPositionsInTree(subgroup: GroupCompSubgroupViewModel): number {
+  private recursivelyCountAssignedNestedPositionsInTree(subgroup: GroupCompSubgroupViewModel, seen: Set<GroupCompSubgroupViewModel> = new Set()): number {
+    if(seen.has(subgroup)) {
+      console.error('Cycle detected at subgroup: ', subgroup.subgroupId ?? subgroup);
+      throw new Error(`Cycle detected in subgroup tree at id=${(subgroup as any).id}`)
+    }
+
+    // seen.add(subgroup);
     return subgroup.crewPositions.filter(pos => pos.assignedMember !== null).length +
       subgroup.subgroups.reduce((sum, child) =>
         sum + this.recursivelyCountAssignedNestedPositionsInTree(child), 0);

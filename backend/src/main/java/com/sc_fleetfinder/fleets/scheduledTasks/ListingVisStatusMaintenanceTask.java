@@ -19,10 +19,14 @@ public class ListingVisStatusMaintenanceTask {
     public void updateListingVisStatuses() {
         int newOutboxEntities = listingRepo.createNotificationOutboxEntriesForStatusUpdates();
 
-        log.info("Update listing vis_status generated {} new outbox entries.", newOutboxEntities);
+        if(newOutboxEntities > 0) {
+            log.info("Update listing vis_status generated {} new outbox entries.", newOutboxEntities);
+        }
 
         int statusesUpdated = listingRepo.updateListingVisStatuses();
 
-        log.info("Updated the vis_status of {} listings.", statusesUpdated);
+        if(statusesUpdated > 0) {
+            log.info("Updated the vis_status of {} listings.", statusesUpdated);
+        }
     }
 }

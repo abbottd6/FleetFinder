@@ -133,7 +133,9 @@ export class DropListRegistryService {
       // console.log('targetBoundingContainer: ', this.targetBoundingContainer$.getValue()?.id);
       // console.log('state: ', handle?.dropList.disabled)
 
-      if(handle?.dropList.id === this.hoveredTargetId$.getValue()) return;
+      if(!(handle?.dropList.id) || handle?.dropList.id === this.hoveredTargetId$.getValue()) return;
+
+      console.log('dropList.id: ' + handle.dropList.id + ', hoveredTargetId$: ' + this.hoveredTargetId$.getValue());
 
       clearTimeout(this.hoverTargetTimer!);
 

@@ -19,7 +19,7 @@
           Pending Invites/Requests: {{ pendingInviteCount$ | async }}
         </span>
         <span class="banner-item">
-          Assigned Positions: TODO
+          Positions Assigned: {{ (compositionInteract.groupPositionsRatio$ | async)?.assigned }} / {{ (compositionInteract.groupPositionsRatio$ | async)?.total }}
         </span>
         <span class="banner-item">
           RSVP: TODO

@@ -14,7 +14,6 @@ import com.sc_fleetfinder.fleets.events.UserRemoveDiscLinkEvent;
 import com.sc_fleetfinder.fleets.exceptions.InvalidUserDataException;
 import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.exceptions.UserConflictException;
-import com.sc_fleetfinder.fleets.projections.UserSearchProjection;
 import com.sc_fleetfinder.fleets.services.CRUD_services.ListingReferenceDataCRUD.ServerRegionServiceImpl;
 import com.sc_fleetfinder.fleets.services.Keycloak_Services.KeycloakAdminServiceImpl;
 import com.sc_fleetfinder.fleets.services.conversion_services.UserConversionServiceImpl;

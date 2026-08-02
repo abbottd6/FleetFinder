@@ -15,10 +15,8 @@ public class GroupCompositionDto {
     public GroupCompositionDto(Long groupId) {
         this.groupId = groupId;
         subgroups = new ArrayList<>();
-        crewPositions = new ArrayList<>();
     }
 
     private Long groupId;
     private List<GroupCompositionSubgroupDto> subgroups = new ArrayList<>();
-    private List<GroupCompositionCrewPositionDto> crewPositions = new ArrayList<>();
 }

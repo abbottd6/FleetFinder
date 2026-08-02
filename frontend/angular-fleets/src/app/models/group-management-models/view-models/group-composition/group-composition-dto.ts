@@ -5,6 +5,5 @@ export class GroupCompositionDto {
   constructor(
     public groupId: number,
     public subgroups: GroupCompSubgroupViewModel[],
-    public crewPositions: GroupCompCrewPositionViewModel[],
   ){}
 }

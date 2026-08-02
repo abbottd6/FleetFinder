@@ -52,18 +52,19 @@ export interface SubgroupHistoryElement {
 export class GroupCompositionInteractService {
   private destroyRef = inject(DestroyRef);
 
+  protected groupId: number | undefined;
+
   protected subgroupTreesSubject = new BehaviorSubject<GroupCompSubgroupViewModel[]>([]);
   public subgroupTrees$ = this.subgroupTreesSubject.asObservable();
 
   private readonly stackSize = 20;
   private subgroupHistoryCache = new BoundedHistoryStack<SubgroupHistoryElement>(this.stackSize);
 
-  protected crewPositionsSubject = new BehaviorSubject<GroupCompCrewPositionViewModel[]>([]);
-  public crewPositions$ = this.crewPositionsSubject.asObservable();
+  protected crewPositionMap = new Map<number, GroupCompCrewPositionViewModel>();
 
   reorientingDropList: boolean = false;
 
-  protected groupPositionsRatio$: BehaviorSubject<GroupCompPositionsRatio> = new BehaviorSubject<GroupCompPositionsRatio>({
+  public groupPositionsRatio$: BehaviorSubject<GroupCompPositionsRatio> = new BehaviorSubject<GroupCompPositionsRatio>({
     assigned: 0,
     total: 0
   });
@@ -71,21 +72,39 @@ export class GroupCompositionInteractService {
   constructor(private compositionApi: GroupCompositionApiService,
               private managementInteract: GroupManagementInteractService,
               private dropListRegistry: DropListRegistryService,
-              private dialog: MatDialog) {}
+              private dialog: MatDialog) {
+    this.groupId = this.managementInteract.sessionManager?.listing?.groupId;
+  }
 
-  getExistingGroupComposition (groupId: number) {
-    this.compositionApi.getExistingGroupStructure(groupId).pipe(takeUntilDestroyed(this.destroyRef))
+  getExistingGroupComposition() {
+    if(!this.groupId) return;
+
+    this.compositionApi.getExistingGroupStructure(this.groupId).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (groupComp: GroupCompositionDto) => {
           this.subgroupTreesSubject.next(groupComp.subgroups ?? []);
-          this.crewPositionsSubject.next(groupComp.crewPositions ?? []);
+          this.cleanAndBuildPositionMap();
           this.dropListRegistry.pageDataLoading = false;
         }
       })
   }
 
-  calculatePositionsRatio() {
+  cleanAndBuildPositionMap() {
+    this.crewPositionMap.clear();
+    let assigned = 0;
 
+    const walk = (subgroups: GroupCompSubgroupViewModel[]) => {
+      for (const node of subgroups) {
+        node.crewPositions?.forEach(p => {
+          this.crewPositionMap.set(p.positionId, p);
+          if(p.assignedMember != null) assigned++;
+        });
+        walk(node.subgroups ?? []);
+      }
+    };
+    walk(this.subgroupTreesSubject.getValue());
+
+    this.groupPositionsRatio$.next({ assigned: assigned, total: this.crewPositionMap.size });
   }
 
   createSubgroupFromTemplate(groupId: number, template: CrewTemplateViewModel) {
@@ -99,12 +118,13 @@ export class GroupCompositionInteractService {
             ...newSubgroups
           ])
 
-          const newPositions = responseDto.crewPositions;
-          const currentPositions = this.crewPositionsSubject.getValue();
-          this.crewPositionsSubject.next([
-            ...currentPositions,
-            ...newPositions
-          ])
+          this.cleanAndBuildPositionMap();
+          // const newPositions = responseDto.crewPositions;
+          // const currentPositions = this.crewPositionsSubject.getValue();
+          // this.crewPositionsSubject.next([
+          //   ...currentPositions,
+          //   ...newPositions
+          // ])
         }
       });
   }
@@ -112,23 +132,25 @@ export class GroupCompositionInteractService {
   persistState() {
     this.subgroupTreesSubject.next([...this.subgroupTreesSubject.value])
 
-    const groupId = this.managementInteract.sessionManager?.listing?.groupId;
 
-    if(!groupId) {
+
+    if(!this.groupId) {
       console.log('not group id')
       return EMPTY;
     }
 
     const latest = new GroupCompositionDto(
-      groupId,
+      this.groupId,
       this.subgroupTreesSubject.getValue(),
-      this.crewPositionsSubject.getValue()
     );
+
+    this.cleanAndBuildPositionMap();
 
     return this.compositionApi.updateGroupCompositionState(latest).pipe(
       catchError((err: HttpErrorResponse)=> {
+        console.log(err.message);
         this.managementInteract.showSnackBarMessage('Error persisting changes.');
-        return throwError(() => err);
+        return EMPTY;
       })
     )
   }
@@ -140,6 +162,7 @@ export class GroupCompositionInteractService {
     this.compositionApi.softDeletePosition(groupId, positionId).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
+          this.cleanAndBuildPositionMap();
           this.managementInteract.fetchActiveRoster(groupId);
         }
       })
@@ -168,6 +191,7 @@ export class GroupCompositionInteractService {
               ]
 
               this.subgroupTreesSubject.next([...this.subgroupTreesSubject.value]);
+              this.cleanAndBuildPositionMap();
             })
         }
       })
@@ -197,6 +221,7 @@ export class GroupCompositionInteractService {
               ];
 
               this.subgroupTreesSubject.next([...this.subgroupTreesSubject.value]);
+              this.cleanAndBuildPositionMap();
 
               if(updated.assignedMember) {
                 this.managementInteract.fetchActiveRoster(this.managementInteract.groupId);
@@ -214,15 +239,16 @@ export class GroupCompositionInteractService {
     } else {
       const idx = current.findIndex(sub => sub.subgroupId === forDelete.subgroupId);
 
-      this.subgroupTreesSubject.next({
+      this.subgroupTreesSubject.next([
         ...current.slice(0, idx),
         ...current.slice(idx + 1)
-      })
+      ])
     }
 
     this.persistState().pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
+          this.cleanAndBuildPositionMap();
           this.managementInteract.fetchActiveRoster(this.managementInteract.groupId);
         }
       });
@@ -296,7 +322,11 @@ export class GroupCompositionInteractService {
       })
     }
 
-    this.persistState().pipe(takeUntilDestroyed(this.destroyRef)).subscribe();
+    this.persistState().pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: () => {
+        this.getExistingGroupComposition();
+      }
+    });
 
     this.dropListRegistry.resetAfterDragEnd();
   }
@@ -345,19 +375,30 @@ export class GroupCompositionInteractService {
       return;
     }
 
-    const position = this.crewPositionsSubject.getValue().find(pos => pos.positionId === targetPositionId);
+    const position = this.crewPositionMap.get(targetPositionId);
+
 
     if(position) {
       const actionLabel = 'Assign Member';
       this.pushSubgroupActionToHistoryCache(actionLabel);
 
-      const positionCopy = { ...position, assignedMember: dropData.source.data };
+      const previouslyAssignedId = dropData.source.data.memberPosition?.positionId;
 
-      //TODO RETURN THE UPDATED MEMBER INSTEAD OF GID SO IT CAN BE REASSIGNED TO UPDATE GROUP/ROLE
-      this.compositionApi.assignMemberToPosition(positionCopy).pipe(takeUntilDestroyed(this.destroyRef))
+      if(previouslyAssignedId) {
+        const old = this.crewPositionMap.get(previouslyAssignedId);
+        if(old != null) {
+          old.assignedMember = null;
+        }
+      }
+
+      position.assignedMember = dropData.source.data;
+      this.subgroupTreesSubject.next([...this.subgroupTreesSubject.getValue()]);
+      this.cleanAndBuildPositionMap();
+
+      this.compositionApi.assignMemberToPosition(position).pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((groupId: number) => {
           if(groupId) {
-            this.getExistingGroupComposition(groupId);
+            this.getExistingGroupComposition();
             this.managementInteract.fetchActiveRoster(groupId);
             this.dropListRegistry.draggedMember$.next(null);
             this.dropListRegistry.hoveredPositionId$.next(null);
@@ -374,7 +415,7 @@ export class GroupCompositionInteractService {
       .subscribe((groupId: number) => {
         if(groupId) {
           position.assignedMember = null;
-          this.getExistingGroupComposition(groupId);
+          this.getExistingGroupComposition();
           this.managementInteract.fetchActiveRoster(groupId)
         }
       })
@@ -393,7 +434,7 @@ export class GroupCompositionInteractService {
     ).subscribe({
       next: (updatedMember: GroupManagementMemberViewModel) => {
         this.managementInteract.findAndReplaceActiveRosterMember(updatedMember);
-        this.getExistingGroupComposition(member.listingId);
+        this.getExistingGroupComposition();
       }
     });
   }
@@ -406,7 +447,7 @@ export class GroupCompositionInteractService {
     const memberRemoved = this.managementInteract.openRemoveMemberPopup(selectedMember);
 
     if(memberRemoved) {
-      this.getExistingGroupComposition(selectedMember.listingId);
+      this.getExistingGroupComposition();
     }
   }
 

@@ -62,7 +62,9 @@ public class PositionManagementServiceImpl implements PositionManagementService 
 
         // if the member has been reassigned elsewhere, do not restore the assignment to this restored position
         boolean assignedElsewhere = requestedMemberId != null &&
-                cpr.findPositionByAssignedMemberUserIdAndListingId(requestedMemberId, posDto.getGroupId()).isPresent();
+                cpr.findPositionByAssignedMemberUserIdAndListingId(requestedMemberId, posDto.getGroupId())
+                        .filter(p -> !p.getPositionId().equals(posDto.getPositionId()))
+                        .isPresent();
 
         Long assignedMemberId = assignedElsewhere ? null : requestedMemberId;
 

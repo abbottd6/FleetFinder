@@ -1,10 +1,6 @@
 package com.sc_fleetfinder.fleets.DAO;
 
 import com.sc_fleetfinder.fleets.entities.Users;
-import com.sc_fleetfinder.fleets.projections.UserSearchProjection;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
