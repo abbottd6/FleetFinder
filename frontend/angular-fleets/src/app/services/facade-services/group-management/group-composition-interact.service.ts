@@ -52,8 +52,6 @@ export interface SubgroupHistoryElement {
 export class GroupCompositionInteractService {
   private destroyRef = inject(DestroyRef);
 
-  protected groupId: number | undefined;
-
   protected subgroupTreesSubject = new BehaviorSubject<GroupCompSubgroupViewModel[]>([]);
   public subgroupTrees$ = this.subgroupTreesSubject.asObservable();
 
@@ -72,14 +70,12 @@ export class GroupCompositionInteractService {
   constructor(private compositionApi: GroupCompositionApiService,
               private managementInteract: GroupManagementInteractService,
               private dropListRegistry: DropListRegistryService,
-              private dialog: MatDialog) {
-    this.groupId = this.managementInteract.sessionManager?.listing?.groupId;
-  }
+              private dialog: MatDialog) {}
 
   getExistingGroupComposition() {
-    if(!this.groupId) return;
+    if(!this.managementInteract.groupId) return;
 
-    this.compositionApi.getExistingGroupStructure(this.groupId).pipe(takeUntilDestroyed(this.destroyRef))
+    this.compositionApi.getExistingGroupStructure(this.managementInteract.groupId).pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (groupComp: GroupCompositionDto) => {
           this.subgroupTreesSubject.next(groupComp.subgroups ?? []);
@@ -132,15 +128,13 @@ export class GroupCompositionInteractService {
   persistState() {
     this.subgroupTreesSubject.next([...this.subgroupTreesSubject.value])
 
-
-
-    if(!this.groupId) {
+    if(!this.managementInteract.groupId) {
       console.log('not group id')
       return EMPTY;
     }
 
     const latest = new GroupCompositionDto(
-      this.groupId,
+      this.managementInteract.groupId,
       this.subgroupTreesSubject.getValue(),
     );
 

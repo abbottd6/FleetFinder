@@ -15,6 +15,9 @@ import {Router, RouterLink} from "@angular/router";
 import {
   GroupMembershipsInteractService
 } from "../../../services/facade-services/group-management/group-memberships-interact.service";
+import {
+  GroupManagementInteractService
+} from "../../../services/facade-services/group-management/group-management-interact.service";
 
 @Component({
   selector: 'app-groups-chip',
@@ -43,15 +46,16 @@ export class GroupsChipComponent implements OnInit, OnDestroy {
   constructor(protected listingInteract: ListingViewInteractionsService,
               protected chatHostSrv: ChatHostService,
               protected memberInteract: GroupMembershipsInteractService,
+              protected managementInteract: GroupManagementInteractService,
               private router: Router) {}
 
   ngOnInit() {
     this.listingDetails = this.membership.listing;
   }
 
-  saveMemberStateAndRouteToManager(manager: GroupMembershipViewModel) {
-    this.router.navigate([`/group-management/${manager.listing.groupId}`], {
-      state: { membership: manager }
+  saveMemberStateAndRouteToManager() {
+    this.router.navigate([`/group-management/${this.membership.listing.groupId}`], {
+      state: { membership: this.membership }
     });
   }
 

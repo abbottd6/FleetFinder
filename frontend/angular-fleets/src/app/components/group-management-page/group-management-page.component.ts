@@ -106,7 +106,6 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   constructor(private userService: UserService,
               private router: Router,
               protected memberManagementApi: MemberManagementApiService,
-              protected subgroupMgmtInteract: GroupCompositionInteractService,
               protected compositionInteract: GroupCompositionInteractService,
               private route: ActivatedRoute,
               protected dropListRegistry: DropListRegistryService,
@@ -117,13 +116,9 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
       this.router.navigateByUrl('');
     }
 
+    this.managementInteract.setManagementSessionState();
+
     this.dropListRegistry.pageDataLoading = true;
-
-    const stringId = this.route.snapshot.paramMap.get('groupId');
-
-    this.managementInteract.sessionManager = history.state?.membership as GroupMembershipViewModel | undefined;
-
-    this.managementInteract.groupId = Number(stringId);
 
     if(!this.managementInteract.groupId || (this.managementInteract.groupId !== this.managementInteract.sessionManager?.listing.groupId)) {
       this.router.navigateByUrl('/nothing-here-page')
@@ -154,7 +149,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
 
     this.listingTitle = this.managementInteract.sessionManager.listing.listingTitle;
 
-    this.subgroupMgmtInteract.getExistingGroupComposition();
+    this.compositionInteract.getExistingGroupComposition();
   }
 
   ngAfterViewInit() {
@@ -165,7 +160,7 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
   }
 
   createFromTemplate(template: CrewTemplateViewModel) {
-    this.subgroupMgmtInteract.createSubgroupFromTemplate(this.managementInteract.groupId, template);
+    this.compositionInteract.createSubgroupFromTemplate(this.managementInteract.groupId, template);
 
     setTimeout(() => this.toggleDoNotShowCreateFrom(), 300);
   }

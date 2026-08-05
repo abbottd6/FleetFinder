@@ -13,6 +13,7 @@
     [cdkDropListEnterPredicate]="dropListRegistry.isCompatibleDrop"
     [cdkDropListSortingDisabled]="true"
     class="active-members-list">
+    <div style="color: deeppink">TODO: ADD SUBGROUP</div>
     @for(member of activeRoster; track member.userSummary.userId) {
       <div cdkDrag
         [cdkDragDisabled]="member.memberPosition != null"
