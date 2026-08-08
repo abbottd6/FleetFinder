@@ -23,7 +23,7 @@
 
 :host ::ng-deep .mat-expansion-panel-header {
   min-height: 60px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   padding-left: 10px;
   font-size: 110%;
   transition: 0.2s ease !important;
@@ -458,6 +458,53 @@ mat-panel-title {
   height: 100%;
   background-color: transparent;
   border: none;
+}
+
+.top-add-new-subgroup-button-container {
+  display: flex;
+  width: 98%;
+  margin-inline: auto;
+  margin-bottom: 20px;
+}
+
+.new-subgroup-button {
+  display: inline-flex;
+  width: 100%;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  align-items: center;
+  justify-content: center;
+  color: rgba(69, 144, 204, 0.95);
+  background-color: rgba(33, 37, 41, .4);
+  border: 1px solid rgba(69, 144, 204, 0.95);
+  border-radius: .2rem;
+  transition: 0.2s ease;
+}
+
+::ng-deep .top-add-new-subgroup-button-container .new-subgroup-button .add-2 {
+  font-size: 30px;
+  font-weight: 400;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  margin-right: 6px;
+  color: rgba(69, 144, 204, 0.95);
+  font-variation-settings: 'wght' 300;
+  transition: 0.2s ease;
+}
+
+.new-subgroup-button:hover {
+  background-color: rgba(65, 103, 142, 0.5);
+  border-color: rgba(69, 144, 204, 0.95);
+  color: rgba(33, 37, 41, 1);
+}
+
+.new-subgroup-button:active {
+  font-size: 97%;
+}
+
+.new-subgroup-button:hover .add-2 {
+  color: rgba(33, 37, 41, 1);
 }
 
 

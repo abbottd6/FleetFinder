@@ -3,7 +3,7 @@
   <mat-form-field subscriptSizing="dynamic">
     <mat-error *ngIf="subgroupLabelCtrl?.hasError && (subgroupLabelCtrl.dirty || !subgroupLabelCtrl.untouched)">
         <span *ngIf="subgroupLabelCtrl?.hasError?.('minlength')">
-          Label must be at least 5 characters
+          Label cannot be empty
         </span>
       <span *ngIf="subgroupLabelCtrl?.hasError?.('required')">
           Label is required
@@ -14,10 +14,11 @@
       [formControl]="subgroupLabelCtrl"
       (input)="updateCharacterCount()"
       (keyup.enter)="updateLabel()"
+      minLength="1"
       maxlength="32"
-      placeholder="Enter listing title..."
+      placeholder="Enter subgroup label..."
       autocomplete="off"
-      [attr.aria-labelledby]="'listing-title'">
+      [attr.aria-labelledby]="'subgroup-label'">
     <button
       matSuffix
       class="embedded-save-button"

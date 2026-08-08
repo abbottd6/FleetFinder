@@ -34,7 +34,7 @@ export class EditSubgroupLabelInputComponent implements OnInit {
   protected subgroupLabelCtrl = new FormControl<string>('', {
     nonNullable: true,
     validators: [Validators.required,
-                 Validators.minLength(3),
+                 Validators.minLength(1),
                  Validators.maxLength(32)]
   });
 

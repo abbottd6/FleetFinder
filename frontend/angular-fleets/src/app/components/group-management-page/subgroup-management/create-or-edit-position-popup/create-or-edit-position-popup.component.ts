@@ -16,10 +16,6 @@ import {
 import {
   GenericMediumInputFieldComponent
 } from "../../../input-fields/generic-medium-input-field/generic-medium-input-field.component";
-import {
-  GenericSmallInputFieldComponent
-} from "../../../input-fields/generic-small-input-field/generic-small-input-field.component";
-import {MatCheckbox} from "@angular/material/checkbox";
 import {NgIf, SlicePipe} from "@angular/common";
 import {FormControl, ReactiveFormsModule} from "@angular/forms";
 import {
@@ -39,6 +35,13 @@ import {
 import {
   GroupManagementInteractService
 } from "../../../../services/facade-services/group-management/group-management-interact.service";
+
+export const GROUP_COMP_ROLE_CATEGORIES: string[] = [
+  'Ship Crew',
+  'Ground Crew',
+  'Support',
+  'Command',
+];
 
 @Component({
   selector: 'app-create-or-edit-position-popup',
@@ -60,17 +63,12 @@ import {
 export class CreateOrEditPositionPopupComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  readonly roleCategories: string[] = [
-    'Ship Crew',
-    'Ground Crew',
-    'Support',
-    'Command',
-  ];
-
   roleCategoryCtrl: FormControl<string | null> = new FormControl<string | null>(null, {nonNullable: true});
   selectedRoleCtrl: FormControl<RoleClassSummaryViewModel | null> = new FormControl<RoleClassSummaryViewModel | null>({
     value: null, disabled: true}, {nonNullable: true});
   positionNoteCtrl: FormControl<string | null> = new FormControl<string | null>(null);
+
+  protected roleCategories = GROUP_COMP_ROLE_CATEGORIES;
 
   protected availableClasses: RoleClassSummaryViewModel[] = [];
   protected filteredClasses: RoleClassSummaryViewModel[] = [];

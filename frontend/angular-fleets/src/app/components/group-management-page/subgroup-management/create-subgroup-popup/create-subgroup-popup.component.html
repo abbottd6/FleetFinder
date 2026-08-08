@@ -1,0 +1,53 @@
+<div class="add-subgroup-popup-wrapper">
+  <h2 mat-dialog-title>{{ popupTitle }}</h2>
+  <mat-dialog-content>
+    @if (data.parentSubgroupLabel) {
+      <div class="parent-details field-row">
+        <span class="field-label">Parent Subgroup: </span>
+        <span class="field-val">{{ data.parentSubgroupLabel }}</span>
+      </div>
+    }
+
+    <div class="content-section-wrapper">
+      <app-generic-small-input-field
+        [label]="'Label'"
+        [errorLabel]="'Subgroup label'"
+        [min]=1
+        [max]=32
+        [placeholder]="'Enter subgroup label/title...'"
+        [inputCtrl]="subgroupLabelCtrl">
+      </app-generic-small-input-field>
+
+      <app-generic-medium-input-field
+        [label]="'Notes:'"
+        [errorLabel]="'Subgroup Notes'"
+        [max]=255
+        [placeholder]="'Optional notes...'"
+        [inputCtrl]="subgroupNotesCtrl">
+      </app-generic-medium-input-field>
+
+      <div class="positions-section-wrapper">
+        <div class="positions-section-header">
+          <h6>Positions</h6>
+        </div>
+        <hr>
+        <div class="position-add-form-row">
+          <button class="secondary-action-buttons-with-icons">
+            <mat-icon class="material-symbols-outlined add-2">add</mat-icon>
+            Add Position
+          </button>
+          <div class="position-add-form"></div>
+        </div>
+        <div class="positions-chips-container">
+
+
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button class="action-buttons" (click)="onCancel()">Cancel</button>
+    <button class="action-buttons" (click)="onConfirm()">Submit</button>
+  </mat-dialog-actions>
+</div>

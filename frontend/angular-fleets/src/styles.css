@@ -379,19 +379,31 @@ app-user {
   transition: 0.2s ease;
 }
 
+/*.secondary-action-buttons {*/
+/*  border: 1px solid rgba(188, 191, 200, .25);*/
+/*  padding: .42rem 1.12rem .42rem 1.12rem;*/
+/*  background-color: rgba(33, 37, 41, .4);*/
+/*  margin-inline: .75rem;*/
+/*  color: rgba(188, 191, 200, .75);*/
+/*  font-size: 0.9rem;*/
+/*  border-radius: 8px;*/
+/*  transition: 0.2s ease;*/
+/*}*/
+
 .secondary-action-buttons {
-  border: 1px solid rgba(188, 191, 200, .25);
+  border: 1px solid rgba(69, 144, 204, 0.95);
   padding: .42rem 1.12rem .42rem 1.12rem;
   background-color: rgba(33, 37, 41, .4);
   margin-inline: .75rem;
-  color: rgba(188, 191, 200, .75);
+  color: rgba(69, 144, 204, 0.95);
   font-size: 0.9rem;
-  border-radius: 8px;
+  border-radius: .2rem;
   transition: 0.2s ease;
 }
 
 .secondary-action-buttons:hover {
   background-color: rgba(65, 103, 142, 0.5);
+  color: rgba(33, 37, 41, 1);
 }
 
 .secondary-action-buttons:active {
@@ -407,6 +419,55 @@ app-user {
   color: rgba(33, 37, 41, .4);
   border-radius: .2rem;
   transition: .3s ease;
+}
+
+.secondary-action-buttons-with-icons {
+  display: inline-flex;
+  gap: 0.25rem;
+  border: 1px solid rgba(69, 144, 204, 0.95);
+  padding: .42rem 1.12rem .42rem 1.12rem;
+  background-color: rgba(33, 37, 41, .4);
+  margin-inline: .75rem;
+  color: rgba(69, 144, 204, 0.95);
+  font-size: 0.9rem;
+  border-radius: .2rem;
+  transition: 0.2s ease;
+  align-items: center;
+}
+
+.secondary-action-buttons-with-icons:hover {
+  background-color: rgba(65, 103, 142, 0.5);
+  color: rgba(33, 37, 41, 1);
+}
+
+.secondary-action-buttons-with-icons:active {
+  transform: scale3d(95%, 95%, 95%);
+}
+
+.secondary-action-buttons-with-icons:disabled {
+  border: 1px solid rgba(33, 37, 41, .4);
+  padding: .42rem 1.12rem .42rem 1.12rem;
+  background-color: rgba(92, 96, 101, .4);
+  margin-inline: .75rem;
+  color: rgba(33, 37, 41, .4);
+  border-radius: .2rem;
+  transition: .3s ease;
+}
+
+.secondary-action-buttons:disabled {
+  border: 1px solid rgba(33, 37, 41, .4);
+  padding: .42rem 1.12rem .42rem 1.12rem;
+  background-color: rgba(92, 96, 101, .4);
+  margin-inline: .75rem;
+  color: rgba(33, 37, 41, .4);
+  border-radius: .2rem;
+  transition: .3s ease;
+}
+
+.action-buttons-with-icons:hover {
+  color: var(--bs-gray-900);
+  border-color: rgba(255, 131, 7, .75);
+  background-color: rgba(255, 131, 7, .25);
 }
 
 

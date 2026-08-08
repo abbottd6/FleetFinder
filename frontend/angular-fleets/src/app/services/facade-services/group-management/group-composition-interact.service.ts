@@ -37,6 +37,10 @@ import {
   CreateOrEditPositionPopupComponent
 } from "../../../components/group-management-page/subgroup-management/create-or-edit-position-popup/create-or-edit-position-popup.component";
 import {NewOrEditPositionRequest} from "../../../models/group-management-models/request-models/new-or-edit-position-request";
+import {
+  CreateSubgroupPopupComponent
+} from "../../../components/group-management-page/subgroup-management/create-subgroup-popup/create-subgroup-popup.component";
+import {AddNewSubgroupRequest} from "../../../models/group-management-models/request-models/add-new-subgroup-request";
 
 export interface GroupCompPositionsRatio {
   assigned: number,
@@ -47,6 +51,8 @@ export interface SubgroupHistoryElement {
   actionLabel: string,
   tree: GroupCompSubgroupViewModel[]
 }
+
+export const SUBGROUP_NESTING_DEPTH_LIMIT = 5;
 
 @Injectable()
 export class GroupCompositionInteractService {
@@ -149,6 +155,30 @@ export class GroupCompositionInteractService {
     )
   }
 
+  openAddNewSubgroupPopup(parentDepth: number, parentSubgroup: GroupCompSubgroupViewModel | null) {
+    if(parentSubgroup && ((parentDepth + 1) > SUBGROUP_NESTING_DEPTH_LIMIT)) {
+      this.managementInteract.showSnackBarMessage('Error: Subgroup nesting depth limit reached, cannot nest further in this subgroup.');
+      return;
+    }
+    const dialogRef = this.dialog.open(CreateSubgroupPopupComponent, {
+      minHeight: '350px',
+      minWidth: '750px',
+      data: {
+        listingId: this.managementInteract.groupId,
+        parentSubgroupLabel: parentSubgroup ? parentSubgroup.subgroupLabel : null,
+        rootSubgroupId: parentSubgroup ? parentSubgroup.rootSubgroupId : null,
+        parentSubgroupId: parentSubgroup ? parentSubgroup.subgroupId : null,
+      }
+    })
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((newSubgroupRequest: AddNewSubgroupRequest) => {
+        if(newSubgroupRequest) {
+
+        }
+    });
+  }
+
   deleteCrewPosition(posForDelete: GroupCompCrewPositionViewModel) {
     const groupId = posForDelete.groupId;
     const positionId = posForDelete.positionId;
@@ -188,7 +218,7 @@ export class GroupCompositionInteractService {
               this.cleanAndBuildPositionMap();
             })
         }
-      })
+      });
   }
 
   editPosition(parent: GroupCompSubgroupViewModel, toEdit: GroupCompCrewPositionViewModel) {

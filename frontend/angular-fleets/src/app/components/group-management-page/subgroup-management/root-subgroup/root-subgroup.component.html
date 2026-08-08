@@ -102,6 +102,24 @@
     </div>
   </mat-expansion-panel-header>
 
+  <!-- Add new with circle icon and plus sign -->
+<!--  <div class="add-new-button-container">-->
+<!--       [class.add-new-horizontal]="rootOrientation === 'horizontal'"-->
+<!--       [class.add-new-vertical]="rootOrientation === 'vertical'"-->
+<!--       [class.add-new-mixed]="rootOrientation === 'mixed'"-->
+<!--    <button class="add-new-button">-->
+<!--      <mat-icon class="material-symbols-outlined add-2">add_circle_outline</mat-icon>-->
+<!--    </button>-->
+<!--  </div>-->
+
+  <div class="top-add-new-subgroup-button-container">
+    <button class="new-subgroup-button"
+      (click)="compositionInteract.openAddNewSubgroupPopup(-1,null)">
+      <mat-icon class="material-symbols-outlined add-2">add</mat-icon>
+      New Root Level Subgroup
+    </button>
+  </div>
+
   <ng-container *ngIf="(compositionInteract.subgroupTrees$ | async) as subgroups">
     <div>
       <div class="drop-list-facade">
@@ -148,14 +166,6 @@
               </app-crew-subgroup>
             </div>
           }
-          <div class="add-new-button-container"
-               [class.add-new-horizontal]="rootOrientation === 'horizontal'"
-               [class.add-new-vertical]="rootOrientation === 'vertical'"
-               [class.add-new-mixed]="rootOrientation === 'mixed'">
-            <button class="add-new-button">
-              <mat-icon class="material-symbols-outlined add-2">add_circle_outline</mat-icon>
-            </button>
-          </div>
 
           <ng-container *ngIf="canScrollHorizontal$ | async">
             <button class="drop-list-horizontal-scroll right"
