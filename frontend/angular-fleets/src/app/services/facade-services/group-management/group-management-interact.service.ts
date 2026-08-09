@@ -79,6 +79,20 @@ export class GroupManagementInteractService {
     this.activeRosterSubject.next(roster);
   }
 
+  updateActiveRosterMember(member: GroupManagementMemberViewModel) {
+    const current = this.activeRosterSubject.getValue();
+    const idx = current.content.findIndex(m => m.userSummary.userId === member.userSummary.userId);
+
+    if(idx === -1) return;
+
+    const currentContent = [...current.content];
+    currentContent[idx] = member;
+
+    this.activeRosterSubject.next({
+      ...current, content: currentContent
+    });
+  }
+
   findAndReplaceActiveRosterMember(member: GroupManagementMemberViewModel) {
     const snapshot = this.activeRosterSubject.getValue();
     const idx = snapshot.content.findIndex(m => m.userSummary.userId === member.userSummary.userId);

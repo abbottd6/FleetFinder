@@ -36,25 +36,29 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
   templateUrl: './crew-position-chip.component.html',
   styleUrl: './crew-position-chip.component.css'
 })
-export class CrewPositionChipComponent implements OnInit, OnChanges {
+export class CrewPositionChipComponent {
   @Input() position!: GroupCompCrewPositionViewModel;
   @Output() emitPositionDelete = new EventEmitter<GroupCompCrewPositionViewModel>;
   @Output() emitPositionEdit = new EventEmitter<GroupCompCrewPositionViewModel>;
 
-  protected assignedMember!: GroupManagementMemberViewModel[];
+  // protected assignedMember!: GroupManagementMemberViewModel[];
 
   constructor(protected dropListRegistry: DropListRegistryService,
               protected compositionInteract: GroupCompositionInteractService){
 
   }
 
-  ngOnInit() {
-    this.assignedMember = this.position?.assignedMember ? [this.position.assignedMember] : [];
+  get hasAssignedMember() {
+    return this.position.assignedMember !== null;
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if(changes['position']) {
-      this.assignedMember = this.position?.assignedMember ? [this.position.assignedMember] : [];
-    }
-  }
+  // ngOnInit() {
+  //   this.assignedMember = this.position?.assignedMember ? [this.position.assignedMember] : [];
+  // }
+  //
+  // ngOnChanges(changes: SimpleChanges) {
+  //   if(changes['position']) {
+  //     this.assignedMember = this.position?.assignedMember ? [this.position.assignedMember] : [];
+  //   }
+  // }
 }

@@ -70,7 +70,7 @@ import {
   templateUrl: './crew-subgroup.component.html',
   styleUrl: './crew-subgroup.component.css'
 })
-export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected dropListRegistry = inject(DropListRegistryService);
   protected groupManagementUiPrefs = inject(GroupManagementUiPrefsService);
 
@@ -88,7 +88,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
   @Output() emitDeleteSubgroup = new EventEmitter<GroupCompSubgroupViewModel>;
   @Output() emitEditingLabel = new EventEmitter<boolean>;
 
-  protected nativeSubgroupsForDisplay: GroupCompSubgroupViewModel[] = [];
+  // protected nativeSubgroupsForDisplay: GroupCompSubgroupViewModel[] = [];
 
   @ViewChild('nativeSubgroupList') nativeSubgroupList!: CdkDropList;
   @ViewChild('nativeSubgroupListElement', {read: ElementRef }) nativeSubgroupListElement!: ElementRef<HTMLElement>;
@@ -198,7 +198,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
               private dialog: MatDialog){}
 
   ngOnInit() {
-    this.nativeSubgroupsForDisplay = this.subgroup.subgroups;
+    // this.nativeSubgroupsForDisplay = this.subgroup.subgroups;
     this.selfDepth = this.parentTreeDepth + 1;
 
     this.selfExpanded = this.expandedFromParent$?.getValue() ?? true;
@@ -279,11 +279,11 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
     );
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if(changes['subgroup']) {
-      this.nativeSubgroupsForDisplay = [...(this.subgroup.subgroups ?? [])];
-    }
-  }
+  // ngOnChanges(changes: SimpleChanges) {
+  //   if(changes['subgroup']) {
+  //     this.nativeSubgroupsForDisplay = [...(this.subgroup.subgroups ?? [])];
+  //   }
+  // }
 
   // dragStarted(event: CdkDragStart) {
   //   console.log('list sortingDisabled: ', event.source.dropContainer.sortingDisabled);
@@ -394,7 +394,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnChanges, 
           this.subgroup.subgroups = this.subgroup.subgroups.filter(
             sub => sub.subgroupId !== forDelete.subgroupId);
 
-          this.nativeSubgroupsForDisplay = this.subgroup.subgroups;
+          // this.nativeSubgroupsForDisplay = this.subgroup.subgroups;
 
           this.compositionInteract.persistState().pipe(takeUntil(this.destroy$))
             .subscribe({

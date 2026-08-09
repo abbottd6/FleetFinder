@@ -19,7 +19,8 @@
       [attr.maxlength]="max"
       [attr.minlength]="min"
       placeholder="{{ placeholder }}"
-      [attr.aria-labelledby]="label">
+      [attr.aria-labelledby]="label"
+      autocomplete="off">
     <mat-hint align="start">{{ characterCount }}/{{ max }}</mat-hint>
   </mat-form-field>
 </div>

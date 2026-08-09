@@ -4,8 +4,8 @@ export class SubgroupSummaryViewModel {
     public subgroupLabel: string,
     public subgroupNotes: string,
     public parentSubgroupId: number,
-    public parentSubgroupLabel: string,
-    public intendedSubgroupSize: number,
+    public parentSubgroupLabel: string | null,
+    // public intendedSubgroupSize: number,
     public createdAt: Date
   ){}
 }

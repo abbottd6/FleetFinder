@@ -50,7 +50,7 @@
           </span>
           <span class="header-secondary" [matTooltip]="buildMemberRoleTooltip()">
             @if(member.memberPosition) {
-              {{ abbreviateLabel(member.memberPosition.subgroupSummary.parentSubgroupLabel) }}
+              {{ abbreviateLabel(member.memberPosition.subgroupSummary.parentSubgroupLabel ?? member.memberPosition.subgroupSummary.subgroupLabel) }}
               {{ abbreviateLabel(member.memberPosition.roleSummary.roleTitle) }}
             } @else {
               Unassigned

@@ -142,7 +142,7 @@
             </button>
           </ng-container>
 
-          @for (childSubgroup of nativeSubgroupsForDisplay; track childSubgroup.subgroupId) {
+          @for (childSubgroup of subgroup.subgroups; track childSubgroup.subgroupId) {
             <div cdkDrag
                  [cdkDragData]="childSubgroup"
                  [cdkDragDisabled]="childEditingLabel"

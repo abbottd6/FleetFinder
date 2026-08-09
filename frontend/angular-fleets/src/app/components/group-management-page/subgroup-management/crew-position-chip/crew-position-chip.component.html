@@ -1,5 +1,5 @@
 <div class="position-chip">
-  <div class="position-header" cdkDragHandle [class.has-member]="assignedMember.length > 0">
+  <div class="position-header" cdkDragHandle [class.has-member]="hasAssignedMember">
     <div class="header-left">
       <span id="position-drag-handle">
         {{ position.groupRole.roleTitle }}
@@ -19,7 +19,7 @@
         <button
           mat-menu-item
           class="options-item"
-          [disabled]="assignedMember.length === 0"
+          [disabled]="hasAssignedMember"
           (click)="compositionInteract.clearPositionAssignment(position)">
           <mat-icon class="material-symbols-outlined dropdown-icon" style="transform: rotate(-90deg)">
             ungroup
@@ -41,7 +41,7 @@
     cdkDropList
     [cdkDropListData]="position.assignedMember"
     [attr.data-position-id]="position.positionId">
-    @for(member of assignedMember; track member.userSummary.userId) {
+    @if(position.assignedMember; as member) {
       <div cdkDrag
         [cdkDragData]="member"
         (cdkDragMoved)="dropListRegistry.onDragMoved($event)"
