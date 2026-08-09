@@ -1,5 +1,5 @@
 import {DropListOrientation} from "@angular/cdk/drag-drop";
-import {GroupCompCrewPositionViewModel} from "../view-models/group-composition/group-comp-crew-position-view-model";
+import {RoleClassSummaryViewModel} from "../nested-models/role-class-summary-view-model";
 
 export class AddNewSubgroupRequest {
   constructor(listingId: number,
@@ -8,7 +8,7 @@ export class AddNewSubgroupRequest {
               subgroupLabel: string,
               subgroupNotes: string | null,
               dropListOrientation: DropListOrientation,
-              positions: GroupCompCrewPositionViewModel[]) {
+              positions: RoleClassSummaryViewModel[]) {
     Object.assign(this, {
       listingId: listingId,
       rootSubgroupId: rootSubgroupId,

@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.AddNewSubgroupRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateOrEditCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
@@ -18,6 +19,8 @@ public interface GroupCompositionService {
     void updateGroupCompositionState(Users manager, GroupCompositionDto groupCompDto);
 
     FlattenedGroupCompDto flattenGroupCompositionDtoSubgroupsAndPositions(GroupCompositionDto groupCompDto);
+
+    GroupCompositionSubgroupDto addSubgroup(Users manager, AddNewSubgroupRequestDto requestDto);
 
     void softDeleteSubgroup(Users manager, Long groupId, Long subgroupId);
 

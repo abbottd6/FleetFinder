@@ -31,16 +31,33 @@
           <h6>Positions</h6>
         </div>
         <hr>
-        <div class="position-add-form-row">
-          <button class="secondary-action-buttons-with-icons">
-            <mat-icon class="material-symbols-outlined add-2">add</mat-icon>
-            Add Position
-          </button>
-          <div class="position-add-form"></div>
+        <div class="positions-container">
+          <div class="add-position-form">
+            <app-add-position-to-new-subgroup-form
+              (addPosition)="addPosition($event)">
+            </app-add-position-to-new-subgroup-form>
+          </div>
+          <div class="positions-proliferation-wrapper">
+            <div class="positions-chips-proliferation-container">
+              @for (roleGroup of groupedPositions; track roleGroup.role.roleTitle) {
+                <span class="role-group-chip">
+                <span>{{ roleGroup.role.roleTitle }}</span>
+                  <span style="margin-left: 8px">x {{ roleGroup.count }}</span>
+                <span class="inc-button-container">
+                  <button class="inc-dec-button"
+                          (click)="decrementPosition(roleGroup.role)">
+                    -
+                  </button>
+                  <button class="inc-dec-button"
+                          (click)="addPosition(roleGroup.role)">
+                    +
+                  </button>
+                </span>
+              </span>
+              }
+
+            </div>
         </div>
-        <div class="positions-chips-container">
-
-
         </div>
       </div>
     </div>
@@ -48,6 +65,6 @@
 
   <mat-dialog-actions align="end">
     <button class="action-buttons" (click)="onCancel()">Cancel</button>
-    <button class="action-buttons" (click)="onConfirm()">Submit</button>
+    <button class="action-buttons" (click)="onConfirm()">Create</button>
   </mat-dialog-actions>
 </div>

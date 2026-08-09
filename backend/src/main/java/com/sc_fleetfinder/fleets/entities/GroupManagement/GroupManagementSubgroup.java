@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.AddNewSubgroupRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionSubgroupDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.SubgroupDropListOrientation;
@@ -48,9 +49,18 @@ public class GroupManagementSubgroup {
         this.dropListOrientation = subDto.getDropListOrientation();
     }
 
-                                   @Id
-                                   @GeneratedValue(strategy = GenerationType.IDENTITY)
-                                   @Column(name="id_subgroup")
+    public GroupManagementSubgroup(AddNewSubgroupRequestDto requestDto, GroupListing listing, GroupManagementSubgroup parentSubgroup) {
+        this.groupListing = listing;
+        this.rootSubgroupId = requestDto.getRootSubgroupId();
+        this.parentSubgroup = parentSubgroup;
+        this.subgroupLabel = requestDto.getSubgroupLabel();
+        this.subgroupNotes = requestDto.getSubgroupNotes();
+        this.dropListOrientation = requestDto.getDropListOrientation();
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id_subgroup")
     private Long subgroupId;
 
     @ManyToOne

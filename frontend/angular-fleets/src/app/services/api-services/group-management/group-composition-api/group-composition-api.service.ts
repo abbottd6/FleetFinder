@@ -26,6 +26,9 @@ import {
 import {
   NewOrEditPositionRequest
 } from "../../../../models/group-management-models/request-models/new-or-edit-position-request";
+import {
+  AddNewSubgroupRequest
+} from "../../../../models/group-management-models/request-models/add-new-subgroup-request";
 
 @Injectable({
   providedIn: 'root'
@@ -66,6 +69,10 @@ export class GroupCompositionApiService {
 
   editExistingPosition(editDto: NewOrEditPositionRequest, positionId: number): Observable<GroupCompCrewPositionViewModel> {
     return this.httpClient.put<GroupCompCrewPositionViewModel>(`${this.baseUrl}/edit-crew-position/${positionId}`, editDto);
+  }
+
+  addSubgroup(requestDto: AddNewSubgroupRequest): Observable<GroupCompSubgroupViewModel> {
+    return this.httpClient.post<GroupCompSubgroupViewModel>(`${this.baseUrl}/add-subgroup`, requestDto);
   }
 
   deleteSubgroup(groupId: number, subgroupId: number) {

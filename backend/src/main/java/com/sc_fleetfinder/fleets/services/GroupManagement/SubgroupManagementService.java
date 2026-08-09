@@ -2,7 +2,6 @@ package com.sc_fleetfinder.fleets.services.GroupManagement;
 
 
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupManagementSubgroup;
-import com.sc_fleetfinder.fleets.entities.Users;
 
 import java.util.HashMap;
 import java.util.List;

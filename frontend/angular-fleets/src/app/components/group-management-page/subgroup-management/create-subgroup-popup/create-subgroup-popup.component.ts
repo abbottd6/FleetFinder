@@ -1,5 +1,5 @@
 import {Component, Inject, OnDestroy, OnInit} from '@angular/core';
-import {Subject, takeUntil} from "rxjs";
+import {Subject} from "rxjs";
 import {
   MAT_DIALOG_DATA,
   MatDialogActions,
@@ -7,24 +7,26 @@ import {
   MatDialogRef,
   MatDialogTitle
 } from "@angular/material/dialog";
-import {GROUP_COMP_ROLE_CATEGORIES} from "../create-or-edit-position-popup/create-or-edit-position-popup.component";
 import {
   RoleClassSummaryViewModel
 } from "../../../../models/group-management-models/nested-models/role-class-summary-view-model";
-import {FormControl, Validators} from "@angular/forms";
-import {
-  GroupCompositionApiService
-} from "../../../../services/api-services/group-management/group-composition-api/group-composition-api.service";
-import {
-  GroupManagementInteractService
-} from "../../../../services/facade-services/group-management/group-management-interact.service";
+import {FormControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {
   GenericSmallInputFieldComponent
 } from "../../../input-fields/generic-small-input-field/generic-small-input-field.component";
-import {MatIcon} from "@angular/material/icon";
 import {
   GenericMediumInputFieldComponent
 } from "../../../input-fields/generic-medium-input-field/generic-medium-input-field.component";
+import {
+  AddPositionToNewSubgroupFormComponent
+} from "./add-position-to-new-subgroup-form/add-position-to-new-subgroup-form.component";
+import {
+  AddNewSubgroupRequest
+} from "../../../../models/group-management-models/request-models/add-new-subgroup-request";
+import {DropListOrientation} from "@angular/cdk/drag-drop";
+import {
+  GroupManagementInteractService
+} from "../../../../services/facade-services/group-management/group-management-interact.service";
 
 @Component({
   selector: 'app-create-subgroup-popup',
@@ -33,8 +35,9 @@ import {
     MatDialogTitle,
     MatDialogActions,
     GenericSmallInputFieldComponent,
-    MatIcon,
-    GenericMediumInputFieldComponent
+    GenericMediumInputFieldComponent,
+    ReactiveFormsModule,
+    AddPositionToNewSubgroupFormComponent
   ],
   templateUrl: './create-subgroup-popup.component.html',
   styleUrl: './create-subgroup-popup.component.css'
@@ -43,10 +46,6 @@ export class CreateSubgroupPopupComponent implements OnInit, OnDestroy{
   private destroy$ = new Subject<void>();
 
   protected popupTitle!: string;
-
-  protected roleCategories = GROUP_COMP_ROLE_CATEGORIES;
-  protected availableClasses: RoleClassSummaryViewModel[] = [];
-  protected filteredClasses: RoleClassSummaryViewModel[] = [];
 
   subgroupLabelCtrl: FormControl<string | null> = new FormControl<string | null>('', {
     nonNullable: true,
@@ -59,6 +58,8 @@ export class CreateSubgroupPopupComponent implements OnInit, OnDestroy{
       Validators.maxLength(255)]
   });
 
+  protected positions: RoleClassSummaryViewModel[] = [];
+
   constructor(
     @Inject(MAT_DIALOG_DATA)
     public data: {
@@ -68,7 +69,6 @@ export class CreateSubgroupPopupComponent implements OnInit, OnDestroy{
       parentSubgroupId: number | null,
     },
     private dialogRef: MatDialogRef<CreateSubgroupPopupComponent>,
-    private compositionApi: GroupCompositionApiService,
     private managementInteract: GroupManagementInteractService
   ){}
 
@@ -78,21 +78,61 @@ export class CreateSubgroupPopupComponent implements OnInit, OnDestroy{
     } else {
       this.popupTitle = 'Add New Root Level Subgroup';
     }
+  }
 
-    this.compositionApi.getAvailableRoleClassifications(this.data.listingId).pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (classifications: RoleClassSummaryViewModel[]) => {
-          this.availableClasses = classifications;
-        },
-        error: () => {
-          this.managementInteract.showSnackBarMessage('Failed to fetch reference data.')
-        }
-      })
+  addPosition(position: RoleClassSummaryViewModel) {
+    if(this.positions.length < 150) {
+      this.positions.push(position);
+    } else {
+      this.managementInteract.showSnackBarMessage('Subgroup positions limit reached.');
+      return;
+    }
+  }
 
+  decrementPosition(position: RoleClassSummaryViewModel) {
+    const idx = this.positions.indexOf(position);
+    if(idx === -1) return;
+
+    this.positions = [
+      ...this.positions.slice(0, idx),
+      ...this.positions.slice(idx + 1)
+    ]
+  }
+
+  get groupedPositions(): { role: RoleClassSummaryViewModel; count: number } [] {
+    const map = new Map<string, {role: RoleClassSummaryViewModel; count: number}>();
+
+    for(const p of this.positions) {
+      const existing = map.get(p.roleTitle);
+      if(existing) {
+        existing.count++;
+      } else {
+        map.set(p.roleTitle, {role: p, count: 1});
+      }
+    }
+    return [...map.values()];
   }
 
   onConfirm() {
+    if(!this.subgroupLabelCtrl.value || this.subgroupLabelCtrl.invalid) {
+      this.subgroupLabelCtrl.markAsTouched();
+      this.subgroupLabelCtrl.markAsDirty();
+      console.log('what is going on');
+      return;
+    }
 
+    const subgroupLabel = this.subgroupLabelCtrl.value!;
+    const subgroupNotes = this.subgroupNotesCtrl.value;
+
+    const dropListOrientation: DropListOrientation = 'vertical';
+
+    const request = new AddNewSubgroupRequest(this.data.listingId, this.data.rootSubgroupId, this.data.parentSubgroupId,
+                                              subgroupLabel, subgroupNotes, dropListOrientation,
+                                              this.positions);
+
+    console.log(request);
+
+    this.dialogRef.close(request);
   }
 
   onCancel(): void {

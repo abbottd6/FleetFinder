@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.AddNewSubgroupRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateOrEditCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
@@ -12,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -83,6 +85,17 @@ public class GroupCompositionController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/add-subgroup")
+    public ResponseEntity<?> addSubgroup(@AuthenticationPrincipal Jwt jwt,
+                                         @RequestBody @Validated AddNewSubgroupRequestDto requestDto) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        GroupCompositionSubgroupDto response = groupCompService.addSubgroup(manager, requestDto);
+
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/delete-subgroup/{groupId}/{subgroupId}")
     public ResponseEntity<?> softDeleteSubgroup(@AuthenticationPrincipal Jwt jwt,
                                                 @PathVariable Long groupId,
@@ -109,7 +122,7 @@ public class GroupCompositionController {
 
     @PostMapping("/create-new-position")
     public ResponseEntity<?> createNewPosition(@AuthenticationPrincipal Jwt jwt,
-                                               @RequestBody CreateOrEditCrewPositionDto positionDto) {
+                                               @RequestBody @Validated CreateOrEditCrewPositionDto positionDto) {
         String kcId = jwt.getSubject();
         Users manager = userService.verifyUser(kcId);
 
@@ -120,7 +133,7 @@ public class GroupCompositionController {
 
     @PutMapping("/edit-crew-position/{positionId}")
     public ResponseEntity<?> editCrewPosition(@AuthenticationPrincipal Jwt jwt,
-                                              @RequestBody CreateOrEditCrewPositionDto positionDto,
+                                              @RequestBody @Validated CreateOrEditCrewPositionDto positionDto,
                                               @PathVariable Long positionId) {
         String kcId = jwt.getSubject();
         Users manager = userService.verifyUser(kcId);

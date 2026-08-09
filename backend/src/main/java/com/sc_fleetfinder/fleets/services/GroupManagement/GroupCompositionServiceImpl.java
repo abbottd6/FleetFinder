@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.AddNewSubgroupRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateOrEditCrewPositionDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
@@ -17,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
@@ -380,6 +380,48 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
         }
 
         return flattenedGroupCompDto;
+    }
+
+    @Override
+    @Transactional
+    public GroupCompositionSubgroupDto addSubgroup(Users manager, AddNewSubgroupRequestDto requestDto) {
+        GroupListing listing = gls.findGroupListingEntityById(requestDto.getListingId());
+
+        rankService.verifyUserRankPermissions(manager, listing, RankPrivilegeOptions.MANAGE_SUBGROUPS);
+
+        GroupManagementSubgroup parentSubgroup = null;
+
+        if(requestDto.getParentSubgroupId() != null) {
+            parentSubgroup = subgroupService.findSubgroupById(requestDto.getParentSubgroupId());
+        }
+
+        GroupManagementSubgroup savedSubgroup = subgroupService.saveSubgroup(new GroupManagementSubgroup(requestDto, listing, parentSubgroup));
+
+        Map<Long, CrewRoleClassification> dbRoles = crewRoleService.getRolesForListingByUserId(listing.getUsers().getUserId())
+                .stream()
+                .collect(Collectors.toMap(
+                        CrewRoleClassification::getRoleId,
+                        Function.identity()
+                ));
+
+        List<CrewPosition> subgroupCrewPositions = new ArrayList<>();
+
+        for(GroupRoleSummaryDto role : requestDto.getPositions()) {
+            CrewPosition newPosition = new CrewPosition(listing, savedSubgroup, requestDto.getRootSubgroupId(),
+                                                        dbRoles.get(role.getRoleId()));
+            subgroupCrewPositions.add(newPosition);
+        }
+
+        HashMap<Long, List<CrewPosition>> subgroupPositionsMap = positionService.saveListOf(subgroupCrewPositions)
+                .stream()
+                .collect(Collectors.groupingBy(pos ->
+                        pos.getSubgroup().getSubgroupId(),
+                        HashMap::new,
+                        Collectors.toList()));
+
+        HashMap<Long, List<GroupManagementSubgroup>> emptySubgroups = new HashMap<>();
+
+        return getChildrenSubgroupsAndPositions(savedSubgroup, emptySubgroups, subgroupPositionsMap);
     }
 
     @Override

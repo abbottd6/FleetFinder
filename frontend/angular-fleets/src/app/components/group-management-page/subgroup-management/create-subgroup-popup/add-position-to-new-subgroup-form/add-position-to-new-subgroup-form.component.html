@@ -1,1 +1,27 @@
-<p>add-position-to-new-subgroup-form works!</p>
+<div class="position-add-form-row">
+  <app-abstract-string-dropdown
+    [abstractControl]="roleCategoryCtrl"
+    [fieldLabel]="'Role:'"
+    [placeholderLabel]="'category'"
+    [options]="roleCategories"
+    [errorMessage]="'Select a category to choose from the available roles'">
+  </app-abstract-string-dropdown>
+  <div class="dropdown-component select-role">
+    <ng-select
+      [items]="filteredClasses"
+      bindLabel="roleTitle"
+      [formControl]="selectedRoleCtrl"
+      placeholder="Select role..."
+      [disabled]="roleCategoryCtrl.value === null"
+      [attr.aria-labelledby]="'roleClassification-dropdown'">
+    </ng-select>
+  </div>
+  <div class="add-button-container">
+    <button class="secondary-action-buttons-with-icons"
+      [disabled]="!selectedRoleCtrl.value"
+      (click)="emitAddPosition()">
+      <mat-icon class="material-symbols-outlined add-2">add</mat-icon>
+      Add
+    </button>
+  </div>
+</div>

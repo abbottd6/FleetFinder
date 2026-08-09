@@ -1,0 +1,66 @@
+@import '../../../../dropdowns/dropdown-module/dropdown-styles.css';
+
+.position-add-form-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-inline: auto;
+}
+
+:host ::ng-deep .dropdown-component .ng-select-searchable {
+  margin-left: 0 !important;
+  margin-right: auto;
+  margin-bottom: 10px;
+  width: 200px;
+  max-height: 100%;
+}
+
+:host ::ng-deep .dropdown-component label {
+  margin-left: 10px !important;
+  padding-left: 0;
+  margin-right: 15px;
+}
+
+:host ::ng-deep .dropdown-component .ng-dropdown-panel {
+  width: 200px !important;
+}
+
+:host ::ng-deep .dropdown-component.select-role {
+  width: 220px !important;
+  min-width: 220px;
+}
+
+:host ::ng-deep .dropdown-component.select-role .ng-select-searchable {
+  max-width: 200px !important;
+}
+
+.add-button-container {
+  margin-bottom: 16px;
+}
+
+@media(max-width: 724px) {
+  .action-buttons {
+    font-size: .9rem;
+  }
+  :host ::ng-deep .ng-select .ng-select-container .ng-placeholder {
+    font-size: 0.8rem;
+  }
+
+  :host ::ng-deep .ng-select .ng-select-container .ng-value-container {
+    padding: 0;
+    margin: 0 0 0 0;
+  }
+
+  :host ::ng-deep .ng-select.ng-select-focused .ng-select-container .ng-value-container {
+    margin: 0.35rem 0.2rem 0.2rem 0.2rem;
+  }
+
+  .mat-mdc-dialog-content {
+    min-height: 3rem;
+  }
+
+  .ng-select {
+    padding-bottom: 0;
+  }
+}

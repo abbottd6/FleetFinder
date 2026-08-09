@@ -47,6 +47,17 @@ public class CrewPosition {
         this.deletedAt = null;
     }
 
+    public CrewPosition(GroupListing listing,
+                        GroupManagementSubgroup subgroup,
+                        Long rootSubgroupId,
+                        CrewRoleClassification role
+                        ) {
+        this.groupListing = listing;
+        this.subgroup = subgroup;
+        this.rootSubgroupId = rootSubgroupId;
+        this.positionRole = role;
+    }
+
     public CrewPosition(GroupListing listing) {
         this.groupListing = listing;
     }

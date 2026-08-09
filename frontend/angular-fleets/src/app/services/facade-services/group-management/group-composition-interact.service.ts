@@ -174,7 +174,24 @@ export class GroupCompositionInteractService {
     dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((newSubgroupRequest: AddNewSubgroupRequest) => {
         if(newSubgroupRequest) {
-
+          this.compositionApi.addSubgroup(newSubgroupRequest).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (newSubgroup: GroupCompSubgroupViewModel) => {
+                if (parentSubgroup !== null) {
+                  parentSubgroup.subgroups.push(newSubgroup);
+                } else {
+                  const root = this.subgroupTreesSubject.getValue();
+                  this.subgroupTreesSubject.next([
+                    ...root,
+                    newSubgroup
+                  ])
+                }
+                this.managementInteract.showSnackBarMessage('Subgroup ' + newSubgroup.subgroupLabel + ' created successfully.')
+              },
+              error: (err: HttpErrorResponse) => {
+                this.managementInteract.showSnackBarMessage('Internal Error: failed to create subgroup.')
+              }
+          });
         }
     });
   }
