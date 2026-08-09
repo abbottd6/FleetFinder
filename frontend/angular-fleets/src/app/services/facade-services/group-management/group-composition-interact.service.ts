@@ -174,6 +174,9 @@ export class GroupCompositionInteractService {
     dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((newSubgroupRequest: AddNewSubgroupRequest) => {
         if(newSubgroupRequest) {
+          const actionLabel = 'Add Subgroup'
+          this.pushSubgroupActionToHistoryCache(actionLabel);
+
           this.compositionApi.addSubgroup(newSubgroupRequest).pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
               next: (newSubgroup: GroupCompSubgroupViewModel) => {
