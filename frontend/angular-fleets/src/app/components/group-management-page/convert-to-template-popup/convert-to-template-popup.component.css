@@ -1,0 +1,67 @@
+:host .mat-mdc-dialog-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 98%;
+  justify-content: flex-start;
+}
+
+:host ::ng-deep app-generic-small-input-field .generic-input {
+  margin-left: 8px;
+}
+
+:host ::ng-deep app-generic-medium-input-field .mat-mdc-text-field-wrapper {
+  max-width: 90%;
+  margin-inline: auto;
+}
+
+:host ::ng-deep app-generic-medium-input-field .generic-input {
+  flex-direction: column;
+}
+
+:host ::ng-deep app-generic-medium-input-field mat-label {
+  margin-left: 8px;
+  margin-bottom: 6px;
+}
+
+:host ::ng-deep app-generic-medium-input-field mat-hint {
+  margin-left: 32px;
+}
+
+h2 {
+  border-bottom: 1px solid;
+  width: 92%;
+  min-width: 325px;
+  margin-inline: auto;
+  padding-left: 0;
+}
+
+.parent-details {
+  margin: 15px auto 15px 20px;
+}
+
+.content-section-wrapper {
+  margin: 10px 0 10px 0;
+  /*background-color: rgba(108, 108, 108, 0.1);*/
+  /*box-shadow: 0 0 5px rgba(188, 191, 200, .1);*/
+}
+
+.subgroup-details {
+  margin: 0;
+  padding-left: 0;
+}
+
+.field-row {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.field-label {
+  margin-right: 4px;
+  color: rgb(53, 114, 163);
+}
+
+.field-val {
+  margin-right: 10px;
+}

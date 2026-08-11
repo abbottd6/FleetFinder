@@ -10,15 +10,23 @@
         </span>
     </mat-error>
     <input
+      #inputField
       matInput
       [formControl]="subgroupLabelCtrl"
       (input)="updateCharacterCount()"
       (keyup.enter)="updateLabel()"
+      (blur)="cancel()"
       minLength="1"
       maxlength="32"
       placeholder="Enter subgroup label..."
       autocomplete="off"
       [attr.aria-labelledby]="'subgroup-label'">
+    <button
+      matSuffix
+      class="embedded-save-button"
+      (click)="cancel()">
+      <mat-icon class="material-symbols-outlined dropdown-icon">close</mat-icon>
+    </button>
     <button
       matSuffix
       class="embedded-save-button"

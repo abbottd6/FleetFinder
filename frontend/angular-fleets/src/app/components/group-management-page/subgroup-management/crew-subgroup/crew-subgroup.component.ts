@@ -444,6 +444,13 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.emitEditingLabel.emit(false);
   }
 
+  cancelLabelUpdate(event: boolean) {
+    if(event) {
+      this.editingTitle = false;
+      this.emitEditingLabel.emit(false);
+    }
+  }
+
   ngOnDestroy() {
     this.dropListRegistry.unregisterHoverTarget(this.subgroupHoverTargetRegistrationRef);
     this.dropListRegistry.unregisterList(this.subgroupListRegistrationRef);

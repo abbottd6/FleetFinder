@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {
   GroupCompSubgroupViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
@@ -26,8 +26,10 @@ import {
   templateUrl: './edit-subgroup-label-input.component.html',
   styleUrl: './edit-subgroup-label-input.component.css'
 })
-export class EditSubgroupLabelInputComponent implements OnInit {
+export class EditSubgroupLabelInputComponent implements OnInit, AfterViewInit {
   @Input() subgroup!: GroupCompSubgroupViewModel;
+  @ViewChild('inputField') inputFieldRef!: ElementRef<HTMLInputElement>
+  @Output() cancelTitleEdit = new EventEmitter<boolean>;
   @Output() emitEditingTitle = new EventEmitter<string>;
   characterCount: number = 0;
 
@@ -46,6 +48,10 @@ export class EditSubgroupLabelInputComponent implements OnInit {
     this.characterCount = this.subgroupLabelCtrl.value.length;
   }
 
+  ngAfterViewInit() {
+    this.inputFieldRef.nativeElement.focus();
+  }
+
   updateCharacterCount() {
     const value = this.subgroupLabelCtrl.value || '';
     this.characterCount = value.length;
@@ -53,5 +59,9 @@ export class EditSubgroupLabelInputComponent implements OnInit {
 
   updateLabel() {
     this.emitEditingTitle.emit(this.subgroupLabelCtrl.value);
+  }
+
+  cancel() {
+    this.cancelTitleEdit.emit(true);
   }
 }

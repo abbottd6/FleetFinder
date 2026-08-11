@@ -255,8 +255,6 @@ export class DropListRegistryService {
     treeDepth: number,
     parentId?: string): DropListRegistration {
 
-    console.log("Registering " + entityType);
-
     switch (entityType) {
       case 'position': {
         const idx = this.droppablePositionLists.push({
@@ -300,7 +298,6 @@ export class DropListRegistryService {
   }
 
   unregisterList(unregister: DropListRegistration) {
-    console.log("Unregistering: " + unregister.entityType)
     switch (unregister.entityType) {
       case 'subgroup': {
         const idx = this.droppableSubgroupLists.indexOf(unregister);

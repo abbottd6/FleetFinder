@@ -318,7 +318,7 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
                     : null);
         });
 
-        // saves are managed by context to ensure roleback on any failure
+        // saves are managed by context to ensure rollback on any failure
     }
 
     @Override

@@ -92,7 +92,8 @@
 
             <button
               mat-menu-item
-              class="options-item">
+              class="options-item"
+              (click)="this.compositionInteract.saveCompositionAsTemplate('nested', [subgroup])">
               <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
               <span>Save template</span>
             </button>
@@ -102,6 +103,7 @@
       <ng-template #editing>
         <app-edit-subgroup-label-input
           [subgroup]="subgroup"
+          (cancelTitleEdit)="cancelLabelUpdate($event)"
           (emitEditingTitle)="updateSubgroupLabel($event)">
         </app-edit-subgroup-label-input>
       </ng-template>
@@ -202,6 +204,7 @@
            [class.chip-subgroup-collapsed]="!selfExpanded"
            [class.orientation-horizontal]="subgroup.dropListOrientation === 'horizontal'"
            [class.orientation-vertical]="subgroup.dropListOrientation === 'vertical'"
+           [class.vertical-and-root]="subgroup.dropListOrientation === 'vertical' && subgroup.parentSubgroupId === null"
            [class.orientation-mixed]="subgroup.dropListOrientation === 'mixed'"
            [class.is-hovered-list]="(isHoveredTarget$ | async)">
           <ng-container *ngIf="!positionsExpanded; else notCollapsed">

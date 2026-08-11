@@ -44,6 +44,9 @@ import {
 import {
   SubgroupSummaryViewModel
 } from "../../../models/group-management-models/nested-models/subgroup-summary-view-model";
+import {
+  ConvertToTemplatePopupComponent
+} from "../../../components/group-management-page/convert-to-template-popup/convert-to-template-popup.component";
 
 export interface GroupCompPositionsRatio {
   assigned: number,
@@ -562,6 +565,28 @@ export class GroupCompositionInteractService {
     if(memberRemoved) {
       this.getExistingGroupComposition();
     }
+  }
+
+  saveCompositionAsTemplate(type: string, subgroups: GroupCompSubgroupViewModel[]) {
+    if(!subgroups || subgroups.length < 1) return;
+
+    let referenceLabel: string | null = null;
+
+    if(type === 'nested') {
+      referenceLabel = subgroups[0].subgroupLabel;
+    }
+
+    console.log('reference: ' + referenceLabel);
+
+    this.dialog.open(ConvertToTemplatePopupComponent, {
+      minHeight: '350px',
+      minWidth: '650px',
+      data: {
+        listingId: this.managementInteract.groupId,
+        templateRootReferenceLabel: referenceLabel,
+        subgroups: subgroups
+      }
+    })
   }
 
   clearTrees() {

@@ -1,0 +1,29 @@
+<div class="add-subgroup-popup-wrapper">
+  <h2 mat-dialog-title>Save Group Composition Template</h2>
+  <mat-dialog-content>
+
+    <div class="parent-details field-row">
+      @if(isFullCompClone) {
+        <span class="field-val">Saving the full composition of this group as a template</span>
+      } @else {
+        <span class="field-val">Saving '{{ data.templateRootReferenceLabel ?? 'a subgroup'}}' and nested children as a template.</span>
+      }
+    </div>
+
+    <div class="content-section-wrapper">
+      <app-generic-small-input-field
+        [label]="'Label'"
+        [errorLabel]="'Template label'"
+        [min]=1
+        [max]=64
+        [placeholder]="'Enter template label/title...'"
+        [inputCtrl]="templateLabelCtrl">
+      </app-generic-small-input-field>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button class="action-buttons" (click)="onCancel()">Cancel</button>
+    <button class="action-buttons" (click)="onConfirm()">Create</button>
+  </mat-dialog-actions>
+</div>
