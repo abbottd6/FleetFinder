@@ -19,7 +19,7 @@ public class CrewTemplateSummaryDto {
     private CrewTemplateCategory templateCategory;
 
     private Long ownerId;
-    private Long ownerUsername;
+    private String ownerUsername;
 
     private Instant lastUsedAt;
 }

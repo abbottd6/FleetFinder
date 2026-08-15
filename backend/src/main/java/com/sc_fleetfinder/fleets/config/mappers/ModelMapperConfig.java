@@ -1,12 +1,11 @@
 package com.sc_fleetfinder.fleets.config.mappers;
 
-import com.sc_fleetfinder.fleets.DAO.GroupManagement.GroupRankAssignedPrivilegeRepository;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateGroupListingDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.CreateOrEditListingTemplateDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.NotificationPrefsAndPushSubs.CreateOrEditCustomNotificationDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.UpdateGroupListingDto;
-import com.sc_fleetfinder.fleets.DTO.responseDTOs.*;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.Chat.GetMessageDto;
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.*;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplayCategoryDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.ListingReferenceDataDTOs.GameplaySubcategoryDto;
@@ -20,9 +19,7 @@ import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModListingActio
 import com.sc_fleetfinder.fleets.entities.ModerationAndReporting.ModerationIssue;
 import com.sc_fleetfinder.fleets.entities.chat.Conversation;
 import com.sc_fleetfinder.fleets.entities.chat.Message;
-import com.sc_fleetfinder.fleets.exceptions.ResourceNotFoundException;
 import com.sc_fleetfinder.fleets.services.MapperLookupService;
-import com.sc_fleetfinder.fleets.utils.GroupManagement.RankPrivilegeOptions;
 import com.sc_fleetfinder.fleets.utils.MessageType;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.AbstractConverter;
@@ -36,10 +33,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.*;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
 
 @Configuration
 @RequiredArgsConstructor

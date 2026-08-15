@@ -17,6 +17,9 @@ import {
 import {
   GroupCompSubgroupViewModel
 } from "../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
+import {
+  TemplateFromCompRequest
+} from "../../../models/group-management-models/request-models/template-from-comp-request";
 
 @Component({
   selector: 'app-convert-to-template-popup',
@@ -57,7 +60,17 @@ export class ConvertToTemplatePopupComponent implements OnInit, OnDestroy {
   }
 
   onConfirm() {
+    if(this.templateLabelCtrl.invalid || this.templateLabelCtrl.value == '' || this.templateLabelCtrl.value === null) {
+      this.templateLabelCtrl.markAsTouched();
+      this.templateLabelCtrl.markAsDirty();
+      return;
+    }
 
+    const subgroupLabel = this.templateLabelCtrl.value;
+
+    const request: TemplateFromCompRequest = new TemplateFromCompRequest(this.data.listingId, subgroupLabel, this.data.subgroups);
+
+    this.dialogRef.close(request);
   }
 
   onCancel() {

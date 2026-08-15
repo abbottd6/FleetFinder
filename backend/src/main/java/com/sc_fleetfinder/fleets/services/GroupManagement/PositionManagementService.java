@@ -4,6 +4,7 @@ import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositi
 import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewPosition;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.GroupMember;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 

@@ -2,12 +2,14 @@ package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.AddNewSubgroupRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateOrEditCrewPositionDto;
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.TemplateFromCompRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.UpdateSubgroupDropListOrientationDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.*;
 import com.sc_fleetfinder.fleets.entities.Users;
 import com.sc_fleetfinder.fleets.services.CRUD_services.UserService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.CrewTemplateService;
 import com.sc_fleetfinder.fleets.services.GroupManagement.GroupCompositionService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,7 +18,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("api/group-composition")
@@ -81,6 +85,20 @@ public class GroupCompositionController {
 
         GroupCompositionDto response = groupCompService.createStructureFromTemplate(user, groupId, fromDto.getTemplateId());
 
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/create-template-from-subgroup")
+    public ResponseEntity<?> createTemplateFromSubgroup(@AuthenticationPrincipal Jwt jwt,
+                                                        @RequestBody @Valid TemplateFromCompRequestDto templateFromDto) {
+        String kcId = jwt.getSubject();
+        Users manager = userService.verifyUser(kcId);
+
+        String savedLabel = crewTemplateService.createTemplateFromCompositionDto(manager, templateFromDto);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("savedLabel", savedLabel);
 
         return ResponseEntity.ok(response);
     }

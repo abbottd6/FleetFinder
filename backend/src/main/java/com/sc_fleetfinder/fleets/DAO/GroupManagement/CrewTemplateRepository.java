@@ -19,4 +19,12 @@ public interface CrewTemplateRepository extends JpaRepository<CrewTemplate, Long
 
     @Query("SELECT t FROM CrewTemplate t WHERE t.templateId = :templateId")
     Optional<CrewTemplate> findTemplateAndChildrenById(@Param("templateId") Long templateId);
+
+    @Query(value = """
+            SELECT COUNT(*)
+            FROM crew_template t
+            WHERE t.owner_id = :userId
+                AND t.template_category = 'Custom'
+            """, nativeQuery = true)
+    Integer countUserCustomTemplates(@Param("userId") Long userId);
 }

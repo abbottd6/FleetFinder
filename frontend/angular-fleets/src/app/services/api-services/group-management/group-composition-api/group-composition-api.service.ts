@@ -29,6 +29,9 @@ import {
 import {
   AddNewSubgroupRequest
 } from "../../../../models/group-management-models/request-models/add-new-subgroup-request";
+import {
+  TemplateFromCompRequest
+} from "../../../../models/group-management-models/request-models/template-from-comp-request";
 
 @Injectable({
   providedIn: 'root'
@@ -61,6 +64,11 @@ export class GroupCompositionApiService {
   createSubgroupFromTemplate(groupId: number, template: CrewTemplateViewModel): Observable<GroupCompositionDto> {
     return this.httpClient.post<GroupCompositionDto>(
       `${this.baseUrl}/create-subgroup-from-template/${groupId}`, template);
+  }
+
+  createTemplateFromComposition(templateRequest: TemplateFromCompRequest): Observable<{savedLabel: string}> {
+    return this.httpClient.post<{savedLabel: string}>(
+      `${this.baseUrl}/create-template-from-subgroup`, templateRequest);
   }
 
   createNewPosition(newPosition: NewOrEditPositionRequest): Observable<GroupCompCrewPositionViewModel> {

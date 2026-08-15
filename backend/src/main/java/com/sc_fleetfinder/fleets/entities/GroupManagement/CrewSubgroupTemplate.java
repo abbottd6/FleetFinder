@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.entities.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupCompositionSubgroupDto;
 import com.sc_fleetfinder.fleets.utils.GroupManagement.SubgroupDropListOrientation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,15 @@ import java.util.LinkedHashSet;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CrewSubgroupTemplate {
+
+    public CrewSubgroupTemplate(Long templateId, Long parentTemplateSubgroupId, GroupCompositionSubgroupDto subgroupDto) {
+        this.templateId = templateId;
+        this.parentSubgroupId = parentTemplateSubgroupId;
+        this.subgroupLabel = subgroupDto.getSubgroupLabel();
+        this.subgroupNotes = subgroupDto.getSubgroupNotes();
+        this.sortOrder = subgroupDto.getSortOrder();
+        this.dropListOrientation = subgroupDto.getDropListOrientation();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

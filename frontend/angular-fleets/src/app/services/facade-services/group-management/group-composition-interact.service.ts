@@ -47,6 +47,9 @@ import {
 import {
   ConvertToTemplatePopupComponent
 } from "../../../components/group-management-page/convert-to-template-popup/convert-to-template-popup.component";
+import {
+  TemplateFromCompRequest
+} from "../../../models/group-management-models/request-models/template-from-comp-request";
 
 export interface GroupCompPositionsRatio {
   assigned: number,
@@ -578,7 +581,7 @@ export class GroupCompositionInteractService {
 
     console.log('reference: ' + referenceLabel);
 
-    this.dialog.open(ConvertToTemplatePopupComponent, {
+    const dialogRef = this.dialog.open(ConvertToTemplatePopupComponent, {
       minHeight: '350px',
       minWidth: '650px',
       data: {
@@ -587,10 +590,34 @@ export class GroupCompositionInteractService {
         subgroups: subgroups
       }
     })
+
+    dialogRef.afterClosed().pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: TemplateFromCompRequest) => {
+        if(result) {
+          this.compositionApi.createTemplateFromComposition(result).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: (response: {savedLabel: string}) => {
+                this.managementInteract.showSnackBarMessage('\'' + response.savedLabel + '\'' + ' custom template created successfully.')
+              },
+              error: (e: HttpErrorResponse) => {
+                //forbidden (content limit exception)
+                if(e.status === 403) {
+                  this.managementInteract.showSnackBarMessage('Error: could not create template. You have reached the custom template limit.')
+                } else {
+                  this.managementInteract.showSnackBarMessage('There was an error generating a template for this composition tree.')
+                }
+              }
+            })
+        }
+    });
   }
 
   clearTrees() {
     this.subgroupTreesSubject.next([]);
+  }
+
+  getSubgroupTreesSnapshot(): GroupCompSubgroupViewModel[] {
+    return [...this.subgroupTreesSubject.getValue()];
   }
 
 }

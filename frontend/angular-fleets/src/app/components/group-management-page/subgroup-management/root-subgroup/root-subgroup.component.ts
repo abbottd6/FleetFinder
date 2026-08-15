@@ -248,6 +248,11 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
     this.showRightScroll = el.scrollLeft < max - 1;
   }
 
+  extractCompositionAndEmitTemplateSave() {
+    const root = this.compositionInteract.getSubgroupTreesSnapshot();
+    this.compositionInteract.saveCompositionAsTemplate('root', root);
+  }
+
 
   ngOnDestroy() {
     // this.subgroupInteract.clearTrees();

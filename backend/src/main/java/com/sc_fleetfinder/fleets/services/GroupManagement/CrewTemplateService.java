@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.services.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.TemplateFromCompRequestDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.CrewTemplateSummaryDto;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewPositionTemplate;
 import com.sc_fleetfinder.fleets.entities.GroupManagement.CrewSubgroupTemplate;
@@ -17,4 +18,6 @@ public interface CrewTemplateService {
     List<CrewSubgroupTemplate> findSubgroupsByTemplateRootId(Long templateId);
 
     List<CrewPositionTemplate> findPositionsByTemplateRootId(Long templateId);
+
+    String createTemplateFromCompositionDto(Users manager, TemplateFromCompRequestDto templateFromDto);
 }

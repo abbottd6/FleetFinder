@@ -21,6 +21,16 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CrewPositionTemplate {
 
+    public CrewPositionTemplate(Long templateRootId, Long subgroupTemplateId,
+                                CrewRoleClassification positionRole, String positionNotes,
+                                Integer sortOrder) {
+        this.templateRootId = templateRootId;
+        this.subgroupTemplateId = subgroupTemplateId;
+        this.positionRole = positionRole;
+        this.positionNotes = positionNotes;
+        this.sortOrder = sortOrder;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_template_position")

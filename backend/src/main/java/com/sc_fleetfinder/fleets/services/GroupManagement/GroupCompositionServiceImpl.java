@@ -269,12 +269,18 @@ public class GroupCompositionServiceImpl implements GroupCompositionService {
 
         // find roles available within this listing scope for position assignments because the position dto uses a dto
         // (can't assign the role classification from the dto to the position entity's role)
-        List<CrewRoleClassification> listingScopedRoles = crewRoleService.getRolesForListingByUserId(listing.getUsers().getUserId());
-
         // convert to map for faster lookup
-        Map<Long, CrewRoleClassification> rolesMap = listingScopedRoles.stream()
-                        .collect(Collectors.toMap(CrewRoleClassification::getRoleId, Function.identity()));
 
+        //extracted to method
+//        List<CrewRoleClassification> listingScopedRoles = crewRoleService.getRolesForListingByUserId(listing.getUsers().getUserId());
+//
+//
+//        Map<Long, CrewRoleClassification> rolesMap = listingScopedRoles.stream()
+//                        .collect(Collectors.toMap(CrewRoleClassification::getRoleId, Function.identity()));
+
+        Map<Long, CrewRoleClassification> rolesMap = crewRoleService.constructCrewRolesMapForGroup(listing.getUsers().getUserId());
+
+        //todo extract to position service method:
         // create positions map with same entity instances from list
         Map<Long, CrewPosition> positionsMap = positionEntitiesList.stream()
                 .collect(Collectors.toMap(CrewPosition::getPositionId, Function.identity()));
