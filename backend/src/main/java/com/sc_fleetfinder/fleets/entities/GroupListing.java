@@ -171,9 +171,11 @@ public class GroupListing {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private Instant rsvpScheduled;
 
+    //not in use
     @Column(name="comms_share", columnDefinition = "VARCHAR(512) NULL", nullable = true)
     private String commsShare;
 
+    //not in use
     @Enumerated(EnumType.STRING)
     @Column(name="send_comms_share_on", nullable = true)
     private CommsShareScheduleOptions sendCommsShareOn;

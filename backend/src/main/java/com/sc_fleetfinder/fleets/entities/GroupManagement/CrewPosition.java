@@ -3,7 +3,6 @@ package com.sc_fleetfinder.fleets.entities.GroupManagement;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.CreateOrEditCrewPositionDto;
 import com.sc_fleetfinder.fleets.entities.GroupListing;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -69,7 +68,6 @@ public class CrewPosition {
 
     @ManyToOne
     @JoinColumn(name="listing_id", referencedColumnName="id_group", nullable=false)
-    @NotNull(message="CrewPosition entity field 'groupListing' cannot be null.")
     private GroupListing groupListing;
 
     @ManyToOne

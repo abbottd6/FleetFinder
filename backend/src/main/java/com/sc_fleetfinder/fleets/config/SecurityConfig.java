@@ -28,6 +28,7 @@ import java.util.Map;
 @EnableMethodSecurity
 @Profile("!test")
 public class SecurityConfig {
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         var defaultConverter = new JwtGrantedAuthoritiesConverter();
@@ -45,6 +46,8 @@ public class SecurityConfig {
             return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
         };
 
+        //TODO: Check which other controller paths should be added to this
+
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -56,6 +59,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/modctrl/**").hasRole("mod")
                         .requestMatchers("/api/group-membership/**").hasRole("user")
                         .requestMatchers("/api/group-member-management/**").authenticated()
+                        .requestMatchers("/api/group-composition/**").authenticated()
+                        .requestMatchers("/api/group-rsvp/**").authenticated()
+                        .requestMatchers("/api/chat/**").authenticated()
+                        .requestMatchers("/api/modctrl/**").authenticated()
+                        .requestMatchers("/api/notify/**").authenticated()
+                        .requestMatchers("/api/user_notification_preferences/**").authenticated()
                         .requestMatchers("/actuator/prometheus").access(
                                 new WebExpressionAuthorizationManager("hasIpAddress('172.16.0.0/12')"))
                         .requestMatchers("/actuator/health").permitAll()

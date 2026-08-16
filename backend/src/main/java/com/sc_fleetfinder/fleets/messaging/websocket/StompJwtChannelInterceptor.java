@@ -53,6 +53,7 @@ public class StompJwtChannelInterceptor implements ChannelInterceptor {
             AbstractAuthenticationToken authToken = new JwtAuthenticationToken(jwt, List.of(), principalName);
 
             accessor.setUser(authToken);
+            System.out.println("authtoken: " + authToken);
         }
 
         return MessageBuilder.createMessage(message.getPayload(), accessor.getMessageHeaders());

@@ -102,6 +102,7 @@ public class ChatController {
     }
 
     //todo mute conv returns conversations
+    //todo: figure out what this ^^ means lol
     @PatchMapping("/mute_conv/{convId}")
     public Page<GetConversationDto> muteConvAndReturnConvs(@AuthenticationPrincipal Jwt jwt,
                                                            @PathVariable Long convId,

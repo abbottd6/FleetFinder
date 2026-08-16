@@ -1,5 +1,6 @@
 package com.sc_fleetfinder.fleets.controllers.GroupManagement;
 
+import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.ScheduleRsvpRequestDto;
 import com.sc_fleetfinder.fleets.DTO.requestDTOs.GroupManagement.SendGroupInviteOfferDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerInviteResponseDto;
 import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.GroupManagerMemberResponseDto;
