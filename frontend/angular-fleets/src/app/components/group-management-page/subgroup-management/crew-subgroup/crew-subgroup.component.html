@@ -93,6 +93,14 @@
             <button
               mat-menu-item
               class="options-item"
+              [disabled]="mgmtRsvpService.hasGlobalMaster">
+              <mat-icon class="material-symbols-outlined dropdown-icon">schedule_send</mat-icon>
+              <span>Schedule RSVP</span>
+            </button>
+
+            <button
+              mat-menu-item
+              class="options-item"
               (click)="this.compositionInteract.saveCompositionAsTemplate('nested', [subgroup])">
               <mat-icon class="material-symbols-outlined dropdown-icon">file_save</mat-icon>
               <span>Save template</span>

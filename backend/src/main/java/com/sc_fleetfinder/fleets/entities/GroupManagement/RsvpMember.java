@@ -9,9 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name="rsvp_member")
@@ -48,6 +51,10 @@ public class RsvpMember {
     @Enumerated(EnumType.STRING)
     @Column(name="status", nullable = false)
     private RsvpStatus status;
+
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name="batch_id", columnDefinition = "BINARY(16) NOT NULL", nullable = false)
+    private UUID batchId;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name="expires_at", nullable = false)

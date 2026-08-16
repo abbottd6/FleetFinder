@@ -34,6 +34,7 @@ import org.springframework.context.annotation.Configuration;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
+import java.util.UUID;
 
 @Configuration
 @RequiredArgsConstructor
@@ -1376,6 +1377,42 @@ public class ModelMapperConfig {
 
                     mapper.map(CrewPosition::getCreatedAt, MemberPositionSummaryDto::setCreatedAt);
                 });
+
+//RSVP MASTER & RSVP MEMBER
+        modelMapper.createTypeMap(RsvpMaster.class, RsvpMasterResponseDto.class)
+            .addMappings(mapper -> {
+                mapper.map(RsvpMaster::getIdRsvpMaster, RsvpMasterResponseDto::setIdRsvpMaster);
+
+                mapper.using(ctx -> {
+                    GroupListing listing = (GroupListing) ctx.getSource();
+                    return listing != null ? listing.getGroupId() : null;
+                }).map(RsvpMaster::getGroupListing, RsvpMasterResponseDto::setListingId);
+
+                mapper.using(ctx -> {
+                    GroupManagementSubgroup subgroup = (GroupManagementSubgroup) ctx.getSource();
+                    return subgroup != null ? subgroup.getSubgroupId() : null;
+                }).map(RsvpMaster::getSubgroup, RsvpMasterResponseDto::setSubgroupId);
+
+                mapper.using(ctx -> {
+                    GroupManagementSubgroup subgroup = (GroupManagementSubgroup) ctx.getSource();
+                    return subgroup != null ? subgroup.getSubgroupLabel() : null;
+                }).map(RsvpMaster::getSubgroup, RsvpMasterResponseDto::setSubgroupLabel);
+
+                mapper.map(RsvpMaster::getScheduledTime, RsvpMasterResponseDto::setScheduledTime);
+
+                mapper.map(RsvpMaster::getExpiresAt, RsvpMasterResponseDto::setExpiresAt);
+
+                mapper.map(RsvpMaster::getRsvpMessage, RsvpMasterResponseDto::setRsvpMessage);
+
+                mapper.map(RsvpMaster::getCommsShare, RsvpMasterResponseDto::setCommsShare);
+
+                mapper.using(ctx -> {
+                    UUID batchId = (UUID)  ctx.getSource();
+                    return batchId != null;
+                }).map(RsvpMaster::getBatchId, RsvpMasterResponseDto::setBatchedAndSent);
+
+                mapper.map(RsvpMaster::getCreatedAt, RsvpMasterResponseDto::setCreatedAt);
+            });
 
 //REFERENCE DATA
         // Gameplay Category ---->>>> Response Dto

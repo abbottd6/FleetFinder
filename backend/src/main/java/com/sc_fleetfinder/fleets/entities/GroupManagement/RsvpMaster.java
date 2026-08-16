@@ -7,9 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name="rsvp_master")
@@ -46,8 +49,9 @@ public class RsvpMaster {
     @Column(name="comms_share", nullable = true)
     private String commsShare;
 
-    @Column(name="sent_flag", nullable = false)
-    private Boolean sentFlag;
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name="batch_id", columnDefinition = "BINARY(16) NULL", nullable = true)
+    private UUID batchId;
 
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

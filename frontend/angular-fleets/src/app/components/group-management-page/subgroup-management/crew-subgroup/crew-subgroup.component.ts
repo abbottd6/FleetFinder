@@ -51,6 +51,7 @@ import {
 import {
   GroupCompCrewPositionViewModel
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-crew-position-view-model";
+import {ManagementRsvpService} from "../../../../services/facade-services/group-management/management-rsvp.service";
 
 @Component({
   selector: 'app-crew-subgroup',
@@ -195,6 +196,7 @@ export class CrewSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
 
   constructor(protected compositionInteract: GroupCompositionInteractService,
               private managementInteract: GroupManagementInteractService,
+              protected mgmtRsvpService: ManagementRsvpService,
               private dialog: MatDialog){}
 
   ngOnInit() {

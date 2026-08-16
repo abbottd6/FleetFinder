@@ -1,0 +1,11 @@
+package com.sc_fleetfinder.fleets.services.GroupManagement;
+
+import com.sc_fleetfinder.fleets.DTO.responseDTOs.GroupManagement.WrapperDtoRsvpActiveMastersResponse;
+import com.sc_fleetfinder.fleets.entities.Users;
+
+import java.util.Set;
+
+public interface RsvpService {
+
+    WrapperDtoRsvpActiveMastersResponse getRsvpActiveMastersList(Users manager, Long listingId);
+}

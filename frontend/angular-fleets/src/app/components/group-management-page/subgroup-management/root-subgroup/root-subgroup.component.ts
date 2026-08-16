@@ -51,6 +51,7 @@ import {
 } from "../../../../models/group-management-models/view-models/group-composition/group-comp-subgroup-view-model";
 import {ConfirmGenericComponent} from "../../../pop-ups/confirm-generic/confirm-generic.component";
 import {MatDialog} from "@angular/material/dialog";
+import {ManagementRsvpService} from "../../../../services/facade-services/group-management/management-rsvp.service";
 
 @Component({
   selector: 'app-root-subgroup',
@@ -114,6 +115,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected rootChildrenExpanded$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   constructor(protected compositionInteract: GroupCompositionInteractService,
+              protected mgmtRsvpService: ManagementRsvpService,
               private dialog: MatDialog){
   }
 

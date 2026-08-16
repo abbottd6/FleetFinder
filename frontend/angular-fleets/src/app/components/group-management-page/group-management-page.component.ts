@@ -1,27 +1,15 @@
-import {
-  AfterViewInit,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  inject,
-  OnDestroy,
-  OnInit,
-  ViewChild
-} from '@angular/core';
-import {filter, Observable, Subject, takeUntil} from "rxjs";
+import {AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Observable, Subject, takeUntil} from "rxjs";
 import {UserService} from "../../services/user-services/user.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {MemberManagementApiService} from "../../services/api-services/group-management/member-management-api.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {AsyncPipe, NgIf, SlicePipe} from "@angular/common";
+import {AsyncPipe, NgIf} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {RosterManagementComponent} from "./roster-management/roster-management.component";
 import {
   GroupManagementInteractService
 } from "../../services/facade-services/group-management/group-management-interact.service";
-import {
-  GroupMembershipViewModel
-} from "../../models/group-management-models/view-models/group-membership/group-membership-view-model";
 import {
   LoadCrewTemplateFormComponent
 } from "./subgroup-management/load-crew-template/load-crew-template-form.component";
@@ -32,9 +20,7 @@ import {
   CrewTemplateViewModel
 } from "../../models/group-management-models/view-models/group-composition/crew-template-view-model";
 import {DragDropModule} from "@angular/cdk/drag-drop";
-import {
-  DropListRegistryService,
-} from "../../services/facade-services/group-management/drop-list-registry.service";
+import {DropListRegistryService,} from "../../services/facade-services/group-management/drop-list-registry.service";
 
 import {RootSubgroupComponent} from "./subgroup-management/root-subgroup/root-subgroup.component";
 import {map} from "rxjs/operators";
@@ -43,6 +29,7 @@ import {MatMenu, MatMenuItem, MatMenuTrigger} from "@angular/material/menu";
 import {
   MgmtMemberQuickAccessMenuService
 } from "../../services/component-services/group-management-quick-access-menus/mgmt-member-quick-access-menu.service";
+import {ManagementRsvpService} from "../../services/facade-services/group-management/management-rsvp.service";
 
 @Component({
   selector: 'app-group-management-page',
@@ -109,7 +96,8 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
               protected compositionInteract: GroupCompositionInteractService,
               private route: ActivatedRoute,
               protected dropListRegistry: DropListRegistryService,
-              protected rosterMemberQuickMenu: MgmtMemberQuickAccessMenuService) {}
+              protected rosterMemberQuickMenu: MgmtMemberQuickAccessMenuService,
+              protected mgmtRsvpService: ManagementRsvpService) {}
 
   ngOnInit() {
     if(!this.userService.userLoggedIn) {
@@ -150,6 +138,8 @@ export class GroupManagementPageComponent implements OnInit, AfterViewInit, OnDe
     this.listingTitle = this.managementInteract.sessionManager.listing.listingTitle;
 
     this.compositionInteract.getExistingGroupComposition();
+
+    this.mgmtRsvpService.getRsvpActiveMasters(this.managementInteract.groupId);
   }
 
   ngAfterViewInit() {

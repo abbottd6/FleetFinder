@@ -6,11 +6,9 @@ CREATE TABLE IF NOT EXISTS rsvp_master
     scheduled_ts   TIMESTAMP    NOT NULL,
     rsvp_message   VARCHAR(255) NULL,
     comms_share    VARCHAR(255) NULL,
-    sent_flag      TINYINT      NOT NULL DEFAULT 0,
+    batch_id       BINARY(16)   NULL,
     expires_at     TIMESTAMP    NOT NULL,
     created_at     TIMESTAMP    NOT NULL,
-
-    CHECK (sent_flag IN (0, 1)),
 
     CONSTRAINT fk_rsvp_master_ref_group_listing
         FOREIGN KEY (listing_id) REFERENCES group_listing (id_group),
@@ -31,6 +29,7 @@ CREATE TABLE IF NOT EXISTS rsvp_member
     user_id        BIGINT                                              NOT NULL,
     rsvp_message   VARCHAR(255),
     status         ENUM ('PENDING', 'ACCEPTED', 'DECLINED', 'EXPIRED') NOT NULL DEFAULT 'PENDING',
+    batch_id       BINARY(16)                                          NOT NULL,
     expires_at     TIMESTAMP                                           NOT NULL,
     created_at     TIMESTAMP                                           NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
