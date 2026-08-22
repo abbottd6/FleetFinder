@@ -12,6 +12,7 @@ public class RsvpMasterResponseDto {
     private Long listingId;
     private Long subgroupId;
     private Long subgroupLabel;
+    private Boolean subgroupIsSource;
     private Instant scheduledTime;
     private Instant expiresAt;
     private String rsvpMessage;

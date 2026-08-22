@@ -35,6 +35,12 @@ public class RsvpMaster {
     @JoinColumn(name="subgroup_id", referencedColumnName="id_subgroup", nullable = true)
     private GroupManagementSubgroup subgroup;
 
+    // flag that indicates whether the subgroup that this RSVP is linked to
+    // is the subgroup where the RSVP originated from, i.e., whether
+    // this subgroup inherited the RSVP from a parent subgroup
+    @Column(name="subgroup_is_source", nullable = false)
+    private Boolean subgroupIsSource = false;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name="scheduled_ts", nullable = false)
     private Instant scheduledTime;

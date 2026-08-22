@@ -1398,6 +1398,8 @@ public class ModelMapperConfig {
                     return subgroup != null ? subgroup.getSubgroupLabel() : null;
                 }).map(RsvpMaster::getSubgroup, RsvpMasterResponseDto::setSubgroupLabel);
 
+                mapper.map(RsvpMaster::getSubgroupIsSource, RsvpMasterResponseDto::setSubgroupIsSource);
+
                 mapper.map(RsvpMaster::getScheduledTime, RsvpMasterResponseDto::setScheduledTime);
 
                 mapper.map(RsvpMaster::getExpiresAt, RsvpMasterResponseDto::setExpiresAt);

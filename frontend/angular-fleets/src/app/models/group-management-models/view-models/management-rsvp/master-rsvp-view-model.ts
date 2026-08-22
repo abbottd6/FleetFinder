@@ -4,6 +4,7 @@ export class MasterRsvpViewModel {
     public listingId: number,
     public subgroupId: number | null,
     public subgroupLabel: string | null,
+    public subgroupIsSource: boolean,
     public scheduledTime: Date,
     public expiresAt: Date,
     public rsvpMessage: string | null,

@@ -5,7 +5,7 @@ import {
   GroupMembershipViewModel
 } from "../../../models/group-management-models/view-models/group-membership/group-membership-view-model";
 import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
-import {BehaviorSubject, EMPTY, Observable, takeUntil} from "rxjs";
+import {BehaviorSubject, EMPTY} from "rxjs";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {Page} from "../../../models/page-interface";
 import {SortablePageRequest} from "../../../utils/sortable-page-request";

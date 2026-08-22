@@ -35,6 +35,10 @@ import {
 import {
   ConvertWaitlistMemberInvite
 } from "../../../models/group-management-models/request-models/convert-waitlist-member-invite";
+import { GroupListingViewModel } from "../../../models/group-listing/group-listing-view-model";
+import {GroupListingFetchService} from "../../api-services/group-listings-fetch-api/group-listing-fetch.service";
+import {HttpErrorResponse} from "@angular/common/http";
+import {Router} from "@angular/router";
 
 @Injectable({
   providedIn: 'root'
@@ -56,6 +60,7 @@ export class GroupManagementInteractService {
   public groupInvites$ = this.groupInvitesSubject.asObservable();
 
   public sessionManager: GroupMembershipViewModel | undefined;
+  public groupListing!: GroupListingViewModel;
   public groupId!: number;
 
   private selectedInviteSubject = new BehaviorSubject<GroupManagementInviteViewModel | null>(null);
@@ -67,12 +72,25 @@ export class GroupManagementInteractService {
               private chatHostSrv: ChatHostService,
               protected dialog: MatDialog,
               private userService: UserService,
-              private snackBar: MatSnackBar) {
+              private listingApi: GroupListingFetchService,
+              private snackBar: MatSnackBar,
+              private router: Router) {
   }
 
   setManagementSessionState() {
     this.sessionManager = history.state?.membership as GroupMembershipViewModel;
     this.groupId = this.sessionManager?.listing.groupId!;
+
+    this.listingApi.getGroupById(this.groupId).pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: ((listing: GroupListingViewModel) => {
+          this.groupListing = listing;
+        }),
+        error: ((e: HttpErrorResponse) => {
+          this.showSnackBarMessage('Error: Could not fetch source Group Listing. It may have been deleted.')
+          this.router.navigateByUrl('/user-account');
+        })
+      })
   }
 
   setActiveRoster(roster: Page<GroupManagementMemberViewModel>) {

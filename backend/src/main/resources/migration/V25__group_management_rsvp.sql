@@ -1,14 +1,15 @@
 CREATE TABLE IF NOT EXISTS rsvp_master
 (
-    id_rsvp_master BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    listing_id     BIGINT       NOT NULL,
-    subgroup_id    BIGINT       NULL,
-    scheduled_ts   TIMESTAMP    NOT NULL,
-    rsvp_message   VARCHAR(255) NULL,
-    comms_share    VARCHAR(255) NULL,
-    batch_id       BINARY(16)   NULL,
-    expires_at     TIMESTAMP    NOT NULL,
-    created_at     TIMESTAMP    NOT NULL,
+    id_rsvp_master     BIGINT       NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    listing_id         BIGINT       NOT NULL,
+    subgroup_id        BIGINT       NULL,
+    subgroup_is_source BOOLEAN      NOT NULL DEFAULT FALSE,
+    scheduled_ts       TIMESTAMP    NOT NULL,
+    rsvp_message       VARCHAR(255) NULL,
+    comms_share        VARCHAR(255) NULL,
+    batch_id           BINARY(16)   NULL,
+    expires_at         TIMESTAMP    NOT NULL,
+    created_at         TIMESTAMP    NOT NULL,
 
     CONSTRAINT fk_rsvp_master_ref_group_listing
         FOREIGN KEY (listing_id) REFERENCES group_listing (id_group),

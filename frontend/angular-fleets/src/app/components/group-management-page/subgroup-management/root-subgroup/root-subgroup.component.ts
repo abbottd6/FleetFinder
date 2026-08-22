@@ -52,6 +52,7 @@ import {
 import {ConfirmGenericComponent} from "../../../pop-ups/confirm-generic/confirm-generic.component";
 import {MatDialog} from "@angular/material/dialog";
 import {ManagementRsvpService} from "../../../../services/facade-services/group-management/management-rsvp.service";
+import {GroupListingViewModel} from "../../../../models/group-listing/group-listing-view-model";
 
 @Component({
   selector: 'app-root-subgroup',
@@ -81,8 +82,7 @@ export class RootSubgroupComponent implements OnInit, AfterViewInit, OnDestroy {
   protected readonly dropListRegistry = inject(DropListRegistryService);
   protected readonly groupManagementUiPrefs = inject(GroupManagementUiPrefsService);
 
-  @Input() listingTitle!: string;
-  @Input() groupId!: number;
+  @Input() groupListing!: GroupListingViewModel;
 
   @ViewChild('rootSubgroupList') rootSubgroupList!: CdkDropList;
   @ViewChild('rootSubgroupListElement', {read: ElementRef }) rootSubgroupListElement!: ElementRef<HTMLElement>;

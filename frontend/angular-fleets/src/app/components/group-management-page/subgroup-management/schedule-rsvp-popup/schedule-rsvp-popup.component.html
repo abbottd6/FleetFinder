@@ -1,0 +1,93 @@
+<div class="add-subgroup-popup-wrapper">
+  <h2 mat-dialog-title>{{ popupTitle }}</h2>
+  <mat-dialog-content>
+    <div class="info-message">
+      @if (data.isGlobalRsvp) {
+
+        <p>You are scheduling a <span class="fancy-text">Global RSVP</span> for all members of this group.
+          Global RSVP scheduling is for groups and events with a <span class="fancy-text">single event start
+        time</span>.
+        </p>
+        <p>
+          <span class="fancy-text">You cannot mix Global RSVPs with Subgroup-Level RSVPs.</span>
+        </p>
+      } @else {
+        <p>You are scheduling a <span class="fancy-text">Subgroup-Level RSVP</span>.
+          Subgroup-Level RSVPs are designed for groups that have <span class="fancy-text">multiple separate events
+          with different event start times </span>.
+        </p>
+        <p>
+          <span class="fancy-text">You cannot mix Subgroup-Level RSVPs with Global RSVPs.</span>
+        </p>
+      }
+    </div>
+    <button
+      class="more-info-button"
+      (click)="toggleShowMoreInfo()">
+      What does this mean?
+      <mat-icon class="material-symbols-outlined dropdown-icon">arrow_drop_down</mat-icon>
+    </button>
+    <div class="more-info-wrapper">
+      <div class="more-info-box"
+           [class.expanding]="infoExpanding"
+           [class.show-more-info]="showMoreInfo">
+        <div class="more-info-text">
+          <p>This system includes two different approaches to scheduling RSVPs to provide simplicity in one form,
+              and granularity for complex events in the other. These two RSVP scheduling methods cannot be mixed.
+          </p>
+          <p>
+            <span class="fancy-text">Global RSVPs</span> are sent to all members on the 'Active Roster' regardless of
+            whether they have been assigned to a position, and regardless of which subgroup a position they have been
+            assigned to is nested in. Global RSVPs are the much more straight forward approach. If you set a Global
+            RSVP, every member in your 'Active Roster' will be sent the same event information (excepting member
+            position assignments) at the same time.
+          </p>
+          <span>Use Global RSVPs if any of these scenarios are true:</span>
+          <ul>
+            <li>You have a single event start time and would like to send RSVPs to all members at the same time, with the same
+              event schedule and comms channel information</li>
+            <li>You are not using the group composition features of this tool to create subgroups and assign members to roles</li>
+            <li>You don't want to deal with thinking through RSVPs for multiple layers of subgroups or anticipating
+              different start times and it is sufficient to send everyone in the group the same event information</li>
+          </ul>
+          <p>
+            <span class="fancy-text">Subgroup-Level RSVPs</span> are sent to members of the specified subgroup and
+            the subgroups nested within it <span style="font-weight: 700">IF</span> those subgroups do not have an RSVP
+            scheduled with greater specificity. Greater specificity meaning: an RSVP directly assigned to that subgroup
+            or an RSVP inherited from a closer ancestor subgroup.
+          </p>
+          <p>
+            Subgroup-Level RSVPs can be straightforward as well if you arrange the subgroups with logical separation
+            and don't try to add unnecessary complexity regarding different start times.
+          </p>
+          <span>Use Subgroup-Level RSVPs if:</span>
+          <ul>
+            <li>Your group composition includes multiple subgroups <span style="font-weight: 700">AND</span> the members
+                of these subgroups should join the event(s) at different times</li>
+            <li>You can at least approximately anticipate when these different start times will be</li>
+          </ul>
+          <span>Or:</span>
+          <ul>
+            <li>You want to use different RSVPs to send different comms channel information to different subgroups</li>
+            <li>You want to use different RSVPs to send different messages with the RSVPs to different subgroups</li>
+          </ul>
+        </div>
+        <div class="collapse-wrapper">
+          <button
+            class="collapse-info-button"
+            (click)="toggleShowMoreInfo()">
+            Collapse
+            <mat-icon class="material-symbols-outlined dropdown-icon">arrow_drop_up</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <span>{{ data.listing.listingTitle }}</span>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button class="action-buttons" (click)="onCancel()">Cancel</button>
+    <button class="action-buttons" (click)="onConfirm()">Create</button>
+  </mat-dialog-actions>
+</div>
+
